@@ -1,0 +1,518 @@
+<?xml version="1.0"?>
+<!DOCTYPE configuration PUBLIC "-//PlanetLab Central//DTD PLC configuration//EN" "configuration.dtd">
+
+<configuration>
+  <variables>
+    <category id="plc">
+      <name>System</name>
+      <description>Basic system variables. Be sure that the values of
+      these variables are the same across all machines in your
+      installation.</description>
+
+      <variablelist>
+	<variable id="name" type="string">
+	  <name>Name</name>
+	  <value>PlanetLab Test</value>
+	  <description>The name of this PLC installation. It is used in
+	  the name of the default system site (e.g., PlanetLab Central)
+	  and in the names of various administrative entities (e.g.,
+	  PlanetLab Support).</description>
+	</variable>
+
+	<variable id="slice_prefix" type="string">
+	  <name>Slice Prefix</name>
+	  <value>pl</value>
+	  <description>The abbreviated name of this PLC
+	  installation. It is used as the prefix for system slices
+	  (e.g., pl_conf). Warning: Currently, this variable should
+	  not be changed once set.</description>
+	</variable>
+
+	<variable id="root_user" type="password">
+	  <name>Root Account</name>
+	  <value>root@test.planet-lab.org</value>
+	  <description>The name of the initial administrative
+	  account. We recommend that this account be used only to create
+	  additional accounts associated with real
+	  administrators, then disabled.</description>
+	</variable>
+
+	<variable id="root_password" type="password">
+	  <name>Root Password</name>
+	  <value>root</value>
+	  <description>The password of the initial administrative
+	  account. Also the password of the root account on the Boot
+	  CD.</description>
+	</variable>
+
+	<!-- The following are not actually meant to be configurable
+	     as variables. The web interface should allow the file to
+	     be downloaded, or its contents replaced by a file upload,
+	     but the actual <value> shouldn't need to be changed.  -->
+
+	<variable id="root_ssh_key_pub" type="file">
+	  <name>Root SSH Public Key</name>
+	  <value>/etc/planetlab/root_ssh_key.pub</value>
+	  <description>The SSH public key used to access the root
+	  account on your nodes.</description>
+	</variable>
+
+	<variable id="root_ssh_key" type="file">
+	  <name>Root SSH Private Key</name>
+	  <value>/etc/planetlab/root_ssh_key.rsa</value>
+	  <description>The SSH private key used to access the root
+	  account on your nodes.</description>
+	</variable>
+
+	<variable id="debug_ssh_key_pub" type="file">
+	  <name>Debug SSH Public Key</name>
+	  <value>/etc/planetlab/debug_ssh_key.pub</value>
+	  <description>The SSH public key used to access the root
+	  account on your nodes when they are in Debug mode.</description>
+	</variable>
+
+	<variable id="debug_ssh_key" type="file">
+	  <name>Debug SSH Private Key</name>
+	  <value>/etc/planetlab/debug_ssh_key.rsa</value>
+	  <description>The SSH private key used to access the root
+	  account on your nodes when they are in Debug mode.</description>
+	</variable>
+
+	<variable id="root_gpg_key_pub" type="file">
+	  <name>Root GPG Public Keyring</name>
+	  <value>/etc/planetlab/pubring.gpg</value>
+	  <description>The GPG public keyring used to sign the Boot
+	  Manager and all node packages.</description>
+	</variable>
+
+	<variable id="root_gpg_key" type="file">
+	  <name>Root GPG Private Keyring</name>
+	  <value>/etc/planetlab/secring.gpg</value>
+	  <description>The SSH private key used to access the root
+	  account on your nodes.</description>
+	</variable>
+      </variablelist>
+    </category>
+
+    <category id="plc_net">
+      <name>Network</name>
+      <description>Network environment.</description>
+
+      <variablelist>
+	<variable id="dns1" type="ip">
+	  <name>Primary DNS Server</name>
+	  <value>128.112.136.10</value>
+	  <description>Primary DNS server address.</description>
+	</variable>
+
+	<variable id="dns2" type="ip">
+	  <name>Secondary DNS Server</name>
+	  <value>128.112.136.12</value>
+	  <description>Secondary DNS server address.</description>
+	</variable>
+      </variablelist>
+    </category>
+
+    <category id="plc_mail">
+      <name>Mail</name>
+      <description>Many maintenance scripts, as well as the API and
+      web site themselves, send e-mail notifications and
+      warnings.</description>
+
+      <variablelist>
+	<variable id="enabled" type="boolean">
+	  <name>Enable Mail</name>
+	  <value>false</value>
+	  <description>Set to false to suppress all e-mail notifications
+	  and warnings.</description>
+	</variable>
+
+	<variable id="support_address">
+	  <name>Support Address</name>
+	  <value>root@localhost</value>
+	  <description>This address is used for support
+	  requests. Support requests may include traffic complaints,
+	  security incident reporting, web site malfunctions, and
+	  general requests for information. We recommend that the
+	  address be aliased to a ticketing system such as Request
+	  Tracker.</description>
+	</variable>
+
+	<variable id="boot_address">
+	  <name>Boot Messages Address</name>
+	  <value>root@localhost</value>
+	  <description>The API will notify this address when a problem
+	  occurs during node installation or boot. If a domain is not
+	  specified, the default system domain will be used
+	  name.</description>
+	</variable>
+      </variablelist>
+    </category>
+
+    <category id="plc_db">
+      <name>Database Server</name>
+      <description>Database server definitions.</description>
+
+      <variablelist>
+	<variable id="enabled" type="boolean">
+	  <name>Enabled</name>
+	  <value>true</value>
+	  <description>Enable the database server on this
+	  machine.</description>
+	</variable>
+
+	<variable id="type" type="string">
+	  <name>Type</name>
+	  <value>postgresql</value>
+	  <description>The type of database server. Currently, only
+	  postgresql is supported.</description>
+	</variable>
+
+	<variable id="host" type="hostname">
+	  <name>Hostname</name>
+	  <value>localhost</value>
+	  <description>The fully qualified hostname or IP address of
+	  the database server. This hostname must be resolvable and
+	  reachable by the rest of your installation.</description>
+	</variable>
+
+	<variable id="name" type="string">
+	  <name>Database Name</name>
+	  <value>planetlab3</value>
+	  <description>The name of the database to access.</description>
+	</variable>
+
+	<variable id="user" type="string">
+	  <name>Database Username</name>
+	  <value>pgsqluser</value>
+	  <description>The username to use when accessing the
+	  database.</description>
+	</variable>
+
+	<variable id="password" type="password">
+	  <name>Database Password</name>
+	  <value></value>
+	  <description>The password to use when accessing the
+	  database. If left blank, one will be
+	  generated.</description>
+	</variable>
+      </variablelist>
+    </category>
+
+    <category id="plc_api">
+      <name>API Server</name>
+      <description>API (XML-RPC) server definitions.</description>
+
+      <variablelist>
+	<variable id="enabled" type="boolean">
+	  <name>Enabled</name>
+	  <value>true</value>
+	  <description>Enable the API server on this
+	  machine.</description>
+	</variable>
+
+	<variable id="debug" type="boolean">
+	  <name>Debug</name>
+	  <value>false</value>
+	  <description>Enable verbose API debugging. Do not enable on
+	  a production system!</description>
+	</variable>
+
+	<variable id="host" type="hostname">
+	  <name>Hostname</name>
+	  <value>localhost</value>
+	  <description>The fully qualified hostname or IP address of
+	  the API server. This hostname must be resolvable and
+	  reachable by the rest of your installation, as well as your
+	  nodes.</description>
+	</variable>
+
+	<variable id="ssl_port" type="int">
+	  <name>Port</name>
+	  <value>80</value>
+	  <description>The TCP port number through which the API
+	  should be accessed. Warning: SSL (port 443) access is not
+	  fully supported by the website code yet. We recommend that
+	  port 80 be used for now and that the API server either run
+	  on the same machine as the web server, or that they both be
+	  on a secure wired network.</description>
+	</variable>
+
+	<variable id="path" type="string">
+	  <name>Path</name>
+	  <value>/PLCAPI/</value>
+	  <description>The base path of the API URL.</description>
+	</variable>
+
+	<variable id="maintenance_user" type="string">
+	  <name>Maintenance User</name>
+	  <value>maint@test.planet-lab.org</value>
+	  <description>The username of the maintenance account. This
+	  account is used by local scripts that perform automated
+	  tasks, and cannot be used for normal logins.</description>
+	</variable>
+
+	<variable id="maintenance_password" type="password">
+	  <name>Maintenance Password</name>
+	  <value></value>
+	  <description>The password of the maintenance account. If
+	  left blank, one will be generated. We recommend that the
+	  password be changed periodically.</description>
+	</variable>
+
+	<variable id="maintenance_sources" type="hostname">
+	  <name>Authorized Hosts</name>
+	  <value></value>
+	  <description>A space-separated list of IP addresses allowed
+	  to access the API through the maintenance account. If left
+	  blank, the API, web, and boot servers are
+	  allowed.</description>
+	</variable>
+
+	<!-- The following are not actually meant to be configurable
+	     as variables. The web interface should allow the file to
+	     be downloaded, or its contents replaced by a file upload,
+	     but the actual <value> shouldn't need to be changed.  -->
+
+	<variable id="ssl_crt" type="file">
+	  <name>SSL Certificate</name>
+	  <value>/etc/planetlab/api_ssl.crt</value>
+	  <description>The signed SSL certificate to use for HTTPS
+	  access. If not specified or non-existent, a self-signed
+	  certificate will be generated.</description>
+	</variable>
+
+	<variable id="ssl_key" type="file">
+	  <name>SSL Key</name>
+	  <value>/etc/planetlab/api_ssl.key</value>
+	  <description>The corresponding SSL private key. If not
+	  specified or non-existent, a self-signed certificate will be
+	  generated.</description>
+	</variable>
+
+	<variable id="ticket_key" type="file">
+	  <name>Slice Ticket Private Key</name>
+	  <value>/etc/planetlab/slice-ticket-key-nopass.pem</value>
+	  <description>The private PEM key file used to sign slice
+	  tickets.</description>
+	</variable>
+
+	<variable id="ticket_key_pub" type="file">
+	  <name>Slice Ticket Public Key</name>
+	  <value>/etc/planetlab/slice-ticket-key-public.pem</value>
+	  <description>The public PEM key file used to verify signed
+	  slice tickets.</description>
+	</variable>
+      </variablelist>
+    </category>
+
+    <category id="plc_www">
+      <name>Web Server</name>
+      <description>Web server definitions.</description>
+
+      <variablelist>
+	<variable id="enabled" type="boolean">
+	  <name>Enabled</name>
+	  <value>true</value>
+	  <description>Enable the web server on this
+	  machine.</description>
+	</variable>
+
+	<variable id="debug" type="boolean">
+	  <name>Debug</name>
+	  <value>false</value>
+	  <description>Enable debugging output on web pages. Do not
+	  enable on a production system!</description>
+	</variable>
+
+	<variable id="host" type="hostname">
+	  <name>Hostname</name>
+	  <value>localhost</value>
+	  <description>The fully qualified hostname or IP address of
+	  the web server. This hostname must be resolvable and
+	  reachable by the rest of your installation, as well as your
+	  nodes.</description>
+	</variable>
+
+	<variable id="port" type="int">
+	  <name>Port</name>
+	  <value>80</value>
+	  <description>The TCP port number through which the
+	  unprotected portions of the web site should be
+	  accessed.</description>
+	</variable>
+
+	<variable id="ssl_port" type="int">
+	  <name>SSL Port</name>
+	  <value>443</value>
+	  <description>The TCP port number through which the protected
+	  portions of the web site should be accessed.</description>
+	</variable>
+
+	<!-- The following are not actually meant to be configurable
+	     as variables. The web interface should allow the file to
+	     be downloaded, or its contents replaced by a file upload,
+	     but the actual <value> shouldn't need to be changed.  -->
+
+	<variable id="ssl_crt" type="file">
+	  <name>SSL Certificate</name>
+	  <value>/etc/planetlab/www_ssl.crt</value>
+	  <description>The signed SSL certificate to use for HTTPS
+	  access. If not specified or non-existent, a self-signed
+	  certificate will be generated.</description>
+	</variable>
+
+	<variable id="ssl_key" type="file">
+	  <name>SSL Key</name>
+	  <value>/etc/planetlab/www_ssl.key</value>
+	  <description>The corresponding SSL private key. If not
+	  specified or non-existent, a self-signed certificate will be
+	  generated.</description>
+	</variable>
+      </variablelist>
+    </category>
+
+    <category id="plc_boot">
+      <name>Boot Server</name>
+      <description>Boot server definitions. Multiple boot servers
+      may be brought up for load balancing, but we recommend that a
+      single DNS round-robin system be implemented so that the
+      following variables are the same across all of
+      them.</description>
+
+      <variablelist>
+	<variable id="enabled" type="boolean">
+	  <name>Enabled</name>
+	  <value>true</value>
+	  <description>Enable the boot server on this
+	  machine.</description>
+	</variable>
+
+	<variable id="host" type="hostname">
+	  <name>Hostname</name>
+	  <value>localhost</value>
+	  <description>The fully qualified hostname or IP address of
+	  the boot server. This hostname must be resolvable and
+	  reachable by the rest of your installation, as well as your
+	  nodes.</description>
+	</variable>
+
+	<variable id="port" type="int">
+	  <name>Port</name>
+	  <value>80</value>
+	  <description>The TCP port number through which the
+	  unprotected portions of the boot server should be
+	  accessed.</description>
+	</variable>
+
+	<variable id="ssl_port" type="int">
+	  <name>SSL Port</name>
+	  <value>443</value>
+	  <description>The TCP port number through which the protected
+	  portions of the boot server should be
+	  accessed.</description>
+	</variable>
+
+	<!-- The following are not actually meant to be configurable
+	     as variables. The web interface should allow the file to
+	     be downloaded, or its contents replaced by a file upload,
+	     but the actual <value> shouldn't need to be changed.  -->
+
+	<variable id="ssl_crt" type="binary">
+	  <name>SSL Certificate</name>
+	  <value>/etc/planetlab/boot_ssl.crt</value>
+	  <description>The signed SSL certificate to use for HTTPS
+	  access. If not specified, or non-existent a self-signed
+	  certificate will be generated.</description>
+	</variable>
+
+	<variable id="ssl_key" type="binary">
+	  <name>SSL Key</name>
+	  <value>/etc/planetlab/boot_ssl.key</value>
+	  <description>The corresponding SSL private key. If not
+	  specified or non-existent, a self-signed certificate will be
+	  generated.</description>
+	</variable>
+      </variablelist>
+    </category>
+  </variables>
+
+  <comps>
+    <group>
+      <id>plc</id>
+      <name>PlanetLab Central</name>
+      <default>true</default>
+      <description>PlanetLab Central Packages</description>
+      <uservisible>true</uservisible>
+      <packagelist>
+	<!-- Sending mail -->
+	<packagereq type="mandatory">sendmail</packagereq>
+	<packagereq type="mandatory">sendmail-cf</packagereq>
+
+	<!-- (Optional) Synchronizing with PLC -->
+	<packagereq type="mandatory">rsync</packagereq>
+
+	<!-- Cron jobs -->
+	<packagereq type="mandatory">vixie-cron</packagereq>	
+
+	<!-- Other utilities -->
+	<packagereq type="mandatory">cvs</packagereq>
+	<packagereq type="mandatory">curl</packagereq>
+	<packagereq type="mandatory">wget</packagereq>
+
+	<!-- yum >=2.2 uses a new repository format -->
+	<packagereq type="mandatory">createrepo</packagereq>
+
+	<!-- For mkpasswd -->
+	<packagereq type="mandatory">expect</packagereq>
+
+	<!-- Almost all scripts are written in Python -->
+	<packagereq type="mandatory">python</packagereq>
+
+	<!-- For various Python scripts that access the API -->
+	<packagereq type="mandatory">plcapilib</packagereq>
+
+	<!-- Database server -->
+	<packagereq type="mandatory">postgresql</packagereq>
+	<packagereq type="mandatory">postgresql-server</packagereq>
+	<packagereq type="mandatory">postgresql-python</packagereq>
+
+	<!-- (Secure) web server -->
+	<packagereq type="mandatory">httpd</packagereq>
+	<packagereq type="mandatory">mod_ssl</packagereq>
+
+	<!-- Web pages are written primarily in PHP. A few pages still
+	     access the DB directly. -->
+	<packagereq type="mandatory">php</packagereq>
+	<packagereq type="mandatory">php-pgsql</packagereq>
+	<packagereq type="mandatory">php-xmlrpc</packagereq>
+
+	<!-- Need GD for ImageCreate(), etc. -->
+	<packagereq type="mandatory">gd</packagereq>	
+	<packagereq type="mandatory">php-gd</packagereq>	
+
+	<!-- API server is implemented in mod_python -->
+	<packagereq type="mandatory">mod_python</packagereq>
+
+	<!-- API server uses a few non-standard packages -->
+	<packagereq type="mandatory">PyXML</packagereq>
+
+	<!-- API server uses SSL to sign tickets -->
+	<packagereq type="mandatory">xmlsec1</packagereq>
+	<packagereq type="mandatory">xmlsec1-openssl</packagereq>
+	<packagereq type="mandatory">openssl</packagereq>
+
+	<!-- bootcd is generated using mkisofs -->
+	<packagereq type="mandatory">mkisofs</packagereq>
+
+	<!-- bootcd and bootmanager images are signed using GPG -->
+	<packagereq type="mandatory">gnupg</packagereq>
+
+	<!-- bootmanager requires uuencode -->
+	<packagereq type="mandatory">sharutils</packagereq>
+      </packagelist>
+    </group>
+
+  </comps>
+
+</configuration>

@@ -1,0 +1,634 @@
+#!/bin/bash
+#
+# plc	Manages all PLC services on this machine
+#
+# chkconfig: 2345 5 99
+#
+# description:	Manages all PLC services on this machine
+#
+# $Id: plc.init,v 1.6 2005/04/24 19:48:11 mlhuang Exp $
+#
+
+PATH=/sbin:/bin:/usr/bin:/usr/sbin
+
+# Source function library.
+. /etc/init.d/functions
+
+# Verbosity
+verbose=0
+
+# Keep in order! All steps should be idempotent. This means that you
+# should be able to run them multiple times without depending on
+# anything previously being run. The idea is that when the
+# configuration changes, "service plc restart" is called, all
+# dependencies are fixed up, and everything just works.
+steps=(
+network
+syslog
+postgresql
+ssl
+gpg
+ssh
+apache
+api
+cron
+)
+nsteps=${#steps[@]}
+
+gethostbyname ()
+{
+    perl -MSocket -e '($a,$b,$c,$d,@addrs) = gethostbyname($ARGV[0]); print inet_ntoa($addrs[0]) . "\n";' $1 2>/dev/null
+}
+
+# Regenerate configuration files
+reload ()
+{
+    # Load configuration
+    plc-config --shell >/etc/planetlab/plc_config
+    . /etc/planetlab/plc_config
+
+    # Generate various defaults
+    if [ -z "$PLC_DB_PASSWORD" ] ; then
+	PLC_DB_PASSWORD=$(uuidgen)
+	plc-config --category=plc_db --variable=password --value="$PLC_DB_PASSWORD" --save
+    fi
+
+    if [ -z "$PLC_API_MAINTENANCE_PASSWORD" ] ; then
+	PLC_API_MAINTENANCE_PASSWORD=$(uuidgen)
+	plc-config --category=plc_api --variable=maintenance_password --value="$PLC_API_MAINTENANCE_PASSWORD" --save
+    fi
+
+    if [ -z "$PLC_API_MAINTENANCE_SOURCES" ] ; then
+	for server in API BOOT WWW ; do
+	    eval hostname=\${PLC_${server}_HOST}
+	    ip=$(gethostbyname $hostname)
+	    if [ -n "$ip" ] ; then
+		if [ -n "$PLC_API_MAINTENANCE_SOURCES" ] ; then
+		    PLC_API_MAINTENANCE_SOURCES="$PLC_API_MAINTENANCE_SOURCES $ip"
+		else
+		    PLC_API_MAINTENANCE_SOURCES=$ip
+		fi
+	    fi
+	done
+	plc-config --category=plc_api --variable=maintenance_sources --value="$PLC_API_MAINTENANCE_SOURCES" --save
+    fi
+
+    # Save configuration
+    mkdir -p /etc/planetlab/php
+    plc-config --php >/etc/planetlab/php/plc_config.php
+    plc-config --shell >/etc/planetlab/plc_config
+
+    # For backward compatibility, until we can convert all code to use
+    # the now standardized variable names.
+
+    # DB constants are all named the same
+    ln -sf plc_config /etc/planetlab/plc_db
+
+    # API constants
+    cat >/etc/planetlab/plc_api <<EOF
+PL_API_SERVER='$PLC_API_HOST'
+PL_API_PATH='$PLC_API_PATH'
+PL_API_PORT=$PLC_API_SSL_PORT
+PL_API_CAPABILITY_AUTH_METHOD='capability'
+PL_API_CAPABILITY_PASS='$PLC_API_MAINTENANCE_PASSWORD'
+PL_API_CAPABILITY_USERNAME='$PLC_API_MAINTENANCE_USER'
+PL_API_TICKET_KEY_FILE='$PLC_API_TICKET_KEY'
+PLANETLAB_SUPPORT_EMAIL='$PLC_MAIL_SUPPORT_ADDRESS'
+BOOT_MESSAGES_EMAIL='$PLC_MAIL_BOOT_ADDRESS'
+WWW_BASE='$PLC_WWW_HOST'
+BOOT_BASE='$PLC_BOOT_HOST'
+EOF
+
+    # The format is
+    #
+    # ip:max_role_id:organization_id:password
+    #
+    # It is unlikely that we will let federated sites use the
+    # maintenance account to access each others' APIs, so we always
+    # set organization_id to -1.
+    (
+	echo -n "PL_API_CAPABILITY_SOURCES='"
+	first=1
+	for ip in $PLC_API_MAINTENANCE_SOURCES ; do
+	    if [ $first -ne 1 ] ; then
+		echo -n " "
+	    fi
+	    first=0
+	    echo -n "$ip:-1:-1:$PLC_API_MAINTENANCE_PASSWORD"
+	done
+	echo "'"
+    ) >>/etc/planetlab/plc_api
+
+    cat >/etc/planetlab/php/site_constants.php <<"EOF"
+<?php
+include('plc_config.php');
+
+DEFINE('PL_API_SERVER', PLC_API_HOST);
+DEFINE('PL_API_PATH', PLC_API_PATH);
+DEFINE('PL_API_PORT', PLC_API_SSL_PORT);
+DEFINE('PL_API_CAPABILITY_AUTH_METHOD', 'capability');
+DEFINE('PL_API_CAPABILITY_PASS', PLC_API_MAINTENANCE_PASSWORD);
+DEFINE('PL_API_CAPABILITY_USERNAME', PLC_API_MAINTENANCE_USER);
+DEFINE('WWW_BASE', PLC_WWW_HOST);
+DEFINE('BOOT_BASE', PLC_BOOT_HOST);
+DEFINE('DEBUG', PLC_WWW_DEBUG);
+DEFINE('API_CALL_DEBUG', PLC_API_DEBUG);
+DEFINE('SENDMAIL', PLC_MAIL_ENABLED);
+DEFINE('PLANETLAB_SUPPORT_EMAIL', PLC_NAME . 'Support <' . PLC_MAIL_SUPPORT_ADDRESS . '>');
+DEFINE('PLANETLAB_SUPPORT_EMAIL_ONLY', PLC_MAIL_SUPPORT_ADDRESS);
+?>
+EOF
+}
+
+config_network ()
+{
+    case "$1" in
+	start)
+	    # Minimal /etc/hosts
+	    (
+		echo "127.0.0.1	localhost.localdomain localhost"
+		for server in API BOOT WWW ; do
+		    eval hostname=\${PLC_${server}_HOST}
+		    ip=$(gethostbyname $hostname)
+		    if [ -n "$ip" ] ; then
+			echo "$ip	$hostname"
+		    fi
+		done
+	    ) >/etc/hosts
+
+	    # Set up nameservers
+	    (
+		[ -n "$PLC_NET_DNS1" ] && echo "nameserver $PLC_NET_DNS1"
+		[ -n "$PLC_NET_DNS2" ] && echo "nameserver $PLC_NET_DNS2"
+	    ) >/etc/resolv.conf
+	    ;;
+    esac
+}
+
+config_syslog ()
+{
+    service syslog $1
+    RETVAL=$?
+}
+
+config_postgresql ()
+{
+    # Default locations
+    PGDATA=/var/lib/pgsql/data
+    postgresql_conf=$PGDATA/postgresql.conf
+    pghba_conf=$PGDATA/pg_hba.conf
+
+    case "$1" in
+	start)
+	    if [ "$PLC_DB_ENABLED" != "1" ] ; then
+		return 0
+	    fi
+
+	    # Set data directory and redirect startup output to /var/log/pgsql
+	    mkdir -p /etc/sysconfig/pgsql
+	    (
+		echo "PGDATA=$PGDATA"
+		echo "PGLOG=/var/log/pgsql"
+	    ) >>/etc/sysconfig/pgsql/postgresql
+
+	    # PostgreSQL must be started at least once to bootstrap
+	    # /var/lib/pgsql/data
+	    if [ ! -f $postgresql_conf ] ; then
+		service postgresql start
+		service postgresql stop
+	    fi
+
+	    # Enable DB server. PostgreSQL >=8.0 defines listen_addresses,
+	    # PostgreSQL 7.x uses tcpip_socket.
+	    if grep -q listen_addresses $postgresql_conf ; then
+		sed -i -e '/^listen_addresses/d' $postgresql_conf
+		echo "listen_addresses = '*'" >>$postgresql_conf
+	    elif grep -q tcpip_socket $postgresql_conf ; then
+		sed -i -e '/^tcpip_socket/d' $postgresql_conf
+		echo "tcpip_socket = true" >>$postgresql_conf
+	    fi
+
+	    # Disable access to all DBs from all hosts
+	    sed -i -e '/^\(host\|local\)/d' $pghba_conf
+
+	    # Enable passwordless localhost access
+	    echo "local all all trust" >>$pghba_conf
+
+	    # Enable access from the API and web servers
+	    PLC_API_IP=$(gethostbyname $PLC_API_HOST)
+	    PLC_WWW_IP=$(gethostbyname $PLC_WWW_HOST)
+	    (
+		echo "host $PLC_DB_NAME $PLC_DB_USER $PLC_API_IP/32 password"
+		echo "host $PLC_DB_NAME $PLC_DB_USER $PLC_WWW_IP/32 password"
+	    ) >>$pghba_conf
+
+	    # Fix ownership (sed -i changes it)
+	    chown postgres:postgres $postgresql_conf $pghba_conf
+
+	    # Start up the server
+	    service postgresql start
+	    RETVAL=$?
+
+	    # Create/update the unprivileged database user and password
+	    if ! psql -U $PLC_DB_USER -c "" template1 >/dev/null 2>&1 ; then
+		psql -U postgres -c "CREATE USER $PLC_DB_USER PASSWORD '$PLC_DB_PASSWORD'" template1
+	    else
+		psql -U postgres -c "ALTER USER $PLC_DB_USER WITH PASSWORD '$PLC_DB_PASSWORD'" template1
+	    fi
+
+	    # Create the database if necessary
+	    if ! psql -U $PLC_DB_USER -c "" $PLC_DB_NAME >/dev/null 2>&1 ; then
+		createdb -U postgres $PLC_DB_NAME
+		psql -U $PLC_DB_USER -f /usr/share/pl_db/plc_schema_3.sql $PLC_DB_NAME
+	    fi
+	    ;;
+
+	stop)
+	    # Drop the current user in case the username changes
+	    psql -U postgres -c "DROP USER $PLC_DB_USER" template1
+
+	    # WARNING: If the DB name changes, the old DB will be left
+	    # intact and a new one will be created. If it changes
+	    # back, the old DB will not be re-created.
+
+	    # Shut down the server
+	    service postgresql stop
+	    RETVAL=$?
+	    ;;
+    esac
+}
+
+# Generate GPG keys
+config_gpg ()
+{
+    case "$1" in
+	start)
+	    # Generate GPG keyrings
+	    if [ ! -f $PLC_ROOT_GPG_KEY_PUB -o ! -f $PLC_ROOT_GPG_KEY ] ; then
+		mkdir -p $(dirname $PLC_ROOT_GPG_KEY_PUB)
+		mkdir -p $(dirname $PLC_ROOT_GPG_KEY)
+
+		# Temporarily replace /dev/random with /dev/urandom to
+		# avoid running out of entropy.
+		rm -f /dev/random
+		mknod /dev/random c 1 9
+		gpg --homedir=/root --batch --gen-key <<EOF
+Key-Type: DSA
+Key-Length: 1024
+Subkey-Type: ELG-E
+Subkey-Length: 1024
+Name-Real: $PLC_NAME Central
+Name-Comment: http://$PLC_WWW_HOST/
+Name-Email: $PLC_MAIL_SUPPORT_ADDRESS
+Expire-Date: 0
+%pubring $PLC_ROOT_GPG_KEY_PUB
+%secring $PLC_ROOT_GPG_KEY
+%commit
+EOF
+		RETVAL=$?
+		rm -f /dev/random
+		mknod /dev/random c 1 8
+		chmod 600 $PLC_ROOT_GPG_KEY_PUB $PLC_ROOT_GPG_KEY
+	    fi
+	    ;;
+    esac
+}
+
+symlink ()
+{
+    mkdir -p $(dirname $2)
+    rm -f $2
+    ln -s $1 $2
+}
+
+# Generate SSL certificates
+config_ssl ()
+{
+    case "$1" in
+	start)
+	    # Generate a self-signed SSL certificate. These nice
+	    # commands came from the mod_ssl spec file for Fedora Core
+	    # 2. We generate only a single certificate for the web
+	    # server, then make copies for the API and boot
+	    # servers. As always, these certificates may be overridden
+	    # later.
+
+	    # Generate SSL private key
+	    if [ ! -f $PLC_WWW_SSL_KEY ] ; then
+		mkdir -p $(dirname $PLC_WWW_SSL_KEY)
+		openssl genrsa -rand /proc/apm:/proc/cpuinfo:/proc/dma:/proc/filesystems:/proc/interrupts:/proc/ioports:/proc/pci:/proc/rtc:/proc/uptime 1024 >$PLC_WWW_SSL_KEY
+		RETVAL=$(($RETVAL+$?))
+		chmod 600 $PLC_WWW_SSL_KEY
+	    fi
+
+	    # Generate self-signed certificate
+	    if [ ! -f $PLC_WWW_SSL_CRT ] ; then
+		mkdir -p $(dirname $PLC_WWW_SSL_CRT)
+		openssl req -new -x509 -days 365 -set_serial $RANDOM \
+		    -key $PLC_WWW_SSL_KEY -out $PLC_WWW_SSL_CRT <<EOF
+--
+State
+City
+Organization
+$PLC_NAME Central
+$PLC_WWW_HOST
+$PLC_MAIL_SUPPORT_ADDRESS
+EOF
+		RETVAL=$(($RETVAL+$?))
+		chmod 644 $PLC_WWW_SSL_CRT
+	    fi
+
+	    # Make copies for the API and boot servers
+	    if [ ! -f $PLC_API_SSL_KEY ] ; then
+		cp -a $PLC_WWW_SSL_KEY $PLC_API_SSL_KEY
+	    fi
+	    if [ ! -f $PLC_API_SSL_CRT ] ; then
+		cp -a $PLC_WWW_SSL_CRT $PLC_API_SSL_CRT
+	    fi
+	    if [ ! -f $PLC_API_SSL_KEY ] ; then
+		cp -a $PLC_WWW_SSL_KEY $PLC_API_SSL_KEY
+	    fi
+	    if [ ! -f $PLC_API_SSL_CRT ] ; then
+		cp -a $PLC_WWW_SSL_CRT $PLC_API_SSL_CRT
+	    fi
+
+	    # Install into both /etc/pki (Fedora Core 4) and
+	    # /etc/httpd/conf (Fedora Core 2). If the API, boot, and
+	    # web servers are all running on the same machine, the web
+	    # server certificate takes precedence.
+	    for server in API BOOT WWW ; do
+		eval enabled=\${PLC_${server}_ENABLED}
+		if [ "$enabled" != "1" ] ; then
+		    continue
+		fi
+		eval ssl_crt=\${PLC_${server}_SSL_CRT}
+		eval ssl_key=\${PLC_${server}_SSL_KEY}
+
+		symlink $ssl_crt /etc/pki/tls/certs/localhost.crt
+		symlink $ssl_key /etc/pki/tls/private/localhost.key
+		symlink $ssl_crt /etc/httpd/conf/ssl.crt/server.crt
+		symlink $ssl_key /etc/httpd/conf/ssl.key/server.key
+	    done
+	    ;;
+    esac
+}
+
+# Generate SSH keys
+config_ssh ()
+{
+    # XXX Could make these configurable
+    KEY_TYPE_ROOT=rsa
+    KEY_LEN_ROOT=1024
+    KEY_TYPE_DEBUG=rsa
+    KEY_LEN_DEBUG=2048	
+
+    case "$1" in
+	start)
+	    tmp=$(mktemp -d /tmp/ssh.XXXXXX)
+
+	    # Generate root SSH key
+	    if [ ! -f $PLC_ROOT_SSH_KEY_PUB -o ! -f $PLC_ROOT_SSH_KEY ] ; then
+		ssh-keygen -N "" -C "$PLC_NAME Central <$PLC_MAIL_SUPPORT_ADDRESS>" \
+		    -b $KEY_LEN_ROOT -t $KEY_TYPE_ROOT -f $tmp/root
+		RETVAL=$(($RETVAL+$?))
+		install -D -m 600 $tmp/root $PLC_ROOT_SSH_KEY
+		install -D -m 600 $tmp/root.pub $PLC_ROOT_SSH_KEY_PUB
+	    fi
+
+	    # Generate debug SSH key
+	    if [ ! -f $PLC_DEBUG_SSH_KEY_PUB -o ! -f $PLC_DEBUG_SSH_KEY ] ; then
+		ssh-keygen -N "" -C "$PLC_NAME Central <$PLC_MAIL_SUPPORT_ADDRESS>" \
+		    -b $KEY_LEN_DEBUG -t $KEY_TYPE_DEBUG -f $tmp/debug
+		RETVAL=$(($RETVAL+$?))
+		install -D -m 600 $tmp/debug $PLC_DEBUG_SSH_KEY
+		install -D -m 600 $tmp/debug.pub $PLC_DEBUG_SSH_KEY_PUB
+	    fi
+
+	    rm -rf $tmp
+	    ;;
+    esac
+}
+
+# Configure Apache web server
+config_apache ()
+{
+    # Default locations
+    DocumentRoot=/var/www/html
+    php_ini=/etc/php.ini
+    httpd_conf=/etc/httpd/conf/httpd.conf
+    ssl_conf=/etc/httpd/conf.d/ssl.conf
+    plc_conf=/etc/httpd/conf.d/plc.conf
+
+    case "$1" in
+	start)
+	    if [ "$PLC_API_ENABLED" != "1" -a \
+		 "$PLC_BOOT_ENABLED" != "1" -a \
+		 "$PLC_WWW_ENABLED" != "1" ] ; then
+		return 0
+	    fi
+
+	    # Set the default include path
+	    include_path=".:$DocumentRoot/includes:$DocumentRoot/generated:/etc/planetlab/php"
+	    sed -i -e "s@;include_path = \"\.:.*\"@include_path = \"$include_path\"@" $php_ini
+
+	    # Set the port numbers. If the API, boot, and web servers
+	    # are all running on the same machine, the web server port
+	    # numbers take precedence.
+	    for server in API BOOT WWW ; do
+		eval enabled=\${PLC_${server}_ENABLED}
+		if [ "$enabled" != "1" ] ; then
+		    continue
+		fi
+		eval http_port=\${PLC_${server}_PORT}
+		eval https_port=\${PLC_${server}_SSL_PORT}
+
+		if [ -n "$http_port" ] ; then
+		    sed -i -e "s/^Listen .*/Listen $http_port/" $httpd_conf
+		fi
+		if [ -n "$https_port" ] ; then
+		    sed -i -e "s/^Listen .*/Listen $https_port/" $ssl_conf
+		fi
+	    done
+		    
+	    # Set custom Apache directives
+	    (
+		if [ "$PLC_API_ENABLED" = "1" ] ; then
+		    cat <<EOF
+<Location $PLC_API_PATH>
+    SetHandler python-program
+    PythonPath "sys.path + ['/usr/share/plc_api']"
+    PythonHandler mod_pythonXMLRPC
+</Location>
+EOF
+		fi
+
+		cat <<EOF
+<VirtualHost $PLC_WWW_HOST:$PLC_WWW_PORT>
+    Redirect /db https://$PLC_WWW_HOST:$PLC_WWW_SSL_PORT/db
+</VirtualHost>
+EOF
+	    ) >$plc_conf
+
+	    # Make alpina-logs directory writable for bootmanager log upload
+	    chown apache:apache $DocumentRoot/alpina-logs/nodes
+
+	    service httpd start
+	    RETVAL=$?
+	    ;;
+
+	stop)
+	    service httpd stop
+	    RETVAL=$?
+	    ;;
+    esac
+}
+
+config_api ()
+{
+    case "$1" in
+	start)
+	    if [ "$PLC_API_ENABLED" -ne 1 ] ; then
+		return
+	    fi
+
+	    # Update the maintenance account username. This can't be
+	    # done through the api-config script since it uses the
+	    # maintenance account to access the API. The maintenance
+	    # account should be person_id 1 since it is created by the
+	    # DB schema itself.
+	    psql -U $PLC_DB_USER -c "UPDATE persons SET email='$PLC_API_MAINTENANCE_USER' WHERE person_id=1" $PLC_DB_NAME
+
+	    # Bootstrap the DB
+	    api-config
+	    RETVAL=$?
+	    ;;
+    esac
+}
+
+config_cron ()
+{
+    case "$1" in
+	start)
+	    cat >/etc/cron.d/plc.cron <<EOF
+SHELL=/bin/bash
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+MAILTO=$PLC_MAIL_SUPPORT_ADDRESS
+HOME=/
+
+# minute hour day-of-month month day-of-week user command
+*/5 * * * * root gen-slices-xml-05.py
+*/15 * * * * root gen-sites-xml.py
+*/15 * * * * root gen-static-content.py
+EOF
+
+	    # Run them once at startup
+	    gen-slices-xml-05.py
+	    gen-sites-xml.py
+	    gen-static-content.py
+
+	    service crond start
+	    RETVAL=$?
+	    ;;
+
+	stop)
+	    service crond stop
+	    RETVAL=$?
+	    ;;
+    esac
+}
+
+usage()
+{
+    echo "Usage: $0 [OPTION]... [COMMAND]"
+    echo "	-v		Be verbose"
+    echo "	-h		This message"
+    echo
+    echo "Commands:"
+    echo "	start		Start all PLC subsystems"
+    echo "	stop		Stop all PLC subsystems"
+    echo "	reload		Regenerate configuration files"
+    echo "	restart		Restart all PLC subsystems"
+    exit 1
+}
+
+# Get options
+while getopts "vh" opt ; do
+    case $opt in
+	v)
+	    verbose=1
+	    set -x
+	    ;;
+	h|*)
+	    usage
+	    ;;
+    esac
+done
+
+shift $(($OPTIND - 1))
+if [ -z "$1" ] ; then
+    usage
+fi
+
+exec 3>&1
+exec 4>&2
+if [ $verbose -eq 0 ] ; then
+    exec 1>/dev/null
+    exec 2>/dev/null
+fi
+
+# Generate and load configuration
+reload
+. /etc/planetlab/plc_config
+
+RETVAL=0
+
+start ()
+{
+    for step in "${steps[@]}" ; do
+	echo -n $"PLC: Starting $step: " >&3
+	RETVAL=0
+	config_$step start
+	if [ $RETVAL -eq 0 ] ; then
+	    success $"PLC: $step startup" >&3
+	else
+	    failure $"PLC: $step startup" >&3
+	fi
+	echo >&3
+    done
+}
+
+stop ()
+{
+    for i in $(seq 1 $nsteps) ; do
+	step=${steps[$(($nsteps - $i))]}
+	echo -n $"PLC: Shutting down $step: " >&3
+	RETVAL=0
+	config_$step stop
+	if [ $RETVAL -eq 0 ] ; then
+	    success $"PLC: $step shutdown" >&3
+	else
+	    failure $"PLC: $step shutdown" >&3
+	fi
+	echo >&3
+    done
+}
+
+case "$1" in
+    start|stop)
+	$1
+	;;
+
+    restart)
+	stop
+	start
+	;;
+
+    reload)
+	;;
+
+    *)
+	usage >&3
+	;;
+esac
+
+exit $RETVAL

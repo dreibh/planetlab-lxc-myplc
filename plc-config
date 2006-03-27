@@ -1,0 +1,151 @@
+#!/usr/bin/python
+#
+# Script for basic access to the PlanetLab Central (PLC) configuration
+# file store.
+#
+# Mark Huang <mlhuang@cs.princeton.edu>
+# Copyright (C) 2006 The Trustees of Princeton University
+#
+# $Id$
+#
+
+import sys
+import os
+import fcntl
+import getopt
+import signal
+from plc_config import PLCConfiguration
+
+
+def usage():
+    print """
+Script to access the PLC configuration file store.
+    
+Usage: %s [OPTION]... [FILES]
+        Conversion:
+
+        --shell         Output shell configuration file
+        --python        Output Python configuration file
+        --php           Output PHP configuration file
+
+        Information:
+
+        --variables     List names of all variables
+        --packages      List names of all packages
+        --comps         List comps.xml from configuration
+
+        Basic variable value manipulation:
+
+        --category=     Category identifier
+        --variable=     Variable identifier
+        --value=        Variable value
+
+        Basic package list manipulation:
+
+        --group=        Package group identifier
+        --package=      Package name
+        --type=         Package type
+
+        Miscellaneous:
+
+        -h, --help      This message
+        -s, --save      Save changes to first configuration file
+""".lstrip() % sys.argv[0]
+    sys.exit(1)
+
+
+def main():
+    plc = PLCConfiguration()
+    fileobjs = []
+    output = None
+    category = {}
+    variable = {}
+    group = {}
+    package = {}
+    save = False
+
+    # Standard options
+    shortopts = "hs"
+    longopts = ["shell", "bash", "python",
+                "php",
+                "xml",
+                "variables",
+                "packages",
+                "comps",
+                "category=", "variable=", "value=",
+                "group=", "package=", "type=",
+                "help",
+                "save"]
+
+    try:
+        (opts, argv) = getopt.gnu_getopt(sys.argv[1:], shortopts, longopts)
+    except Exception, err:
+        sys.stderr.write("Error: " + str(err) + os.linesep)
+        sys.exit(1)
+
+    for (opt, optval) in opts:
+        if opt == "--shell" or \
+             opt == "--bash" or \
+             opt == "--python":
+            output = plc.output_shell
+        elif opt == "--php":
+            output = plc.output_php
+        elif opt == "--xml":
+            output = plc.output_xml
+        elif opt == "--variables":
+            output = plc.output_variables
+        elif opt == "--packages":
+            output = plc.output_packages
+        elif opt == "--comps":
+            output = plc.output_comps
+        elif opt == "--category":
+            category['id'] = optval
+        elif opt == "--variable":
+            variable['id'] = optval
+        elif opt == "--value":
+            variable['value'] = optval
+        elif opt == "--group":
+            group['id'] = optval
+        elif opt == "--package":
+            package['name'] = optval
+        elif opt == "--type":
+            package['type'] = optval
+        elif opt == '-s' or opt == "--save":
+            save = True
+        elif opt == '-h' or opt == "--help":
+            usage()
+
+    # Try the default
+    if not argv:
+        argv = ["/etc/planetlab/plc_config.xml"]
+
+    # Merge all files
+    for file in argv:
+        try:
+            plc.load(file)
+        except IOError:
+            pass
+        except Exception, err:
+            sys.stderr.write("Error: %s: %s" % (file, str(err)) + os.linesep)
+            sys.exit(1)
+
+    # --category, --variable, --value
+    if category.has_key('id') and variable.has_key('id'):
+        if variable.has_key('value'):
+            plc.set(category, variable)
+        else:
+            (category, variable) = plc.get(category['id'], variable['id'])
+            if variable.has_key('value'):
+                print variable['value']
+
+    # --shell, --php, --xml
+    if output is not None:
+        sys.stdout.write(output())
+
+    # --save
+    if save:
+        plc.save()
+
+
+if __name__ == '__main__':
+    main()

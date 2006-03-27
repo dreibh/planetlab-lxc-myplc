@@ -1,0 +1,106 @@
+#!/bin/bash
+#
+# plc	Manages all PLC services on this machine
+#
+# chkconfig: 2345 99 5
+#
+# description:	Manages all PLC services on this machine
+#
+# $Id: plc.init,v 1.6 2005/04/24 19:48:11 mlhuang Exp $
+#
+
+PATH=/sbin:/bin:/usr/bin:/usr/sbin
+
+# Source function library.
+. /etc/init.d/functions
+
+# Source configuration
+if [ -f /etc/sysconfig/plc ] ; then
+    . /etc/sysconfig/plc
+fi
+
+RETVAL=0
+
+# Get options
+while getopts "vh" opt ; do
+    case $opt in
+	v)
+	    verbose=1
+	    set -x
+	    ;;
+	h|*)
+	    usage
+	    ;;
+    esac
+done
+
+start ()
+{
+    echo -n $"Mounting PLC: "
+
+    if ! grep -q $PLC_ROOT.img /proc/mounts ; then
+	if ! e2fsck -a $PLC_ROOT.img | logger -t "PLC" ; then
+	    e2fsck $PLC_ROOT.img
+	fi
+	mount -o loop $PLC_ROOT.img $PLC_ROOT
+	RETVAL=$(($RETVAL+$?))
+    fi
+    if ! grep -q $PLC_DATA /proc/mounts ; then
+	mount -t none -o bind,rw $PLC_DATA $PLC_ROOT/data
+	RETVAL=$(($RETVAL+$?))
+    fi
+    if ! grep -q $PLC_ROOT/proc /proc/mounts ; then
+	mount -t proc none $PLC_ROOT/proc
+	RETVAL=$(($RETVAL+$?))
+    fi
+
+    if [ $RETVAL -eq 0 ]; then
+	success $"PLC mount"
+    else
+	failure $"PLC mount"
+    fi
+    echo
+
+    chroot $PLC_ROOT /sbin/service plc $PLC_OPTIONS start
+    RETVAL=$?
+}
+
+stop ()
+{
+    chroot $PLC_ROOT /sbin/service plc $PLC_OPTIONS stop
+
+    echo -n $"Unmounting PLC: "
+
+    umount $PLC_ROOT/proc
+    RETVAL=$(($RETVAL+$?))
+    umount $PLC_ROOT/data
+    RETVAL=$(($RETVAL+$?))
+    umount $PLC_ROOT
+    RETVAL=$(($RETVAL+$?))
+
+    if [ $RETVAL -eq 0 ]; then
+	success $"PLC unmount"
+    else
+	failure $"PLC unmount"	
+    fi
+    echo
+}
+
+restart ()
+{
+    stop
+    start
+}
+
+case "$1" in
+    start|stop|restart)
+	$1
+	;;
+
+    *)
+	echo "Usage: $0 {start|stop|restart}"
+	RETVAL=1
+	;;
+esac
+
+exit $RETVAL

@@ -1,0 +1,97 @@
+#!/usr/bin/python
+#
+# Bootstraps the PLC database with a default administrator account and
+# a default site.
+#
+# Mark Huang <mlhuang@cs.princeton.edu>
+# Copyright (C) 2006 The Trustees of Princeton University
+#
+# $Id$
+#
+
+import plcapilib
+(plcapi, moreopts, argv) = plcapilib.plcapi(globals())
+from plc_config import PLCConfiguration
+
+
+def main():
+    cfg = PLCConfiguration()
+    cfg.load()
+    variables = cfg.variables()
+
+    # Load variables into dictionaries
+    (category, variablelist) = variables['plc']
+    plc = dict(zip(variablelist.keys(),
+                   [variable['value'] for variable in variablelist.values()]))
+
+    (category, variablelist) = variables['plc_www']
+    plc_www = dict(zip(variablelist.keys(),
+                       [variable['value'] for variable in variablelist.values()]))
+
+    (category, variablelist) = variables['plc_api']
+    plc_api = dict(zip(variablelist.keys(),
+                       [variable['value'] for variable in variablelist.values()]))
+
+    # Create/update the default administrator account (should be
+    # person_id 2).
+    admin = { 'person_id': 2,
+              'first_name': "Default",
+              'last_name': "Administrator",
+              'email': plc['root_user'],
+              'password': plc['root_password'] }
+    persons = AdmGetPersons([admin['person_id']])
+    if not persons:
+        person_id = AdmAddPerson(admin['first_name'], admin['last_name'], admin)
+        if person_id != admin['person_id']:
+            # Huh? Someone deleted the account manually from the database.
+            AdmDeletePerson(person_id)
+            raise Exception, "Someone deleted the \"%s %s\" account from the database!" % \
+                  (admin['first_name'], admin['last_name'])
+        AdmSetPersonEnabled(person_id, True)
+    else:
+        person_id = persons[0]['person_id']
+        AdmUpdatePerson(person_id, admin)
+
+    # Create/update the default site (should be site_id 0)
+    if plc_www['port'] == '80':
+        url = "http://" + plc_www['host'] + "/"
+    elif plc_www['port'] == '443':
+        url = "https://" + plc_www['host'] + "/"
+    else:
+        url = "http://" + plc_www['host'] + ":" + plc_www['port'] + "/"
+    site = { 'site_id': 1,
+             'name': plc['name'] + " Central",
+             'abbreviated_name': plc['name'],
+             'login_base': plc['slice_prefix'],
+             'is_public': False,
+             'url': url,
+             'max_slices': 100 }
+
+    sites = AdmGetSites([site['site_id']])
+    if not sites:
+        site_id = AdmAddSite(site['name'], site['abbreviated_name'], site['login_base'], site)
+        if site_id != site['site_id']:
+            AdmDeleteSite(site_id)
+            raise Exception, "Someone deleted the \"%s\" site from the database!" % \
+                  site['name']
+    else:
+        site_id = sites[0]['site_id']
+        # XXX login_base cannot be updated
+        del site['login_base']
+        AdmUpdateSite(site_id, site)
+
+    # The default administrator account must be associated with a site
+    # in order to login.
+    AdmAddPersonToSite(admin['person_id'], site['site_id'])
+    AdmSetPersonPrimarySite(admin['person_id'], site['site_id'])
+
+    # Grant admin and PI roles to the default administrator account
+    AdmGrantRoleToPerson(admin['person_id'], 10)
+    AdmGrantRoleToPerson(admin['person_id'], 20)
+
+    # XXX Setup default slice attributes and initscripts (copy from PLC)
+
+    # XXX Setup PlanetLabConf entries (copy from PLC)
+
+if __name__ == '__main__':
+    main()
