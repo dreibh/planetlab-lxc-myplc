@@ -6,7 +6,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id$
+# $Id: build.sh,v 1.1.1.1 2006/03/27 17:36:46 mlhuang Exp $
 #
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
@@ -132,9 +132,9 @@ rsync -a $srcdir/pl_db $srcdir/plc_api $root/usr/share/
 # Install web scripts
 mkdir -p $root/usr/bin
 install -m 755 \
-    plc/scripts/gen-sites-xml.py \
-    plc/scripts/gen-slices-xml-05.py \
-    plc/scripts/gen-static-content.py \
+    $srcdir/plc/scripts/gen-sites-xml.py \
+    $srcdir/plc/scripts/gen-slices-xml-05.py \
+    $srcdir/plc/scripts/gen-static-content.py \
     $root/usr/bin/
 
 # Install web pages
