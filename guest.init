@@ -6,7 +6,7 @@
 #
 # description:	Manages all PLC services on this machine
 #
-# $Id: plc.init,v 1.6 2005/04/24 19:48:11 mlhuang Exp $
+# $Id: guest.init,v 1.1.1.1 2006/03/27 17:36:46 mlhuang Exp $
 #
 
 PATH=/sbin:/bin:/usr/bin:/usr/sbin
@@ -190,6 +190,9 @@ config_postgresql ()
 		echo "PGDATA=$PGDATA"
 		echo "PGLOG=/var/log/pgsql"
 	    ) >>/etc/sysconfig/pgsql/postgresql
+
+	    # Fix ownership (rpm installation may have changed it)
+	    chown -R -H postgres:postgres $(dirname $PGDATA)
 
 	    # PostgreSQL must be started at least once to bootstrap
 	    # /var/lib/pgsql/data
