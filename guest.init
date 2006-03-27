@@ -6,7 +6,7 @@
 #
 # description:	Manages all PLC services on this machine
 #
-# $Id: guest.init,v 1.1.1.1 2006/03/27 17:36:46 mlhuang Exp $
+# $Id: guest.init,v 1.2 2006/03/27 18:50:20 mlhuang Exp $
 #
 
 PATH=/sbin:/bin:/usr/bin:/usr/sbin
@@ -88,7 +88,7 @@ reload ()
     cat >/etc/planetlab/plc_api <<EOF
 PL_API_SERVER='$PLC_API_HOST'
 PL_API_PATH='$PLC_API_PATH'
-PL_API_PORT=$PLC_API_SSL_PORT
+PL_API_PORT=$PLC_API_PORT
 PL_API_CAPABILITY_AUTH_METHOD='capability'
 PL_API_CAPABILITY_PASS='$PLC_API_MAINTENANCE_PASSWORD'
 PL_API_CAPABILITY_USERNAME='$PLC_API_MAINTENANCE_USER'
@@ -125,7 +125,7 @@ include('plc_config.php');
 
 DEFINE('PL_API_SERVER', PLC_API_HOST);
 DEFINE('PL_API_PATH', PLC_API_PATH);
-DEFINE('PL_API_PORT', PLC_API_SSL_PORT);
+DEFINE('PL_API_PORT', PLC_API_PORT);
 DEFINE('PL_API_CAPABILITY_AUTH_METHOD', 'capability');
 DEFINE('PL_API_CAPABILITY_PASS', PLC_API_MAINTENANCE_PASSWORD);
 DEFINE('PL_API_CAPABILITY_USERNAME', PLC_API_MAINTENANCE_USER);
@@ -449,7 +449,10 @@ config_apache ()
 		    sed -i -e "s/^Listen .*/Listen $http_port/" $httpd_conf
 		fi
 		if [ -n "$https_port" ] ; then
-		    sed -i -e "s/^Listen .*/Listen $https_port/" $ssl_conf
+		    sed -i \
+			-e "s/^Listen .*/Listen $https_port/" \
+			-e "s/<VirtualHost _default_:.*>/<VirtualHost _default_:$https_port>/" \
+			$ssl_conf
 		fi
 	    done
 		    
@@ -575,8 +578,8 @@ fi
 exec 3>&1
 exec 4>&2
 if [ $verbose -eq 0 ] ; then
-    exec 1>/dev/null
-    exec 2>/dev/null
+    exec 1>>/var/log/boot.log
+    exec 2>>/var/log/boot.log
 fi
 
 # Generate and load configuration

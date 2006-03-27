@@ -227,7 +227,7 @@
 	  nodes.</description>
 	</variable>
 
-	<variable id="ssl_port" type="int">
+	<variable id="port" type="int">
 	  <name>Port</name>
 	  <value>80</value>
 	  <description>The TCP port number through which the API
