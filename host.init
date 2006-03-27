@@ -6,7 +6,7 @@
 #
 # description:	Manages all PLC services on this machine
 #
-# $Id: plc.init,v 1.6 2005/04/24 19:48:11 mlhuang Exp $
+# $Id: host.init,v 1.1.1.1 2006/03/27 17:36:46 mlhuang Exp $
 #
 
 PATH=/sbin:/bin:/usr/bin:/usr/sbin
@@ -15,41 +15,28 @@ PATH=/sbin:/bin:/usr/bin:/usr/sbin
 . /etc/init.d/functions
 
 # Source configuration
-if [ -f /etc/sysconfig/plc ] ; then
+if [ -f /etc/sysconfig/plc -a -z "${PLC_ROOT}${PLC_DATA}" ] ; then
     . /etc/sysconfig/plc
 fi
 
 RETVAL=0
 
-# Get options
-while getopts "vh" opt ; do
-    case $opt in
-	v)
-	    verbose=1
-	    set -x
-	    ;;
-	h|*)
-	    usage
-	    ;;
-    esac
-done
-
 start ()
 {
     echo -n $"Mounting PLC: "
 
-    if ! grep -q $PLC_ROOT.img /proc/mounts ; then
+    if ! cut -d' ' -f2 /proc/mounts | grep -q $PLC_ROOT ; then
 	if ! e2fsck -a $PLC_ROOT.img | logger -t "PLC" ; then
 	    e2fsck $PLC_ROOT.img
 	fi
 	mount -o loop $PLC_ROOT.img $PLC_ROOT
 	RETVAL=$(($RETVAL+$?))
     fi
-    if ! grep -q $PLC_DATA /proc/mounts ; then
+    if ! cut -d' ' -f2 /proc/mounts | grep -q $PLC_ROOT/data ; then
 	mount -t none -o bind,rw $PLC_DATA $PLC_ROOT/data
 	RETVAL=$(($RETVAL+$?))
     fi
-    if ! grep -q $PLC_ROOT/proc /proc/mounts ; then
+    if ! cut -d' ' -f2 /proc/mounts | grep -q $PLC_ROOT/proc ; then
 	mount -t proc none $PLC_ROOT/proc
 	RETVAL=$(($RETVAL+$?))
     fi
@@ -86,15 +73,14 @@ stop ()
     echo
 }
 
-restart ()
-{
-    stop
-    start
-}
-
 case "$1" in
-    start|stop|restart)
+    start|stop)
 	$1
+	;;
+
+    restart)
+	stop
+	start
 	;;
 
     *)
