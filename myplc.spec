@@ -10,7 +10,7 @@ URL: http://cvs.planet-lab.org/cvs/myplc
 Summary: PlanetLab Central (PLC) Portable Installation
 Name: myplc
 Version: %{releasever}.0
-Release: 1
+Release: 1%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 License: BSD
 Group: Applications/Systems
 Source0: %{name}-%{version}.tar.gz
