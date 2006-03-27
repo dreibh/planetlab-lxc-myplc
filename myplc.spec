@@ -31,8 +31,9 @@ system.
 %setup -q
 
 %build
-cd myplc
+pushd myplc
 ./build.sh -r %{releasever} -d %{_datadir}
+popd
 
 # If run under sudo, allow user to delete the build directory
 if [ -n "$SUDO_USER" ] ; then
@@ -45,12 +46,13 @@ fi
 %install
 rm -rf $RPM_BUILD_ROOT
 
-cd myplc
+pushd myplc
 install -d -m 755 $RPM_BUILD_ROOT/%{_datadir}/plc/fc%{releasever}
 install -D -m 644 fc%{releasever}.img $RPM_BUILD_ROOT/%{_datadir}/plc/fc%{releasever}.img
 find data%{releasever} | cpio -p -d -u $RPM_BUILD_ROOT/%{_datadir}/plc/
 install -D -m 755 host.init $RPM_BUILD_ROOT/%{_sysconfdir}/init.d/plc
 install -D -m 644 plc.sysconfig $RPM_BUILD_ROOT/%{_sysconfdir}/sysconfig/plc
+popd
 
 %clean
 rm -rf $RPM_BUILD_ROOT
