@@ -79,7 +79,7 @@ fi
 %{_datadir}/plc/fc%{releasever}.img
 %{_datadir}/plc/data%{releasever}
 %{_sysconfdir}/init.d/plc
-%{_sysconfdir}/sysconfig/plc
+%config(noreplace) %{_sysconfdir}/sysconfig/plc
 
 %changelog
 * Fri Mar 17 2006 Mark Huang <mlhuang@CS.Princeton.EDU> - 0.1-1
