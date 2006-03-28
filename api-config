@@ -6,7 +6,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: api-config,v 1.2 2006/03/28 20:47:04 mlhuang Exp $
+# $Id: api-config,v 1.3 2006/03/28 22:03:21 mlhuang Exp $
 #
 
 import plcapilib
@@ -78,11 +78,13 @@ def main():
             AdmDeleteSite(site_id)
             raise Exception, "Someone deleted the \"%s\" site from the database!" % \
                   site['name']
-    else:
-        site_id = sites[0]['site_id']
-        # XXX login_base cannot be updated
-        del site['login_base']
-        AdmUpdateSite(site_id, site)
+        sites = [site]
+
+    # Must call AdmUpdateSite() even after AdmAddSite() to update max_slices
+    site_id = sites[0]['site_id']
+    # XXX login_base cannot be updated
+    del site['login_base']
+    AdmUpdateSite(site_id, site)
 
     # The default administrator account must be associated with a site
     # in order to login.
