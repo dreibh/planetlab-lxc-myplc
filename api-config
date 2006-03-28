@@ -6,12 +6,14 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id$
+# $Id: api-config,v 1.1.1.1 2006/03/27 17:36:46 mlhuang Exp $
 #
 
 import plcapilib
 (plcapi, moreopts, argv) = plcapilib.plcapi(globals())
 from plc_config import PLCConfiguration
+import xmlrpclib
+import sys
 
 
 def main():
@@ -62,7 +64,9 @@ def main():
     site = { 'site_id': 1,
              'name': plc['name'] + " Central",
              'abbreviated_name': plc['name'],
-             'login_base': plc['slice_prefix'],
+             # XXX Default site slice_prefix/login_base must be "pl_"
+             # 'login_base': plc['slice_prefix'],
+             'login_base': "pl_",
              'is_public': False,
              'url': url,
              'max_slices': 100 }
@@ -89,9 +93,131 @@ def main():
     AdmGrantRoleToPerson(admin['person_id'], 10)
     AdmGrantRoleToPerson(admin['person_id'], 20)
 
-    # XXX Setup default slice attributes and initscripts (copy from PLC)
+    # Further bootstrap the database. A few PlanetLabConf entries are
+    # absolutely required, and NM requires the slice tables to be
+    # populated.
+    #
+    # XXX This data should really become part of the DB schema so that
+    # we don't have to copy it from PLC. For now, this code is only
+    # intended to be called at build time, when we know that we have
+    # access to PLC. Once the tables have been populated, this code
+    # should never be called again and PLC access is not required,
+    # i.e., end users of MyPLC should never see this code be executed.
 
-    # XXX Setup PlanetLabConf entries (copy from PLC)
+    # Use xmlrpclib to connect to PLC temporarily. plcapilib cannot
+    # connect to multiple servers at once.
+    auth = {'AuthMethod': 'anonymous'}
+    PLC = None
+
+    conf_files = AdmGetConfFile()
+    if not conf_files:
+        if PLC is None:
+            PLC = xmlrpclib.Server("https://www.planet-lab.org/PLCAPI/")
+        for conf_file in PLC.AnonAdmGetConfFile(auth):
+            if conf_file['enabled'] and \
+               not conf_file['node_id'] and \
+               not conf_file['nodegroup_id']:
+                AdmCreateConfFile(conf_file['enabled'],
+                                  conf_file['source'],
+                                  conf_file['dest'],
+                                  conf_file['file_permissions'],
+                                  conf_file['file_owner'],
+                                  conf_file['file_group'],
+                                  conf_file['preinstall_cmd'],
+                                  conf_file['postinstall_cmd'],
+                                  conf_file['error_cmd'],
+                                  conf_file['ignore_cmd_errors'],
+                                  conf_file['always_update'])
+        
+    # Setup default slice attribute types, slices, and
+    # attributes. These are hard-coded here because we cannot safely
+    # support an anonymous interface to the SliceAttribute functions,
+    # yet we also do not want to require API authentication for
+    # bootstrapping.
+    
+    if not SliceAttributeTypeList():
+        # Create system attribute types
+        attribute_types = [{'name': "general_prop_share",
+                            'description': "general share",
+                            'is_exclusive': False, 'min_role_id': 10, 'max_per_slice': 1,
+                            'value_fields': [{'description': "",
+                                              'name': "general_prop_share",
+                                              'type': "integer"}]},
+                           {'name': "initscript",
+                            'description': "slice initialization script",
+                            'is_exclusive': False, 'min_role_id': 10, 'max_per_slice': 1,
+                            'value_fields': [{'description': "",
+                                              'name': "initscript_id",
+                                              'type': "integer"}]},
+                           {'name': "plc_slice_type",
+                            'description': "Type of slice rspec to be created",
+                            'is_exclusive': True, 'min_role_id': 20, 'max_per_slice': 1,
+                            'value_fields': [{'description': "rspec class",
+                                              'name': "type",
+                                              'type': "string"}]},
+                           {'name': "nm_cpu_share",
+                            'description': "Number of CPU shares to be allocated to slice",
+                            'is_exclusive': True, 'min_role_id': 10, 'max_per_slice': 1,
+                            'value_fields': [{'description': "number of shares",
+                                              'name': "cpu_share",
+                                              'type': "integer"}]},
+                           {'name': "plc_agent_version",
+                            'description': "Version of PLC agent (slice creation service) software to be deployed",
+                            'is_exclusive': True, 'min_role_id': 10, 'max_per_slice': 1,
+                            'value_fields': [{'description': "current version of PLC agent (SCS)",
+                                              'name': "version",
+                                              'type': "string"}]},
+                           {'name': "plc_ticket_pubkey",
+                            'description': "Public key used to verify PLC-signed tickets",
+                            'is_exclusive': True, 'min_role_id': 10, 'max_per_slice': 1,
+                            'value_fields': [{'description': "PEM-encoded public key",
+                                              'name': "key",
+                                              'type': "string"}]},
+                           {'name': "nm_disk_quota",
+                            'description': "Disk quota",
+                            'is_exclusive': True, 'min_role_id': 10, 'max_per_slice': 1,
+                            'value_fields': [{'description': "Number of 1k disk blocks",
+                                              'name': "quota",
+                                              'type': "integer"}]}]
+        for attribute_type in attribute_types:
+            SliceAttributeTypeCreate(attribute_type['name'], attribute_type['description'],
+                                     attribute_type['min_role_id'], attribute_type['max_per_slice'],
+                                     attribute_type['is_exclusive'], attribute_type['value_fields'])
+
+    if not SliceListNames():
+        # Get contents of SSL public certificate used for signing tickets
+        try:
+            plc_ticket_pubkey = ""
+            for line in file(plc_api['ssl_key_pub']):
+                # Skip comments
+                if line[0:5] != "-----":
+                    # XXX The embedded newlines matter, do not strip()!
+                    plc_ticket_pubkey += line
+        except:
+            plc_ticket_pubkey = '%KEY%'
+
+        # Create system slices
+        slices = [{'name': "pl_conf",
+                   'description': "PlanetLab Slice Creation Service (SCS)",
+                   'url': url,
+                   'attributes': {'plc_slice_type': {'type': "VServerSlice"},
+                                  'plc_agent_version': {'version': "1.0"},
+                                  'plc_ticket_pubkey': {'key': plc_ticket_pubkey}}},
+                  {'name': "pl_conf_vserverslice",
+                   'description': "Default attributes for vserver slices",
+                   'url': url,
+                   'attributes': {'nm_cpu_share': {'cpu_share': 32},
+                                  'plc_slice_type': {'type': "VServerSlice"},
+                                  'nm_disk_quota': {'quota': 5000000}}}]
+        for slice in slices:
+            SliceCreate(slice['name'])
+            SliceUpdate(slice['name'], slice['url'], slice['description'])
+            SliceSetInstantiationMethod(slice['name'], 'plc-instantiated')
+            # Renew forever
+            SliceRenew(slice['name'], sys.maxint)
+            for attribute, values in slice['attributes'].iteritems():
+                SliceAttributeAdd(slice['name'], attribute, values)
+
 
 if __name__ == '__main__':
     main()
