@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!DOCTYPE configuration PUBLIC "-//PlanetLab Central//DTD PLC configuration//EN" "configuration.dtd">
+
+<configuration>
+
+  <!-- This overlay configuration file changes the web, API, and boot
+       server ports to (hopefully unused) ports so that the system can
+       be bootstrapped on a build machine that may itself be running a
+       web server. -->
+
+  <variables>
+    <category id="plc_api">
+      <variablelist>
+	<variable id="port" type="int">
+	  <value>10080</value>
+	</variable>
+      </variablelist>
+    </category>
+
+    <category id="plc_www">
+      <variablelist>
+	<variable id="port" type="int">
+	  <value>10080</value>
+	</variable>
+
+	<variable id="ssl_port" type="int">
+	  <value>10443</value>
+	</variable>
+      </variablelist>
+    </category>
+
+    <category id="plc_boot">
+      <variablelist>
+	<variable id="port" type="int">
+	  <value>10080</value>
+	</variable>
+
+	<variable id="ssl_port" type="int">
+	  <value>10443</value>
+	</variable>
+      </variablelist>
+    </category>
+  </variables>
+
+</configuration>
