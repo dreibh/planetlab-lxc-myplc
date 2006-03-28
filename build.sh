@@ -6,7 +6,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: build.sh,v 1.1.1.1 2006/03/27 17:36:46 mlhuang Exp $
+# $Id: build.sh,v 1.2 2006/03/27 18:08:06 mlhuang Exp $
 #
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
@@ -141,6 +141,18 @@ install -m 755 \
 mkdir -p $root/var/www/html
 rsync -a $srcdir/plc_www/ $root/var/www/html/
 
+# Install node RPMs
+if [ -n "$RPM_BUILD_DIR" ] ; then
+    RPM_RPMS_DIR=$(cd $(dirname $RPM_BUILD_DIR)/RPMS && pwd -P)
+    mkdir -p $root/var/www/html/install-rpms/planetlab
+    find $RPM_RPMS_DIR -type f -and -not -name '*-debuginfo-*' | \
+	cpio -p -d -u $root/var/www/html/install-rpms/planetlab/
+    yum-arch $root/var/www/html/install-rpms/planetlab || :
+    createrepo $root/var/www/html/install-rpms/planetlab || :
+fi
+
+# XXX Build imprintable BootCD and BootManager images.
+
 # Install configuration file
 install -D -m 644 $config $data/etc/planetlab/plc_config.xml
 
@@ -212,5 +224,21 @@ PLC_ROOT=$usr_share/plc/$root
 PLC_DATA=$usr_share/plc/$data
 #PLC_OPTIONS="-v"
 EOF
+
+# Bootstrap the system. Configure the web server to run on an
+# alternate port (in case the build machine is running a web server),
+# start everything up, then shut it back down again.
+./plc-config --save $data/etc/planetlab/plc_config.xml bootstrap.xml
+
+export PLC_ROOT=$PWD/$root
+export PLC_DATA=$PWD/$data
+
+./host.init start
+RETVAL=$?
+
+# Restore default configuration before shutting down
+install -D -m 644 $config $data/etc/planetlab/plc_config.xml
+
+./host.init stop
 
 exit $RETVAL
