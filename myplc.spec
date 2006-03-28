@@ -91,7 +91,7 @@ fi
 %defattr(-,root,root,-)
 %dir %{_datadir}/plc/fc2
 %{_datadir}/plc/fc2.img
-%config(noreplace) %{_datadir}/plc/data2/etc/planetlab/plc_config.xml
+%config(noreplace) %{_datadir}/plc/data2
 
 %changelog
 * Fri Mar 17 2006 Mark Huang <mlhuang@CS.Princeton.EDU> - 0.1-1
