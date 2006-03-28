@@ -25,7 +25,7 @@
 	  <description>The abbreviated name of this PLC
 	  installation. It is used as the prefix for system slices
 	  (e.g., pl_conf). Warning: Currently, this variable should
-	  not be changed once set.</description>
+	  not be changed.</description>
 	</variable>
 
 	<variable id="root_user" type="password">
@@ -285,23 +285,18 @@
 	<variable id="ssl_key" type="file">
 	  <name>SSL Key</name>
 	  <value>/etc/planetlab/api_ssl.key</value>
-	  <description>The corresponding SSL private key. If not
-	  specified or non-existent, a self-signed certificate will be
+	  <description>The corresponding SSL private key used for
+	  signing the certificate, and for signing slice tickets. If
+	  not specified or non-existent, one will be
 	  generated.</description>
 	</variable>
 
-	<variable id="ticket_key" type="file">
-	  <name>Slice Ticket Private Key</name>
-	  <value>/etc/planetlab/slice-ticket-key-nopass.pem</value>
-	  <description>The private PEM key file used to sign slice
-	  tickets.</description>
-	</variable>
-
-	<variable id="ticket_key_pub" type="file">
-	  <name>Slice Ticket Public Key</name>
-	  <value>/etc/planetlab/slice-ticket-key-public.pem</value>
-	  <description>The public PEM key file used to verify signed
-	  slice tickets.</description>
+	<variable id="ssl_key_pub" type="file">
+	  <name>SSL Key</name>
+	  <value>/etc/planetlab/api_ssl.pub</value>
+	  <description>The corresponding SSL public key. If not
+	  specified or non-existent, one will be
+	  generated.</description>
 	</variable>
       </variablelist>
     </category>
@@ -366,7 +361,7 @@
 	  <name>SSL Key</name>
 	  <value>/etc/planetlab/www_ssl.key</value>
 	  <description>The corresponding SSL private key. If not
-	  specified or non-existent, a self-signed certificate will be
+	  specified or non-existent, one will be
 	  generated.</description>
 	</variable>
       </variablelist>
@@ -430,7 +425,7 @@
 	  <name>SSL Key</name>
 	  <value>/etc/planetlab/boot_ssl.key</value>
 	  <description>The corresponding SSL private key. If not
-	  specified or non-existent, a self-signed certificate will be
+	  specified or non-existent, one will be
 	  generated.</description>
 	</variable>
       </variablelist>
