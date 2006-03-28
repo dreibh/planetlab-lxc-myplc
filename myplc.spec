@@ -1,7 +1,3 @@
-# Fedora Core release version to base the installation on. Currently
-# supported: 2, 4.
-%define releasever 2
-
 Vendor: PlanetLab
 Packager: PlanetLab Central <support@planet-lab.org>
 Distribution: PlanetLab 3.0
@@ -9,7 +5,7 @@ URL: http://cvs.planet-lab.org/cvs/myplc
 
 Summary: PlanetLab Central (PLC) Portable Installation
 Name: myplc
-Version: %{releasever}.0
+Version: 0.1
 Release: 1%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 License: BSD
 Group: Applications/Systems
@@ -27,12 +23,22 @@ through a graphical interface. All PLC services are started up and
 shut down through a single System V init script installed in the host
 system.
 
+%package fc2
+Summary: MyPLC installation based on Fedora Core 2
+Group: Applications/Systems
+
+%description fc2
+This package installs a MyPLC installation based on Fedora Core 2.
+
 %prep
 %setup -q
 
 %build
 pushd myplc
-./build.sh -r %{releasever} -d %{_datadir}
+./build.sh -r 2 -d %{_datadir}
+# Not until we can get the build server to run Fedora Core 4 or an
+# updated version of yum.
+#./build.sh -r 4 -d %{_datadir}
 popd
 
 # If run under sudo, allow user to delete the build directory
@@ -47,11 +53,14 @@ fi
 rm -rf $RPM_BUILD_ROOT
 
 pushd myplc
-install -d -m 755 $RPM_BUILD_ROOT/%{_datadir}/plc/fc%{releasever}
-install -D -m 644 fc%{releasever}.img $RPM_BUILD_ROOT/%{_datadir}/plc/fc%{releasever}.img
-find data%{releasever} | cpio -p -d -u $RPM_BUILD_ROOT/%{_datadir}/plc/
 install -D -m 755 host.init $RPM_BUILD_ROOT/%{_sysconfdir}/init.d/plc
 install -D -m 644 plc.sysconfig $RPM_BUILD_ROOT/%{_sysconfdir}/sysconfig/plc
+#for releasever in 2 4 ; do
+for releasever in 2 ; do
+    install -d -m 755 $RPM_BUILD_ROOT/%{_datadir}/plc/fc$releasever
+    install -D -m 644 fc$releasever.img $RPM_BUILD_ROOT/%{_datadir}/plc/fc$releasever.img
+    find data$releasever | cpio -p -d -u $RPM_BUILD_ROOT/%{_datadir}/plc/
+done
 popd
 
 %clean
@@ -75,11 +84,14 @@ fi
 
 %files
 %defattr(-,root,root,-)
-%dir %{_datadir}/plc/fc%{releasever}
-%{_datadir}/plc/fc%{releasever}.img
-%{_datadir}/plc/data%{releasever}
 %{_sysconfdir}/init.d/plc
 %config(noreplace) %{_sysconfdir}/sysconfig/plc
+
+%files fc2
+%defattr(-,root,root,-)
+%dir %{_datadir}/plc/fc2
+%{_datadir}/plc/fc2.img
+%config(noreplace) %{_datadir}/plc/data2/etc/planetlab/plc_config.xml
 
 %changelog
 * Fri Mar 17 2006 Mark Huang <mlhuang@CS.Princeton.EDU> - 0.1-1
