@@ -6,7 +6,7 @@
 #
 # description:	Manages all PLC services on this machine
 #
-# $Id: guest.init,v 1.5 2006/03/29 00:01:35 mlhuang Exp $
+# $Id: guest.init,v 1.6 2006/03/29 02:56:15 mlhuang Exp $
 #
 
 PATH=/sbin:/bin:/usr/bin:/usr/sbin
@@ -68,22 +68,16 @@ reload ()
 	plc-config --category=plc_api --variable=maintenance_password --value="$PLC_API_MAINTENANCE_PASSWORD" --save
     fi
 
-    if [ -z "$PLC_API_MAINTENANCE_SOURCES" ] ; then
-        # Need to configure network before resolving hostnames
-	config_network start
+    # Need to configure network before resolving hostnames
+    config_network start
+
+    PLC_API_MAINTENANCE_SOURCES=$(
 	for server in API BOOT WWW ; do
 	    eval hostname=\${PLC_${server}_HOST}
-	    ip=$(gethostbyname $hostname)
-	    if [ -n "$ip" ] ; then
-		if [ -n "$PLC_API_MAINTENANCE_SOURCES" ] ; then
-		    PLC_API_MAINTENANCE_SOURCES="$PLC_API_MAINTENANCE_SOURCES $ip"
-		else
-		    PLC_API_MAINTENANCE_SOURCES=$ip
-		fi
-	    fi
-	done
-	plc-config --category=plc_api --variable=maintenance_sources --value="$PLC_API_MAINTENANCE_SOURCES" --save
-    fi
+	    gethostbyname $hostname
+	done | sort -u
+    )
+    plc-config --category=plc_api --variable=maintenance_sources --value="$PLC_API_MAINTENANCE_SOURCES" --save
 
     # Save configuration
     mkdir -p /etc/planetlab/php
@@ -477,6 +471,12 @@ config_apache ()
 	    # Set custom Apache directives
 	    (
 		if [ "$PLC_API_ENABLED" = "1" ] ; then
+		    # XXX We should only support non-SSL access to the
+		    # API by writing this to conf.d/plc_ssl.conf, then
+		    # writing "Include conf.d/plc_ssl.conf" to
+		    # conf.d/ssl.conf. Once oldapi, which does not
+		    # support SSL, is removed from the web pages, we
+		    # can do this.
 		    cat <<EOF
 <Location $PLC_API_PATH>
     SetHandler python-program
@@ -486,11 +486,19 @@ config_apache ()
 EOF
 		fi
 
-		cat <<EOF
-<VirtualHost $PLC_WWW_HOST:$PLC_WWW_PORT>
+		if [ "$PLC_WWW_ENABLED" = "1" ] ; then
+		    cat <<EOF
+<VirtualHost *:$PLC_WWW_PORT>
     Redirect /db https://$PLC_WWW_HOST:$PLC_WWW_SSL_PORT/db
 </VirtualHost>
 EOF
+		else
+		    cat <<EOF
+<Location /db>
+    Deny from all
+</Location>
+EOF
+		fi
 	    ) >$plc_conf
 
 	    # Make alpina-logs directory writable for bootmanager log upload
