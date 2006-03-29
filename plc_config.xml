@@ -264,9 +264,10 @@
 	  <name>Authorized Hosts</name>
 	  <value></value>
 	  <description>A space-separated list of IP addresses allowed
-	  to access the API through the maintenance account. If left
-	  blank, the API, web, and boot servers are
-	  allowed.</description>
+	  to access the API through the maintenance account. The value
+	  of this variable is set automatically to allow only the API,
+	  web, and boot servers, and should not be
+	  changed.</description>
 	</variable>
 
 	<!-- The following are not actually meant to be configurable
