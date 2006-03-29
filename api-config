@@ -6,7 +6,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: api-config,v 1.3 2006/03/28 22:03:21 mlhuang Exp $
+# $Id: api-config,v 1.4 2006/03/28 22:35:42 mlhuang Exp $
 #
 
 import plcapilib
@@ -186,39 +186,42 @@ def main():
                                      attribute_type['min_role_id'], attribute_type['max_per_slice'],
                                      attribute_type['is_exclusive'], attribute_type['value_fields'])
 
-    if not SliceListNames():
-        # Get contents of SSL public certificate used for signing tickets
-        try:
-            plc_ticket_pubkey = ""
-            for line in file(plc_api['ssl_key_pub']):
-                # Skip comments
-                if line[0:5] != "-----":
-                    # XXX The embedded newlines matter, do not strip()!
-                    plc_ticket_pubkey += line
-        except:
-            plc_ticket_pubkey = '%KEY%'
+    # Get contents of SSL public certificate used for signing tickets
+    try:
+        plc_ticket_pubkey = ""
+        for line in file(plc_api['ssl_key_pub']):
+            # Skip comments
+            if line[0:5] != "-----":
+                # XXX The embedded newlines matter, do not strip()!
+                plc_ticket_pubkey += line
+    except:
+        plc_ticket_pubkey = '%KEY%'
 
-        # Create system slices
-        slices = [{'name': "pl_conf",
-                   'description': "PlanetLab Slice Creation Service (SCS)",
-                   'url': url,
-                   'attributes': {'plc_slice_type': {'type': "VServerSlice"},
-                                  'plc_agent_version': {'version': "1.0"},
-                                  'plc_ticket_pubkey': {'key': plc_ticket_pubkey}}},
-                  {'name': "pl_conf_vserverslice",
-                   'description': "Default attributes for vserver slices",
-                   'url': url,
-                   'attributes': {'nm_cpu_share': {'cpu_share': 32},
-                                  'plc_slice_type': {'type': "VServerSlice"},
-                                  'nm_disk_quota': {'quota': 5000000}}}]
-        for slice in slices:
+    # Create/update system slices
+    slices = [{'name': "pl_conf",
+               'description': "PlanetLab Slice Creation Service (SCS)",
+               'url': url,
+               'attributes': {'plc_slice_type': {'type': "VServerSlice"},
+                              'plc_agent_version': {'version': "1.0"},
+                              'plc_ticket_pubkey': {'key': plc_ticket_pubkey}}},
+              {'name': "pl_conf_vserverslice",
+               'description': "Default attributes for vserver slices",
+               'url': url,
+               'attributes': {'nm_cpu_share': {'cpu_share': 32},
+                              'plc_slice_type': {'type': "VServerSlice"},
+                              'nm_disk_quota': {'quota': 5000000}}}]
+    for slice in slices:
+        try:
+            SliceInfo([slice['name']])
+        except:
             SliceCreate(slice['name'])
-            SliceUpdate(slice['name'], slice['url'], slice['description'])
             SliceSetInstantiationMethod(slice['name'], 'plc-instantiated')
-            # Renew forever
-            SliceRenew(slice['name'], sys.maxint)
-            for attribute, values in slice['attributes'].iteritems():
-                SliceAttributeAdd(slice['name'], attribute, values)
+        SliceUpdate(slice['name'], slice['url'], slice['description'])
+        # Renew forever
+        SliceRenew(slice['name'], sys.maxint)
+        # Create/update all attributes
+        for attribute, values in slice['attributes'].iteritems():
+            SliceAttributeSet(slice['name'], attribute, values)
 
 
 if __name__ == '__main__':
