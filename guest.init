@@ -6,7 +6,7 @@
 #
 # description:	Manages all PLC services on this machine
 #
-# $Id: guest.init,v 1.4 2006/03/28 20:47:57 mlhuang Exp $
+# $Id: guest.init,v 1.5 2006/03/29 00:01:35 mlhuang Exp $
 #
 
 PATH=/sbin:/bin:/usr/bin:/usr/sbin
@@ -35,6 +35,16 @@ cron
 )
 nsteps=${#steps[@]}
 
+# Total number of errors
+ERRORS=0
+
+# Count the exit status of the last command
+check ()
+{
+    ERRORS=$(($ERRORS+$?))
+}
+
+# Return IP address of hostname if resolvable
 gethostbyname ()
 {
     perl -MSocket -e '($a,$b,$c,$d,@addrs) = gethostbyname($ARGV[0]); print inet_ntoa($addrs[0]) . "\n";' $1 2>/dev/null
@@ -59,6 +69,8 @@ reload ()
     fi
 
     if [ -z "$PLC_API_MAINTENANCE_SOURCES" ] ; then
+        # Need to configure network before resolving hostnames
+	config_network start
 	for server in API BOOT WWW ; do
 	    eval hostname=\${PLC_${server}_HOST}
 	    ip=$(gethostbyname $hostname)
@@ -145,8 +157,8 @@ config_network ()
     case "$1" in
 	start)
 	    # Minimal /etc/hosts
+	    echo "127.0.0.1	localhost.localdomain localhost" >/etc/hosts
 	    (
-		echo "127.0.0.1	localhost.localdomain localhost"
 		for server in API BOOT WWW ; do
 		    eval hostname=\${PLC_${server}_HOST}
 		    ip=$(gethostbyname $hostname)
@@ -154,7 +166,7 @@ config_network ()
 			echo "$ip	$hostname"
 		    fi
 		done
-	    ) >/etc/hosts
+	    ) >>/etc/hosts
 
 	    # Set up nameservers
 	    (
@@ -168,7 +180,7 @@ config_network ()
 config_syslog ()
 {
     service syslog $1
-    RETVAL=$?
+    check
 }
 
 config_postgresql ()
@@ -232,7 +244,7 @@ config_postgresql ()
 	    service postgresql start
 	    # /etc/init.d/postgresql always returns 0, even on failure
 	    status postmaster
-	    RETVAL=$?
+	    check
 
 	    # Create/update the unprivileged database user and password
 	    if ! psql -U $PLC_DB_USER -c "" template1 >/dev/null 2>&1 ; then
@@ -258,7 +270,7 @@ config_postgresql ()
 
 	    # Shut down the server
 	    service postgresql stop
-	    RETVAL=$?
+	    check
 	    ;;
     esac
 }
@@ -290,7 +302,7 @@ Expire-Date: 0
 %secring $PLC_ROOT_GPG_KEY
 %commit
 EOF
-		RETVAL=$?
+		check
 		rm -f /dev/random
 		mknod /dev/random c 1 8
 		chmod 600 $PLC_ROOT_GPG_KEY_PUB $PLC_ROOT_GPG_KEY
@@ -322,7 +334,7 @@ config_ssl ()
 	    if [ ! -f $PLC_WWW_SSL_KEY ] ; then
 		mkdir -p $(dirname $PLC_WWW_SSL_KEY)
 		openssl genrsa -rand /proc/apm:/proc/cpuinfo:/proc/dma:/proc/filesystems:/proc/interrupts:/proc/ioports:/proc/pci:/proc/rtc:/proc/uptime 1024 >$PLC_WWW_SSL_KEY
-		RETVAL=$(($RETVAL+$?))
+		check
 		chmod 600 $PLC_WWW_SSL_KEY
 	    fi
 
@@ -339,7 +351,7 @@ $PLC_NAME Central
 $PLC_WWW_HOST
 $PLC_MAIL_SUPPORT_ADDRESS
 EOF
-		RETVAL=$(($RETVAL+$?))
+		check
 		chmod 644 $PLC_WWW_SSL_CRT
 	    fi
 
@@ -349,7 +361,7 @@ EOF
 	    fi
 	    if [ ! -f $PLC_API_SSL_KEY_PUB ] ; then
 		openssl rsa -pubout <$PLC_API_SSL_KEY >$PLC_API_SSL_KEY_PUB
-		RETVAL=$(($RETVAL+$?))
+		check
 	    fi
 	    if [ ! -f $PLC_API_SSL_CRT ] ; then
 		cp -a $PLC_WWW_SSL_CRT $PLC_API_SSL_CRT
@@ -399,7 +411,7 @@ config_ssh ()
 	    if [ ! -f $PLC_ROOT_SSH_KEY_PUB -o ! -f $PLC_ROOT_SSH_KEY ] ; then
 		ssh-keygen -N "" -C "$PLC_NAME Central <$PLC_MAIL_SUPPORT_ADDRESS>" \
 		    -b $KEY_LEN_ROOT -t $KEY_TYPE_ROOT -f $tmp/root
-		RETVAL=$(($RETVAL+$?))
+		check
 		install -D -m 600 $tmp/root $PLC_ROOT_SSH_KEY
 		install -D -m 600 $tmp/root.pub $PLC_ROOT_SSH_KEY_PUB
 	    fi
@@ -408,7 +420,7 @@ config_ssh ()
 	    if [ ! -f $PLC_DEBUG_SSH_KEY_PUB -o ! -f $PLC_DEBUG_SSH_KEY ] ; then
 		ssh-keygen -N "" -C "$PLC_NAME Central <$PLC_MAIL_SUPPORT_ADDRESS>" \
 		    -b $KEY_LEN_DEBUG -t $KEY_TYPE_DEBUG -f $tmp/debug
-		RETVAL=$(($RETVAL+$?))
+		check
 		install -D -m 600 $tmp/debug $PLC_DEBUG_SSH_KEY
 		install -D -m 600 $tmp/debug.pub $PLC_DEBUG_SSH_KEY_PUB
 	    fi
@@ -485,12 +497,12 @@ EOF
 	    chown apache:apache $DocumentRoot/alpina-logs/nodes
 
 	    service httpd start
-	    RETVAL=$?
+	    check
 	    ;;
 
 	stop)
 	    service httpd stop
-	    RETVAL=$?
+	    check
 	    ;;
     esac
 }
@@ -512,7 +524,7 @@ config_api ()
 
 	    # Bootstrap the DB
 	    api-config
-	    RETVAL=$?
+	    check
 	    ;;
     esac
 }
@@ -540,16 +552,19 @@ EOF
 
 	    # Run them once at startup
 	    gen-slices-xml-05.py
+	    check
 	    gen-sites-xml.py
+	    check
 	    gen-static-content.py
+	    check
 
 	    service crond start
-	    RETVAL=$?
+	    check
 	    ;;
 
 	stop)
 	    service crond stop
-	    RETVAL=$?
+	    check
 	    ;;
     esac
 }
@@ -603,9 +618,9 @@ start ()
 {
     for step in "${steps[@]}" ; do
 	echo -n $"PLC: Starting $step: " >&3
-	RETVAL=0
+	RETVAL=$ERRORS
 	config_$step start
-	if [ $RETVAL -eq 0 ] ; then
+	if [ $RETVAL -eq $ERRORS ] ; then
 	    success $"PLC: $step startup" >&3
 	else
 	    failure $"PLC: $step startup" >&3
@@ -619,9 +634,9 @@ stop ()
     for i in $(seq 1 $nsteps) ; do
 	step=${steps[$(($nsteps - $i))]}
 	echo -n $"PLC: Shutting down $step: " >&3
-	RETVAL=0
+	RETVAL=$ERRORS
 	config_$step stop
-	if [ $RETVAL -eq 0 ] ; then
+	if [ $RETVAL -eq $ERRORS ] ; then
 	    success $"PLC: $step shutdown" >&3
 	else
 	    failure $"PLC: $step shutdown" >&3
