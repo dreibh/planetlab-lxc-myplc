@@ -241,8 +241,17 @@ if [ -n "$RPM_BUILD_DIR" ] ; then
 	install -D -m 644 $RPM_RPMS_DIR/yumgroups.xml \
 	    $data/var/www/html/install-rpms/planetlab/yumgroups.xml
     fi
-    yum-arch $data/var/www/html/install-rpms/planetlab || :
-    createrepo $data/var/www/html/install-rpms/planetlab || :
+    # yum-2.0.x
+    if [ -x /usr/bin/yum-arch ] ; then
+	yum-arch $data/var/www/html/install-rpms/planetlab
+    fi
+    # yum-2.4.x
+    if [ -x /usr/bin/createrepo ] ; then
+	if [ -f $data/var/www/html/install-rpms/planetlab/yumgroups.xml ] ; then
+	    groupfile="-g yumgroups.xml"
+	fi
+	createrepo $groupfile $data/var/www/html/install-rpms/planetlab
+    fi
 fi
 
 # Bootstrap the system for quicker startup (and to populate the
