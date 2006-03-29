@@ -6,7 +6,7 @@
 #
 # description:	Manages all PLC services on this machine
 #
-# $Id: guest.init,v 1.6 2006/03/29 02:56:15 mlhuang Exp $
+# $Id: guest.init,v 1.7 2006/03/29 05:14:43 mlhuang Exp $
 #
 
 PATH=/sbin:/bin:/usr/bin:/usr/sbin
@@ -184,6 +184,9 @@ config_postgresql ()
     postgresql_conf=$PGDATA/postgresql.conf
     pghba_conf=$PGDATA/pg_hba.conf
 
+    # Export so that we do not have to specify -p to psql invocations
+    export PGPORT=$PLC_DB_PORT
+
     case "$1" in
 	start)
 	    if [ "$PLC_DB_ENABLED" != "1" ] ; then
@@ -195,6 +198,7 @@ config_postgresql ()
 	    (
 		echo "PGDATA=$PGDATA"
 		echo "PGLOG=/var/log/pgsql"
+		echo "PGPORT=$PLC_DB_PORT"
 	    ) >>/etc/sysconfig/pgsql/postgresql
 
 	    # Fix ownership (rpm installation may have changed it)
@@ -237,7 +241,7 @@ config_postgresql ()
 	    # Start up the server
 	    service postgresql start
 	    # /etc/init.d/postgresql always returns 0, even on failure
-	    status postmaster
+	    status postmaster && [ -f /var/lock/subsys/postgresql ]
 	    check
 
 	    # Create/update the unprivileged database user and password
