@@ -176,6 +176,13 @@
 	  reachable by the rest of your installation.</description>
 	</variable>
 
+	<variable id="port" type="int">
+	  <name>Port</name>
+	  <value>5432</value>
+	  <description>The TCP port number through which the database
+	  server should be accessed.</description>
+	</variable>
+
 	<variable id="name" type="string">
 	  <name>Database Name</name>
 	  <value>planetlab3</value>
