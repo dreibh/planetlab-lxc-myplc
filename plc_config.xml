@@ -469,6 +469,9 @@
 	<!-- For mkpasswd -->
 	<packagereq type="mandatory">expect</packagereq>
 
+	<!-- For ssh-keygen -->
+	<packagereq type="mandatory">openssh</packagereq>
+
 	<!-- Almost all scripts are written in Python -->
 	<packagereq type="mandatory">python</packagereq>
 
