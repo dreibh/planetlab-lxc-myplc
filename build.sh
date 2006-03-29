@@ -6,7 +6,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: build.sh,v 1.4 2006/03/29 03:36:53 mlhuang Exp $
+# $Id$
 #
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
@@ -146,27 +146,6 @@ rsync -a \
     --exclude=geni --exclude=PDN --exclude=Talks \
     $srcdir/plc_www/ $root/var/www/html/
 
-# Install node RPMs
-if [ -n "$RPM_BUILD_DIR" ] ; then
-    echo "* Installing node RPMs"
-    RPM_RPMS_DIR=$(cd $(dirname $RPM_BUILD_DIR)/RPMS && pwd -P)
-    mkdir -p $root/var/www/html/install-rpms/planetlab
-    # Exclude ourself (e.g., if rebuilding), the bootcd and
-    # bootmanager builds, and debuginfo RPMs.
-    rsync -a \
-	--exclude='myplc-*' \
-	--exclude='bootcd-*' --exclude='bootmanager-*' \
-	--exclude='*-debuginfo-*' \
-	$(find $RPM_RPMS_DIR -type f -and -name '*.rpm') \
-	$root/var/www/html/install-rpms/planetlab/
-    if [ -f $RPM_RPMS_DIR/yumgroups.xml ] ; then
-	install -D -m 644 $RPM_RPMS_DIR/yumgroups.xml \
-	    $root/var/www/html/install-rpms/planetlab/yumgroups.xml
-    fi
-    yum-arch $root/var/www/html/install-rpms/planetlab || :
-    createrepo $root/var/www/html/install-rpms/planetlab || :
-fi
-
 # XXX Build imprintable BootCD and BootManager images.
 
 # Install configuration file
@@ -181,6 +160,7 @@ datadirs=(
 /var/www/html/boot
 /var/www/html/download
 /var/www/html/generated
+/var/www/html/install-rpms
 /var/www/html/xml
 )
 
@@ -243,6 +223,27 @@ PLC_ROOT=$usr_share/plc/$root
 PLC_DATA=$usr_share/plc/$data
 #PLC_OPTIONS="-v"
 EOF
+
+# Install node RPMs
+if [ -n "$RPM_BUILD_DIR" ] ; then
+    echo "* Installing node RPMs"
+    RPM_RPMS_DIR=$(cd $(dirname $RPM_BUILD_DIR)/RPMS && pwd -P)
+    mkdir -p $data/var/www/html/install-rpms/planetlab
+    # Exclude ourself (e.g., if rebuilding), the bootcd and
+    # bootmanager builds, and debuginfo RPMs.
+    rsync -a \
+	--exclude='myplc-*' \
+	--exclude='bootcd-*' --exclude='bootmanager-*' \
+	--exclude='*-debuginfo-*' \
+	$(find $RPM_RPMS_DIR -type f -and -name '*.rpm') \
+	$data/var/www/html/install-rpms/planetlab/
+    if [ -f $RPM_RPMS_DIR/yumgroups.xml ] ; then
+	install -D -m 644 $RPM_RPMS_DIR/yumgroups.xml \
+	    $data/var/www/html/install-rpms/planetlab/yumgroups.xml
+    fi
+    yum-arch $data/var/www/html/install-rpms/planetlab || :
+    createrepo $data/var/www/html/install-rpms/planetlab || :
+fi
 
 # Bootstrap the system for quicker startup (and to populate the
 # PlanetLabConf tables from PLC, which may not be accessible
