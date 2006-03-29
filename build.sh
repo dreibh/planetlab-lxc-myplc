@@ -6,19 +6,15 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: build.sh,v 1.2 2006/03/27 18:08:06 mlhuang Exp $
+# $Id: build.sh,v 1.3 2006/03/28 21:30:48 mlhuang Exp $
 #
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
-# In a normal CVS environment, the requisite CVS modules (including
-# build/) are located at the same level we are. In a PlanetLab RPM
-# build environment (see the RPM spec file), they are checked out into
-# a subdirectory.
-if [ -d ./build ] ; then
-    PATH=$PATH:./build
-    srcdir=.
-elif [ -d ../build ] ; then
+# In both a normal CVS environment and a PlanetLab RPM
+# build environment, all of our dependencies are checked out into
+# directories at the same level as us.
+if [ -d ../build ] ; then
     PATH=$PATH:../build
     srcdir=..
 else
@@ -116,20 +112,24 @@ make -C $srcdir/pl_db
 #
 
 # Install configuration scripts
+echo "* Installing configuration scripts"
 install -D -m 755 plc_config.py $root/tmp/plc_config.py
 chroot $root sh -c 'cd /tmp; python plc_config.py build; python plc_config.py install'
 install -D -m 755 plc-config $root/usr/bin/plc-config
 install -D -m 755 api-config $root/usr/bin/api-config
 
 # Install init script
+echo "* Installing initscript"
 install -D -m 755 guest.init $root/etc/init.d/plc
 chroot $root sh -c 'chkconfig --add plc; chkconfig plc on'
 
 # Install DB schema and API code
+echo "* Installing DB schema and API code"
 mkdir -p $root/usr/share
 rsync -a $srcdir/pl_db $srcdir/plc_api $root/usr/share/
 
 # Install web scripts
+echo "* Installing web scripts"
 mkdir -p $root/usr/bin
 install -m 755 \
     $srcdir/plc/scripts/gen-sites-xml.py \
@@ -138,22 +138,18 @@ install -m 755 \
     $root/usr/bin/
 
 # Install web pages
+echo "* Installing web pages"
 mkdir -p $root/var/www/html
-rsync -a $srcdir/plc_www/ $root/var/www/html/
-
-# Install node RPMs
-if [ -n "$RPM_BUILD_DIR" ] ; then
-    RPM_RPMS_DIR=$(cd $(dirname $RPM_BUILD_DIR)/RPMS && pwd -P)
-    mkdir -p $root/var/www/html/install-rpms/planetlab
-    find $RPM_RPMS_DIR -type f -and -not -name '*-debuginfo-*' | \
-	cpio -p -d -u $root/var/www/html/install-rpms/planetlab/
-    yum-arch $root/var/www/html/install-rpms/planetlab || :
-    createrepo $root/var/www/html/install-rpms/planetlab || :
-fi
+# Exclude old cruft, unrelated GENI pages, and official documents
+rsync -a \
+    --exclude='*2002' --exclude='*2003' \
+    --exclude=geni --exclude=PDN --exclude=Talks \
+    $srcdir/plc_www/ $root/var/www/html/
 
 # XXX Build imprintable BootCD and BootManager images.
 
 # Install configuration file
+echo "* Installing configuration file"
 install -D -m 644 $config $data/etc/planetlab/plc_config.xml
 
 # Move "data" directories out of the installation
@@ -168,6 +164,7 @@ datadirs=(
 /var/www/html/xml
 )
 
+echo "* Moving data directories out of the installation"
 mkdir -p $root/data
 for datadir in "${datadirs[@]}" ; do
     mkdir -p ${data}$datadir
@@ -207,7 +204,9 @@ if [ -n "$kb" ] ; then
     trap "losetup -d $dev_loop" ERR
 
     # Resize the filesystem
-    e2fsck -f $dev_loop
+    echo "* Checking filesystem"
+    e2fsck -a -f $dev_loop
+    echo "* Shrinking filesystem"
     resize2fs $dev_loop ${kb}K
 
     # Tear down loopback association
@@ -225,13 +224,41 @@ PLC_DATA=$usr_share/plc/$data
 #PLC_OPTIONS="-v"
 EOF
 
-# Bootstrap the system. Configure the web server to run on an
-# alternate port (in case the build machine is running a web server),
-# start everything up, then shut it back down again.
+# Install node RPMs
+if [ -n "$RPM_BUILD_DIR" ] ; then
+    echo "* Installing node RPMs"
+    RPM_RPMS_DIR=$(cd $(dirname $RPM_BUILD_DIR)/RPMS && pwd -P)
+    mkdir -p $data/var/www/html/install-rpms/planetlab
+    # Exclude ourself (e.g., if rebuilding), the bootcd and
+    # bootmanager builds, and debuginfo RPMs.
+    rsync -a \
+	--exclude='myplc-*' \
+	--exclude='bootcd-*' --exclude='bootmanager-*' \
+	--exclude='*-debuginfo-*' \
+	$(find $RPM_RPMS_DIR -type f -and -name '*.rpm') \
+	$data/var/www/html/install-rpms/planetlab/
+    if [ -f $RPM_RPMS_DIR/yumgroups.xml ] ; then
+	install -D -m 644 $RPM_RPMS_DIR/yumgroups.xml \
+	    $data/var/www/html/install-rpms/planetlab/yumgroups.xml
+    fi
+    yum-arch $data/var/www/html/install-rpms/planetlab || :
+    createrepo $data/var/www/html/install-rpms/planetlab || :
+fi
+
+# Bootstrap the system for quicker startup (and to populate the
+# PlanetLabConf tables from PLC, which may not be accessible
+# later). The bootstrap.xml configuration overlay configures the web
+# server to run on an alternate port (in case the build machine itself
+# is running a web server on port 80). Start everything up to
+# bootstrap the database, then shut it back down again immediately.
+echo "* Bootstrapping installation"
+
 ./plc-config --save $data/etc/planetlab/plc_config.xml bootstrap.xml
 
+# Otherwise, host.init will try to read /etc/sysconfig/plc
 export PLC_ROOT=$PWD/$root
 export PLC_DATA=$PWD/$data
+#export PLC_OPTIONS="-v"
 
 ./host.init start
 RETVAL=$?
@@ -240,5 +267,6 @@ RETVAL=$?
 install -D -m 644 $config $data/etc/planetlab/plc_config.xml
 
 ./host.init stop
+RETVAL=$(($RETVAL+$?))
 
 exit $RETVAL
