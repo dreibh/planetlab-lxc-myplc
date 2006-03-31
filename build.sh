@@ -73,6 +73,9 @@ while getopts "c:r:a:d:s:h" opt ; do
     esac
 done
 
+# Do not tolerate errors
+set -e
+
 root=fc$releasever
 data=data$releasever
 
@@ -85,7 +88,7 @@ fi
 
 mkdir -p $root $data
 mount -o loop $root.img $root
-trap "umount $root; exit 1" ERR
+trap "umount $root" ERR
 
 #
 # Build
@@ -98,6 +101,9 @@ done < <(./plc-config --packages $config)
 
 # Install base system
 mkfedora -v -r $releasever -a $basearch $packages $root
+
+# Disable all services in reference image
+chroot $vroot sh -c "/sbin/chkconfig --list | awk '{ print \$1 }' | xargs -i /sbin/chkconfig {} off"
 
 # FC2 minilogd starts up during shutdown and makes unmounting
 # impossible. Just get rid of it.
