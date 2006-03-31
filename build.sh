@@ -18,7 +18,7 @@ if [ -d ../build ] ; then
     PATH=$PATH:../build
     srcdir=..
 else
-    echo "Error: Could not find sources in either . or .."
+    echo "Error: Could not find $(cd .. && pwd -P)/build/"
     exit 1
 fi
 
