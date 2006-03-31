@@ -6,7 +6,7 @@
 #
 # description:	Manages all PLC services on this machine
 #
-# $Id: guest.init,v 1.7 2006/03/29 05:14:43 mlhuang Exp $
+# $Id: guest.init,v 1.8 2006/03/29 17:03:15 mlhuang Exp $
 #
 
 PATH=/sbin:/bin:/usr/bin:/usr/sbin
@@ -364,11 +364,11 @@ EOF
 	    if [ ! -f $PLC_API_SSL_CRT ] ; then
 		cp -a $PLC_WWW_SSL_CRT $PLC_API_SSL_CRT
 	    fi
-	    if [ ! -f $PLC_API_SSL_KEY ] ; then
-		cp -a $PLC_WWW_SSL_KEY $PLC_API_SSL_KEY
+	    if [ ! -f $PLC_BOOT_SSL_KEY ] ; then
+		cp -a $PLC_WWW_SSL_KEY $PLC_BOOT_SSL_KEY
 	    fi
-	    if [ ! -f $PLC_API_SSL_CRT ] ; then
-		cp -a $PLC_WWW_SSL_CRT $PLC_API_SSL_CRT
+	    if [ ! -f $PLC_BOOT_SSL_CRT ] ; then
+		cp -a $PLC_WWW_SSL_CRT $PLC_BOOT_SSL_CRT
 	    fi
 
 	    # Install into both /etc/pki (Fedora Core 4) and
