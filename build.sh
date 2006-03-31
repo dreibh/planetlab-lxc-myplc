@@ -103,7 +103,7 @@ done < <(./plc-config --packages $config)
 mkfedora -v -r $releasever -a $basearch $packages $root
 
 # Disable all services in reference image
-chroot $vroot sh -c "/sbin/chkconfig --list | awk '{ print \$1 }' | xargs -i /sbin/chkconfig {} off"
+chroot $root sh -c "/sbin/chkconfig --list | awk '{ print \$1 }' | xargs -i /sbin/chkconfig {} off"
 
 # FC2 minilogd starts up during shutdown and makes unmounting
 # impossible. Just get rid of it.
