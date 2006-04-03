@@ -235,6 +235,8 @@ if [ -n "$RPM_BUILD_DIR" ] ; then
     echo "* Installing node RPMs"
     RPM_RPMS_DIR=$(cd $(dirname $RPM_BUILD_DIR)/RPMS && pwd -P)
     mkdir -p $data/var/www/html/install-rpms/planetlab
+    # Backward compatibility
+    ln -nsf planetlab $data/var/www/html/install-rpms/planetlab-v3
     # Exclude ourself (e.g., if rebuilding), the bootcd and
     # bootmanager builds, and debuginfo RPMs.
     rsync -a \
