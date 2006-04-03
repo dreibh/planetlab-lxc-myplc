@@ -6,7 +6,7 @@
 #
 # description:	Manages all PLC services on this machine
 #
-# $Id: guest.init,v 1.9 2006/03/31 00:41:03 mlhuang Exp $
+# $Id: guest.init,v 1.10 2006/04/03 19:47:07 mlhuang Exp $
 #
 
 PATH=/sbin:/bin:/usr/bin:/usr/sbin
@@ -106,6 +106,9 @@ BOOT_MESSAGES_EMAIL='$PLC_MAIL_BOOT_ADDRESS'
 WWW_BASE='$PLC_WWW_HOST'
 BOOT_BASE='$PLC_BOOT_HOST'
 EOF
+
+    # API expects root SSH public key to be at /etc/planetlab/node_root_key
+    ln -sf "$PLC_ROOT_SSH_KEY_PUB" /etc/planetlab/node_root_key
 
     # The format is
     #
@@ -444,7 +447,7 @@ config_ssh ()
 		    -b $KEY_LEN_ROOT -t $KEY_TYPE_ROOT -f $tmp/root
 		check
 		install -D -m 600 $tmp/root $PLC_ROOT_SSH_KEY
-		install -D -m 600 $tmp/root.pub $PLC_ROOT_SSH_KEY_PUB
+		install -D -m 644 $tmp/root.pub $PLC_ROOT_SSH_KEY_PUB
 	    fi
 
 	    # Generate debug SSH key
@@ -453,7 +456,7 @@ config_ssh ()
 		    -b $KEY_LEN_DEBUG -t $KEY_TYPE_DEBUG -f $tmp/debug
 		check
 		install -D -m 600 $tmp/debug $PLC_DEBUG_SSH_KEY
-		install -D -m 600 $tmp/debug.pub $PLC_DEBUG_SSH_KEY_PUB
+		install -D -m 644 $tmp/debug.pub $PLC_DEBUG_SSH_KEY_PUB
 	    fi
 
 	    rm -rf $tmp
