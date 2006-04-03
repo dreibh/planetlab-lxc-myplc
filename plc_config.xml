@@ -448,6 +448,9 @@
       <description>PlanetLab Central Packages</description>
       <uservisible>true</uservisible>
       <packagelist>
+	<!-- Basics -->
+	<packagereq type="mandatory">dev</packagereq>	
+
 	<!-- Sending mail -->
 	<packagereq type="mandatory">sendmail</packagereq>
 	<packagereq type="mandatory">sendmail-cf</packagereq>
@@ -462,9 +465,17 @@
 	<packagereq type="mandatory">cvs</packagereq>
 	<packagereq type="mandatory">curl</packagereq>
 	<packagereq type="mandatory">wget</packagereq>
+	<packagereq type="mandatory">less</packagereq>
+	<packagereq type="mandatory">gzip</packagereq>
+	<packagereq type="mandatory">bzip2</packagereq>
+	<packagereq type="mandatory">cpio</packagereq>
+	<packagereq type="mandatory">tar</packagereq>
+	<packagereq type="mandatory">diffutils</packagereq>
 
 	<!-- yum >=2.2 uses a new repository format -->
 	<packagereq type="mandatory">createrepo</packagereq>
+	<packagereq type="mandatory">yum</packagereq>
+	<packagereq type="mandatory">rpm</packagereq>
 
 	<!-- For mkpasswd -->
 	<packagereq type="mandatory">expect</packagereq>
@@ -508,14 +519,9 @@
 	<packagereq type="mandatory">xmlsec1-openssl</packagereq>
 	<packagereq type="mandatory">openssl</packagereq>
 
-	<!-- bootcd is generated using mkisofs -->
-	<packagereq type="mandatory">mkisofs</packagereq>
-
-	<!-- bootcd and bootmanager images are signed using GPG -->
-	<packagereq type="mandatory">gnupg</packagereq>
-
-	<!-- bootmanager requires uuencode -->
-	<packagereq type="mandatory">sharutils</packagereq>
+	<!-- Customizable Boot CD and Boot Manager packages -->
+	<packagereq type="mandatory">bootcd</packagereq>
+	<packagereq type="mandatory">bootmanager</packagereq>
       </packagelist>
     </group>
 
