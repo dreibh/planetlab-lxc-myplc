@@ -6,7 +6,7 @@
 #
 # description:	Manages all PLC services on this machine
 #
-# $Id: guest.init,v 1.8 2006/03/29 17:03:15 mlhuang Exp $
+# $Id: guest.init,v 1.9 2006/03/31 00:41:03 mlhuang Exp $
 #
 
 PATH=/sbin:/bin:/usr/bin:/usr/sbin
@@ -32,6 +32,8 @@ ssh
 apache
 api
 cron
+bootcd
+bootmanager
 )
 nsteps=${#steps[@]}
 
@@ -73,8 +75,8 @@ reload ()
 
     PLC_API_MAINTENANCE_SOURCES=$(
 	for server in API BOOT WWW ; do
-	    eval hostname=\${PLC_${server}_HOST}
-	    gethostbyname $hostname
+	    hostname=PLC_${server}_HOST
+	    gethostbyname ${!hostname}
 	done | sort -u
     )
     plc-config --category=plc_api --variable=maintenance_sources --value="$PLC_API_MAINTENANCE_SOURCES" --save
@@ -154,8 +156,8 @@ config_network ()
 	    echo "127.0.0.1	localhost.localdomain localhost" >/etc/hosts
 	    (
 		for server in API BOOT WWW ; do
-		    eval hostname=\${PLC_${server}_HOST}
-		    ip=$(gethostbyname $hostname)
+		    hostname=PLC_${server}_HOST
+		    ip=$(gethostbyname ${!hostname})
 		    if [ -n "$ip" ] ; then
 			echo "$ip	$hostname"
 		    fi
@@ -309,6 +311,12 @@ EOF
     esac
 }
 
+ssl_cname ()
+{
+    openssl x509 -noout -in $1 -subject | \
+	sed -n -e 's@.*/CN=\([^/]*\).*@\1@p'
+}
+
 symlink ()
 {
     mkdir -p $(dirname $2)
@@ -321,54 +329,79 @@ config_ssl ()
 {
     case "$1" in
 	start)
-	    # Generate a self-signed SSL certificate. These nice
-	    # commands came from the mod_ssl spec file for Fedora Core
-	    # 2. We generate only a single certificate for the web
-	    # server, then make copies for the API and boot
-	    # servers. As always, these certificates may be overridden
-	    # later.
+	    # Generate self-signed SSL certificate(s). These nice
+	    # commands come from the mod_ssl spec file for Fedora Core
+	    # 2. We generate a certificate for each enabled server
+	    # with a different hostname. These self-signed
+	    # certificates may be overridden later.
+	    for server in WWW API BOOT ; do
+		ssl_key=PLC_${server}_SSL_KEY
+		ssl_crt=PLC_${server}_SSL_CRT
+		hostname=PLC_${server}_HOST
 
-	    # Generate SSL private key
-	    if [ ! -f $PLC_WWW_SSL_KEY ] ; then
-		mkdir -p $(dirname $PLC_WWW_SSL_KEY)
-		openssl genrsa -rand /proc/apm:/proc/cpuinfo:/proc/dma:/proc/filesystems:/proc/interrupts:/proc/ioports:/proc/pci:/proc/rtc:/proc/uptime 1024 >$PLC_WWW_SSL_KEY
-		check
-		chmod 600 $PLC_WWW_SSL_KEY
-	    fi
+		# Check if we have already generated a certificate for
+		# the same hostname.
+		for previous_server in WWW API BOOT ; do
+		    if [ "$server" = "$previous_server" ] ; then
+			break
+		    fi
+		    previous_ssl_key=PLC_${previous_server}_SSL_KEY
+		    previous_ssl_crt=PLC_${previous_server}_SSL_CRT
+		    previous_hostname=PLC_${previous_server}_HOST
 
-	    # Generate self-signed certificate
-	    if [ ! -f $PLC_WWW_SSL_CRT ] ; then
-		mkdir -p $(dirname $PLC_WWW_SSL_CRT)
-		openssl req -new -x509 -days 365 -set_serial $RANDOM \
-		    -key $PLC_WWW_SSL_KEY -out $PLC_WWW_SSL_CRT <<EOF
+		    if [ -f ${!previous_ssl_crt} ] && \
+			[ "$(ssl_cname ${!previous_ssl_crt})" = "${!hostname}" ] ; then
+			cp -a ${!previous_ssl_key} ${!ssl_key}
+			cp -a ${!previous_ssl_crt} ${!ssl_crt}
+			break
+		    fi
+		done
+
+		# Generate new SSL private key
+		if [ ! -f ${!ssl_key} ] ; then
+		    mkdir -p $(dirname ${!ssl_key})
+		    openssl genrsa -rand /proc/apm:/proc/cpuinfo:/proc/dma:/proc/filesystems:/proc/interrupts:/proc/ioports:/proc/pci:/proc/rtc:/proc/uptime 1024 >${!ssl_key}
+		    check
+		    chmod 600 ${!ssl_key}
+		fi
+
+		# Check if self signed certificate is valid
+		if [ -f ${!ssl_crt} ] ; then
+		    verify=$(openssl verify ${!ssl_crt})
+		    # If self signed
+		    if grep -q "self signed certificate" <<<$verify ; then
+			# Delete if expired or hostname changed
+			if grep -q "expired" <<<$verify || \
+			    [ "$(ssl_cname ${!ssl_crt})" != "${!hostname}" ] ; then
+			    rm -f ${!ssl_crt}
+			fi
+		    else
+			echo "$verify" >&2
+		    fi
+		fi
+
+		# Generate new self signed certificate
+		if [ ! -f ${!ssl_crt} ] ; then
+		    mkdir -p $(dirname ${!ssl_crt})
+		    openssl req -new -x509 -days 365 -set_serial $RANDOM \
+			-key ${!ssl_key} -out ${!ssl_crt} <<EOF
 --
 State
 City
 Organization
 $PLC_NAME Central
-$PLC_WWW_HOST
+${!hostname}
 $PLC_MAIL_SUPPORT_ADDRESS
 EOF
-		check
-		chmod 644 $PLC_WWW_SSL_CRT
-	    fi
+		    check
+		    chmod 644 ${!ssl_crt}
+		fi
+	    done
 
-	    # Make copies for the API and boot servers
-	    if [ ! -f $PLC_API_SSL_KEY ] ; then
-		cp -a $PLC_WWW_SSL_KEY $PLC_API_SSL_KEY
-	    fi
+	    # API requires a public key for slice ticket verification
 	    if [ ! -f $PLC_API_SSL_KEY_PUB ] ; then
 		openssl rsa -pubout <$PLC_API_SSL_KEY >$PLC_API_SSL_KEY_PUB
 		check
-	    fi
-	    if [ ! -f $PLC_API_SSL_CRT ] ; then
-		cp -a $PLC_WWW_SSL_CRT $PLC_API_SSL_CRT
-	    fi
-	    if [ ! -f $PLC_BOOT_SSL_KEY ] ; then
-		cp -a $PLC_WWW_SSL_KEY $PLC_BOOT_SSL_KEY
-	    fi
-	    if [ ! -f $PLC_BOOT_SSL_CRT ] ; then
-		cp -a $PLC_WWW_SSL_CRT $PLC_BOOT_SSL_CRT
 	    fi
 
 	    # Install into both /etc/pki (Fedora Core 4) and
@@ -376,17 +409,17 @@ EOF
 	    # web servers are all running on the same machine, the web
 	    # server certificate takes precedence.
 	    for server in API BOOT WWW ; do
-		eval enabled=\${PLC_${server}_ENABLED}
-		if [ "$enabled" != "1" ] ; then
+		enabled=PLC_${server}_ENABLED
+		if [ "${!enabled}" != "1" ] ; then
 		    continue
 		fi
-		eval ssl_crt=\${PLC_${server}_SSL_CRT}
-		eval ssl_key=\${PLC_${server}_SSL_KEY}
+		ssl_key=PLC_${server}_SSL_KEY
+		ssl_crt=PLC_${server}_SSL_CRT
 
-		symlink $ssl_crt /etc/pki/tls/certs/localhost.crt
-		symlink $ssl_key /etc/pki/tls/private/localhost.key
-		symlink $ssl_crt /etc/httpd/conf/ssl.crt/server.crt
-		symlink $ssl_key /etc/httpd/conf/ssl.key/server.key
+		symlink ${!ssl_crt} /etc/pki/tls/certs/localhost.crt
+		symlink ${!ssl_key} /etc/pki/tls/private/localhost.key
+		symlink ${!ssl_crt} /etc/httpd/conf/ssl.crt/server.crt
+		symlink ${!ssl_key} /etc/httpd/conf/ssl.key/server.key
 	    done
 	    ;;
     esac
@@ -450,37 +483,70 @@ config_apache ()
 	    include_path=".:$DocumentRoot/includes:$DocumentRoot/generated:/etc/planetlab/php"
 	    sed -i -e "s@;include_path = \"\.:.*\"@include_path = \"$include_path\"@" $php_ini
 
-	    # Set the port numbers. If the API, boot, and web servers
-	    # are all running on the same machine, the web server port
-	    # numbers take precedence.
-	    for server in API BOOT WWW ; do
-		eval enabled=\${PLC_${server}_ENABLED}
-		if [ "$enabled" != "1" ] ; then
+	    # Disable default Listen directive
+	    sed -i -e '/^Listen/d' $httpd_conf
+
+	    # Set the port numbers
+	    for server in WWW API BOOT ; do
+		enabled=PLC_${server}_ENABLED
+		if [ "${!enabled}" != "1" ] ; then
 		    continue
 		fi
-		eval http_port=\${PLC_${server}_PORT}
-		eval https_port=\${PLC_${server}_SSL_PORT}
+		hostname=PLC_${server}_HOST
+		http_port=PLC_${server}_PORT
+		https_port=PLC_${server}_SSL_PORT
 
-		if [ -n "$http_port" ] ; then
-		    sed -i -e "s/^Listen .*/Listen $http_port/" $httpd_conf
+		# API should always be accessed via SSL
+		if [ "$server" = "API" ] ; then
+		    https_port=${!http_port}
+		    http_port=
 		fi
-		if [ -n "$https_port" ] ; then
+
+		# Check if we are already listening on these ports
+		skip_http=0
+		skip_https=0
+		for previous_server in WWW API BOOT ; do
+		    if [ "$server" = "$previous_server" ] ; then
+			break
+		    fi
+		    previous_hostname=PLC_${previous_server}_HOST
+		    previous_http_port=PLC_${previous_server}_PORT
+		    previous_https_port=PLC_${previous_server}_SSL_PORT
+
+		    if [ "${!http_port}" = "${!previous_http_port}" ] ; then
+			skip_http=1
+		    fi
+		    if [ "${!https_port}" = "${!previous_https_port}" ] ; then
+			skip_https=1
+		    fi
+		done
+
+		# Listen on these ports
+		if [ $skip_http -eq 0 -a -n "${!http_port}" ] ; then
+		    cat <<EOF
+Listen ${!http_port}
+<VirtualHost *:${!http_port}>
+    Redirect /db https://$PLC_WWW_HOST:$PLC_WWW_SSL_PORT/db
+    # XXX Not yet until we can get rid of oldapi
+    # Redirect /$PLC_API_PATH https://$PLC_API_HOST:$PLC_API_PORT/$PLC_API_PATH
+</VirtualHost>
+EOF
+		fi
+		if [ $skip_https -eq 0 -a -n "${!https_port}" ] ; then
+		    # XXX Cannot support NameVirtualHost over SSL. If
+		    # the API, boot, and web servers are all running
+		    # on the same machine, the web server certificate
+		    # takes precedence.
 		    sed -i \
-			-e "s/^Listen .*/Listen $https_port/" \
-			-e "s/<VirtualHost _default_:.*>/<VirtualHost _default_:$https_port>/" \
+			-e "s/^Listen .*/Listen ${!https_port}/" \
+			-e "s/<VirtualHost _default_:.*>/<VirtualHost _default_:${!https_port}>/" \
 			$ssl_conf
 		fi
-	    done
-		    
+	    done >$plc_conf
+
 	    # Set custom Apache directives
 	    (
 		if [ "$PLC_API_ENABLED" = "1" ] ; then
-		    # XXX We should only support non-SSL access to the
-		    # API by writing this to conf.d/plc_ssl.conf, then
-		    # writing "Include conf.d/plc_ssl.conf" to
-		    # conf.d/ssl.conf. Once oldapi, which does not
-		    # support SSL, is removed from the web pages, we
-		    # can do this.
 		    cat <<EOF
 <Location $PLC_API_PATH>
     SetHandler python-program
@@ -488,22 +554,22 @@ config_apache ()
     PythonHandler mod_pythonXMLRPC
 </Location>
 EOF
+		else
+		    cat <<EOF
+<Location $PLC_API_PATH>
+    Deny from all
+</Location>
+EOF
 		fi
 
-		if [ "$PLC_WWW_ENABLED" = "1" ] ; then
-		    cat <<EOF
-<VirtualHost *:$PLC_WWW_PORT>
-    Redirect /db https://$PLC_WWW_HOST:$PLC_WWW_SSL_PORT/db
-</VirtualHost>
-EOF
-		else
+		if [ "$PLC_WWW_ENABLED" != "1" ] ; then
 		    cat <<EOF
 <Location /db>
     Deny from all
 </Location>
 EOF
 		fi
-	    ) >$plc_conf
+	    ) >>$plc_conf
 
 	    # Make alpina-logs directory writable for bootmanager log upload
 	    chown apache:apache $DocumentRoot/alpina-logs/nodes
@@ -577,6 +643,42 @@ EOF
 	stop)
 	    service crond stop
 	    check
+	    ;;
+    esac
+}
+
+config_bootcd ()
+{
+    case "$1" in
+	start)
+	    if [ "$PLC_BOOT_ENABLED" != "1" -a \
+		 "$PLC_WWW_ENABLED" != "1" ] ; then
+		return 0
+	    fi
+
+	    # Customize the BootCD
+	    pushd /var/www/html/download
+	    /usr/share/bootcd/build.sh
+	    check
+	    popd
+	    ;;
+    esac
+}
+
+config_bootmanager ()
+{
+    case "$1" in
+	start)
+	    if [ "$PLC_BOOT_ENABLED" != "1" -a \
+		 "$PLC_WWW_ENABLED" != "1" ] ; then
+		return 0
+	    fi
+
+	    # Customize the Boot Manager
+	    pushd /var/www/html/boot
+	    /usr/share/bootmanager/build.sh
+	    check
+	    popd
 	    ;;
     esac
 }
