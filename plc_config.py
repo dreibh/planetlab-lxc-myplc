@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id$
+# $Id: plc_config.py,v 1.1.1.1 2006/03/27 17:36:46 mlhuang Exp $
 #
 
 import xml.dom.minidom
@@ -675,7 +675,7 @@ DO NOT EDIT. This file was automatically generated at
                     buf.writelines(["// " + line + os.linesep for line in comments])
                 if value is None:
                     value = 'NULL'
-                buf.write("DEFINE('%s', %s);" % (id, value) + os.linesep)
+                buf.write("define('%s', %s);" % (id, value) + os.linesep)
 
         buf.write("?>" + os.linesep)
 
