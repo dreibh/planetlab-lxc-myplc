@@ -28,10 +28,10 @@ system.
 
 %build
 pushd myplc
-./build.sh -r 2 -d %{_datadir}
+./build.sh -r 2
 # Not until we can get the build server to run Fedora Core 4 or an
 # updated version of yum.
-#./build.sh -r 4 -d %{_datadir}
+#./build.sh -r 4
 popd
 
 %install
