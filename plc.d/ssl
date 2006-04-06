@@ -1,0 +1,118 @@
+#!/bin/bash
+#
+# priority: 400
+#
+# Generate SSL certificates
+#
+# Mark Huang <mlhuang@cs.princeton.edu>
+# Copyright (C) 2006 The Trustees of Princeton University
+#
+# $Id: guest.init,v 1.12 2006/04/04 22:09:47 mlhuang Exp $
+#
+
+# Source function library and configuration
+. /etc/plc.d/functions
+
+case "$1" in
+    start)
+	MESSAGE=$"Generating SSL certificates"
+	dialog "$MESSAGE"
+
+	# Generate self-signed SSL certificate(s). These nice
+	# commands come from the mod_ssl spec file for Fedora Core
+	# 2. We generate a certificate for each enabled server
+	# with a different hostname. These self-signed
+	# certificates may be overridden later.
+	for server in WWW API BOOT ; do
+	    ssl_key=PLC_${server}_SSL_KEY
+	    ssl_crt=PLC_${server}_SSL_CRT
+	    hostname=PLC_${server}_HOST
+
+	    # Check if we have already generated a certificate for
+	    # the same hostname.
+	    for previous_server in WWW API BOOT ; do
+		if [ "$server" = "$previous_server" ] ; then
+		    break
+		fi
+		previous_ssl_key=PLC_${previous_server}_SSL_KEY
+		previous_ssl_crt=PLC_${previous_server}_SSL_CRT
+		previous_hostname=PLC_${previous_server}_HOST
+
+		if [ -f ${!previous_ssl_crt} ] && \
+		    [ "$(ssl_cname ${!previous_ssl_crt})" = "${!hostname}" ] ; then
+		    cp -a ${!previous_ssl_key} ${!ssl_key}
+		    cp -a ${!previous_ssl_crt} ${!ssl_crt}
+		    break
+		fi
+	    done
+
+	    # Generate new SSL private key
+	    if [ ! -f ${!ssl_key} ] ; then
+		mkdir -p $(dirname ${!ssl_key})
+		openssl genrsa -rand /proc/apm:/proc/cpuinfo:/proc/dma:/proc/filesystems:/proc/interrupts:/proc/ioports:/proc/pci:/proc/rtc:/proc/uptime 1024 >${!ssl_key}
+		check
+		chmod 600 ${!ssl_key}
+	    fi
+
+	    # Check if self signed certificate is valid
+	    if [ -f ${!ssl_crt} ] ; then
+		verify=$(openssl verify ${!ssl_crt})
+		# If self signed
+		if grep -q "self signed certificate" <<<$verify ; then
+		    # Delete if expired or hostname changed
+		    if grep -q "expired" <<<$verify || \
+			[ "$(ssl_cname ${!ssl_crt})" != "${!hostname}" ] ; then
+			rm -f ${!ssl_crt}
+		    fi
+		else
+		    echo "$verify" >&2
+		fi
+	    fi
+
+	    # Generate new self signed certificate
+	    if [ ! -f ${!ssl_crt} ] ; then
+		mkdir -p $(dirname ${!ssl_crt})
+		openssl req -new -x509 -days 365 -set_serial $RANDOM \
+		    -key ${!ssl_key} -out ${!ssl_crt} <<EOF
+--
+State
+City
+Organization
+$PLC_NAME Central
+${!hostname}
+$PLC_MAIL_SUPPORT_ADDRESS
+EOF
+		check
+		chmod 644 ${!ssl_crt}
+	    fi
+	done
+
+	# API requires a public key for slice ticket verification
+	if [ ! -f $PLC_API_SSL_KEY_PUB ] ; then
+	    openssl rsa -pubout <$PLC_API_SSL_KEY >$PLC_API_SSL_KEY_PUB
+	    check
+	fi
+
+	# Install into both /etc/pki (Fedora Core 4) and
+	# /etc/httpd/conf (Fedora Core 2). If the API, boot, and
+	# web servers are all running on the same machine, the web
+	# server certificate takes precedence.
+	for server in API BOOT WWW ; do
+	    enabled=PLC_${server}_ENABLED
+	    if [ "${!enabled}" != "1" ] ; then
+		continue
+	    fi
+	    ssl_key=PLC_${server}_SSL_KEY
+	    ssl_crt=PLC_${server}_SSL_CRT
+
+	    symlink ${!ssl_crt} /etc/pki/tls/certs/localhost.crt
+	    symlink ${!ssl_key} /etc/pki/tls/private/localhost.key
+	    symlink ${!ssl_crt} /etc/httpd/conf/ssl.crt/server.crt
+	    symlink ${!ssl_key} /etc/httpd/conf/ssl.key/server.key
+	done
+
+	result "$MESSAGE"
+	;;
+esac
+
+exit $ERRORS

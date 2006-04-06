@@ -1,0 +1,53 @@
+#!/bin/bash
+#
+# priority: 600
+#
+# Generate SSH keys
+#
+# Mark Huang <mlhuang@cs.princeton.edu>
+# Copyright (C) 2006 The Trustees of Princeton University
+#
+# $Id: guest.init,v 1.12 2006/04/04 22:09:47 mlhuang Exp $
+#
+
+# Source function library and configuration
+. /etc/plc.d/functions
+
+# XXX Could make these configurable
+KEY_TYPE_ROOT=rsa
+KEY_LEN_ROOT=1024
+KEY_TYPE_DEBUG=rsa
+KEY_LEN_DEBUG=2048	
+
+case "$1" in
+    start)
+	MESSAGE=$"Generating SSH keys"
+	dialog "$MESSAGE"
+
+	tmp=$(mktemp -d /tmp/ssh.XXXXXX)
+
+	# Generate root SSH key
+	if [ ! -f $PLC_ROOT_SSH_KEY_PUB -o ! -f $PLC_ROOT_SSH_KEY ] ; then
+	    ssh-keygen -N "" -C "$PLC_NAME Central <$PLC_MAIL_SUPPORT_ADDRESS>" \
+		-b $KEY_LEN_ROOT -t $KEY_TYPE_ROOT -f $tmp/root
+	    check
+	    install -D -m 600 $tmp/root $PLC_ROOT_SSH_KEY
+	    install -D -m 644 $tmp/root.pub $PLC_ROOT_SSH_KEY_PUB
+	fi
+
+	# Generate debug SSH key
+	if [ ! -f $PLC_DEBUG_SSH_KEY_PUB -o ! -f $PLC_DEBUG_SSH_KEY ] ; then
+	    ssh-keygen -N "" -C "$PLC_NAME Central <$PLC_MAIL_SUPPORT_ADDRESS>" \
+		-b $KEY_LEN_DEBUG -t $KEY_TYPE_DEBUG -f $tmp/debug
+	    check
+	    install -D -m 600 $tmp/debug $PLC_DEBUG_SSH_KEY
+	    install -D -m 644 $tmp/debug.pub $PLC_DEBUG_SSH_KEY_PUB
+	fi
+
+	rm -rf $tmp
+
+	result "$MESSAGE"
+	;;
+esac
+
+exit $ERRORS

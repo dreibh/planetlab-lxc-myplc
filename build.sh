@@ -117,8 +117,9 @@ chroot $root sh -c 'cd /tmp; python plc_config.py build; python plc_config.py in
 install -D -m 755 plc-config $root/usr/bin/plc-config
 install -D -m 755 api-config $root/usr/bin/api-config
 
-# Install init script
-echo "* Installing initscript"
+# Install initscripts
+echo "* Installing initscripts"
+find plc.d | cpio -p -d -u $root/etc/
 install -D -m 755 guest.init $root/etc/init.d/plc
 chroot $root sh -c 'chkconfig --add plc; chkconfig plc on'
 

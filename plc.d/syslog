@@ -1,0 +1,41 @@
+#!/bin/bash
+#
+# priority: 200
+#
+# Do not use the standard syslog initscript. It will start up a
+# (probably duplicate) copy of klogd, and on shutdown, if a pidfile is
+# not found, will (probably) kill the host syslogd and klogd instances
+# as well.
+#
+# Mark Huang <mlhuang@cs.princeton.edu>
+# Copyright (C) 2006 The Trustees of Princeton University
+#
+# $Id: guest.init,v 1.12 2006/04/04 22:09:47 mlhuang Exp $
+#
+
+# Source function library and configuration
+. /etc/plc.d/functions
+
+case "$1" in
+    start)
+	MESSAGE=$"Starting system logger"
+	dialog "$MESSAGE"
+
+	plc_daemon syslogd -m 0
+	check
+
+	result "$MESSAGE"
+	;;
+
+    stop)
+	MESSAGE=$"Shutting down system logger"
+	dialog "$MESSAGE"
+
+	killproc plc_syslogd
+	check
+
+	result "$MESSAGE"
+	;;
+esac
+
+exit $ERRORS

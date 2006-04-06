@@ -1,0 +1,53 @@
+#!/bin/bash
+#
+# priority: 500
+#
+# Generate GPG keys
+#
+# Mark Huang <mlhuang@cs.princeton.edu>
+# Copyright (C) 2006 The Trustees of Princeton University
+#
+# $Id: guest.init,v 1.12 2006/04/04 22:09:47 mlhuang Exp $
+#
+
+# Source function library and configuration
+. /etc/plc.d/functions
+
+case "$1" in
+    start)
+	# Generate GPG keyrings
+	if [ ! -f $PLC_ROOT_GPG_KEY_PUB -o ! -f $PLC_ROOT_GPG_KEY ] ; then
+	    MESSAGE=$"Generating GPG keys"
+	    dialog "$MESSAGE"
+
+	    mkdir -p $(dirname $PLC_ROOT_GPG_KEY_PUB)
+	    mkdir -p $(dirname $PLC_ROOT_GPG_KEY)
+
+	    # Temporarily replace /dev/random with /dev/urandom to
+	    # avoid running out of entropy.
+	    rm -f /dev/random
+	    mknod /dev/random c 1 9
+	    gpg --homedir=/root --batch --gen-key <<EOF
+Key-Type: DSA
+Key-Length: 1024
+Subkey-Type: ELG-E
+Subkey-Length: 1024
+Name-Real: $PLC_NAME Central
+Name-Comment: http://$PLC_WWW_HOST/
+Name-Email: $PLC_MAIL_SUPPORT_ADDRESS
+Expire-Date: 0
+%pubring $PLC_ROOT_GPG_KEY_PUB
+%secring $PLC_ROOT_GPG_KEY
+%commit
+EOF
+	    check
+	    rm -f /dev/random
+	    mknod /dev/random c 1 8
+	    chmod 600 $PLC_ROOT_GPG_KEY_PUB $PLC_ROOT_GPG_KEY
+
+	    result "$MESSAGE"
+	fi
+	;;
+esac
+
+exit $ERRORS

@@ -1,0 +1,43 @@
+#!/bin/bash
+#
+# priority: 100
+#
+# Manage network related configuration files
+#
+# Mark Huang <mlhuang@cs.princeton.edu>
+# Copyright (C) 2006 The Trustees of Princeton University
+#
+# $Id: guest.init,v 1.12 2006/04/04 22:09:47 mlhuang Exp $
+#
+
+# Source function library and configuration
+. /etc/plc.d/functions
+
+case "$1" in
+    start)
+	MESSAGE=$"Generating network files"
+	dialog "$MESSAGE"
+
+	# Minimal /etc/hosts
+	echo "127.0.0.1	localhost.localdomain localhost" >/etc/hosts
+	(
+	    for server in API BOOT WWW ; do
+		hostname=PLC_${server}_HOST
+		ip=$(gethostbyname ${!hostname})
+		if [ -n "$ip" ] ; then
+		    echo "$ip	$hostname"
+		fi
+	    done
+	) >>/etc/hosts
+
+	# Set up nameservers
+	(
+	    [ -n "$PLC_NET_DNS1" ] && echo "nameserver $PLC_NET_DNS1"
+	    [ -n "$PLC_NET_DNS2" ] && echo "nameserver $PLC_NET_DNS2"
+	) >/etc/resolv.conf
+
+	result "$MESSAGE"
+	;;
+esac
+
+exit $ERRORS

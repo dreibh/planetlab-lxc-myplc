@@ -1,0 +1,36 @@
+#!/bin/bash
+#
+# priority: 1100
+#
+# Rebuild the Boot Manager
+#
+# Mark Huang <mlhuang@cs.princeton.edu>
+# Copyright (C) 2006 The Trustees of Princeton University
+#
+# $Id: guest.init,v 1.12 2006/04/04 22:09:47 mlhuang Exp $
+#
+
+# Source function library and configuration
+. /etc/plc.d/functions
+
+case "$1" in
+    start)
+	if [ "$PLC_BOOT_ENABLED" != "1" -a \
+	     "$PLC_WWW_ENABLED" != "1" ] ; then
+	    return 0
+	fi
+
+	MESSAGE=$"Rebuilding Boot Manager"
+	dialog "$MESSAGE"
+
+	# Customize the Boot Manager
+	pushd /var/www/html/boot
+	/usr/share/bootmanager/build.sh
+	check
+	popd
+
+	result "$MESSAGE"
+	;;
+esac
+
+exit $ERRORS

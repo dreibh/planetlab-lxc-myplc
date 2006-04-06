@@ -1,0 +1,146 @@
+#!/bin/bash
+#
+# priority: 700
+#
+# Configure Apache web server
+#
+# Mark Huang <mlhuang@cs.princeton.edu>
+# Copyright (C) 2006 The Trustees of Princeton University
+#
+# $Id: guest.init,v 1.12 2006/04/04 22:09:47 mlhuang Exp $
+#
+
+# Source function library and configuration
+. /etc/plc.d/functions
+
+# Default locations
+DocumentRoot=/var/www/html
+php_ini=/etc/php.ini
+httpd_conf=/etc/httpd/conf/httpd.conf
+ssl_conf=/etc/httpd/conf.d/ssl.conf
+plc_conf=/etc/httpd/conf.d/plc.conf
+
+case "$1" in
+    start)
+	if [ "$PLC_API_ENABLED" != "1" -a \
+	     "$PLC_BOOT_ENABLED" != "1" -a \
+	     "$PLC_WWW_ENABLED" != "1" ] ; then
+	    exit 0
+	fi
+
+	MESSAGE=$"Starting web server"
+	dialog "$MESSAGE"
+
+	# Set the default include path
+	include_path=".:$DocumentRoot/includes:$DocumentRoot/generated:/etc/planetlab/php"
+	sed -i -e "s@;include_path = \"\.:.*\"@include_path = \"$include_path\"@" $php_ini
+
+	# Disable default Listen directive
+	sed -i -e '/^Listen/d' $httpd_conf
+
+	# Set the port numbers
+	for server in WWW API BOOT ; do
+	    enabled=PLC_${server}_ENABLED
+	    if [ "${!enabled}" != "1" ] ; then
+		continue
+	    fi
+	    hostname=PLC_${server}_HOST
+	    http_port=PLC_${server}_PORT
+	    https_port=PLC_${server}_SSL_PORT
+
+	    # API should always be accessed via SSL
+	    if [ "$server" = "API" ] ; then
+		https_port=${!http_port}
+		http_port=
+	    fi
+
+	    # Check if we are already listening on these ports
+	    skip_http=0
+	    skip_https=0
+	    for previous_server in WWW API BOOT ; do
+		if [ "$server" = "$previous_server" ] ; then
+		    break
+		fi
+		previous_hostname=PLC_${previous_server}_HOST
+		previous_http_port=PLC_${previous_server}_PORT
+		previous_https_port=PLC_${previous_server}_SSL_PORT
+
+		if [ "${!http_port}" = "${!previous_http_port}" ] ; then
+		    skip_http=1
+		fi
+		if [ "${!https_port}" = "${!previous_https_port}" ] ; then
+		    skip_https=1
+		fi
+	    done
+
+	    # Listen on these ports
+	    if [ $skip_http -eq 0 -a -n "${!http_port}" ] ; then
+		cat <<EOF
+Listen ${!http_port}
+<VirtualHost *:${!http_port}>
+    Redirect /db https://$PLC_WWW_HOST:$PLC_WWW_SSL_PORT/db
+    # XXX Not yet until we can get rid of oldapi
+    # Redirect /$PLC_API_PATH https://$PLC_API_HOST:$PLC_API_PORT/$PLC_API_PATH
+</VirtualHost>
+EOF
+	    fi
+	    if [ $skip_https -eq 0 -a -n "${!https_port}" ] ; then
+		# XXX Cannot support NameVirtualHost over SSL. If
+		# the API, boot, and web servers are all running
+		# on the same machine, the web server certificate
+		# takes precedence.
+		sed -i \
+		    -e "s/^Listen .*/Listen ${!https_port}/" \
+		    -e "s/<VirtualHost _default_:.*>/<VirtualHost _default_:${!https_port}>/" \
+		    $ssl_conf
+	    fi
+	done >$plc_conf
+
+	# Set custom Apache directives
+	(
+	    if [ "$PLC_API_ENABLED" = "1" ] ; then
+		cat <<EOF
+<Location $PLC_API_PATH>
+    SetHandler python-program
+    PythonPath "sys.path + ['/usr/share/plc_api']"
+    PythonHandler mod_pythonXMLRPC
+</Location>
+EOF
+	    else
+		cat <<EOF
+<Location $PLC_API_PATH>
+    Deny from all
+</Location>
+EOF
+	    fi
+
+	    if [ "$PLC_WWW_ENABLED" != "1" ] ; then
+		cat <<EOF
+<Location /db>
+    Deny from all
+</Location>
+EOF
+	    fi
+	) >>$plc_conf
+
+	# Make alpina-logs directory writable for bootmanager log upload
+	chown apache:apache $DocumentRoot/alpina-logs/nodes
+
+	plc_daemon httpd
+	check
+
+	result "$MESSAGE"
+	;;
+
+    stop)
+	MESSAGE=$"Stopping web server"
+	dialog "$MESSAGE"
+
+	killproc plc_httpd
+	check
+
+	result "$MESSAGE"
+	;;
+esac
+
+exit $ERRORS

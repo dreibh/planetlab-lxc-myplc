@@ -1,0 +1,93 @@
+# -*-Shell-script-*-
+#
+# Common functions for PLC startup/shutdown scripts
+#
+# Mark Huang <mlhuang@cs.princeton.edu>
+# Copyright (C) 2006 The Trustees of Princeton University
+#
+# $Id: guest.init,v 1.12 2006/04/04 22:09:47 mlhuang Exp $
+#
+
+export PATH=/sbin:/bin:/usr/bin:/usr/sbin
+
+# Source function library
+. /etc/init.d/functions
+
+# Source configuration
+. /etc/planetlab/plc_config
+
+# Total number of errors
+ERRORS=0
+
+# Count the exit status of the last command
+check ()
+{
+    ERRORS=$(($ERRORS+$?))
+}
+
+# Print status header
+dialog ()
+{
+    echo -n "PLC: $*: " >&3
+}
+
+# Print result
+result ()
+{
+    if [ $ERRORS -eq 0 ] ; then
+	success "$*" >&3
+    else
+	failure "$*" >&3
+    fi
+    echo >&3
+}
+
+# Start up a program with a plc_ prefix
+plc_daemon ()
+{
+    base=${1##*/}
+
+    # See if it's already running. Look *only* at the pid file.
+    if [ -f /var/run/plc_${base}.pid ]; then
+	local line p
+	read line < /var/run/plc_${base}.pid
+	for p in $line ; do
+		[ -z "${p//[0-9]/}" -a -d "/proc/$p" ] && pid="$pid $p"
+	done
+    fi
+
+    [ -n "${pid:-}" -a -z "${force:-}" ] && return
+
+    # And start it up.
+    (exec -a plc_${base} $*)
+
+    if [ -f /var/run/${base}.pid ] ; then
+	mv /var/run/${base}.pid /var/run/plc_${base}.pid
+    fi
+}
+
+# Print IP address of hostname if resolvable
+gethostbyname ()
+{
+    perl -MSocket -e '($a,$b,$c,$d,@addrs) = gethostbyname($ARGV[0]); print inet_ntoa($addrs[0]) . "\n";' $1 2>/dev/null
+}
+
+# Print the CNAME of an SSL certificate
+ssl_cname ()
+{
+    openssl x509 -noout -in $1 -subject | \
+	sed -n -e 's@.*/CN=\([^/]*\).*@\1@p'
+}
+
+# Forcefully make a symlink
+symlink ()
+{
+    mkdir -p $(dirname $2)
+    rm -f $2
+    ln -s $1 $2
+}
+
+# Make copies of stdout and stderr. The plc initscript redirects
+# stdout and stderr to a logfile if -v is not specified.
+[ ! -e /dev/fd/3 ] && exec 3>&1
+[ ! -e /dev/fd/4 ] && exec 4>&2
