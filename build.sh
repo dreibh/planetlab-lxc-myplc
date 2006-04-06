@@ -268,6 +268,11 @@ RETVAL=$?
 # Restore default configuration before shutting down
 install -D -m 644 $config $data/etc/planetlab/plc_config.xml
 
+# Remove ISO and USB images, which take up >100MB but only take a
+# couple of seconds to generate at first boot.
+rm -f $data/var/www/html/download/*.{iso,usb}
+install -D -m 644 $config $data/etc/planetlab/plc_config.xml
+
 ./host.init stop
 RETVAL=$(($RETVAL+$?))
 
