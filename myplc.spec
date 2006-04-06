@@ -1,11 +1,11 @@
 Vendor: PlanetLab
 Packager: PlanetLab Central <support@planet-lab.org>
-Distribution: PlanetLab 3.0
+Distribution: PlanetLab 3.3
 URL: http://cvs.planet-lab.org/cvs/myplc
 
 Summary: PlanetLab Central (PLC) Portable Installation
 Name: myplc
-Version: 0.1
+Version: 0.2
 Release: 1%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 License: BSD
 Group: Applications/Systems
@@ -23,13 +23,6 @@ through a graphical interface. All PLC services are started up and
 shut down through a single System V init script installed in the host
 system.
 
-%package fc2
-Summary: MyPLC installation based on Fedora Core 2
-Group: Applications/Systems
-
-%description fc2
-This package installs a MyPLC installation based on Fedora Core 2.
-
 %prep
 %setup -q
 
@@ -41,34 +34,40 @@ pushd myplc
 #./build.sh -r 4 -d %{_datadir}
 popd
 
-# If run under sudo, allow user to delete the build directory
-if [ -n "$SUDO_USER" ] ; then
-    chown -R $SUDO_USER .
-    # Some temporary chroot files like /var/empty/sshd and
-    # /usr/bin/sudo get created with non-readable permissions.
-    find . -not -perm +0600 -exec chmod u+rw {} \;
-fi
-
 %install
 rm -rf $RPM_BUILD_ROOT
 
 pushd myplc
+
+# Install host startup script and configuration file
 install -D -m 755 host.init $RPM_BUILD_ROOT/%{_sysconfdir}/init.d/plc
 install -D -m 644 plc.sysconfig $RPM_BUILD_ROOT/%{_sysconfdir}/sysconfig/plc
-#for releasever in 2 4 ; do
-for releasever in 2 ; do
-    install -d -m 755 $RPM_BUILD_ROOT/%{_datadir}/plc/fc$releasever
-    install -D -m 644 fc$releasever.img $RPM_BUILD_ROOT/%{_datadir}/plc/fc$releasever.img
-    find data$releasever | cpio -p -d -u $RPM_BUILD_ROOT/%{_datadir}/plc/
-done
+
+# Create convenient symlink
+install -d -m 755 $RPM_BUILD_ROOT/%{_sysconfdir}
+ln -sf /plc/data/etc/planetlab $RPM_BUILD_ROOT/%{_sysconfdir}/planetlab
+
+# Install root filesystem
+install -d -m 755 $RPM_BUILD_ROOT/plc/root
+install -D -m 644 root.img $RPM_BUILD_ROOT/plc/root.img
+
+# Install data directory
+find data | cpio -p -d -u $RPM_BUILD_ROOT/plc/
+
 popd
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-# If run under sudo, allow user to delete the built RPM
+# If run under sudo
 if [ -n "$SUDO_USER" ] ; then
-    chown $SUDO_USER %{_rpmdir}/%{_arch}/%{name}-%{version}-%{release}.%{_arch}.rpm
+    # Allow user to delete the build directory
+    chown -R $SUDO_USER .
+    # Some temporary cdroot files like /var/empty/sshd and
+    # /usr/bin/sudo get created with non-readable permissions.
+    find . -not -perm +0600 -exec chmod u+rw {} \;
+    # Allow user to delete the built RPM(s)
+    chown -R $SUDO_USER %{_rpmdir}/%{_arch}
 fi
 
 %post
@@ -84,16 +83,26 @@ fi
 
 %files
 %defattr(-,root,root,-)
+# Host startup script and configuration file
 %{_sysconfdir}/init.d/plc
-%config(noreplace) %{_sysconfdir}/sysconfig/plc
+%{_sysconfdir}/sysconfig/plc
 
-%files fc2
-%defattr(-,root,root,-)
-%dir %{_datadir}/plc/fc2
-%{_datadir}/plc/fc2.img
-%config(noreplace) %{_datadir}/plc/data2
+# Symlink to /etc/planetlab within data directory
+%{_sysconfdir}/planetlab
+
+# Root filesystem
+/plc/root.img
+/plc/root
+
+# Data directory
+%dir /plc/data
+%config(noreplace) /plc/data
 
 %changelog
+* Wed Apr  5 2006 Mark Huang <mlhuang@CS.Princeton.EDU> - 0.2-1
+- Basic functionality complete. Consolidate into a single package
+  installed in /plc.
+
 * Fri Mar 17 2006 Mark Huang <mlhuang@CS.Princeton.EDU> - 0.1-1
 - Initial build.
 
