@@ -95,7 +95,8 @@ fi
 /plc/root
 
 # Data directory
-%dir %config(noreplace) /plc/data
+%dir /plc/data
+%config(noreplace) /plc/data/*
 
 %changelog
 * Wed Apr  5 2006 Mark Huang <mlhuang@CS.Princeton.EDU> - 0.2-1
