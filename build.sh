@@ -31,9 +31,6 @@ config=plc_config.xml
 releasever=2
 basearch=i386
 
-# Data directory base
-usr_share=/usr/share
-
 # Initial size of the image
 size=1000000000
 
@@ -43,14 +40,13 @@ usage()
     echo "	-c file		PLC configuration file (default: $config)"
     echo "	-r release	Fedora release number (default: $releasever)"
     echo "	-a arch		Fedora architecture (default: $basearch)"
-    echo "	-d datadir	Data directory base (default: $usr_share)"
     echo "	-s size		Approximate size of the installation (default: $size)"
     echo "	-h		This message"
     exit 1
 }
 
 # Get options
-while getopts "c:r:a:d:s:h" opt ; do
+while getopts "c:r:a:s:h" opt ; do
     case $opt in
 	c)
 	    config=$OPTARG
@@ -60,9 +56,6 @@ while getopts "c:r:a:d:s:h" opt ; do
 	    ;;
 	a)
 	    basearch=$OPTARG
-	    ;;
-	d)
-	    usr_share=$OPTARG
 	    ;;
 	s)
 	    size=$OPTARG
@@ -76,8 +69,8 @@ done
 # Do not tolerate errors
 set -e
 
-root=fc$releasever
-data=data$releasever
+root=root
+data=data
 
 if [ ! -f $root.img ] ; then
     bs=4096
@@ -225,24 +218,18 @@ fi
 
 # Write sysconfig
 cat >plc.sysconfig <<EOF
-PLC_ROOT=$usr_share/plc/$root
-PLC_DATA=$usr_share/plc/$data
+PLC_ROOT=/plc/$root
+PLC_DATA=/plc/$data
 #PLC_OPTIONS="-v"
 EOF
 
-# Install node RPMs
+# Initialize node RPMs directory. The PlanetLab-Bootstrap.tar.bz2
+# tarball already contains all of the node RPMs pre-installed. Only
+# updates or optional packages should be placed in this directory.
 if [ -n "$RPM_BUILD_DIR" ] ; then
-    echo "* Installing node RPMs"
+    echo "* Initializing node RPMs directory"
     RPM_RPMS_DIR=$(cd $(dirname $RPM_BUILD_DIR)/RPMS && pwd -P)
     mkdir -p $data/var/www/html/install-rpms/planetlab
-    # Exclude ourself (e.g., if rebuilding), the bootcd and
-    # bootmanager builds, and debuginfo RPMs.
-    rsync -a \
-	--exclude='myplc-*' \
-	--exclude='bootcd-*' --exclude='bootmanager-*' \
-	--exclude='*-debuginfo-*' \
-	$(find $RPM_RPMS_DIR -type f -and -name '*.rpm') \
-	$data/var/www/html/install-rpms/planetlab/
     if [ -f $RPM_RPMS_DIR/yumgroups.xml ] ; then
 	install -D -m 644 $RPM_RPMS_DIR/yumgroups.xml \
 	    $data/var/www/html/install-rpms/planetlab/yumgroups.xml
