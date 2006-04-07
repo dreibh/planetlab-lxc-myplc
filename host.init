@@ -6,7 +6,7 @@
 #
 # description:	Manages all PLC services on this machine
 #
-# $Id: host.init,v 1.1.1.1 2006/03/27 17:36:46 mlhuang Exp $
+# $Id: host.init,v 1.2 2006/03/27 22:01:36 mlhuang Exp $
 #
 
 PATH=/sbin:/bin:/usr/bin:/usr/sbin
@@ -19,57 +19,68 @@ if [ -f /etc/sysconfig/plc -a -z "${PLC_ROOT}${PLC_DATA}" ] ; then
     . /etc/sysconfig/plc
 fi
 
-RETVAL=0
+# Total number of errors
+ERRORS=0
+
+# Count the exit status of the last command
+check ()
+{
+    ERRORS=$(($ERRORS+$?))
+}
+
+mounted ()
+{
+    if cut -d' ' -f2 /proc/mounts | grep -q "$1" ; then
+	return 0
+    else
+	return 1
+    fi
+}
 
 start ()
 {
     echo -n $"Mounting PLC: "
 
-    if ! cut -d' ' -f2 /proc/mounts | grep -q $PLC_ROOT ; then
+    if ! mounted $PLC_ROOT ; then
 	if ! e2fsck -a $PLC_ROOT.img | logger -t "PLC" ; then
 	    e2fsck $PLC_ROOT.img
 	fi
 	mount -o loop $PLC_ROOT.img $PLC_ROOT
-	RETVAL=$(($RETVAL+$?))
+	check
     fi
-    if ! cut -d' ' -f2 /proc/mounts | grep -q $PLC_ROOT/data ; then
+    if ! mounted $PLC_ROOT/data ; then
 	mount -t none -o bind,rw $PLC_DATA $PLC_ROOT/data
-	RETVAL=$(($RETVAL+$?))
+	check
     fi
-    if ! cut -d' ' -f2 /proc/mounts | grep -q $PLC_ROOT/proc ; then
+    if ! mounted $PLC_ROOT/proc ; then
 	mount -t proc none $PLC_ROOT/proc
-	RETVAL=$(($RETVAL+$?))
+	check
     fi
 
-    if [ $RETVAL -eq 0 ]; then
-	success $"PLC mount"
-    else
-	failure $"PLC mount"
-    fi
+    [ $ERRORS -eq 0 ] && success $"PLC unmount" || failure $"PLC unmount"	
     echo
 
     chroot $PLC_ROOT /sbin/service plc $PLC_OPTIONS start
-    RETVAL=$?
+    check
 }
 
 stop ()
 {
-    chroot $PLC_ROOT /sbin/service plc $PLC_OPTIONS stop
+    if mounted $PLC_ROOT ; then
+	chroot $PLC_ROOT /sbin/service plc $PLC_OPTIONS stop
+	check
+    fi
 
     echo -n $"Unmounting PLC: "
 
-    umount $PLC_ROOT/proc
-    RETVAL=$(($RETVAL+$?))
-    umount $PLC_ROOT/data
-    RETVAL=$(($RETVAL+$?))
-    umount $PLC_ROOT
-    RETVAL=$(($RETVAL+$?))
+    for dir in $PLC_ROOT/proc $PLC_ROOT/data $PLC_ROOT ; do
+	if mounted $dir ; then
+	    umount $dir
+	    check
+	fi
+    done
 
-    if [ $RETVAL -eq 0 ]; then
-	success $"PLC unmount"
-    else
-	failure $"PLC unmount"	
-    fi
+    [ $ERRORS -eq 0 ] && success $"PLC unmount" || failure $"PLC unmount"	
     echo
 }
 
@@ -89,4 +100,4 @@ case "$1" in
 	;;
 esac
 
-exit $RETVAL
+exit $ERRORS
