@@ -70,6 +70,11 @@ if [ -n "$SUDO_USER" ] ; then
     chown -R $SUDO_USER %{_rpmdir}/%{_arch}
 fi
 
+%pre
+if [ -x %{_sysconfdir}/init.d/plc ] ; then
+    service plc stop
+fi
+
 %post
 chkconfig --add plc
 chkconfig plc on
