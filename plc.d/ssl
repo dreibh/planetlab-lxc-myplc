@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: guest.init,v 1.12 2006/04/04 22:09:47 mlhuang Exp $
+# $Id: ssl,v 1.1 2006/04/06 21:51:59 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -46,14 +46,6 @@ case "$1" in
 		fi
 	    done
 
-	    # Generate new SSL private key
-	    if [ ! -f ${!ssl_key} ] ; then
-		mkdir -p $(dirname ${!ssl_key})
-		openssl genrsa -rand /proc/apm:/proc/cpuinfo:/proc/dma:/proc/filesystems:/proc/interrupts:/proc/ioports:/proc/pci:/proc/rtc:/proc/uptime 1024 >${!ssl_key}
-		check
-		chmod 600 ${!ssl_key}
-	    fi
-
 	    # Check if self signed certificate is valid
 	    if [ -f ${!ssl_crt} ] ; then
 		verify=$(openssl verify ${!ssl_crt})
@@ -73,11 +65,12 @@ case "$1" in
 	    if [ ! -f ${!ssl_crt} ] ; then
 		mkdir -p $(dirname ${!ssl_crt})
 		openssl req -new -x509 -days 365 -set_serial $RANDOM \
-		    -key ${!ssl_key} -out ${!ssl_crt} <<EOF
+		    -nodes -keyout ${!ssl_key} -out ${!ssl_crt} <<EOF
 --
-State
-City
-Organization
+US
+NJ
+Princeton
+PlanetLab Federation
 $PLC_NAME Central
 ${!hostname}
 $PLC_MAIL_SUPPORT_ADDRESS
