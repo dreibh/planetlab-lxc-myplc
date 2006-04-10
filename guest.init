@@ -6,7 +6,7 @@
 #
 # description:	Manages all PLC services on this machine
 #
-# $Id: guest.init,v 1.13 2006/04/06 21:51:59 mlhuang Exp $
+# $Id: guest.init,v 1.14 2006/04/10 18:18:14 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -34,11 +34,20 @@ nsteps=${#steps[@]}
 reload ()
 {
     # Regenerate the main configuration file from default values
-    # overlaid with site-specific values.
+    # overlaid with site-specific and current values.
+    tmp=$(mktemp /tmp/plc_config.xml.XXXXXX)
     plc-config --xml \
 	/etc/planetlab/default_config.xml \
 	/etc/planetlab/configs/* \
-	>/etc/planetlab/plc_config.xml
+	/etc/planetlab/plc_config.xml \
+	>$tmp
+    if [ $? -eq 0 ] ; then
+	mv $tmp /etc/planetlab/plc_config.xml
+	chmod 644 /etc/planetlab/plc_config.xml
+    else
+	echo "PLC: Warning: Invalid configuration file(s) detected"
+	rm -f $tmp
+    fi
 
     # Shell constants
     plc-config --shell >/etc/planetlab/plc_config
