@@ -451,6 +451,11 @@
 	<!-- Basics -->
 	<packagereq type="mandatory">dev</packagereq>	
 
+	<!-- kernel-vserver is intended for the vserver-reference, but
+	     serves the same useful purpose for MyPLC, namely, to
+	     Provide: kernel without actually installing anything. -->
+	<packagereq type="mandatory">kernel-vserver</packagereq>	
+
 	<!-- Sending mail -->
 	<packagereq type="mandatory">sendmail</packagereq>
 	<packagereq type="mandatory">sendmail-cf</packagereq>
