@@ -5,7 +5,7 @@ URL: http://cvs.planet-lab.org/cvs/myplc
 
 Summary: PlanetLab Central (PLC) Portable Installation
 Name: myplc
-Version: 0.2
+Version: 0.3
 Release: 1%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 License: BSD
 Group: Applications/Systems
@@ -28,10 +28,7 @@ system.
 
 %build
 pushd myplc
-./build.sh -r 2
-# Not until we can get the build server to run Fedora Core 4 or an
-# updated version of yum.
-#./build.sh -r 4
+./build.sh -r 4
 popd
 
 %install
