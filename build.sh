@@ -93,7 +93,7 @@ while read package ; do
 done < <(./plc-config --packages $config)
 
 # Install base system
-mkfedora -v -r $releasever -a $basearch $packages $root
+mkfedora -v -r $releasever -a $basearch -k $packages $root
 
 # Disable all services in reference image
 chroot $root sh -c "/sbin/chkconfig --list | awk '{ print \$1 }' | xargs -i /sbin/chkconfig {} off"
@@ -264,14 +264,14 @@ export PLC_DATA=$PWD/$data
 ./host.init start
 RETVAL=$?
 
-# Restore default configuration before shutting down
-rm -f $data/etc/planetlab/plc_config.xml $data/etc/planetlab/configs/bootstrap.xml
-
 # Remove ISO and USB images, which take up >100MB but only take a
 # couple of seconds to generate at first boot.
 rm -f $data/var/www/html/download/*.{iso,usb}
 
 ./host.init stop
 RETVAL=$(($RETVAL+$?))
+
+# Restore default configuration
+rm -f $data/etc/planetlab/plc_config.xml $data/etc/planetlab/configs/bootstrap.xml
 
 exit $RETVAL
