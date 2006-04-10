@@ -146,11 +146,9 @@ rsync -a \
     --exclude=geni --exclude=PDN --exclude=Talks \
     $srcdir/plc_www/ $root/var/www/html/
 
-# XXX Build imprintable BootCD and BootManager images.
-
 # Install configuration file
 echo "* Installing configuration file"
-install -D -m 644 $config $data/etc/planetlab/plc_config.xml
+install -D -m 444 $config $data/etc/planetlab/default_config.xml
 
 # Move "data" directories out of the installation
 datadirs=(
@@ -256,7 +254,7 @@ fi
 # bootstrap the database, then shut it back down again immediately.
 echo "* Bootstrapping installation"
 
-./plc-config --save $data/etc/planetlab/plc_config.xml bootstrap.xml
+install -D -m 644 bootstrap.xml $data/etc/planetlab/configs/bootstrap.xml
 
 # Otherwise, host.init will try to read /etc/sysconfig/plc
 export PLC_ROOT=$PWD/$root
@@ -267,12 +265,11 @@ export PLC_DATA=$PWD/$data
 RETVAL=$?
 
 # Restore default configuration before shutting down
-install -D -m 644 $config $data/etc/planetlab/plc_config.xml
+rm -f $data/etc/planetlab/plc_config.xml $data/etc/planetlab/configs/bootstrap.xml
 
 # Remove ISO and USB images, which take up >100MB but only take a
 # couple of seconds to generate at first boot.
 rm -f $data/var/www/html/download/*.{iso,usb}
-install -D -m 644 $config $data/etc/planetlab/plc_config.xml
 
 ./host.init stop
 RETVAL=$(($RETVAL+$?))
