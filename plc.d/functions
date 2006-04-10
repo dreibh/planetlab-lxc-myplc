@@ -5,7 +5,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: functions,v 1.1 2006/04/06 21:51:59 mlhuang Exp $
+# $Id: functions,v 1.2 2006/04/07 04:27:56 mlhuang Exp $
 #
 
 export PATH=/sbin:/bin:/usr/bin:/usr/sbin
@@ -13,8 +13,10 @@ export PATH=/sbin:/bin:/usr/bin:/usr/sbin
 # Source function library
 . /etc/init.d/functions
 
-# Source configuration
-. /etc/planetlab/plc_config
+# Source configuration if it exists
+if [ -f /etc/planetlab/plc_config ] ; then
+    . /etc/planetlab/plc_config
+fi
 
 # Total number of errors
 ERRORS=0
