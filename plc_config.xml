@@ -1,5 +1,15 @@
-<?xml version="1.0"?>
-<!DOCTYPE configuration PUBLIC "-//PlanetLab Central//DTD PLC configuration//EN" "configuration.dtd">
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Default PLC configuration file
+
+Mark Huang <mlhuang@cs.princeton.edu>
+Copyright (C) 2006 The Trustees of Princeton University
+
+$Id$
+-->
+
+<!DOCTYPE configuration PUBLIC "-//PlanetLab Central//DTD PLC configuration//EN" "plc_config.dtd">
 
 <configuration>
   <variables>
@@ -28,7 +38,7 @@
 	  not be changed.</description>
 	</variable>
 
-	<variable id="root_user" type="password">
+	<variable id="root_user" type="email">
 	  <name>Root Account</name>
 	  <value>root@test.planet-lab.org</value>
 	  <description>The name of the initial administrative
@@ -127,7 +137,7 @@
 	  and warnings.</description>
 	</variable>
 
-	<variable id="support_address">
+	<variable id="support_address" type="email">
 	  <name>Support Address</name>
 	  <value>root@localhost</value>
 	  <description>This address is used for support
@@ -138,7 +148,7 @@
 	  Tracker.</description>
 	</variable>
 
-	<variable id="boot_address">
+	<variable id="boot_address" type="email">
 	  <name>Boot Messages Address</name>
 	  <value>root@localhost</value>
 	  <description>The API will notify this address when a problem
