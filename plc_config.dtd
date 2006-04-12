@@ -1,0 +1,30 @@
+<!--
+Specification for PLC configuration files
+
+Mark Huang <mlhuang@cs.princeton.edu>
+Copyright (C) 2006 The Trustees of Princeton University
+
+$Id$
+-->
+
+<!ELEMENT configuration (variables, comps)>
+<!ELEMENT variables (category*)>
+<!ELEMENT category (name, description, variablelist)>
+<!ATTLIST category id		CDATA #REQUIRED>
+<!ELEMENT variablelist (variable*)>
+<!ELEMENT variable (name, value, description)>
+<!ATTLIST variable id		CDATA #REQUIRED
+                   type		CDATA #REQUIRED>
+<!ELEMENT name (#PCDATA)>
+<!ELEMENT description (#PCDATA)>
+<!ELEMENT value (#PCDATA)>
+
+<!-- A best guess at the DTD for comps -->
+<!ELEMENT comps (group*)>
+<!ELEMENT group (id, name, default, description, uservisible, packagelist)>
+<!ELEMENT id (#PCDATA)>
+<!ELEMENT default (#PCDATA)>
+<!ELEMENT uservisible (#PCDATA)>
+<!ELEMENT packagelist (packagereq*)>
+<!ELEMENT packagereq (#PCDATA)>
+<!ATTLIST packagereq type	CDATA #REQUIRED>
