@@ -149,6 +149,7 @@ rsync -a \
 # Install configuration file
 echo "* Installing configuration file"
 install -D -m 444 $config $data/etc/planetlab/default_config.xml
+install -D -m 444 plc_config.dtd $data/etc/planetlab/plc_config.dtd
 
 # Move "data" directories out of the installation
 datadirs=(
