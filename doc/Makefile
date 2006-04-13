@@ -4,10 +4,15 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: Makefile.in,v 1.6 2005/09/07 22:05:20 mlhuang Exp $
+# $Id: Makefile,v 1.1 2006/04/12 21:21:36 mlhuang Exp $
 #
 
+vpath GenDoc.xsl ../../plc_www/doc
+
 all: myplc.pdf
+
+# Dependencies
+.myplc.xml.valid: architecture.eps architecture.png
 
 # Validate the XML
 .%.xml.valid: %.xml
@@ -26,6 +31,10 @@ endef
 # docbook2pdf craps out on figures
 %.pdf: %.ps
 	ps2pdf $< $@
+
+# PHP for the website
+%.php: GenDoc.xsl .%.xml.valid
+	xsltproc $(XSLFLAGS) --output $@ $^
 
 $(foreach format,$(FORMATS),$(eval $(call docbook2,$(format))))
 
