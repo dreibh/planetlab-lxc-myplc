@@ -6,7 +6,7 @@
 #
 # description:	Manages all PLC services on this machine
 #
-# $Id: guest.init,v 1.14 2006/04/10 18:18:14 mlhuang Exp $
+# $Id: guest.init,v 1.15 2006/04/10 21:09:02 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -22,7 +22,7 @@ verbose=0
 # everything just works.
 steps=($(
 for step in /etc/plc.d/* ; do
-    if [ -x $step ] ; then
+    if [ -f $step -a -x $step ] ; then
 	priority=$(sed -ne 's/# priority: \(.*\)/\1/p' $step)
 	echo $priority $(basename $step)
     fi
