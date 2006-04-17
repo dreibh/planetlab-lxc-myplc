@@ -6,7 +6,7 @@ Default PLC configuration file
 Mark Huang <mlhuang@cs.princeton.edu>
 Copyright (C) 2006 The Trustees of Princeton University
 
-$Id$
+$Id: plc_config.xml,v 1.9 2006/04/12 17:59:45 mlhuang Exp $
 -->
 
 <!DOCTYPE configuration PUBLIC "-//PlanetLab Central//DTD PLC configuration//EN" "plc_config.dtd">
@@ -40,7 +40,7 @@ $Id$
 
 	<variable id="root_user" type="email">
 	  <name>Root Account</name>
-	  <value>root@test.planet-lab.org</value>
+	  <value>root@localhost.localdomain</value>
 	  <description>The name of the initial administrative
 	  account. We recommend that this account be used only to create
 	  additional accounts associated with real
@@ -139,7 +139,7 @@ $Id$
 
 	<variable id="support_address" type="email">
 	  <name>Support Address</name>
-	  <value>root@localhost</value>
+	  <value>root@localhost.localdomain</value>
 	  <description>This address is used for support
 	  requests. Support requests may include traffic complaints,
 	  security incident reporting, web site malfunctions, and
@@ -150,7 +150,7 @@ $Id$
 
 	<variable id="boot_address" type="email">
 	  <name>Boot Messages Address</name>
-	  <value>root@localhost</value>
+	  <value>root@localhost.localdomain</value>
 	  <description>The API will notify this address when a problem
 	  occurs during node installation or boot. If a domain is not
 	  specified, the default system domain will be used
@@ -263,7 +263,7 @@ $Id$
 
 	<variable id="maintenance_user" type="string">
 	  <name>Maintenance User</name>
-	  <value>maint@test.planet-lab.org</value>
+	  <value>maint@localhost.localdomain</value>
 	  <description>The username of the maintenance account. This
 	  account is used by local scripts that perform automated
 	  tasks, and cannot be used for normal logins.</description>
