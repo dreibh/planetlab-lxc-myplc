@@ -311,7 +311,7 @@ PLC: Rebuilding Boot Manager:                              [  OK  ]
     visit <literal>http://localhost/</literal>, which should bring you
     to the front page of your PLC installation. The password of the
     default administrator account
-    <literal>root@test.planet-lab.org</literal> (set by
+    <literal>root@localhost.localdomain</literal> (set by
     <envar>PLC_ROOT_USER</envar>) is <literal>root</literal> (set by
     <envar>PLC_ROOT_PASSWORD</envar>).</para>
 
