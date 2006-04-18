@@ -1,0 +1,256 @@
+#!/usr/bin/python
+
+# Interactively prompts for variable values
+# expected arguments are
+# command [default-xml [custom-xml]]
+#
+# Two-steps logic:
+# (1) scans all variables (todo: pass categories as arguments)
+#     and prompts for value
+#     current value proposed as default
+#     also allows to remove site-dependent setting
+# (2) epilogue : allows to
+#     list the site-dependent vars with values
+#     and to locally (re-)edit a variable from its shell name
+#     quit with or without saving
+
+import sys
+import os
+import re
+import readline
+
+from plc_config import PLCConfiguration
+
+####################
+release = "$Id"
+
+def_main_config = "/etc/planetlab/default_config.xml"
+def_site_config = "/etc/planetlab/configs/site.xml"
+
+command_usage="""Usage: %s [default-xml [site-xml]]
+\t default-xml defaults to %s
+\t site-xml defaults to %s
+""" % (sys.argv[0],def_main_config,def_site_config)
+
+####################
+variable_usage= """Special answers :
+#\tShow variable comments
+.\tStops prompting, return to mainloop
+/\tCleans any site-defined value, reverts to default
+=\tShows default value
+>\tSkips to next category
+?\tThis help
+"""
+
+def usage ():
+    print(command_usage)
+    sys.exit(1)
+
+####################
+def get_value (config,  category_id, variable_id):
+    (category, variable) = config.get (category_id, variable_id)
+    return variable['value']
+
+# refrain from using plc_config's _sanitize 
+def get_varname (config,  category_id, variable_id):
+    (category, variable) = config.get (category_id, variable_id)
+    return (category_id+"_"+variable['id']).upper()
+
+def prompt_variable (cdef, cread, cwrite, category, variable):
+
+    assert category.has_key('id')
+    assert variable.has_key('id')
+
+    category_id = category ['id']
+    variable_id = variable['id']
+
+    while True:
+        default_value = get_value(cdef,category_id,variable_id)
+        current_value = get_value(cread,category_id, variable_id)
+        varname = get_varname (cread,category_id, variable_id)
+        
+        prompt = "== %s : [%s] " % (varname,current_value)
+        try:
+            answer = raw_input(prompt).strip()
+        except EOFError :
+            raise Exception ('BailOut')
+
+        # no change
+        if (answer == "") or (answer == current_value):
+            return None
+        elif (answer == "."):
+            raise Exception ('BailOut')
+        elif (answer == ">"):
+            raise Exception ('NextCategory')
+        elif (answer == "#"):
+            if friendly_name is not None:
+                print ("### " + friendly_name)
+            if comments == None:
+                print ("!!! No comment associated to %s" % varname)
+            else:
+                for line in comments:
+                    print ("# " + line)
+        elif (answer == "?"):
+            print variable_usage.strip()
+        elif (answer == "="):
+            print ("%s defaults to %s" %(varname,default_value))
+        # revert to default : remove from cwrite (i.e. site-config)
+        elif (answer == "/"):
+            cwrite.delete(category_id,variable_id)
+            print ("%s reverted to %s" %(varname,default_value))
+            return
+        else:
+            variable['value'] = answer
+            cwrite.set(category,variable)
+            return
+
+####################
+def prompt_all_variables (cdef, cread, cwrite):
+    try:
+        for (category_id, (category, variables)) in cread.variables().iteritems():
+            print ("========== Category = %s" % category_id)
+            for variable in variables.values():
+                try:
+                    newvar = prompt_variable (cdef, cread, cwrite, category, variable)
+                except Exception, inst:
+                    if (str(inst) == 'NextCategory'): break
+                    else: raise
+                    
+    except Exception, inst:
+        if (str(inst) == 'BailOut'): return
+        else: raise
+
+
+####################
+def restart_plc ():
+    print ("==================== Stopping plc")
+    os.system("service plc stop")
+    print ("==================== Starting plc")
+    os.system("service plc start")
+
+####################
+mainloop_usage= """Available commands
+c\tEdits commonly tuned variables
+e\tEdits all variables
+p\tPrints all locally-customized vars and values
+e <var>\tPrompts (edit) fro variable <var>
+p <var>\tShows current setting for <var>
+l\tlists all known variables
+w\tSaves and quit
+r\trestarts plc service
+q\tQuits without saving
+"""
+
+re_mainloop_var="^(?P<command>[pe])[ \t]+(?P<varname>\w+)$"
+matcher_mainloop_var=re.compile(re_mainloop_var)
+
+common_variables=("PLC_NAME",
+                  "PLC_ROOT_USER",
+                  "PLC_ROOT_PASSWORD",
+                  "PLC_MAIL_SUPPORT_ADDRESS",
+                  "PLC_DB_HOST",
+                  "PLC_API_HOST",
+                  "PLC_WWW_HOST",
+                  "PLC_BOOT_HOST",
+                  "PLC_NET_DNS1",
+                  "PLC_NET_DNS2")
+
+def mainloop (cdef, cread, cwrite,site_config):
+    while True:
+        try:
+            answer = raw_input("Enter command (c for usual changes, w to save, ? for help) ").strip()
+        except EOFError:
+            answer =""
+        if (answer == "") or (answer == "?") or (answer == "h"):
+            print mainloop_usage
+        elif (answer == "q"):
+            # todo check confirmation
+            return
+        elif (answer == "e"):
+            prompt_all_variables(cdef, cread, cwrite)
+        elif (answer == "w"):
+            try:
+                cwrite.save(site_config)
+            except:
+                print ("Could not save -- fix write access on %s" % site_config)
+                break
+            print ("Wrote %s" % site_config)
+            return
+        elif (answer == "l"):
+            print ("Config involves the following variables")
+            sys.stdout.write(cread.output_variables())
+        elif (answer == "p"):
+            print ("Current site config")
+            sys.stdout.write(cwrite.output_shell(False))
+        elif (answer == "c"):
+            try:
+                for varname in common_variables:
+                    (category,variable) = cdef.locate_varname(varname)
+                    prompt_variable(cdef, cread, cwrite, category,variable)
+            except Exception, inst:
+                if (str(inst) != 'BailOut'):
+                    raise
+        elif (answer == "r"):
+            restart_plc()
+        else:
+            groups_var = matcher_mainloop_var.match(answer)
+            if (groups_var):
+                command = groups_var.group('command')
+                varname = groups_var.group('varname')
+                (category,variable) = cdef.locate_varname(varname)
+                if not category:
+                    print "Unknown variable %s" % varname
+                elif (command == 'p'):
+                    print ("%s = %s" % (varname,get_value(cwrite,
+                                                          category['id'],
+                                                          variable['id'])))
+                else:
+                    try:
+                        prompt_variable(cdef, cread, cwrite, category,variable)
+                    except Exception, inst:
+                        if (str(inst) != 'BailOut'):
+                            raise
+            else:
+                print ("Unknown command >%s<" % answer)
+
+####################
+def main ():
+
+    save = True
+    command=sys.argv[0]
+    argv = sys.argv[1:]
+    if len(argv) == 0:
+        (main_config,site_config) = (def_main_config, def_site_config)
+    elif len(argv) == 1:
+        (main_config,site_config) = (argv[1], def_site_config)
+    elif len(argv) == 2:
+        (main_config, site_config)  = argv
+    else:
+        usage()
+
+    try:
+        # the default settings only - read only
+        cdef = PLCConfiguration(main_config)
+
+        # in effect : default settings + local settings - read only
+        cread = PLCConfiguration(main_config)
+
+    except:
+        print ("default config files not found, is myplc installed ?")
+        return 1
+
+    # local settings only, will be modified & saved
+    cwrite=PLCConfiguration()
+    
+    try:
+        cread.load(site_config)
+        cwrite.load(site_config)
+    except:
+        cwrite = PLCConfiguration()
+
+        print ("This is %s - %s -- Type ? at the prompt for help" %(command,release))
+    mainloop (cdef, cread, cwrite,site_config)
+    return 0
+
+if __name__ == '__main__':
+    main()
