@@ -78,6 +78,7 @@ chkconfig plc on
 
 %preun
 # 0 = erase, 1 = upgrade
+service plc stop
 if [ $1 -eq 0 ] ; then
     chkconfig plc off
     chkconfig --del plc
