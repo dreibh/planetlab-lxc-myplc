@@ -6,7 +6,7 @@
 #
 # description:	Manages all PLC services on this machine
 #
-# $Id: host.init,v 1.3 2006/04/07 17:12:52 mlhuang Exp $
+# $Id: host.init,v 1.4 2006/04/12 19:30:47 mlhuang Exp $
 #
 
 PATH=/sbin:/bin:/usr/bin:/usr/sbin
@@ -37,7 +37,7 @@ mounted ()
     fi
 }
 
-start ()
+mount_plc ()
 {
     echo -n $"Mounting PLC: "
 
@@ -64,13 +64,8 @@ start ()
     check
 }
 
-stop ()
+umount_plc ()
 {
-    if mounted $PLC_ROOT ; then
-	chroot $PLC_ROOT /sbin/service plc $PLC_OPTIONS stop $*
-	check
-    fi
-
     echo -n $"Unmounting PLC: "
 
     for dir in $PLC_ROOT/proc $PLC_ROOT/data $PLC_ROOT ; do
@@ -82,6 +77,28 @@ stop ()
 
     [ $ERRORS -eq 0 ] && success $"PLC unmount" || failure $"PLC unmount"	
     echo
+}
+
+stop ()
+{
+    if mounted $PLC_ROOT ; then
+	chroot $PLC_ROOT /sbin/service plc $PLC_OPTIONS stop $*
+	check
+    fi
+
+    umount_plc
+
+}
+
+mount_status ()
+{
+  lines=$(mount | grep $PLC_ROOT)
+  if [ -z "$lines" ] ; then
+    echo "==== $PLC_ROOT is *not* mounted"
+  else
+    echo "==== The following mount points remain active"
+    echo "$lines"
+  fi
 }
 
 # Get command
@@ -101,6 +118,14 @@ case "$command" in
 	start $*
 	;;
 
+    mount|umount)
+        ${command}_plc $*
+	;;
+
+    mountstatus)
+        mount_status $*
+	;;
+  
     *)
 	echo "Usage: $0 {start|stop|restart}"
 	RETVAL=1
