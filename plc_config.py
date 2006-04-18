@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: plc_config.py,v 1.1.1.1 2006/03/27 17:36:46 mlhuang Exp $
+# $Id: plc_config.py,v 1.2 2006/04/04 22:09:25 mlhuang Exp $
 #
 
 import xml.dom.minidom
@@ -225,7 +225,7 @@ class PLCConfiguration:
                 file = "/etc/planetlab/plc_config.xml"
 
         if type(file) in types.StringTypes:
-            fileobj = open(file, 'r+')
+            fileobj = open(file, 'w')
         else:
             fileobj = file
 
@@ -387,6 +387,22 @@ class PLCConfiguration:
             variable['element'] = variable_element
             variables[variable_id] = variable
 
+
+    def locate_varname (self, varname):
+        """
+        Locates category and variable from a variable's (shell) name
+
+        Returns:
+        (variable, category) when found
+        (None, None) otherwise
+        """
+        
+        for (category_id, (category, variables)) in self._variables.iteritems():
+            for variable in variables.values():
+                (id, name, value, comments) = self._sanitize_variable(category_id, variable)
+                if (id == varname):
+                    return (category,variable)
+        return (None,None)
 
     def get_package(self, group_id, package_name):
         """
@@ -633,7 +649,7 @@ DO NOT EDIT. This file was automatically generated at
         return header.strip().split(os.linesep)
 
 
-    def output_shell(self, encoding = "utf-8"):
+    def output_shell(self, show_comments = True, encoding = "utf-8"):
         """
         Return variables as a shell script.
         """
@@ -644,11 +660,12 @@ DO NOT EDIT. This file was automatically generated at
         for (category_id, (category, variables)) in self._variables.iteritems():
             for variable in variables.values():
                 (id, name, value, comments) = self._sanitize_variable(category_id, variable)
-                buf.write(os.linesep)
-                if name is not None:
-                    buf.write("# " + name + os.linesep)
-                if comments is not None:
-                    buf.writelines(["# " + line + os.linesep for line in comments])
+                if show_comments:
+                    buf.write(os.linesep)
+                    if name is not None:
+                        buf.write("# " + name + os.linesep)
+                    if comments is not None:
+                        buf.writelines(["# " + line + os.linesep for line in comments])
                 # bash does not have the concept of NULL
                 if value is not None:
                     buf.write(id + "=" + value + os.linesep)
