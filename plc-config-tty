@@ -26,11 +26,13 @@ release = "$Id"
 
 def_main_config = "/etc/planetlab/default_config.xml"
 def_site_config = "/etc/planetlab/configs/site.xml"
+def_consolidated_config = "/etc/planetlab/plc_config.xml"
 
-command_usage="""Usage: %s [default-xml [site-xml]]
+command_usage="""Usage: %s [default-xml [site-xml [consolidated-xml]]]
 \t default-xml defaults to %s
 \t site-xml defaults to %s
-""" % (sys.argv[0],def_main_config,def_site_config)
+\t consolidated-xml defaults to %s
+""" % (sys.argv[0],def_main_config,def_site_config, def_consolidated_config)
 
 ####################
 variable_usage= """Special answers :
@@ -122,6 +124,17 @@ def prompt_all_variables (cdef, cread, cwrite):
 
 
 ####################
+def consolidate (main_config, site_config, consolidated_config):
+    try:
+        conso = PLCConfiguration (main_config)
+        conso.load (site_config)
+        conso.save (consolidated_config)
+    except Exception, inst:
+        print "Could not consolidate, %s" % (str(inst))
+        return
+    print ("Overwote %s\n\tfrom %s\n\tand %s"%(consolidated_config,main_config,site_config))
+        
+####################
 def restart_plc ():
     print ("==================== Stopping plc")
     os.system("service plc stop")
@@ -137,6 +150,7 @@ e <var>\tPrompts (edit) fro variable <var>
 p <var>\tShows current setting for <var>
 l\tlists all known variables
 w\tSaves and quit
+W\tsaves, consolidates and quit
 r\trestarts plc service
 q\tQuits without saving
 """
@@ -155,7 +169,7 @@ common_variables=("PLC_NAME",
                   "PLC_NET_DNS1",
                   "PLC_NET_DNS2")
 
-def mainloop (cdef, cread, cwrite,site_config):
+def mainloop (cdef, cread, cwrite,main_config, site_config, consolidated_config):
     while True:
         try:
             answer = raw_input("Enter command (c for usual changes, w to save, ? for help) ").strip()
@@ -168,13 +182,15 @@ def mainloop (cdef, cread, cwrite,site_config):
             return
         elif (answer == "e"):
             prompt_all_variables(cdef, cread, cwrite)
-        elif (answer == "w"):
+        elif (answer.lower() == "w"):
             try:
                 cwrite.save(site_config)
             except:
                 print ("Could not save -- fix write access on %s" % site_config)
                 break
             print ("Wrote %s" % site_config)
+            if (answer == "W"):
+                consolidate(main_config, site_config, consolidated_config)
             return
         elif (answer == "l"):
             print ("Config involves the following variables")
@@ -186,7 +202,7 @@ def mainloop (cdef, cread, cwrite,site_config):
             try:
                 for varname in common_variables:
                     (category,variable) = cdef.locate_varname(varname)
-                    prompt_variable(cdef, cread, cwrite, category,variable)
+                    prompt_variable(cdef, cread, cwrite, category, variable)
             except Exception, inst:
                 if (str(inst) != 'BailOut'):
                     raise
@@ -220,11 +236,13 @@ def main ():
     command=sys.argv[0]
     argv = sys.argv[1:]
     if len(argv) == 0:
-        (main_config,site_config) = (def_main_config, def_site_config)
+        (main_config,site_config,consolidated_config) = (def_main_config, def_site_config, def_consolidated_config)
     elif len(argv) == 1:
-        (main_config,site_config) = (argv[1], def_site_config)
+        (main_config,site_config,consolidated_config) = (argv[1], def_site_config, def_consolidated_config)
     elif len(argv) == 2:
-        (main_config, site_config)  = argv
+        (main_config, site_config,consolidated_config)  = (argv[1], argv[2], def_consolidated_config)
+    elif len(argv) == 3:
+        (main_config, site_config,consolidated_config)  = argv
     else:
         usage()
 
@@ -249,7 +267,7 @@ def main ():
         cwrite = PLCConfiguration()
 
         print ("This is %s - %s -- Type ? at the prompt for help" %(command,release))
-    mainloop (cdef, cread, cwrite,site_config)
+    mainloop (cdef, cread, cwrite,main_config, site_config, consolidated_config)
     return 0
 
 if __name__ == '__main__':
