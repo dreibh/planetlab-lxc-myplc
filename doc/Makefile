@@ -4,15 +4,19 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: Makefile,v 1.1 2006/04/12 21:21:36 mlhuang Exp $
+# $Id: Makefile,v 1.2 2006/04/13 15:11:38 mlhuang Exp $
 #
 
 vpath GenDoc.xsl ../../plc_www/doc
+vpath plc_config.xml ..
 
 all: myplc.pdf
 
 # Dependencies
-.myplc.xml.valid: architecture.eps architecture.png
+.myplc.xml.valid: architecture.eps architecture.png variables.xml
+
+variables.xml: variables.xsl plc_config.xml
+	xsltproc $(XSLFLAGS) --output $@ $^
 
 # Validate the XML
 .%.xml.valid: %.xml
@@ -39,7 +43,7 @@ endef
 $(foreach format,$(FORMATS),$(eval $(call docbook2,$(format))))
 
 docclean:
-	rm -f $(patsubst %,*.%,$(FORMATS)) *.pdf .*.xml.valid
+	rm -f $(patsubst %,*.%,$(FORMATS)) *.pdf .*.xml.valid variables.xml
 
 clean: docclean
 

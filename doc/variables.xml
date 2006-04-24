@@ -1,0 +1,555 @@
+<variablelist>
+  <varlistentry>
+    <term>PLC_NAME</term>
+    <listitem>
+      <para>
+		  Type: string</para>
+      <para>
+		  Default: PlanetLab Test</para>
+      <para>The name of this PLC installation. It is used in
+	  the name of the default system site (e.g., PlanetLab Central)
+	  and in the names of various administrative entities (e.g.,
+	  PlanetLab Support).</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_SLICE_PREFIX</term>
+    <listitem>
+      <para>
+		  Type: string</para>
+      <para>
+		  Default: pl</para>
+      <para>The abbreviated name of this PLC
+	  installation. It is used as the prefix for system slices
+	  (e.g., pl_conf). Warning: Currently, this variable should
+	  not be changed.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_ROOT_USER</term>
+    <listitem>
+      <para>
+		  Type: email</para>
+      <para>
+		  Default: root@localhost.localdomain</para>
+      <para>The name of the initial administrative
+	  account. We recommend that this account be used only to create
+	  additional accounts associated with real
+	  administrators, then disabled.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_ROOT_PASSWORD</term>
+    <listitem>
+      <para>
+		  Type: password</para>
+      <para>
+		  Default: root</para>
+      <para>The password of the initial administrative
+	  account. Also the password of the root account on the Boot
+	  CD.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_ROOT_SSH_KEY_PUB</term>
+    <listitem>
+      <para>
+		  Type: file</para>
+      <para>
+		  Default: /etc/planetlab/root_ssh_key.pub</para>
+      <para>The SSH public key used to access the root
+	  account on your nodes.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_ROOT_SSH_KEY</term>
+    <listitem>
+      <para>
+		  Type: file</para>
+      <para>
+		  Default: /etc/planetlab/root_ssh_key.rsa</para>
+      <para>The SSH private key used to access the root
+	  account on your nodes.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_DEBUG_SSH_KEY_PUB</term>
+    <listitem>
+      <para>
+		  Type: file</para>
+      <para>
+		  Default: /etc/planetlab/debug_ssh_key.pub</para>
+      <para>The SSH public key used to access the root
+	  account on your nodes when they are in Debug mode.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_DEBUG_SSH_KEY</term>
+    <listitem>
+      <para>
+		  Type: file</para>
+      <para>
+		  Default: /etc/planetlab/debug_ssh_key.rsa</para>
+      <para>The SSH private key used to access the root
+	  account on your nodes when they are in Debug mode.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_ROOT_GPG_KEY_PUB</term>
+    <listitem>
+      <para>
+		  Type: file</para>
+      <para>
+		  Default: /etc/planetlab/pubring.gpg</para>
+      <para>The GPG public keyring used to sign the Boot
+	  Manager and all node packages.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_ROOT_GPG_KEY</term>
+    <listitem>
+      <para>
+		  Type: file</para>
+      <para>
+		  Default: /etc/planetlab/secring.gpg</para>
+      <para>The SSH private key used to access the root
+	  account on your nodes.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_NET_DNS1</term>
+    <listitem>
+      <para>
+		  Type: ip</para>
+      <para>
+		  Default: 128.112.136.10</para>
+      <para>Primary DNS server address.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_NET_DNS2</term>
+    <listitem>
+      <para>
+		  Type: ip</para>
+      <para>
+		  Default: 128.112.136.12</para>
+      <para>Secondary DNS server address.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_MAIL_ENABLED</term>
+    <listitem>
+      <para>
+		  Type: boolean</para>
+      <para>
+		  Default: false</para>
+      <para>Set to false to suppress all e-mail notifications
+	  and warnings.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_MAIL_SUPPORT_ADDRESS</term>
+    <listitem>
+      <para>
+		  Type: email</para>
+      <para>
+		  Default: root+support@localhost.localdomain</para>
+      <para>This address is used for support
+	  requests. Support requests may include traffic complaints,
+	  security incident reporting, web site malfunctions, and
+	  general requests for information. We recommend that the
+	  address be aliased to a ticketing system such as Request
+	  Tracker.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_MAIL_BOOT_ADDRESS</term>
+    <listitem>
+      <para>
+		  Type: email</para>
+      <para>
+		  Default: root+install-msgs@localhost.localdomain</para>
+      <para>The API will notify this address when a problem
+	  occurs during node installation or boot.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_MAIL_SLICE_ADDRESS</term>
+    <listitem>
+      <para>
+		  Type: email</para>
+      <para>
+		  Default: root+SLICE@localhost.localdomain</para>
+      <para>This address template is used for sending
+	  e-mail notifications to slices. SLICE will be replaced with
+	  the name of the slice.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_DB_ENABLED</term>
+    <listitem>
+      <para>
+		  Type: boolean</para>
+      <para>
+		  Default: true</para>
+      <para>Enable the database server on this
+	  machine.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_DB_TYPE</term>
+    <listitem>
+      <para>
+		  Type: string</para>
+      <para>
+		  Default: postgresql</para>
+      <para>The type of database server. Currently, only
+	  postgresql is supported.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_DB_HOST</term>
+    <listitem>
+      <para>
+		  Type: hostname</para>
+      <para>
+		  Default: localhost</para>
+      <para>The fully qualified hostname or IP address of
+	  the database server. This hostname must be resolvable and
+	  reachable by the rest of your installation.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_DB_PORT</term>
+    <listitem>
+      <para>
+		  Type: int</para>
+      <para>
+		  Default: 5432</para>
+      <para>The TCP port number through which the database
+	  server should be accessed.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_DB_NAME</term>
+    <listitem>
+      <para>
+		  Type: string</para>
+      <para>
+		  Default: planetlab3</para>
+      <para>The name of the database to access.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_DB_USER</term>
+    <listitem>
+      <para>
+		  Type: string</para>
+      <para>
+		  Default: pgsqluser</para>
+      <para>The username to use when accessing the
+	  database.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_DB_PASSWORD</term>
+    <listitem>
+      <para>
+		  Type: password</para>
+      <para>
+		  Default: </para>
+      <para>The password to use when accessing the
+	  database. If left blank, one will be
+	  generated.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_API_ENABLED</term>
+    <listitem>
+      <para>
+		  Type: boolean</para>
+      <para>
+		  Default: true</para>
+      <para>Enable the API server on this
+	  machine.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_API_DEBUG</term>
+    <listitem>
+      <para>
+		  Type: boolean</para>
+      <para>
+		  Default: false</para>
+      <para>Enable verbose API debugging. Do not enable on
+	  a production system!</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_API_HOST</term>
+    <listitem>
+      <para>
+		  Type: hostname</para>
+      <para>
+		  Default: localhost</para>
+      <para>The fully qualified hostname or IP address of
+	  the API server. This hostname must be resolvable and
+	  reachable by the rest of your installation, as well as your
+	  nodes.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_API_PORT</term>
+    <listitem>
+      <para>
+		  Type: int</para>
+      <para>
+		  Default: 80</para>
+      <para>The TCP port number through which the API
+	  should be accessed. Warning: SSL (port 443) access is not
+	  fully supported by the website code yet. We recommend that
+	  port 80 be used for now and that the API server either run
+	  on the same machine as the web server, or that they both be
+	  on a secure wired network.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_API_PATH</term>
+    <listitem>
+      <para>
+		  Type: string</para>
+      <para>
+		  Default: /PLCAPI/</para>
+      <para>The base path of the API URL.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_API_MAINTENANCE_USER</term>
+    <listitem>
+      <para>
+		  Type: string</para>
+      <para>
+		  Default: maint@localhost.localdomain</para>
+      <para>The username of the maintenance account. This
+	  account is used by local scripts that perform automated
+	  tasks, and cannot be used for normal logins.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_API_MAINTENANCE_PASSWORD</term>
+    <listitem>
+      <para>
+		  Type: password</para>
+      <para>
+		  Default: </para>
+      <para>The password of the maintenance account. If
+	  left blank, one will be generated. We recommend that the
+	  password be changed periodically.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_API_MAINTENANCE_SOURCES</term>
+    <listitem>
+      <para>
+		  Type: hostname</para>
+      <para>
+		  Default: </para>
+      <para>A space-separated list of IP addresses allowed
+	  to access the API through the maintenance account. The value
+	  of this variable is set automatically to allow only the API,
+	  web, and boot servers, and should not be
+	  changed.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_API_SSL_CRT</term>
+    <listitem>
+      <para>
+		  Type: file</para>
+      <para>
+		  Default: /etc/planetlab/api_ssl.crt</para>
+      <para>The signed SSL certificate to use for HTTPS
+	  access. If not specified or non-existent, a self-signed
+	  certificate will be generated.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_API_SSL_KEY</term>
+    <listitem>
+      <para>
+		  Type: file</para>
+      <para>
+		  Default: /etc/planetlab/api_ssl.key</para>
+      <para>The corresponding SSL private key used for
+	  signing the certificate, and for signing slice tickets. If
+	  not specified or non-existent, one will be
+	  generated.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_API_SSL_KEY_PUB</term>
+    <listitem>
+      <para>
+		  Type: file</para>
+      <para>
+		  Default: /etc/planetlab/api_ssl.pub</para>
+      <para>The corresponding SSL public key. If not
+	  specified or non-existent, one will be
+	  generated.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_WWW_ENABLED</term>
+    <listitem>
+      <para>
+		  Type: boolean</para>
+      <para>
+		  Default: true</para>
+      <para>Enable the web server on this
+	  machine.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_WWW_DEBUG</term>
+    <listitem>
+      <para>
+		  Type: boolean</para>
+      <para>
+		  Default: false</para>
+      <para>Enable debugging output on web pages. Do not
+	  enable on a production system!</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_WWW_HOST</term>
+    <listitem>
+      <para>
+		  Type: hostname</para>
+      <para>
+		  Default: localhost</para>
+      <para>The fully qualified hostname or IP address of
+	  the web server. This hostname must be resolvable and
+	  reachable by the rest of your installation, as well as your
+	  nodes.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_WWW_PORT</term>
+    <listitem>
+      <para>
+		  Type: int</para>
+      <para>
+		  Default: 80</para>
+      <para>The TCP port number through which the
+	  unprotected portions of the web site should be
+	  accessed.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_WWW_SSL_PORT</term>
+    <listitem>
+      <para>
+		  Type: int</para>
+      <para>
+		  Default: 443</para>
+      <para>The TCP port number through which the protected
+	  portions of the web site should be accessed.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_WWW_SSL_CRT</term>
+    <listitem>
+      <para>
+		  Type: file</para>
+      <para>
+		  Default: /etc/planetlab/www_ssl.crt</para>
+      <para>The signed SSL certificate to use for HTTPS
+	  access. If not specified or non-existent, a self-signed
+	  certificate will be generated.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_WWW_SSL_KEY</term>
+    <listitem>
+      <para>
+		  Type: file</para>
+      <para>
+		  Default: /etc/planetlab/www_ssl.key</para>
+      <para>The corresponding SSL private key. If not
+	  specified or non-existent, one will be
+	  generated.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_BOOT_ENABLED</term>
+    <listitem>
+      <para>
+		  Type: boolean</para>
+      <para>
+		  Default: true</para>
+      <para>Enable the boot server on this
+	  machine.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_BOOT_HOST</term>
+    <listitem>
+      <para>
+		  Type: hostname</para>
+      <para>
+		  Default: localhost</para>
+      <para>The fully qualified hostname or IP address of
+	  the boot server. This hostname must be resolvable and
+	  reachable by the rest of your installation, as well as your
+	  nodes.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_BOOT_PORT</term>
+    <listitem>
+      <para>
+		  Type: int</para>
+      <para>
+		  Default: 80</para>
+      <para>The TCP port number through which the
+	  unprotected portions of the boot server should be
+	  accessed.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_BOOT_SSL_PORT</term>
+    <listitem>
+      <para>
+		  Type: int</para>
+      <para>
+		  Default: 443</para>
+      <para>The TCP port number through which the protected
+	  portions of the boot server should be
+	  accessed.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_BOOT_SSL_CRT</term>
+    <listitem>
+      <para>
+		  Type: binary</para>
+      <para>
+		  Default: /etc/planetlab/boot_ssl.crt</para>
+      <para>The signed SSL certificate to use for HTTPS
+	  access. If not specified, or non-existent a self-signed
+	  certificate will be generated.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_BOOT_SSL_KEY</term>
+    <listitem>
+      <para>
+		  Type: binary</para>
+      <para>
+		  Default: /etc/planetlab/boot_ssl.key</para>
+      <para>The corresponding SSL private key. If not
+	  specified or non-existent, one will be
+	  generated.</para>
+    </listitem>
+  </varlistentry>
+</variablelist>
