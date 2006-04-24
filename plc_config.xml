@@ -6,7 +6,7 @@ Default PLC configuration file
 Mark Huang <mlhuang@cs.princeton.edu>
 Copyright (C) 2006 The Trustees of Princeton University
 
-$Id: plc_config.xml,v 1.9 2006/04/12 17:59:45 mlhuang Exp $
+$Id: plc_config.xml,v 1.10 2006/04/17 16:47:38 mlhuang Exp $
 -->
 
 <!DOCTYPE configuration PUBLIC "-//PlanetLab Central//DTD PLC configuration//EN" "plc_config.dtd">
@@ -139,7 +139,7 @@ $Id: plc_config.xml,v 1.9 2006/04/12 17:59:45 mlhuang Exp $
 
 	<variable id="support_address" type="email">
 	  <name>Support Address</name>
-	  <value>root@localhost.localdomain</value>
+	  <value>root+support@localhost.localdomain</value>
 	  <description>This address is used for support
 	  requests. Support requests may include traffic complaints,
 	  security incident reporting, web site malfunctions, and
@@ -150,11 +150,17 @@ $Id: plc_config.xml,v 1.9 2006/04/12 17:59:45 mlhuang Exp $
 
 	<variable id="boot_address" type="email">
 	  <name>Boot Messages Address</name>
-	  <value>root@localhost.localdomain</value>
+	  <value>root+install-msgs@localhost.localdomain</value>
 	  <description>The API will notify this address when a problem
-	  occurs during node installation or boot. If a domain is not
-	  specified, the default system domain will be used
-	  name.</description>
+	  occurs during node installation or boot.</description>
+	</variable>
+
+	<variable id="slice_address" type="email">
+	  <name>Slice Address</name>
+	  <value>root+SLICE@localhost.localdomain</value>
+	  <description>This address template is used for sending
+	  e-mail notifications to slices. SLICE will be replaced with
+	  the name of the slice.</description>
 	</variable>
       </variablelist>
     </category>
