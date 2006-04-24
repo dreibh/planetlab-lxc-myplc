@@ -13,7 +13,7 @@
 <div class="titlepage">
 <div>
 <div><h1 class="title">
-<a name="id261154"></a>MyPLC User's Guide</h1></div>
+<a name="id224920"></a>MyPLC User's Guide</h1></div>
 <div><div class="author"><h3 class="author"><span class="firstname">Mark Huang</span></h3></div></div>
 <div><div class="revhistory"><table border="1" width="100%" summary="Revision history">
 <tr><th align="left" valign="top" colspan="3"><b>Revision History</b></th></tr>
@@ -41,21 +41,22 @@
 <div class="toc">
 <p><b>Table of Contents</b></p>
 <dl>
-<dt><span class="section"><a href="#id225264">1. Overview</a></span></dt>
-<dt><span class="section"><a href="#id225151">2. Installation</a></span></dt>
-<dt><span class="section"><a href="#id267561">3. Quickstart</a></span></dt>
+<dt><span class="section"><a href="#id225358">1. Overview</a></span></dt>
+<dt><span class="section"><a href="#id225202">2. Installation</a></span></dt>
+<dt><span class="section"><a href="#id267666">3. Quickstart</a></span></dt>
 <dd><dl>
 <dt><span class="section"><a href="#ChangingTheConfiguration">3.1. Changing the configuration</a></span></dt>
-<dt><span class="section"><a href="#id268048">3.2. Installing nodes</a></span></dt>
-<dt><span class="section"><a href="#id268124">3.3. Administering nodes</a></span></dt>
-<dt><span class="section"><a href="#id268217">3.4. Creating a slice</a></span></dt>
+<dt><span class="section"><a href="#id268154">3.2. Installing nodes</a></span></dt>
+<dt><span class="section"><a href="#id268229">3.3. Administering nodes</a></span></dt>
+<dt><span class="section"><a href="#id268323">3.4. Creating a slice</a></span></dt>
 </dl></dd>
-<dt><span class="bibliography"><a href="#id268292">Bibliography</a></span></dt>
+<dt><span class="appendix"><a href="#id268397">A. Configuration variables</a></span></dt>
+<dt><span class="bibliography"><a href="#id270521">Bibliography</a></span></dt>
 </dl>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
-<a name="id225264"></a>1. Overview</h2></div></div></div>
+<a name="id225358"></a>1. Overview</h2></div></div></div>
 <p>MyPLC is a complete PlanetLab Central (PLC) portable
     installation contained within a <span><strong class="command">chroot</strong></span>
     jail. The default installation consists of a web server, an
@@ -79,14 +80,14 @@
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
-<a name="id225151"></a>2. Installation</h2></div></div></div>
+<a name="id225202"></a>2. Installation</h2></div></div></div>
 <p>Though internally composed of commodity software
     subpackages, MyPLC should be treated as a monolithic software
     application. MyPLC is distributed as single RPM package that has
     no external dependencies, allowing it to be installed on
     practically any Linux 2.6 based distribution:</p>
 <div class="example">
-<a name="id225162"></a><p class="title"><b>Example 1. Installing MyPLC.</b></p>
+<a name="id225260"></a><p class="title"><b>Example 1. Installing MyPLC.</b></p>
 <pre class="programlisting"># If your distribution supports RPM
 rpm -U myplc-0.3-1.planetlab.i386.rpm
 
@@ -182,7 +183,7 @@ service plc stop</pre>
 	the <span><strong class="command">chkconfig</strong></span> command on a Red Hat or Fedora
 	host system:</p>
 <div class="example">
-<a name="id243437"></a><p class="title"><b>Example 3. Disabling automatic startup of MyPLC.</b></p>
+<a name="id243542"></a><p class="title"><b>Example 3. Disabling automatic startup of MyPLC.</b></p>
 <pre class="programlisting"># Disable automatic startup
 chkconfig plc off
 
@@ -207,13 +208,13 @@ chkconfig plc on</pre>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
-<a name="id267561"></a>3. Quickstart</h2></div></div></div>
+<a name="id267666"></a>3. Quickstart</h2></div></div></div>
 <p>Once installed, start MyPLC (see <a href="#StartingAndStoppingMyPLC" title="Example 2. Starting and stopping MyPLC.">Example 2, “Starting and stopping MyPLC.”</a>). MyPLC must be started as
     root. Observe the output of this command for any failures. If no
     failures occur, you should see output similar to the
     following:</p>
 <div class="example">
-<a name="id267681"></a><p class="title"><b>Example 4. A successful MyPLC startup.</b></p>
+<a name="id267786"></a><p class="title"><b>Example 4. A successful MyPLC startup.</b></p>
 <pre class="programlisting">Mounting PLC:                                              [  OK  ]
 PLC: Generating network files:                             [  OK  ]
 PLC: Starting system logger:                               [  OK  ]
@@ -281,7 +282,7 @@ PLC: Rebuilding Boot Manager:                              [  OK  ]
     visit <code class="literal">http://localhost/</code>, which should bring you
     to the front page of your PLC installation. The password of the
     default administrator account
-    <code class="literal">root@test.planet-lab.org</code> (set by
+    <code class="literal">root@localhost.localdomain</code> (set by
     <code class="envar">PLC_ROOT_USER</code>) is <code class="literal">root</code> (set by
     <code class="envar">PLC_ROOT_PASSWORD</code>).</p>
 <div class="section" lang="en">
@@ -337,7 +338,7 @@ PLC: Rebuilding Boot Manager:                              [  OK  ]
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="id268048"></a>3.2. Installing nodes</h3></div></div></div>
+<a name="id268154"></a>3.2. Installing nodes</h3></div></div></div>
 <p>Install your first node by clicking <code class="literal">Add
       Node</code> under the <code class="literal">Nodes</code> tab. Fill in
       all the appropriate details, then click
@@ -361,12 +362,12 @@ PLC: Rebuilding Boot Manager:                              [  OK  ]
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="id268124"></a>3.3. Administering nodes</h3></div></div></div>
+<a name="id268229"></a>3.3. Administering nodes</h3></div></div></div>
 <p>You may administer nodes as <code class="literal">root</code> by
       using the SSH key stored in
       <code class="filename">/etc/planetlab/root_ssh_key.rsa</code>.</p>
 <div class="example">
-<a name="id268145"></a><p class="title"><b>Example 5. Accessing nodes via SSH. Replace
+<a name="id268250"></a><p class="title"><b>Example 5. Accessing nodes via SSH. Replace
 	<code class="literal">node</code> with the hostname of the node.</b></p>
 <pre class="programlisting">ssh -i /etc/planetlab/root_ssh_key.rsa root@node</pre>
 </div>
@@ -389,7 +390,7 @@ PLC: Rebuilding Boot Manager:                              [  OK  ]
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="id268217"></a>3.4. Creating a slice</h3></div></div></div>
+<a name="id268323"></a>3.4. Creating a slice</h3></div></div></div>
 <p>Create a slice by clicking <code class="literal">Create Slice</code>
       under the <code class="literal">Slices</code> tab. Fill in all the
       appropriate details, then click <code class="literal">Create</code>. Add
@@ -404,7 +405,7 @@ PLC: Rebuilding Boot Manager:                              [  OK  ]
       to determine if it needs to create or delete any slices. You may
       accelerate this process manually if desired.</p>
 <div class="example">
-<a name="id268275"></a><p class="title"><b>Example 6. Forcing slice creation on a node.</b></p>
+<a name="id268381"></a><p class="title"><b>Example 6. Forcing slice creation on a node.</b></p>
 <pre class="programlisting"># Update slices.xml immediately
 service plc start crond
 
@@ -414,9 +415,480 @@ vserver pl_conf exec service pl_conf restart</pre>
 </div>
 </div>
 </div>
+<div class="appendix" lang="en">
+<h2 class="title" style="clear: both">
+<a name="id268397"></a>A. Configuration variables</h2>
+<p>Listed below is the set of standard configuration variables
+    and their default values, defined in the template
+    <code class="filename">/etc/planetlab/default_config.xml</code>. Additional
+    variables and their defaults may be defined in site-specific XML
+    templates that should be placed in
+    <code class="filename">/etc/planetlab/configs/</code>.</p>
+<div class="variablelist"><dl>
+<dt><span class="term">PLC_NAME</span></dt>
+<dd>
+<p>
+		  Type: string</p>
+<p>
+		  Default: PlanetLab Test</p>
+<p>The name of this PLC installation. It is used in
+	  the name of the default system site (e.g., PlanetLab Central)
+	  and in the names of various administrative entities (e.g.,
+	  PlanetLab Support).</p>
+</dd>
+<dt><span class="term">PLC_SLICE_PREFIX</span></dt>
+<dd>
+<p>
+		  Type: string</p>
+<p>
+		  Default: pl</p>
+<p>The abbreviated name of this PLC
+	  installation. It is used as the prefix for system slices
+	  (e.g., pl_conf). Warning: Currently, this variable should
+	  not be changed.</p>
+</dd>
+<dt><span class="term">PLC_ROOT_USER</span></dt>
+<dd>
+<p>
+		  Type: email</p>
+<p>
+		  Default: root@localhost.localdomain</p>
+<p>The name of the initial administrative
+	  account. We recommend that this account be used only to create
+	  additional accounts associated with real
+	  administrators, then disabled.</p>
+</dd>
+<dt><span class="term">PLC_ROOT_PASSWORD</span></dt>
+<dd>
+<p>
+		  Type: password</p>
+<p>
+		  Default: root</p>
+<p>The password of the initial administrative
+	  account. Also the password of the root account on the Boot
+	  CD.</p>
+</dd>
+<dt><span class="term">PLC_ROOT_SSH_KEY_PUB</span></dt>
+<dd>
+<p>
+		  Type: file</p>
+<p>
+		  Default: /etc/planetlab/root_ssh_key.pub</p>
+<p>The SSH public key used to access the root
+	  account on your nodes.</p>
+</dd>
+<dt><span class="term">PLC_ROOT_SSH_KEY</span></dt>
+<dd>
+<p>
+		  Type: file</p>
+<p>
+		  Default: /etc/planetlab/root_ssh_key.rsa</p>
+<p>The SSH private key used to access the root
+	  account on your nodes.</p>
+</dd>
+<dt><span class="term">PLC_DEBUG_SSH_KEY_PUB</span></dt>
+<dd>
+<p>
+		  Type: file</p>
+<p>
+		  Default: /etc/planetlab/debug_ssh_key.pub</p>
+<p>The SSH public key used to access the root
+	  account on your nodes when they are in Debug mode.</p>
+</dd>
+<dt><span class="term">PLC_DEBUG_SSH_KEY</span></dt>
+<dd>
+<p>
+		  Type: file</p>
+<p>
+		  Default: /etc/planetlab/debug_ssh_key.rsa</p>
+<p>The SSH private key used to access the root
+	  account on your nodes when they are in Debug mode.</p>
+</dd>
+<dt><span class="term">PLC_ROOT_GPG_KEY_PUB</span></dt>
+<dd>
+<p>
+		  Type: file</p>
+<p>
+		  Default: /etc/planetlab/pubring.gpg</p>
+<p>The GPG public keyring used to sign the Boot
+	  Manager and all node packages.</p>
+</dd>
+<dt><span class="term">PLC_ROOT_GPG_KEY</span></dt>
+<dd>
+<p>
+		  Type: file</p>
+<p>
+		  Default: /etc/planetlab/secring.gpg</p>
+<p>The SSH private key used to access the root
+	  account on your nodes.</p>
+</dd>
+<dt><span class="term">PLC_NET_DNS1</span></dt>
+<dd>
+<p>
+		  Type: ip</p>
+<p>
+		  Default: 128.112.136.10</p>
+<p>Primary DNS server address.</p>
+</dd>
+<dt><span class="term">PLC_NET_DNS2</span></dt>
+<dd>
+<p>
+		  Type: ip</p>
+<p>
+		  Default: 128.112.136.12</p>
+<p>Secondary DNS server address.</p>
+</dd>
+<dt><span class="term">PLC_MAIL_ENABLED</span></dt>
+<dd>
+<p>
+		  Type: boolean</p>
+<p>
+		  Default: false</p>
+<p>Set to false to suppress all e-mail notifications
+	  and warnings.</p>
+</dd>
+<dt><span class="term">PLC_MAIL_SUPPORT_ADDRESS</span></dt>
+<dd>
+<p>
+		  Type: email</p>
+<p>
+		  Default: root+support@localhost.localdomain</p>
+<p>This address is used for support
+	  requests. Support requests may include traffic complaints,
+	  security incident reporting, web site malfunctions, and
+	  general requests for information. We recommend that the
+	  address be aliased to a ticketing system such as Request
+	  Tracker.</p>
+</dd>
+<dt><span class="term">PLC_MAIL_BOOT_ADDRESS</span></dt>
+<dd>
+<p>
+		  Type: email</p>
+<p>
+		  Default: root+install-msgs@localhost.localdomain</p>
+<p>The API will notify this address when a problem
+	  occurs during node installation or boot.</p>
+</dd>
+<dt><span class="term">PLC_MAIL_SLICE_ADDRESS</span></dt>
+<dd>
+<p>
+		  Type: email</p>
+<p>
+		  Default: root+SLICE@localhost.localdomain</p>
+<p>This address template is used for sending
+	  e-mail notifications to slices. SLICE will be replaced with
+	  the name of the slice.</p>
+</dd>
+<dt><span class="term">PLC_DB_ENABLED</span></dt>
+<dd>
+<p>
+		  Type: boolean</p>
+<p>
+		  Default: true</p>
+<p>Enable the database server on this
+	  machine.</p>
+</dd>
+<dt><span class="term">PLC_DB_TYPE</span></dt>
+<dd>
+<p>
+		  Type: string</p>
+<p>
+		  Default: postgresql</p>
+<p>The type of database server. Currently, only
+	  postgresql is supported.</p>
+</dd>
+<dt><span class="term">PLC_DB_HOST</span></dt>
+<dd>
+<p>
+		  Type: hostname</p>
+<p>
+		  Default: localhost</p>
+<p>The fully qualified hostname or IP address of
+	  the database server. This hostname must be resolvable and
+	  reachable by the rest of your installation.</p>
+</dd>
+<dt><span class="term">PLC_DB_PORT</span></dt>
+<dd>
+<p>
+		  Type: int</p>
+<p>
+		  Default: 5432</p>
+<p>The TCP port number through which the database
+	  server should be accessed.</p>
+</dd>
+<dt><span class="term">PLC_DB_NAME</span></dt>
+<dd>
+<p>
+		  Type: string</p>
+<p>
+		  Default: planetlab3</p>
+<p>The name of the database to access.</p>
+</dd>
+<dt><span class="term">PLC_DB_USER</span></dt>
+<dd>
+<p>
+		  Type: string</p>
+<p>
+		  Default: pgsqluser</p>
+<p>The username to use when accessing the
+	  database.</p>
+</dd>
+<dt><span class="term">PLC_DB_PASSWORD</span></dt>
+<dd>
+<p>
+		  Type: password</p>
+<p>
+		  Default: </p>
+<p>The password to use when accessing the
+	  database. If left blank, one will be
+	  generated.</p>
+</dd>
+<dt><span class="term">PLC_API_ENABLED</span></dt>
+<dd>
+<p>
+		  Type: boolean</p>
+<p>
+		  Default: true</p>
+<p>Enable the API server on this
+	  machine.</p>
+</dd>
+<dt><span class="term">PLC_API_DEBUG</span></dt>
+<dd>
+<p>
+		  Type: boolean</p>
+<p>
+		  Default: false</p>
+<p>Enable verbose API debugging. Do not enable on
+	  a production system!</p>
+</dd>
+<dt><span class="term">PLC_API_HOST</span></dt>
+<dd>
+<p>
+		  Type: hostname</p>
+<p>
+		  Default: localhost</p>
+<p>The fully qualified hostname or IP address of
+	  the API server. This hostname must be resolvable and
+	  reachable by the rest of your installation, as well as your
+	  nodes.</p>
+</dd>
+<dt><span class="term">PLC_API_PORT</span></dt>
+<dd>
+<p>
+		  Type: int</p>
+<p>
+		  Default: 80</p>
+<p>The TCP port number through which the API
+	  should be accessed. Warning: SSL (port 443) access is not
+	  fully supported by the website code yet. We recommend that
+	  port 80 be used for now and that the API server either run
+	  on the same machine as the web server, or that they both be
+	  on a secure wired network.</p>
+</dd>
+<dt><span class="term">PLC_API_PATH</span></dt>
+<dd>
+<p>
+		  Type: string</p>
+<p>
+		  Default: /PLCAPI/</p>
+<p>The base path of the API URL.</p>
+</dd>
+<dt><span class="term">PLC_API_MAINTENANCE_USER</span></dt>
+<dd>
+<p>
+		  Type: string</p>
+<p>
+		  Default: maint@localhost.localdomain</p>
+<p>The username of the maintenance account. This
+	  account is used by local scripts that perform automated
+	  tasks, and cannot be used for normal logins.</p>
+</dd>
+<dt><span class="term">PLC_API_MAINTENANCE_PASSWORD</span></dt>
+<dd>
+<p>
+		  Type: password</p>
+<p>
+		  Default: </p>
+<p>The password of the maintenance account. If
+	  left blank, one will be generated. We recommend that the
+	  password be changed periodically.</p>
+</dd>
+<dt><span class="term">PLC_API_MAINTENANCE_SOURCES</span></dt>
+<dd>
+<p>
+		  Type: hostname</p>
+<p>
+		  Default: </p>
+<p>A space-separated list of IP addresses allowed
+	  to access the API through the maintenance account. The value
+	  of this variable is set automatically to allow only the API,
+	  web, and boot servers, and should not be
+	  changed.</p>
+</dd>
+<dt><span class="term">PLC_API_SSL_CRT</span></dt>
+<dd>
+<p>
+		  Type: file</p>
+<p>
+		  Default: /etc/planetlab/api_ssl.crt</p>
+<p>The signed SSL certificate to use for HTTPS
+	  access. If not specified or non-existent, a self-signed
+	  certificate will be generated.</p>
+</dd>
+<dt><span class="term">PLC_API_SSL_KEY</span></dt>
+<dd>
+<p>
+		  Type: file</p>
+<p>
+		  Default: /etc/planetlab/api_ssl.key</p>
+<p>The corresponding SSL private key used for
+	  signing the certificate, and for signing slice tickets. If
+	  not specified or non-existent, one will be
+	  generated.</p>
+</dd>
+<dt><span class="term">PLC_API_SSL_KEY_PUB</span></dt>
+<dd>
+<p>
+		  Type: file</p>
+<p>
+		  Default: /etc/planetlab/api_ssl.pub</p>
+<p>The corresponding SSL public key. If not
+	  specified or non-existent, one will be
+	  generated.</p>
+</dd>
+<dt><span class="term">PLC_WWW_ENABLED</span></dt>
+<dd>
+<p>
+		  Type: boolean</p>
+<p>
+		  Default: true</p>
+<p>Enable the web server on this
+	  machine.</p>
+</dd>
+<dt><span class="term">PLC_WWW_DEBUG</span></dt>
+<dd>
+<p>
+		  Type: boolean</p>
+<p>
+		  Default: false</p>
+<p>Enable debugging output on web pages. Do not
+	  enable on a production system!</p>
+</dd>
+<dt><span class="term">PLC_WWW_HOST</span></dt>
+<dd>
+<p>
+		  Type: hostname</p>
+<p>
+		  Default: localhost</p>
+<p>The fully qualified hostname or IP address of
+	  the web server. This hostname must be resolvable and
+	  reachable by the rest of your installation, as well as your
+	  nodes.</p>
+</dd>
+<dt><span class="term">PLC_WWW_PORT</span></dt>
+<dd>
+<p>
+		  Type: int</p>
+<p>
+		  Default: 80</p>
+<p>The TCP port number through which the
+	  unprotected portions of the web site should be
+	  accessed.</p>
+</dd>
+<dt><span class="term">PLC_WWW_SSL_PORT</span></dt>
+<dd>
+<p>
+		  Type: int</p>
+<p>
+		  Default: 443</p>
+<p>The TCP port number through which the protected
+	  portions of the web site should be accessed.</p>
+</dd>
+<dt><span class="term">PLC_WWW_SSL_CRT</span></dt>
+<dd>
+<p>
+		  Type: file</p>
+<p>
+		  Default: /etc/planetlab/www_ssl.crt</p>
+<p>The signed SSL certificate to use for HTTPS
+	  access. If not specified or non-existent, a self-signed
+	  certificate will be generated.</p>
+</dd>
+<dt><span class="term">PLC_WWW_SSL_KEY</span></dt>
+<dd>
+<p>
+		  Type: file</p>
+<p>
+		  Default: /etc/planetlab/www_ssl.key</p>
+<p>The corresponding SSL private key. If not
+	  specified or non-existent, one will be
+	  generated.</p>
+</dd>
+<dt><span class="term">PLC_BOOT_ENABLED</span></dt>
+<dd>
+<p>
+		  Type: boolean</p>
+<p>
+		  Default: true</p>
+<p>Enable the boot server on this
+	  machine.</p>
+</dd>
+<dt><span class="term">PLC_BOOT_HOST</span></dt>
+<dd>
+<p>
+		  Type: hostname</p>
+<p>
+		  Default: localhost</p>
+<p>The fully qualified hostname or IP address of
+	  the boot server. This hostname must be resolvable and
+	  reachable by the rest of your installation, as well as your
+	  nodes.</p>
+</dd>
+<dt><span class="term">PLC_BOOT_PORT</span></dt>
+<dd>
+<p>
+		  Type: int</p>
+<p>
+		  Default: 80</p>
+<p>The TCP port number through which the
+	  unprotected portions of the boot server should be
+	  accessed.</p>
+</dd>
+<dt><span class="term">PLC_BOOT_SSL_PORT</span></dt>
+<dd>
+<p>
+		  Type: int</p>
+<p>
+		  Default: 443</p>
+<p>The TCP port number through which the protected
+	  portions of the boot server should be
+	  accessed.</p>
+</dd>
+<dt><span class="term">PLC_BOOT_SSL_CRT</span></dt>
+<dd>
+<p>
+		  Type: binary</p>
+<p>
+		  Default: /etc/planetlab/boot_ssl.crt</p>
+<p>The signed SSL certificate to use for HTTPS
+	  access. If not specified, or non-existent a self-signed
+	  certificate will be generated.</p>
+</dd>
+<dt><span class="term">PLC_BOOT_SSL_KEY</span></dt>
+<dd>
+<p>
+		  Type: binary</p>
+<p>
+		  Default: /etc/planetlab/boot_ssl.key</p>
+<p>The corresponding SSL private key. If not
+	  specified or non-existent, one will be
+	  generated.</p>
+</dd>
+</dl></div>
+</div>
 <div class="bibliography">
 <div class="titlepage"><div><div><h2 class="title">
-<a name="id268292"></a>Bibliography</h2></div></div></div>
+<a name="id270521"></a>Bibliography</h2></div></div></div>
 <div class="biblioentry">
 <a name="TechsGuide"></a><p>[1] <span class="author"><span class="firstname">Mark</span> <span class="surname">Huang</span>. </span><span class="title"><i><a href="http://www.planet-lab.org/doc/TechsGuide.php" target="_top">PlanetLab
       Technical Contact's Guide</a></i>. </span></p>
