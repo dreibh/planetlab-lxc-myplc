@@ -7,11 +7,12 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: ssl,v 1.2 2006/04/07 03:36:04 mlhuang Exp $
+# $Id: ssl,v 1.3 2006/04/07 04:28:16 mlhuang Exp $
 #
 
 # Source function library and configuration
 . /etc/plc.d/functions
+. /etc/planetlab/plc_config
 
 case "$1" in
     start)
