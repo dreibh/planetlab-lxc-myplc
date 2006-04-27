@@ -6,7 +6,7 @@
 #
 # description:	Manages all PLC services on this machine
 #
-# $Id: guest.init,v 1.15 2006/04/10 21:09:02 mlhuang Exp $
+# $Id: guest.init,v 1.16 2006/04/17 17:04:37 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -139,7 +139,7 @@ define('BOOT_BASE', PLC_BOOT_HOST);
 define('DEBUG', PLC_WWW_DEBUG);
 define('API_CALL_DEBUG', PLC_API_DEBUG);
 define('SENDMAIL', PLC_MAIL_ENABLED);
-define('PLANETLAB_SUPPORT_EMAIL', PLC_NAME . 'Support <' . PLC_MAIL_SUPPORT_ADDRESS . '>');
+define('PLANETLAB_SUPPORT_EMAIL', PLC_NAME . ' Support <' . PLC_MAIL_SUPPORT_ADDRESS . '>');
 define('PLANETLAB_SUPPORT_EMAIL_ONLY', PLC_MAIL_SUPPORT_ADDRESS);
 ?>
 EOF
