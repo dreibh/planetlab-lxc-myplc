@@ -4,13 +4,13 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: Makefile,v 1.2 2006/04/13 15:11:38 mlhuang Exp $
+# $Id: Makefile,v 1.3 2006/04/24 22:14:56 mlhuang Exp $
 #
 
 vpath GenDoc.xsl ../../plc_www/doc
 vpath plc_config.xml ..
 
-all: myplc.pdf
+all: myplc.pdf myplc.php
 
 # Dependencies
 .myplc.xml.valid: architecture.eps architecture.png variables.xml
