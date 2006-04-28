@@ -435,7 +435,7 @@ PLC: Rebuilding Boot Manager:                              [  OK  ]
 	perform certain privileged operations in the root
 	context.</para></listitem>
 
-	<listitem><para><filename>/vserver/pl_netflow/var/log/netflow.log</filename>:
+	<listitem><para><filename>/vservers/pl_netflow/var/log/netflow.log</filename>:
 	The log file for PlanetFlow, the network traffic auditing
 	service.</para></listitem>
       </itemizedlist>
