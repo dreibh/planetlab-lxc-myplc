@@ -213,7 +213,7 @@
       <para>
 		  Type: hostname</para>
       <para>
-		  Default: localhost</para>
+		  Default: localhost.localdomain</para>
       <para>The fully qualified hostname or IP address of
 	  the database server. This hostname must be resolvable and
 	  reachable by the rest of your installation.</para>
@@ -291,7 +291,7 @@
       <para>
 		  Type: hostname</para>
       <para>
-		  Default: localhost</para>
+		  Default: localhost.localdomain</para>
       <para>The fully qualified hostname or IP address of
 	  the API server. This hostname must be resolvable and
 	  reachable by the rest of your installation, as well as your
@@ -426,7 +426,7 @@
       <para>
 		  Type: hostname</para>
       <para>
-		  Default: localhost</para>
+		  Default: localhost.localdomain</para>
       <para>The fully qualified hostname or IP address of
 	  the web server. This hostname must be resolvable and
 	  reachable by the rest of your installation, as well as your
@@ -497,7 +497,7 @@
       <para>
 		  Type: hostname</para>
       <para>
-		  Default: localhost</para>
+		  Default: localhost.localdomain</para>
       <para>The fully qualified hostname or IP address of
 	  the boot server. This hostname must be resolvable and
 	  reachable by the rest of your installation, as well as your

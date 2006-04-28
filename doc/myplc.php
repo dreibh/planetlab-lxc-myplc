@@ -51,7 +51,7 @@
 <dt><span class="section"><a href="#id268323">3.4. Creating a slice</a></span></dt>
 </dl></dd>
 <dt><span class="appendix"><a href="#id268397">A. Configuration variables</a></span></dt>
-<dt><span class="bibliography"><a href="#id270521">Bibliography</a></span></dt>
+<dt><span class="bibliography"><a href="#id270522">Bibliography</a></span></dt>
 </dl>
 </div>
 <div class="section" lang="en">
@@ -383,7 +383,7 @@ PLC: Rebuilding Boot Manager:                              [  OK  ]
 	file for Proper, the service which allows certain slices to
 	perform certain privileged operations in the root
 	context.</p></li>
-<li><p><code class="filename">/vserver/pl_netflow/var/log/netflow.log</code>:
+<li><p><code class="filename">/vservers/pl_netflow/var/log/netflow.log</code>:
 	The log file for PlanetFlow, the network traffic auditing
 	service.</p></li>
 </ul></div>
@@ -602,7 +602,7 @@ vserver pl_conf exec service pl_conf restart</pre>
 <p>
 		  Type: hostname</p>
 <p>
-		  Default: localhost</p>
+		  Default: localhost.localdomain</p>
 <p>The fully qualified hostname or IP address of
 	  the database server. This hostname must be resolvable and
 	  reachable by the rest of your installation.</p>
@@ -666,7 +666,7 @@ vserver pl_conf exec service pl_conf restart</pre>
 <p>
 		  Type: hostname</p>
 <p>
-		  Default: localhost</p>
+		  Default: localhost.localdomain</p>
 <p>The fully qualified hostname or IP address of
 	  the API server. This hostname must be resolvable and
 	  reachable by the rest of your installation, as well as your
@@ -779,7 +779,7 @@ vserver pl_conf exec service pl_conf restart</pre>
 <p>
 		  Type: hostname</p>
 <p>
-		  Default: localhost</p>
+		  Default: localhost.localdomain</p>
 <p>The fully qualified hostname or IP address of
 	  the web server. This hostname must be resolvable and
 	  reachable by the rest of your installation, as well as your
@@ -838,7 +838,7 @@ vserver pl_conf exec service pl_conf restart</pre>
 <p>
 		  Type: hostname</p>
 <p>
-		  Default: localhost</p>
+		  Default: localhost.localdomain</p>
 <p>The fully qualified hostname or IP address of
 	  the boot server. This hostname must be resolvable and
 	  reachable by the rest of your installation, as well as your
@@ -888,7 +888,7 @@ vserver pl_conf exec service pl_conf restart</pre>
 </div>
 <div class="bibliography">
 <div class="titlepage"><div><div><h2 class="title">
-<a name="id270521"></a>Bibliography</h2></div></div></div>
+<a name="id270522"></a>Bibliography</h2></div></div></div>
 <div class="biblioentry">
 <a name="TechsGuide"></a><p>[1] <span class="author"><span class="firstname">Mark</span> <span class="surname">Huang</span>. </span><span class="title"><i><a href="http://www.planet-lab.org/doc/TechsGuide.php" target="_top">PlanetLab
       Technical Contact's Guide</a></i>. </span></p>
