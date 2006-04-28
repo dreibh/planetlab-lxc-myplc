@@ -6,7 +6,7 @@ Default PLC configuration file
 Mark Huang <mlhuang@cs.princeton.edu>
 Copyright (C) 2006 The Trustees of Princeton University
 
-$Id: plc_config.xml,v 1.10 2006/04/17 16:47:38 mlhuang Exp $
+$Id: plc_config.xml,v 1.11 2006/04/24 18:04:25 mlhuang Exp $
 -->
 
 <!DOCTYPE configuration PUBLIC "-//PlanetLab Central//DTD PLC configuration//EN" "plc_config.dtd">
@@ -186,7 +186,7 @@ $Id: plc_config.xml,v 1.10 2006/04/17 16:47:38 mlhuang Exp $
 
 	<variable id="host" type="hostname">
 	  <name>Hostname</name>
-	  <value>localhost</value>
+	  <value>localhost.localdomain</value>
 	  <description>The fully qualified hostname or IP address of
 	  the database server. This hostname must be resolvable and
 	  reachable by the rest of your installation.</description>
@@ -243,7 +243,7 @@ $Id: plc_config.xml,v 1.10 2006/04/17 16:47:38 mlhuang Exp $
 
 	<variable id="host" type="hostname">
 	  <name>Hostname</name>
-	  <value>localhost</value>
+	  <value>localhost.localdomain</value>
 	  <description>The fully qualified hostname or IP address of
 	  the API server. This hostname must be resolvable and
 	  reachable by the rest of your installation, as well as your
@@ -346,7 +346,7 @@ $Id: plc_config.xml,v 1.10 2006/04/17 16:47:38 mlhuang Exp $
 
 	<variable id="host" type="hostname">
 	  <name>Hostname</name>
-	  <value>localhost</value>
+	  <value>localhost.localdomain</value>
 	  <description>The fully qualified hostname or IP address of
 	  the web server. This hostname must be resolvable and
 	  reachable by the rest of your installation, as well as your
@@ -409,7 +409,7 @@ $Id: plc_config.xml,v 1.10 2006/04/17 16:47:38 mlhuang Exp $
 
 	<variable id="host" type="hostname">
 	  <name>Hostname</name>
-	  <value>localhost</value>
+	  <value>localhost.localdomain</value>
 	  <description>The fully qualified hostname or IP address of
 	  the boot server. This hostname must be resolvable and
 	  reachable by the rest of your installation, as well as your
