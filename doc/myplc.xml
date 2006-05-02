@@ -308,6 +308,13 @@ PLC: Rebuilding Boot Manager:                              [  OK  ]
       Service uses to determine slice state.</para></listitem>
     </itemizedlist>
 
+    <para> Please also note that SELinux, when enabled, has been
+    reported to prevent the system from operating smoothly. These
+    reports were based on attempts made on FC4 and FC5. If you run any
+    of those linux distributions, you should use the 'Security Level
+    Configuration' utility and make sure SELinux is not configured as
+    'Enforcing', but as 'Permissive' at most. </para>
+
     <para>If no failures occur, then MyPLC should be active with a
     default configuration. Open a web browser on the host system and
     visit <literal>http://localhost/</literal>, which should bring you
