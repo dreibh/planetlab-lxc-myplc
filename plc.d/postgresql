@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: postgresql,v 1.1 2006/04/06 21:51:59 mlhuang Exp $
+# $Id: postgresql,v 1.2 2006/04/25 21:18:19 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -25,8 +25,19 @@ export PGPORT=$PLC_DB_PORT
 # /etc/init.d/postgresql always returns 0, even on failure
 postgresql_start ()
 {
+    # start() always returns 0
     service postgresql start
-    status postmaster && [ -f /var/lock/subsys/postgresql ]
+
+    # status() will still return 0 even while still initializing
+    if status postmaster && [ -f /var/lock/subsys/postgresql ] ; then
+	# The only way we can be sure is if we can access it
+	for i in $(seq 1 10) ; do
+	    psql -U postgres -c "" template1 && return 0
+	    sleep 1
+	done
+    fi
+
+    return 1
 }
 
 case "$1" in
