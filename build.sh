@@ -273,6 +273,7 @@ rm -f $data/var/www/html/download/*.{iso,usb}
 RETVAL=$(($RETVAL+$?))
 
 # Restore default configuration
-rm -f $data/etc/planetlab/plc_config.xml $data/etc/planetlab/configs/bootstrap.xml
+rm -f $data/etc/planetlab/configs/bootstrap.xml
+install -D -m 444 $config $data/etc/planetlab/plc_config.xml
 
 exit $RETVAL
