@@ -191,7 +191,7 @@ def mainloop (cdef, cread, cwrite,main_config, site_config, consolidated_config)
             print ("Wrote %s" % site_config)
             if (answer == "W"):
                 consolidate(main_config, site_config, consolidated_config)
-            return
+            print ("You might want to type 'r' (restart plc) or 'q' (quit)")
         elif (answer == "l"):
             print ("Config involves the following variables")
             sys.stdout.write(cread.output_variables())
