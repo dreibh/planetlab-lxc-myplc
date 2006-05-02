@@ -6,7 +6,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: api-config,v 1.4 2006/03/28 22:35:42 mlhuang Exp $
+# $Id: api-config,v 1.5 2006/03/29 19:17:26 mlhuang Exp $
 #
 
 import plcapilib
@@ -54,7 +54,7 @@ def main():
         person_id = persons[0]['person_id']
         AdmUpdatePerson(person_id, admin)
 
-    # Create/update the default site (should be site_id 0)
+    # Create/update the default site (should be site_id 1)
     if plc_www['port'] == '80':
         url = "http://" + plc_www['host'] + "/"
     elif plc_www['port'] == '443':
