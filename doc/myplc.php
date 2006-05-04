@@ -46,12 +46,12 @@
 <dt><span class="section"><a href="#id267666">3. Quickstart</a></span></dt>
 <dd><dl>
 <dt><span class="section"><a href="#ChangingTheConfiguration">3.1. Changing the configuration</a></span></dt>
-<dt><span class="section"><a href="#id268154">3.2. Installing nodes</a></span></dt>
-<dt><span class="section"><a href="#id268229">3.3. Administering nodes</a></span></dt>
-<dt><span class="section"><a href="#id268323">3.4. Creating a slice</a></span></dt>
+<dt><span class="section"><a href="#id268160">3.2. Installing nodes</a></span></dt>
+<dt><span class="section"><a href="#id268236">3.3. Administering nodes</a></span></dt>
+<dt><span class="section"><a href="#id268330">3.4. Creating a slice</a></span></dt>
 </dl></dd>
-<dt><span class="appendix"><a href="#id268397">A. Configuration variables</a></span></dt>
-<dt><span class="bibliography"><a href="#id270522">Bibliography</a></span></dt>
+<dt><span class="appendix"><a href="#id268404">A. Configuration variables</a></span></dt>
+<dt><span class="bibliography"><a href="#id270529">Bibliography</a></span></dt>
 </dl>
 </div>
 <div class="section" lang="en">
@@ -277,6 +277,12 @@ PLC: Rebuilding Boot Manager:                              [  OK  ]
       generates the initial set of XML files that the Slice Creation
       Service uses to determine slice state.</p></li>
 </ul></div>
+<p> Please also note that SELinux, when enabled, has been
+    reported to prevent the system from operating smoothly. These
+    reports were based on attempts made on FC4 and FC5. If you run any
+    of those linux distributions, you should use the 'Security Level
+    Configuration' utility and make sure SELinux is not configured as
+    'Enforcing', but as 'Permissive' at most. </p>
 <p>If no failures occur, then MyPLC should be active with a
     default configuration. Open a web browser on the host system and
     visit <code class="literal">http://localhost/</code>, which should bring you
@@ -338,7 +344,7 @@ PLC: Rebuilding Boot Manager:                              [  OK  ]
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="id268154"></a>3.2. Installing nodes</h3></div></div></div>
+<a name="id268160"></a>3.2. Installing nodes</h3></div></div></div>
 <p>Install your first node by clicking <code class="literal">Add
       Node</code> under the <code class="literal">Nodes</code> tab. Fill in
       all the appropriate details, then click
@@ -362,12 +368,12 @@ PLC: Rebuilding Boot Manager:                              [  OK  ]
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="id268229"></a>3.3. Administering nodes</h3></div></div></div>
+<a name="id268236"></a>3.3. Administering nodes</h3></div></div></div>
 <p>You may administer nodes as <code class="literal">root</code> by
       using the SSH key stored in
       <code class="filename">/etc/planetlab/root_ssh_key.rsa</code>.</p>
 <div class="example">
-<a name="id268250"></a><p class="title"><b>Example 5. Accessing nodes via SSH. Replace
+<a name="id268257"></a><p class="title"><b>Example 5. Accessing nodes via SSH. Replace
 	<code class="literal">node</code> with the hostname of the node.</b></p>
 <pre class="programlisting">ssh -i /etc/planetlab/root_ssh_key.rsa root@node</pre>
 </div>
@@ -390,7 +396,7 @@ PLC: Rebuilding Boot Manager:                              [  OK  ]
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="id268323"></a>3.4. Creating a slice</h3></div></div></div>
+<a name="id268330"></a>3.4. Creating a slice</h3></div></div></div>
 <p>Create a slice by clicking <code class="literal">Create Slice</code>
       under the <code class="literal">Slices</code> tab. Fill in all the
       appropriate details, then click <code class="literal">Create</code>. Add
@@ -405,7 +411,7 @@ PLC: Rebuilding Boot Manager:                              [  OK  ]
       to determine if it needs to create or delete any slices. You may
       accelerate this process manually if desired.</p>
 <div class="example">
-<a name="id268381"></a><p class="title"><b>Example 6. Forcing slice creation on a node.</b></p>
+<a name="id268387"></a><p class="title"><b>Example 6. Forcing slice creation on a node.</b></p>
 <pre class="programlisting"># Update slices.xml immediately
 service plc start crond
 
@@ -417,7 +423,7 @@ vserver pl_conf exec service pl_conf restart</pre>
 </div>
 <div class="appendix" lang="en">
 <h2 class="title" style="clear: both">
-<a name="id268397"></a>A. Configuration variables</h2>
+<a name="id268404"></a>A. Configuration variables</h2>
 <p>Listed below is the set of standard configuration variables
     and their default values, defined in the template
     <code class="filename">/etc/planetlab/default_config.xml</code>. Additional
@@ -888,7 +894,7 @@ vserver pl_conf exec service pl_conf restart</pre>
 </div>
 <div class="bibliography">
 <div class="titlepage"><div><div><h2 class="title">
-<a name="id270522"></a>Bibliography</h2></div></div></div>
+<a name="id270529"></a>Bibliography</h2></div></div></div>
 <div class="biblioentry">
 <a name="TechsGuide"></a><p>[1] <span class="author"><span class="firstname">Mark</span> <span class="surname">Huang</span>. </span><span class="title"><i><a href="http://www.planet-lab.org/doc/TechsGuide.php" target="_top">PlanetLab
       Technical Contact's Guide</a></i>. </span></p>
