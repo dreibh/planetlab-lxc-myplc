@@ -28,7 +28,7 @@ system.
 
 %build
 pushd myplc
-./build.sh -r 4
+./build.sh
 popd
 
 %install

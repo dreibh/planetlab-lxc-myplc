@@ -28,7 +28,7 @@ export PATH
 config=plc_config.xml
 
 # Release and architecture to install
-releasever=2
+releasever=4
 basearch=i386
 
 # Initial size of the image
