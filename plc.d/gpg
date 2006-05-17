@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: gpg,v 1.2 2006/04/25 21:18:19 mlhuang Exp $
+# $Id: gpg,v 1.3 2006/05/08 18:16:33 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -16,8 +16,8 @@
 
 case "$1" in
     start)
-	# Generate GPG keyrings
 	if [ ! -f $PLC_ROOT_GPG_KEY_PUB -o ! -f $PLC_ROOT_GPG_KEY ] ; then
+	    # Generate new GPG keyring
 	    MESSAGE=$"Generating GPG keys"
 	    dialog "$MESSAGE"
 
@@ -28,7 +28,8 @@ case "$1" in
 	    # avoid running out of entropy.
 	    rm -f /dev/random
 	    mknod /dev/random c 1 9
-	    gpg --homedir=/root --batch --gen-key <<EOF
+	    gpg --homedir=/root --no-tty --yes \
+		--batch --gen-key <<EOF
 Key-Type: DSA
 Key-Length: 1024
 Subkey-Type: ELG-E
@@ -46,6 +47,46 @@ EOF
 	    mknod /dev/random c 1 8
 	    chmod 644 $PLC_ROOT_GPG_KEY_PUB
 	    chmod 600 $PLC_ROOT_GPG_KEY
+
+	    result "$MESSAGE"
+	else
+	    # Update GPG UID
+	    MESSAGE=$"Updating GPG keys"
+	    dialog "$MESSAGE"
+
+	    # Get the current GPG fingerprint
+	    fingerprint=$PLC_MAIL_SUPPORT_ADDRESS
+	    (
+		IFS=:
+		while read -a fields ; do
+		    if [ "${fields[0]}" = "pub" ] ; then
+			fingerprint=${fields[4]}
+			break
+		    fi
+		done < <(
+		    gpg --homedir=/root --no-tty --yes \
+			--no-default-keyring --keyring $PLC_ROOT_GPG_KEY_PUB --secret-keyring $PLC_ROOT_GPG_KEY \
+			--list-public-keys --with-colons
+		    check
+		)
+	    )
+
+	    # GPG UIDs cannot and should not normally be changed, but
+	    # since we do not certify signatures, we can effectively
+	    # change it by adding a new one and deleting the old one.
+	    gpg --homedir=/root --no-tty --yes \
+		--no-default-keyring --keyring $PLC_ROOT_GPG_KEY_PUB --secret-keyring $PLC_ROOT_GPG_KEY \
+		--command-fd 0 --status-fd 1 --edit-key $fingerprint <<EOF
+adduid
+$PLC_NAME Central
+$PLC_MAIL_SUPPORT_ADDRESS
+http://$PLC_WWW_HOST/
+uid 1
+deluid
+y
+save
+EOF
+	    check
 
 	    result "$MESSAGE"
 	fi
