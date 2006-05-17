@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: gpg,v 1.3 2006/05/08 18:16:33 mlhuang Exp $
+# $Id: gpg,v 1.4 2006/05/17 20:47:59 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -47,49 +47,55 @@ EOF
 	    mknod /dev/random c 1 8
 	    chmod 644 $PLC_ROOT_GPG_KEY_PUB
 	    chmod 600 $PLC_ROOT_GPG_KEY
-
-	    result "$MESSAGE"
 	else
 	    # Update GPG UID
 	    MESSAGE=$"Updating GPG keys"
 	    dialog "$MESSAGE"
 
-	    # Get the current GPG fingerprint
-	    fingerprint=$PLC_MAIL_SUPPORT_ADDRESS
-	    (
-		IFS=:
-		while read -a fields ; do
-		    if [ "${fields[0]}" = "pub" ] ; then
-			fingerprint=${fields[4]}
-			break
-		    fi
-		done < <(
-		    gpg --homedir=/root --no-tty --yes \
-			--no-default-keyring --keyring $PLC_ROOT_GPG_KEY_PUB --secret-keyring $PLC_ROOT_GPG_KEY \
-			--list-public-keys --with-colons
-		    check
-		)
+	    # Get the current GPG fingerprint and comment
+	    OLDIFS=$IFS
+	    IFS=:
+	    while read -a fields ; do
+		if [ "${fields[0]}" = "pub" ] ; then
+		    fingerprint=${fields[4]}
+		    IFS=$OLDIFS
+		    comment=${fields[9]/\x3a/:}
+		    break
+		fi
+	    done < <(
+		gpg --homedir=/etc/planetlab --no-permission-warning --no-tty --yes \
+		    --list-public-keys --with-colons
+		check
 	    )
+	    IFS=$OLDIFS
 
-	    # GPG UIDs cannot and should not normally be changed, but
-	    # since we do not certify signatures, we can effectively
-	    # change it by adding a new one and deleting the old one.
-	    gpg --homedir=/root --no-tty --yes \
-		--no-default-keyring --keyring $PLC_ROOT_GPG_KEY_PUB --secret-keyring $PLC_ROOT_GPG_KEY \
-		--command-fd 0 --status-fd 1 --edit-key $fingerprint <<EOF
+	    # Add a new UID if appropriate
+	    if [ "$comment" != "$PLC_NAME Central (http://$PLC_WWW_HOST/) <$PLC_MAIL_SUPPORT_ADDRESS>" ] ; then
+		gpg --homedir=/etc/planetlab --no-permission-warning --no-tty --yes \
+		    --command-fd 0 --status-fd 1 --edit-key $fingerprint <<EOF
 adduid
 $PLC_NAME Central
 $PLC_MAIL_SUPPORT_ADDRESS
 http://$PLC_WWW_HOST/
-uid 1
-deluid
-y
 save
 EOF
-	    check
-
-	    result "$MESSAGE"
+		check
+	    fi
 	fi
+
+	# Install the key in the RPM database
+	mkdir -p /etc/pki/rpm-gpg
+	gpg --homedir=/etc/planetlab --no-permission-warning --no-tty --yes \
+	    --export --armor >"/etc/pki/rpm-gpg/RPM-GPG-KEY-$PLC_NAME"
+	check
+	if rpm -q gpg-pubkey ; then
+	    rpm --allmatches -e gpg-pubkey
+	    check
+	fi
+	rpm --import /etc/pki/rpm-gpg/*
+	check
+
+	result "$MESSAGE"
 	;;
 esac
 
