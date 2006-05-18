@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: gpg,v 1.4 2006/05/17 20:47:59 mlhuang Exp $
+# $Id: gpg,v 1.5 2006/05/17 22:52:09 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -58,8 +58,6 @@ EOF
 	    while read -a fields ; do
 		if [ "${fields[0]}" = "pub" ] ; then
 		    fingerprint=${fields[4]}
-		    IFS=$OLDIFS
-		    comment=${fields[9]/\x3a/:}
 		    break
 		fi
 	    done < <(
@@ -69,18 +67,16 @@ EOF
 	    )
 	    IFS=$OLDIFS
 
-	    # Add a new UID if appropriate
-	    if [ "$comment" != "$PLC_NAME Central (http://$PLC_WWW_HOST/) <$PLC_MAIL_SUPPORT_ADDRESS>" ] ; then
-		gpg --homedir=/etc/planetlab --no-permission-warning --no-tty --yes \
-		    --command-fd 0 --status-fd 1 --edit-key $fingerprint <<EOF
+	    # Add a new UID if appropriate. GPG will detect and merge duplicates.
+	    gpg --homedir=/etc/planetlab --no-permission-warning --no-tty --yes \
+		--command-fd 0 --status-fd 1 --edit-key $fingerprint <<EOF
 adduid
 $PLC_NAME Central
 $PLC_MAIL_SUPPORT_ADDRESS
 http://$PLC_WWW_HOST/
 save
 EOF
-		check
-	    fi
+	    check
 	fi
 
 	# Install the key in the RPM database
