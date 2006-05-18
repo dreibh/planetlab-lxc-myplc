@@ -1,0 +1,50 @@
+#!/bin/bash
+#
+# priority: 1200
+#
+# Update node package repository metadata and sign packages
+#
+# Mark Huang <mlhuang@cs.princeton.edu>
+# Copyright (C) 2006 The Trustees of Princeton University
+#
+# $Id: gpg,v 1.3 2006/05/08 18:16:33 mlhuang Exp $
+#
+
+# Source function library and configuration
+. /etc/plc.d/functions
+. /etc/planetlab/plc_config
+
+case "$1" in
+    start)
+	MESSAGE=$"Signing node packages"
+	dialog "$MESSAGE"
+
+	shopt -s nullglob
+	for repository in /var/www/html/install-rpms/* ; do
+            # Sign all RPMS. setsid detaches rpm from the terminal,
+            # allowing the (hopefully blank) GPG password to be
+            # entered from stdin instead of /dev/tty.
+	    packages=$repository/*.rpm
+	    if [ -n $packages ] ; then
+		echo | setsid rpm \
+		    --define "_signature gpg" \
+		    --define "_gpg_path /etc/planetlab" \
+		    --define "_gpg_name $PLC_MAIL_SUPPORT_ADDRESS" \
+		    --resign $packages
+		check
+	    fi
+
+	    # Update yum metadata. createrepo sometimes leaves behind
+	    # an .olddata file accidentally.
+	    rm -rf $repository/.olddata
+	    yum-arch $repository
+	    check
+	    createrepo -g yumgroups.xml $repository
+	    check
+	done
+
+	result "$MESSAGE"
+	;;
+esac
+
+exit $ERRORS
