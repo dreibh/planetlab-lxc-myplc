@@ -132,7 +132,7 @@ def consolidate (main_config, site_config, consolidated_config):
     except Exception, inst:
         print "Could not consolidate, %s" % (str(inst))
         return
-    print ("Overwote %s\n\tfrom %s\n\tand %s"%(consolidated_config,main_config,site_config))
+    print ("Merged\n\t%s\nand\t%s\ninto\t%s"%(main_config,site_config,consolidated_config))
         
 ####################
 def restart_plc ():
@@ -149,10 +149,11 @@ p\tPrints all locally-customized vars and values
 e <var>\tPrompts (edit) fro variable <var>
 p <var>\tShows current setting for <var>
 l\tlists all known variables
-w\tSaves and quit
-W\tsaves, consolidates and quit
+w\tsaves & consolidates
 r\trestarts plc service
 q\tQuits without saving
+---
+Typical usage involves: c, [p,] w, r
 """
 
 re_mainloop_var="^(?P<command>[pe])[ \t]+(?P<varname>\w+)$"
@@ -175,6 +176,7 @@ def mainloop (cdef, cread, cwrite,main_config, site_config, consolidated_config)
             answer = raw_input("Enter command (c for usual changes, w to save, ? for help) ").strip()
         except EOFError:
             answer =""
+        answer=answer.lower()
         if (answer == "") or (answer == "?") or (answer == "h"):
             print mainloop_usage
         elif (answer == "q"):
@@ -182,15 +184,14 @@ def mainloop (cdef, cread, cwrite,main_config, site_config, consolidated_config)
             return
         elif (answer == "e"):
             prompt_all_variables(cdef, cread, cwrite)
-        elif (answer.lower() == "w"):
+        elif (answer == "w"):
             try:
                 cwrite.save(site_config)
             except:
                 print ("Could not save -- fix write access on %s" % site_config)
                 break
             print ("Wrote %s" % site_config)
-            if (answer == "W"):
-                consolidate(main_config, site_config, consolidated_config)
+            consolidate(main_config, site_config, consolidated_config)
             print ("You might want to type 'r' (restart plc) or 'q' (quit)")
         elif (answer == "l"):
             print ("Config involves the following variables")
