@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: crond,v 1.1 2006/04/06 21:51:59 mlhuang Exp $
+# $Id: crond,v 1.2 2006/04/25 21:18:19 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -34,6 +34,7 @@ HOME=/
 */5 * * * * root gen-slices-xml-05.py
 */15 * * * * root gen-sites-xml.py
 */15 * * * * root gen-static-content.py
+5 5 * * * root vacuumdb -U postgres --all --analyze --quiet
 EOF
 
         # Run them once at startup
@@ -42,6 +43,8 @@ EOF
 	gen-sites-xml.py
 	check
 	gen-static-content.py
+	check
+	vacuumdb -U postgres --all --analyze --quiet
 	check
 
 	plc_daemon crond
