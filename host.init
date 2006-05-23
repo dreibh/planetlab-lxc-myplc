@@ -6,7 +6,7 @@
 #
 # description:	Manages all PLC services on this machine
 #
-# $Id: host.init,v 1.5 2006/04/18 15:39:34 thierry Exp $
+# $Id: host.init,v 1.6 2006/04/20 09:01:00 thierry Exp $
 #
 
 PATH=/sbin:/bin:/usr/bin:/usr/sbin
@@ -64,7 +64,10 @@ mount_plc ()
 
 start ()
 {
-    mount_plc 
+    # Starting everything
+    if [ -z "$1" ] ; then
+	mount_plc 
+    fi
 
     chroot $PLC_ROOT /sbin/service plc $PLC_OPTIONS start $*
     check
@@ -92,8 +95,10 @@ stop ()
 	check
     fi
 
-    umount_plc
-
+    # Stopped everything
+    if [ -z "$1" ] ; then
+	umount_plc
+    fi
 }
 
 mount_status ()
