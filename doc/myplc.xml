@@ -165,7 +165,7 @@ rpm2cpio myplc-0.3-1.planetlab.i386.rpm | cpio -diu]]></programlisting>
 	  <command>createrepo</command> to update the
 	  <command>yum</command> caches in this directory after
 	  installing a new RPM. PlanetLab Central cannot support any
-	  changes to this file.</para></listitem>
+	  changes to this directory.</para></listitem>
 
 	  <listitem><para><filename>/var/www/html/xml</filename>: This
 	  directory contains various XML files that the Slice Creation
@@ -247,9 +247,11 @@ PLC: Generating SSL certificates:                          [  OK  ]
 PLC: Generating SSH keys:                                  [  OK  ]
 PLC: Starting web server:                                  [  OK  ]
 PLC: Bootstrapping the database:                           [  OK  ]
+PLC: Starting DNS server:                                  [  OK  ]
 PLC: Starting crond:                                       [  OK  ]
 PLC: Rebuilding Boot CD:                                   [  OK  ]
 PLC: Rebuilding Boot Manager:                              [  OK  ]
+PLC: Signing node packages:                                [  OK  ]
 ]]></programlisting>
     </example>
 
@@ -267,8 +269,11 @@ PLC: Rebuilding Boot Manager:                              [  OK  ]
       mounts, or your kernel may not support loopback mounting, bind
       mounting, or the ext3 filesystem. Try freeing at least one
       loopback device, or re-compiling your kernel to support loopback
-      mounting, bind mounting, and the ext3
-      filesystem.</para></listitem>
+      mounting, bind mounting, and the ext3 filesystem. SELinux may
+      also be enabled. If you install MyPLC on Fedora Core 4 or 5, use
+      the <application>Security Level Configuration</application>
+      utility to configure SELinux to be
+      <literal>Permissive</literal>.</para></listitem>
 
       <listitem><para><literal>Starting database server</literal>: If
       this step fails, check
@@ -307,13 +312,6 @@ PLC: Rebuilding Boot Manager:                              [  OK  ]
       generates the initial set of XML files that the Slice Creation
       Service uses to determine slice state.</para></listitem>
     </itemizedlist>
-
-    <para> Please also note that SELinux, when enabled, has been
-    reported to prevent the system from operating smoothly. These
-    reports were based on attempts made on FC4 and FC5. If you run any
-    of those linux distributions, you should use the 'Security Level
-    Configuration' utility and make sure SELinux is not configured as
-    'Enforcing', but as 'Permissive' at most. </para>
 
     <para>If no failures occur, then MyPLC should be active with a
     default configuration. Open a web browser on the host system and
@@ -359,20 +357,17 @@ PLC: Rebuilding Boot Manager:                              [  OK  ]
 	<listitem><para><envar>PLC_ROOT_PASSWORD</envar>: Change this
 	to a more secure password.</para></listitem>
 
-	<listitem><para><envar>PLC_NET_DNS1</envar>,
-	<envar>PLC_NET_DNS2</envar>: Change these to the IP addresses
-	of your primary and secondary DNS servers. Check
-	<filename>/etc/resolv.conf</filename> on your host
-	filesystem.</para></listitem>
-
 	<listitem><para><envar>PLC_MAIL_SUPPORT_ADDRESS</envar>:
 	Change this to the e-mail address at which you would like to
 	receive support requests.</para></listitem>
 
 	<listitem><para><envar>PLC_DB_HOST</envar>,
-	<envar>PLC_API_HOST</envar>, <envar>PLC_WWW_HOST</envar>,
-	<envar>PLC_BOOT_HOST</envar>: Change all of these to the
-	preferred FQDN of your host system.</para></listitem>
+	<envar>PLC_DB_IP</envar>, <envar>PLC_API_HOST</envar>,
+	<envar>PLC_API_IP</envar>, <envar>PLC_WWW_HOST</envar>,
+	<envar>PLC_WWW_IP</envar>, <envar>PLC_BOOT_HOST</envar>,
+	<envar>PLC_BOOT_IP</envar>: Change all of these to the
+	preferred FQDN and external IP address of your host
+	system.</para></listitem>
       </itemizedlist>
 
       <para>After changing these variables, save the file, then

@@ -122,7 +122,7 @@
       <para>
 		  Type: ip</para>
       <para>
-		  Default: 128.112.136.10</para>
+		  Default: 127.0.0.1</para>
       <para>Primary DNS server address.</para>
     </listitem>
   </varlistentry>
@@ -132,8 +132,22 @@
       <para>
 		  Type: ip</para>
       <para>
-		  Default: 128.112.136.12</para>
+		  Default: </para>
       <para>Secondary DNS server address.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_DNS_ENABLED</term>
+    <listitem>
+      <para>
+		  Type: boolean</para>
+      <para>
+		  Default: true</para>
+      <para>Enable the internal DNS server. The server does
+          not provide reverse resolution and is not a production
+          quality or scalable DNS solution. Use the internal DNS
+          server only for small deployments or for
+          testing.</para>
     </listitem>
   </varlistentry>
   <varlistentry>
@@ -214,9 +228,19 @@
 		  Type: hostname</para>
       <para>
 		  Default: localhost.localdomain</para>
-      <para>The fully qualified hostname or IP address of
-	  the database server. This hostname must be resolvable and
-	  reachable by the rest of your installation.</para>
+      <para>The fully qualified hostname of the database
+	  server.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_DB_IP</term>
+    <listitem>
+      <para>
+		  Type: ip</para>
+      <para>
+		  Default: 127.0.0.1</para>
+      <para>The IP address of the database server, if not
+          resolvable by the configured DNS servers.</para>
     </listitem>
   </varlistentry>
   <varlistentry>
@@ -292,10 +316,19 @@
 		  Type: hostname</para>
       <para>
 		  Default: localhost.localdomain</para>
-      <para>The fully qualified hostname or IP address of
-	  the API server. This hostname must be resolvable and
-	  reachable by the rest of your installation, as well as your
-	  nodes.</para>
+      <para>The fully qualified hostname of the API
+	  server.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_API_IP</term>
+    <listitem>
+      <para>
+		  Type: ip</para>
+      <para>
+		  Default: 127.0.0.1</para>
+      <para>The IP address of the API server, if not
+          resolvable by the configured DNS servers.</para>
     </listitem>
   </varlistentry>
   <varlistentry>
@@ -427,10 +460,19 @@
 		  Type: hostname</para>
       <para>
 		  Default: localhost.localdomain</para>
-      <para>The fully qualified hostname or IP address of
-	  the web server. This hostname must be resolvable and
-	  reachable by the rest of your installation, as well as your
-	  nodes.</para>
+      <para>The fully qualified hostname of the web
+	  server.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_WWW_IP</term>
+    <listitem>
+      <para>
+		  Type: ip</para>
+      <para>
+		  Default: 127.0.0.1</para>
+      <para>The IP address of the web server, if not
+          resolvable by the configured DNS servers.</para>
     </listitem>
   </varlistentry>
   <varlistentry>
@@ -498,10 +540,19 @@
 		  Type: hostname</para>
       <para>
 		  Default: localhost.localdomain</para>
-      <para>The fully qualified hostname or IP address of
-	  the boot server. This hostname must be resolvable and
-	  reachable by the rest of your installation, as well as your
-	  nodes.</para>
+      <para>The fully qualified hostname of the boot
+	  server.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_BOOT_IP</term>
+    <listitem>
+      <para>
+		  Type: ip</para>
+      <para>
+		  Default: 127.0.0.1</para>
+      <para>The IP address of the boot server, if not
+          resolvable by the configured DNS servers.</para>
     </listitem>
   </varlistentry>
   <varlistentry>

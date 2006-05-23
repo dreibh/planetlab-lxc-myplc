@@ -46,12 +46,12 @@
 <dt><span class="section"><a href="#id267666">3. Quickstart</a></span></dt>
 <dd><dl>
 <dt><span class="section"><a href="#ChangingTheConfiguration">3.1. Changing the configuration</a></span></dt>
-<dt><span class="section"><a href="#id268160">3.2. Installing nodes</a></span></dt>
-<dt><span class="section"><a href="#id268236">3.3. Administering nodes</a></span></dt>
-<dt><span class="section"><a href="#id268330">3.4. Creating a slice</a></span></dt>
+<dt><span class="section"><a href="#id268166">3.2. Installing nodes</a></span></dt>
+<dt><span class="section"><a href="#id268240">3.3. Administering nodes</a></span></dt>
+<dt><span class="section"><a href="#id268334">3.4. Creating a slice</a></span></dt>
 </dl></dd>
-<dt><span class="appendix"><a href="#id268404">A. Configuration variables</a></span></dt>
-<dt><span class="bibliography"><a href="#id270529">Bibliography</a></span></dt>
+<dt><span class="appendix"><a href="#id268409">A. Configuration variables</a></span></dt>
+<dt><span class="bibliography"><a href="#id270747">Bibliography</a></span></dt>
 </dl>
 </div>
 <div class="section" lang="en">
@@ -154,7 +154,7 @@ rpm2cpio myplc-0.3-1.planetlab.i386.rpm | cpio -diu</pre>
 	  <span><strong class="command">createrepo</strong></span> to update the
 	  <span><strong class="command">yum</strong></span> caches in this directory after
 	  installing a new RPM. PlanetLab Central cannot support any
-	  changes to this file.</p></li>
+	  changes to this directory.</p></li>
 <li><p><code class="filename">/var/www/html/xml</code>: This
 	  directory contains various XML files that the Slice Creation
 	  Service uses to determine the state of slices. These XML
@@ -214,7 +214,7 @@ chkconfig plc on</pre>
     failures occur, you should see output similar to the
     following:</p>
 <div class="example">
-<a name="id267786"></a><p class="title"><b>Example 4. A successful MyPLC startup.</b></p>
+<a name="id267787"></a><p class="title"><b>Example 4. A successful MyPLC startup.</b></p>
 <pre class="programlisting">Mounting PLC:                                              [  OK  ]
 PLC: Generating network files:                             [  OK  ]
 PLC: Starting system logger:                               [  OK  ]
@@ -223,9 +223,11 @@ PLC: Generating SSL certificates:                          [  OK  ]
 PLC: Generating SSH keys:                                  [  OK  ]
 PLC: Starting web server:                                  [  OK  ]
 PLC: Bootstrapping the database:                           [  OK  ]
+PLC: Starting DNS server:                                  [  OK  ]
 PLC: Starting crond:                                       [  OK  ]
 PLC: Rebuilding Boot CD:                                   [  OK  ]
 PLC: Rebuilding Boot Manager:                              [  OK  ]
+PLC: Signing node packages:                                [  OK  ]
 </pre>
 </div>
 <p>If <code class="filename">/plc/root</code> is mounted successfully, a
@@ -241,8 +243,11 @@ PLC: Rebuilding Boot Manager:                              [  OK  ]
       mounts, or your kernel may not support loopback mounting, bind
       mounting, or the ext3 filesystem. Try freeing at least one
       loopback device, or re-compiling your kernel to support loopback
-      mounting, bind mounting, and the ext3
-      filesystem.</p></li>
+      mounting, bind mounting, and the ext3 filesystem. SELinux may
+      also be enabled. If you install MyPLC on Fedora Core 4 or 5, use
+      the <span class="application">Security Level Configuration</span>
+      utility to configure SELinux to be
+      <code class="literal">Permissive</code>.</p></li>
 <li><p><code class="literal">Starting database server</code>: If
       this step fails, check
       <code class="filename">/plc/root/var/log/pgsql</code> and
@@ -277,12 +282,6 @@ PLC: Rebuilding Boot Manager:                              [  OK  ]
       generates the initial set of XML files that the Slice Creation
       Service uses to determine slice state.</p></li>
 </ul></div>
-<p> Please also note that SELinux, when enabled, has been
-    reported to prevent the system from operating smoothly. These
-    reports were based on attempts made on FC4 and FC5. If you run any
-    of those linux distributions, you should use the 'Security Level
-    Configuration' utility and make sure SELinux is not configured as
-    'Enforcing', but as 'Permissive' at most. </p>
 <p>If no failures occur, then MyPLC should be active with a
     default configuration. Open a web browser on the host system and
     visit <code class="literal">http://localhost/</code>, which should bring you
@@ -322,18 +321,16 @@ PLC: Rebuilding Boot Manager:                              [  OK  ]
 	name of your PLC installation.</p></li>
 <li><p><code class="envar">PLC_ROOT_PASSWORD</code>: Change this
 	to a more secure password.</p></li>
-<li><p><code class="envar">PLC_NET_DNS1</code>,
-	<code class="envar">PLC_NET_DNS2</code>: Change these to the IP addresses
-	of your primary and secondary DNS servers. Check
-	<code class="filename">/etc/resolv.conf</code> on your host
-	filesystem.</p></li>
 <li><p><code class="envar">PLC_MAIL_SUPPORT_ADDRESS</code>:
 	Change this to the e-mail address at which you would like to
 	receive support requests.</p></li>
 <li><p><code class="envar">PLC_DB_HOST</code>,
-	<code class="envar">PLC_API_HOST</code>, <code class="envar">PLC_WWW_HOST</code>,
-	<code class="envar">PLC_BOOT_HOST</code>: Change all of these to the
-	preferred FQDN of your host system.</p></li>
+	<code class="envar">PLC_DB_IP</code>, <code class="envar">PLC_API_HOST</code>,
+	<code class="envar">PLC_API_IP</code>, <code class="envar">PLC_WWW_HOST</code>,
+	<code class="envar">PLC_WWW_IP</code>, <code class="envar">PLC_BOOT_HOST</code>,
+	<code class="envar">PLC_BOOT_IP</code>: Change all of these to the
+	preferred FQDN and external IP address of your host
+	system.</p></li>
 </ul></div>
 <p>After changing these variables, save the file, then
       restart MyPLC with <span><strong class="command">service plc start</strong></span>. You
@@ -344,7 +341,7 @@ PLC: Rebuilding Boot Manager:                              [  OK  ]
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="id268160"></a>3.2. Installing nodes</h3></div></div></div>
+<a name="id268166"></a>3.2. Installing nodes</h3></div></div></div>
 <p>Install your first node by clicking <code class="literal">Add
       Node</code> under the <code class="literal">Nodes</code> tab. Fill in
       all the appropriate details, then click
@@ -368,12 +365,12 @@ PLC: Rebuilding Boot Manager:                              [  OK  ]
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="id268236"></a>3.3. Administering nodes</h3></div></div></div>
+<a name="id268240"></a>3.3. Administering nodes</h3></div></div></div>
 <p>You may administer nodes as <code class="literal">root</code> by
       using the SSH key stored in
       <code class="filename">/etc/planetlab/root_ssh_key.rsa</code>.</p>
 <div class="example">
-<a name="id268257"></a><p class="title"><b>Example 5. Accessing nodes via SSH. Replace
+<a name="id268262"></a><p class="title"><b>Example 5. Accessing nodes via SSH. Replace
 	<code class="literal">node</code> with the hostname of the node.</b></p>
 <pre class="programlisting">ssh -i /etc/planetlab/root_ssh_key.rsa root@node</pre>
 </div>
@@ -396,7 +393,7 @@ PLC: Rebuilding Boot Manager:                              [  OK  ]
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="id268330"></a>3.4. Creating a slice</h3></div></div></div>
+<a name="id268334"></a>3.4. Creating a slice</h3></div></div></div>
 <p>Create a slice by clicking <code class="literal">Create Slice</code>
       under the <code class="literal">Slices</code> tab. Fill in all the
       appropriate details, then click <code class="literal">Create</code>. Add
@@ -411,7 +408,7 @@ PLC: Rebuilding Boot Manager:                              [  OK  ]
       to determine if it needs to create or delete any slices. You may
       accelerate this process manually if desired.</p>
 <div class="example">
-<a name="id268387"></a><p class="title"><b>Example 6. Forcing slice creation on a node.</b></p>
+<a name="id268392"></a><p class="title"><b>Example 6. Forcing slice creation on a node.</b></p>
 <pre class="programlisting"># Update slices.xml immediately
 service plc start crond
 
@@ -423,7 +420,7 @@ vserver pl_conf exec service pl_conf restart</pre>
 </div>
 <div class="appendix" lang="en">
 <h2 class="title" style="clear: both">
-<a name="id268404"></a>A. Configuration variables</h2>
+<a name="id268409"></a>A. Configuration variables</h2>
 <p>Listed below is the set of standard configuration variables
     and their default values, defined in the template
     <code class="filename">/etc/planetlab/default_config.xml</code>. Additional
@@ -533,7 +530,7 @@ vserver pl_conf exec service pl_conf restart</pre>
 <p>
 		  Type: ip</p>
 <p>
-		  Default: 128.112.136.10</p>
+		  Default: 127.0.0.1</p>
 <p>Primary DNS server address.</p>
 </dd>
 <dt><span class="term">PLC_NET_DNS2</span></dt>
@@ -541,8 +538,20 @@ vserver pl_conf exec service pl_conf restart</pre>
 <p>
 		  Type: ip</p>
 <p>
-		  Default: 128.112.136.12</p>
+		  Default: </p>
 <p>Secondary DNS server address.</p>
+</dd>
+<dt><span class="term">PLC_DNS_ENABLED</span></dt>
+<dd>
+<p>
+		  Type: boolean</p>
+<p>
+		  Default: true</p>
+<p>Enable the internal DNS server. The server does
+          not provide reverse resolution and is not a production
+          quality or scalable DNS solution. Use the internal DNS
+          server only for small deployments or for
+          testing.</p>
 </dd>
 <dt><span class="term">PLC_MAIL_ENABLED</span></dt>
 <dd>
@@ -609,9 +618,17 @@ vserver pl_conf exec service pl_conf restart</pre>
 		  Type: hostname</p>
 <p>
 		  Default: localhost.localdomain</p>
-<p>The fully qualified hostname or IP address of
-	  the database server. This hostname must be resolvable and
-	  reachable by the rest of your installation.</p>
+<p>The fully qualified hostname of the database
+	  server.</p>
+</dd>
+<dt><span class="term">PLC_DB_IP</span></dt>
+<dd>
+<p>
+		  Type: ip</p>
+<p>
+		  Default: 127.0.0.1</p>
+<p>The IP address of the database server, if not
+          resolvable by the configured DNS servers.</p>
 </dd>
 <dt><span class="term">PLC_DB_PORT</span></dt>
 <dd>
@@ -673,10 +690,17 @@ vserver pl_conf exec service pl_conf restart</pre>
 		  Type: hostname</p>
 <p>
 		  Default: localhost.localdomain</p>
-<p>The fully qualified hostname or IP address of
-	  the API server. This hostname must be resolvable and
-	  reachable by the rest of your installation, as well as your
-	  nodes.</p>
+<p>The fully qualified hostname of the API
+	  server.</p>
+</dd>
+<dt><span class="term">PLC_API_IP</span></dt>
+<dd>
+<p>
+		  Type: ip</p>
+<p>
+		  Default: 127.0.0.1</p>
+<p>The IP address of the API server, if not
+          resolvable by the configured DNS servers.</p>
 </dd>
 <dt><span class="term">PLC_API_PORT</span></dt>
 <dd>
@@ -786,10 +810,17 @@ vserver pl_conf exec service pl_conf restart</pre>
 		  Type: hostname</p>
 <p>
 		  Default: localhost.localdomain</p>
-<p>The fully qualified hostname or IP address of
-	  the web server. This hostname must be resolvable and
-	  reachable by the rest of your installation, as well as your
-	  nodes.</p>
+<p>The fully qualified hostname of the web
+	  server.</p>
+</dd>
+<dt><span class="term">PLC_WWW_IP</span></dt>
+<dd>
+<p>
+		  Type: ip</p>
+<p>
+		  Default: 127.0.0.1</p>
+<p>The IP address of the web server, if not
+          resolvable by the configured DNS servers.</p>
 </dd>
 <dt><span class="term">PLC_WWW_PORT</span></dt>
 <dd>
@@ -845,10 +876,17 @@ vserver pl_conf exec service pl_conf restart</pre>
 		  Type: hostname</p>
 <p>
 		  Default: localhost.localdomain</p>
-<p>The fully qualified hostname or IP address of
-	  the boot server. This hostname must be resolvable and
-	  reachable by the rest of your installation, as well as your
-	  nodes.</p>
+<p>The fully qualified hostname of the boot
+	  server.</p>
+</dd>
+<dt><span class="term">PLC_BOOT_IP</span></dt>
+<dd>
+<p>
+		  Type: ip</p>
+<p>
+		  Default: 127.0.0.1</p>
+<p>The IP address of the boot server, if not
+          resolvable by the configured DNS servers.</p>
 </dd>
 <dt><span class="term">PLC_BOOT_PORT</span></dt>
 <dd>
@@ -894,7 +932,7 @@ vserver pl_conf exec service pl_conf restart</pre>
 </div>
 <div class="bibliography">
 <div class="titlepage"><div><div><h2 class="title">
-<a name="id270529"></a>Bibliography</h2></div></div></div>
+<a name="id270747"></a>Bibliography</h2></div></div></div>
 <div class="biblioentry">
 <a name="TechsGuide"></a><p>[1] <span class="author"><span class="firstname">Mark</span> <span class="surname">Huang</span>. </span><span class="title"><i><a href="http://www.planet-lab.org/doc/TechsGuide.php" target="_top">PlanetLab
       Technical Contact's Guide</a></i>. </span></p>
