@@ -6,7 +6,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: api-config,v 1.7 2006/05/09 19:52:01 mlhuang Exp $
+# $Id: api-config,v 1.8 2006/05/19 22:22:15 mlhuang Exp $
 #
 
 import plcapilib
@@ -94,17 +94,9 @@ def main():
     AdmGrantRoleToPerson(admin['person_id'], 10)
     AdmGrantRoleToPerson(admin['person_id'], 20)
 
-    # Read and parse /etc/hosts
-    hosts = {}
-    for line in file("/etc/hosts"):
-        line = line.strip()
-        words = line.split()
-        if len(words) > 1 and words[0] != "#":
-            hosts[words[0]] = words[1:]
-
-    nodes = AdmGetNodes([], ['node_id', 'hostname'])
-
     # Get the primary IP address for each node
+    hosts = {}
+    nodes = AdmGetNodes([], ['node_id', 'hostname'])
     plcapi.begin()
     for node in nodes:
         AdmGetAllNodeNetworks(node['node_id'])
@@ -122,11 +114,11 @@ def main():
             else:
                 hosts[nodenetwork['ip']] = [hostname]
     
-    # Rewrite /etc/hosts
-    etc_hosts = open("/etc/hosts", "w")
+    # Write /etc/plc_hosts
+    plc_hosts = open("/etc/plc_hosts", "w")
     for ip, hostnames in hosts.iteritems():
-        etc_hosts.write(ip + "\t" + " ".join(hostnames) + "\n")
-    etc_hosts.close()
+        plc_hosts.write(ip + "\t" + " ".join(hostnames) + "\n")
+    plc_hosts.close()
 
     # Setup default PlanetLabConf entries
     default_conf_files = [
