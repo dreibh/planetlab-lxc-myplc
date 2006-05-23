@@ -6,7 +6,7 @@ Default PLC configuration file
 Mark Huang <mlhuang@cs.princeton.edu>
 Copyright (C) 2006 The Trustees of Princeton University
 
-$Id: plc_config.xml,v 1.11 2006/04/24 18:04:25 mlhuang Exp $
+$Id: plc_config.xml,v 1.12 2006/04/28 20:15:00 mlhuang Exp $
 -->
 
 <!DOCTYPE configuration PUBLIC "-//PlanetLab Central//DTD PLC configuration//EN" "plc_config.dtd">
@@ -111,15 +111,38 @@ $Id: plc_config.xml,v 1.11 2006/04/24 18:04:25 mlhuang Exp $
       <variablelist>
 	<variable id="dns1" type="ip">
 	  <name>Primary DNS Server</name>
-	  <value>128.112.136.10</value>
+	  <value>127.0.0.1</value>
 	  <description>Primary DNS server address.</description>
 	</variable>
 
 	<variable id="dns2" type="ip">
 	  <name>Secondary DNS Server</name>
-	  <value>128.112.136.12</value>
+	  <value></value>
 	  <description>Secondary DNS server address.</description>
 	</variable>
+      </variablelist>
+    </category>
+
+    <category id="plc_dns">
+      <name>DNS</name>
+      <description>MyPLC can provide forward DNS resolution for itself
+      and for its nodes. To enable resolution for MyPLC itself, set
+      the Primary DNS Server address to 127.0.0.1 and provide external
+      IP addresses for the database, API, web, and boot servers
+      below. To enable resolution for nodes, use the external IP
+      address of this machine as the primary DNS server address for
+      each node.</description>
+
+      <variablelist>
+        <variable id="enabled" type="boolean">
+          <name>Enable DNS</name>
+          <value>true</value>
+          <description>Enable the internal DNS server. The server does
+          not provide reverse resolution and is not a production
+          quality or scalable DNS solution. Use the internal DNS
+          server only for small deployments or for
+          testing.</description>
+        </variable>
       </variablelist>
     </category>
 
@@ -187,10 +210,16 @@ $Id: plc_config.xml,v 1.11 2006/04/24 18:04:25 mlhuang Exp $
 	<variable id="host" type="hostname">
 	  <name>Hostname</name>
 	  <value>localhost.localdomain</value>
-	  <description>The fully qualified hostname or IP address of
-	  the database server. This hostname must be resolvable and
-	  reachable by the rest of your installation.</description>
+	  <description>The fully qualified hostname of the database
+	  server.</description>
 	</variable>
+
+        <variable id="ip" type="ip">
+          <name>IP Address</name>
+          <value>127.0.0.1</value>
+          <description>The IP address of the database server, if not
+          resolvable by the configured DNS servers.</description>
+        </variable>
 
 	<variable id="port" type="int">
 	  <name>Port</name>
@@ -244,11 +273,16 @@ $Id: plc_config.xml,v 1.11 2006/04/24 18:04:25 mlhuang Exp $
 	<variable id="host" type="hostname">
 	  <name>Hostname</name>
 	  <value>localhost.localdomain</value>
-	  <description>The fully qualified hostname or IP address of
-	  the API server. This hostname must be resolvable and
-	  reachable by the rest of your installation, as well as your
-	  nodes.</description>
+	  <description>The fully qualified hostname of the API
+	  server.</description>
 	</variable>
+
+        <variable id="ip" type="ip">
+          <name>IP Address</name>
+          <value>127.0.0.1</value>
+          <description>The IP address of the API server, if not
+          resolvable by the configured DNS servers.</description>
+        </variable>
 
 	<variable id="port" type="int">
 	  <name>Port</name>
@@ -347,11 +381,16 @@ $Id: plc_config.xml,v 1.11 2006/04/24 18:04:25 mlhuang Exp $
 	<variable id="host" type="hostname">
 	  <name>Hostname</name>
 	  <value>localhost.localdomain</value>
-	  <description>The fully qualified hostname or IP address of
-	  the web server. This hostname must be resolvable and
-	  reachable by the rest of your installation, as well as your
-	  nodes.</description>
+	  <description>The fully qualified hostname of the web
+	  server.</description>
 	</variable>
+
+        <variable id="ip" type="ip">
+          <name>IP Address</name>
+          <value>127.0.0.1</value>
+          <description>The IP address of the web server, if not
+          resolvable by the configured DNS servers.</description>
+        </variable>
 
 	<variable id="port" type="int">
 	  <name>Port</name>
@@ -410,11 +449,16 @@ $Id: plc_config.xml,v 1.11 2006/04/24 18:04:25 mlhuang Exp $
 	<variable id="host" type="hostname">
 	  <name>Hostname</name>
 	  <value>localhost.localdomain</value>
-	  <description>The fully qualified hostname or IP address of
-	  the boot server. This hostname must be resolvable and
-	  reachable by the rest of your installation, as well as your
-	  nodes.</description>
+	  <description>The fully qualified hostname of the boot
+	  server.</description>
 	</variable>
+
+        <variable id="ip" type="ip">
+          <name>IP Address</name>
+          <value>127.0.0.1</value>
+          <description>The IP address of the boot server, if not
+          resolvable by the configured DNS servers.</description>
+        </variable>
 
 	<variable id="port" type="int">
 	  <name>Port</name>
@@ -475,6 +519,9 @@ $Id: plc_config.xml,v 1.11 2006/04/24 18:04:25 mlhuang Exp $
 	<!-- Sending mail -->
 	<packagereq type="mandatory">sendmail</packagereq>
 	<packagereq type="mandatory">sendmail-cf</packagereq>
+
+	<!-- Caching DNS server -->
+	<packagereq type="mandatory">dnsmasq</packagereq>
 
 	<!-- (Optional) Synchronizing with PLC -->
 	<packagereq type="mandatory">rsync</packagereq>
