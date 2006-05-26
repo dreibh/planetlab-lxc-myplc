@@ -1,0 +1,100 @@
+#!/usr/bin/python
+#
+# Writes IP addresses and hostnames of PlanetLab nodes to
+# /etc/plc_hosts. Useful for dnsmasq, specify "addn-hosts
+# /etc/plc_hosts" in /etc/dnsmasq.conf.
+#
+# Mark Huang <mlhuang@cs.princeton.edu>
+# Copyright (C) 2006 The Trustees of Princeton University
+#
+# $Id: api-config,v 1.10 2006/05/24 03:08:55 mlhuang Exp $
+#
+
+import plcapilib
+(plcapi, moreopts, argv) = plcapilib.plcapi(globals())
+from plc_config import PLCConfiguration
+import os, sys
+
+def writepid(prog):
+    """
+    Check PID file. Exit if already running. Update PID file.
+    """
+
+    try:
+        pidfile = file("/var/run/%s.pid" % prog, "r")
+        pid = pidfile.readline().strip()
+        pidfile.close()
+        if os.path.isdir("/proc/" + pid):
+            print "Error: Another copy of %s is still running (%s)" % (prog, pid)
+            sys.exit(1)
+    except IOError:
+        pass
+
+    pidfile = file("/var/run/%s.pid" % prog, "w")
+    pidfile.write(str(os.getpid()))
+    pidfile.close()
+
+def removepid(prog):
+    os.unlink("/var/run/%s.pid" % prog)
+
+def main():
+    writepid("dns-config")
+
+    cfg = PLCConfiguration()
+    cfg.load()
+    variables = cfg.variables()
+
+    (category, variablelist) = variables['plc_dns']
+    plc_dns = dict(zip(variablelist.keys(),
+                       [variable['value'] for variable in variablelist.values()]))
+
+    if plc_dns['enabled'] != "true":
+        return 0
+
+    # Get the primary IP address for each node
+    hosts = {}
+    nodes = AdmGetNodes([], ['node_id', 'hostname'])
+    plcapi.begin()
+    for node in nodes:
+        AdmGetAllNodeNetworks(node['node_id'])
+    nodenetworks_list = plcapi.commit()
+    if nodenetworks_list is not None:
+        for i, nodenetworks in enumerate(nodenetworks_list):
+            for nodenetwork in nodenetworks:
+                if nodenetwork['hostname']:
+                    hostname = nodenetwork['hostname']
+                else:
+                    hostname = nodes[i]['hostname']
+        
+                if hosts.has_key(nodenetwork['ip']):
+                    if hostname not in hosts[nodenetwork['ip']]:
+                        hosts[nodenetwork['ip']].append(hostname)
+                else:
+                    hosts[nodenetwork['ip']] = [hostname]
+    
+    # Write /etc/plc_hosts
+    plc_hosts = open("/etc/plc_hosts", "w")
+    for ip, hostnames in hosts.iteritems():
+        plc_hosts.write(ip + "\t" + " ".join(hostnames) + "\n")
+    plc_hosts.close()
+
+    # From the default dnsmasq.conf configuration file:
+    #
+    # The [domain-needed and bogus-priv] options make you a better
+    # netizen, since they tell dnsmasq to filter out queries which
+    # the public DNS cannot answer, and which load the servers
+    # (especially the root servers) uneccessarily.
+    #
+    file("/etc/dnsmasq.conf", "w").write("""
+domain-needed
+bogus-priv
+addn-hosts=/etc/plc_hosts
+""".lstrip())
+
+    # Reload dnsmasq
+    os.system("killall -q -HUP dnsmasq")
+
+    removepid("dns-config")
+
+if __name__ == '__main__':
+    main()

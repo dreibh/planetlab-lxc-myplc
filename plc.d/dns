@@ -8,7 +8,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: mail,v 1.2 2006/04/25 21:18:19 mlhuang Exp $
+# $Id: dns,v 1.1 2006/05/23 18:10:08 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -24,21 +24,8 @@ case "$1" in
 	MESSAGE=$"Starting DNS server"
 	dialog "$MESSAGE"
 
-	# From the default dnsmasq.conf configuration file:
-	#
-	# The [domain-needed and bogus-priv] options make you a better
-	# netizen, since they tell dnsmasq to filter out queries which
-	# the public DNS cannot answer, and which load the servers
-	# (especially the root servers) uneccessarily.
-	#
-	# The api-config bootstrap script writes node hostnames to
-	# /etc/plc_hosts.
-	#
-	cat >/etc/dnsmasq.conf <<EOF
-domain-needed
-bogus-priv
-addn-hosts=/etc/plc_hosts
-EOF
+	dns-config
+	check
 
 	plc_daemon dnsmasq
 	check
