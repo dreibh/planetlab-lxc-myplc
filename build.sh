@@ -116,6 +116,7 @@ install -D -m 755 plc_config.py $root/tmp/plc_config.py
 chroot $root sh -c 'cd /tmp; python plc_config.py build; python plc_config.py install'
 install -D -m 755 plc-config $root/usr/bin/plc-config
 install -D -m 755 api-config $root/usr/bin/api-config
+install -D -m 755 dns-config $root/usr/bin/dns-config
 
 # Install initscripts
 echo "* Installing initscripts"
