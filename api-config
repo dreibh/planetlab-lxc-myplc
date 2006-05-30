@@ -6,7 +6,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: api-config,v 1.10 2006/05/24 03:08:55 mlhuang Exp $
+# $Id: api-config,v 1.11 2006/05/26 19:57:30 mlhuang Exp $
 #
 
 import plcapilib
@@ -536,37 +536,37 @@ def main():
         {'name': "nm_net_min_rate",
          'description': "Minimum network Tx bandwidth",
          'is_exclusive': True, 'min_role_id': 10, 'max_per_slice': 1,
-         'value_fields': [{'description': "rate (kbps)",
+         'value_fields': [{'description': "rate (bps)",
                            'name': "rate",
                            'type': "integer"}]},
         {'name': "nm_net_max_rate",
          'description': "Maximum network Tx bandwidth",
          'is_exclusive': True, 'min_role_id': 10, 'max_per_slice': 1,
-         'value_fields': [{'description': "rate (kbps)",
+         'value_fields': [{'description': "rate (bps)",
                            'name': "rate",
                            'type': "integer"}]},
         {'name': "nm_net_avg_rate",
          'description': "Average daily network Tx bandwidth",
          'is_exclusive': True, 'min_role_id': 10, 'max_per_slice': 1,
-         'value_fields': [{'description': "rate (kbps)",
+         'value_fields': [{'description': "rate (bps)",
                            'name': "rate",
                            'type': "integer"}]},
         {'name': "nm_net_exempt_min_rate",
          'description': "Minimum network Tx bandwidth to Internet2 destinations",
          'is_exclusive': True, 'min_role_id': 10, 'max_per_slice': 1,
-         'value_fields': [{'description': "rate (kbps)",
+         'value_fields': [{'description': "rate (bps)",
                            'name': "rate",
                            'type': "integer"}]},
         {'name': "nm_net_exempt_max_rate",
          'description': "Maximum network Tx bandwidth to Internet2 destinations",
          'is_exclusive': True, 'min_role_id': 10, 'max_per_slice': 1,
-         'value_fields': [{'description': "rate (kbps)",
+         'value_fields': [{'description': "rate (bps)",
                            'name': "rate",
                            'type': "integer"}]},
         {'name': "nm_net_exempt avg_rate",
          'description': "Average daily network Tx bandwidth to Internet2 destinations",
          'is_exclusive': True, 'min_role_id': 10, 'max_per_slice': 1,
-         'value_fields': [{'description': "rate (kbps)",
+         'value_fields': [{'description': "rate (bps)",
                            'name': "rate",
                            'type': "integer"}]},
 
