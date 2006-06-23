@@ -1,21 +1,22 @@
 #!/bin/bash
 #
-# priority: 800
+# priority: 450
 #
-# Bootstrap the database
+# Configure the API. Must be done after SSL certificates are generated
+# and before the API web server is brought up.
 #
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: api,v 1.2 2006/04/10 16:00:47 mlhuang Exp $
+# $Id: api,v 1.3 2006/04/25 21:18:19 mlhuang Exp $
 #
 
 # Source function library and configuration
 . /etc/plc.d/functions
 . /etc/planetlab/plc_config
 
-# Export so that we do not have to specify -p to psql invocations
-export PGPORT=$PLC_DB_PORT
+# Be verbose
+set -x
 
 case "$1" in
     start)
@@ -23,17 +24,9 @@ case "$1" in
 	    exit 0
 	fi
 
-	MESSAGE=$"Bootstrapping the database"
+	MESSAGE=$"Configuring the API"
 	dialog "$MESSAGE"
 
-	# Update the maintenance account username. This can't be
-	# done through the api-config script since it uses the
-	# maintenance account to access the API. The maintenance
-	# account should be person_id 1 since it is created by the
-	# DB schema itself.
-	psql -U $PLC_DB_USER -c "UPDATE persons SET email='$PLC_API_MAINTENANCE_USER' WHERE person_id=1" $PLC_DB_NAME
-
-	# Bootstrap the DB
 	api-config
 	check
 
