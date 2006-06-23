@@ -1,0 +1,47 @@
+#!/bin/bash
+#
+# priority: 800
+#
+# Bootstrap the database
+#
+# Mark Huang <mlhuang@cs.princeton.edu>
+# Copyright (C) 2006 The Trustees of Princeton University
+#
+# $Id: api,v 1.3 2006/04/25 21:18:19 mlhuang Exp $
+#
+
+# Source function library and configuration
+. /etc/plc.d/functions
+. /etc/planetlab/plc_config
+
+# Be verbose
+set -x
+
+# Export so that we do not have to specify -p to psql invocations
+export PGPORT=$PLC_DB_PORT
+
+case "$1" in
+    start)
+	if [ "$PLC_API_ENABLED" != "1" ] ; then
+	    exit 0
+	fi
+
+	MESSAGE=$"Bootstrapping the database"
+	dialog "$MESSAGE"
+
+	# Update the maintenance account username. This can't be
+	# done through the api-config script since it uses the
+	# maintenance account to access the API. The maintenance
+	# account should be person_id 1 since it is created by the
+	# DB schema itself.
+	psql -U $PLC_DB_USER -c "UPDATE persons SET email='$PLC_API_MAINTENANCE_USER' WHERE person_id=1" $PLC_DB_NAME
+
+	# Bootstrap the DB
+	db-config
+	check
+
+	result "$MESSAGE"
+	;;
+esac
+
+exit $ERRORS
