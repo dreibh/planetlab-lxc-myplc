@@ -6,7 +6,7 @@
 #
 # description:	Manages all PLC services on this machine
 #
-# $Id: guest.init,v 1.16 2006/04/17 17:04:37 mlhuang Exp $
+# $Id: guest.init,v 1.17 2006/04/27 21:50:00 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -86,44 +86,7 @@ reload ()
     # DB constants are all named the same
     ln -sf plc_config /etc/planetlab/plc_db
 
-    # API constants
-    cat >/etc/planetlab/plc_api <<EOF
-PL_API_SERVER='$PLC_API_HOST'
-PL_API_PATH='$PLC_API_PATH'
-PL_API_PORT=$PLC_API_PORT
-PL_API_CAPABILITY_AUTH_METHOD='capability'
-PL_API_CAPABILITY_PASS='$PLC_API_MAINTENANCE_PASSWORD'
-PL_API_CAPABILITY_USERNAME='$PLC_API_MAINTENANCE_USER'
-PL_API_TICKET_KEY_FILE='$PLC_API_SSL_KEY'
-PLANETLAB_SUPPORT_EMAIL='$PLC_MAIL_SUPPORT_ADDRESS'
-BOOT_MESSAGES_EMAIL='$PLC_MAIL_BOOT_ADDRESS'
-WWW_BASE='$PLC_WWW_HOST'
-BOOT_BASE='$PLC_BOOT_HOST'
-EOF
-
-    # API expects root SSH public key to be at /etc/planetlab/node_root_key
-    ln -sf "$PLC_ROOT_SSH_KEY_PUB" /etc/planetlab/node_root_key
-
-    # The format is
-    #
-    # ip:max_role_id:organization_id:password
-    #
-    # It is unlikely that we will let federated sites use the
-    # maintenance account to access each others' APIs, so we always
-    # set organization_id to -1.
-    (
-	echo -n "PL_API_CAPABILITY_SOURCES='"
-	first=1
-	for ip in $PLC_API_MAINTENANCE_SOURCES ; do
-	    if [ $first -ne 1 ] ; then
-		echo -n " "
-	    fi
-	    first=0
-	    echo -n "$ip:-1:-1:$PLC_API_MAINTENANCE_PASSWORD"
-	done
-	echo "'"
-    ) >>/etc/planetlab/plc_api
-
+    # PHP constants
     cat >/etc/planetlab/php/site_constants.php <<"EOF"
 <?php
 include('plc_config.php');
@@ -143,6 +106,8 @@ define('PLANETLAB_SUPPORT_EMAIL', PLC_NAME . ' Support <' . PLC_MAIL_SUPPORT_ADD
 define('PLANETLAB_SUPPORT_EMAIL_ONLY', PLC_MAIL_SUPPORT_ADDRESS);
 ?>
 EOF
+
+    # API constants are written in plc.d/api
 }
 
 usage()
@@ -180,6 +145,8 @@ done
 
 # Redirect stdout and stderr of each step to /var/log/boot.log
 if [ $verbose -eq 0 ] ; then
+    touch /var/log/boot.log
+    chmod 600 /var/log/boot.log
     exec 1>>/var/log/boot.log
     exec 2>>/var/log/boot.log
 fi
