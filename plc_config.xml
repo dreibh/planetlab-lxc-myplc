@@ -6,7 +6,7 @@ Default PLC configuration file
 Mark Huang <mlhuang@cs.princeton.edu>
 Copyright (C) 2006 The Trustees of Princeton University
 
-$Id: plc_config.xml,v 1.12 2006/04/28 20:15:00 mlhuang Exp $
+$Id: plc_config.xml,v 1.13 2006/05/23 18:14:47 mlhuang Exp $
 -->
 
 <!DOCTYPE configuration PUBLIC "-//PlanetLab Central//DTD PLC configuration//EN" "plc_config.dtd">
@@ -100,6 +100,75 @@ $Id: plc_config.xml,v 1.12 2006/04/28 20:15:00 mlhuang Exp $
 	  <value>/etc/planetlab/secring.gpg</value>
 	  <description>The SSH private key used to access the root
 	  account on your nodes.</description>
+	</variable>
+
+	<variable id="root_ca_ssl_key" type="file">
+	  <name>Root CA SSL Private Key</name>
+	  <value>/etc/planetlab/root_ca_ssl.key</value>
+	  <description>The SSL private key used for signing all other
+	  generated certificates. If non-existent, one will be
+	  generated.</description>
+	</variable>
+
+	<variable id="root_ca_ssl_key_pub" type="file">
+	  <name>Root CA SSL Public Key</name>
+	  <value>/etc/planetlab/root_ca_ssl.pub</value>
+	  <description>The corresponding SSL public key.</description>
+	</variable>
+
+	<variable id="root_ca_ssl_crt" type="file">
+	  <name>Root CA SSL Public Certificate</name>
+	  <value>/etc/planetlab/root_ca_ssl.crt</value>
+	  <description>The corresponding SSL public
+	  certificate.</description>
+	</variable>
+      </variablelist>
+    </category>
+
+    <category id="plc_ma_sa">
+      <name>Management and Slice Authority</name>
+      <description>These variables control how your site interacts
+      with other PlanetLab sites as a Management Authority (MA) and/or
+      Slice Authority (SA).</description>
+
+      <variablelist>
+	<variable id="namespace" type="ip">
+	  <name>Namespace</name>
+	  <value>test</value>
+	  <description>The namespace of your MA/SA. This should be a
+	  globally unique value assigned by PlanetLab
+	  Central.</description>
+	</variable>
+
+	<variable id="ssl_key" type="file">
+	  <name>SSL Private Key</name>
+	  <value>/etc/planetlab/ma_sa_ssl.key</value>
+	  <description>The SSL private key used for signing documents
+	  with the signature of your MA/SA. If non-existent, one will
+	  be generated.</description>
+	</variable>
+
+	<variable id="ssl_key_pub" type="file">
+	  <name>SSL Public Key</name>
+	  <value>/etc/planetlab/ma_sa_ssl.pub</value>
+	  <description>The corresponding SSL public key.</description>
+	</variable>
+
+	<variable id="ssl_crt" type="file">
+	  <name>SSL Public Certificate</name>
+	  <value>/etc/planetlab/ma_sa_ssl.crt</value>
+	  <description>The corresponding SSL public certificate,
+	  signed by the root CA.</description>
+	</variable>
+
+	<variable id="api_crt" type="file">
+	  <name>API Certificate</name>
+	  <value>/etc/planetlab/ma_sa_api.xml</value>
+	  <description>The API Certificate for your MA/SA is the SSL
+	  public key for your MA/SA embedded in an XML document and
+	  signed by the root CA SSL private key. The API Certificate
+	  can be used by any PlanetLab node managed by any MA, to
+	  verify that your MA/SA public key is valid.</description>
 	</variable>
       </variablelist>
     </category>
@@ -332,29 +401,19 @@ $Id: plc_config.xml,v 1.12 2006/04/28 20:15:00 mlhuang Exp $
 	     be downloaded, or its contents replaced by a file upload,
 	     but the actual <value> shouldn't need to be changed.  -->
 
-	<variable id="ssl_crt" type="file">
-	  <name>SSL Certificate</name>
-	  <value>/etc/planetlab/api_ssl.crt</value>
-	  <description>The signed SSL certificate to use for HTTPS
-	  access. If not specified or non-existent, a self-signed
-	  certificate will be generated.</description>
-	</variable>
-
 	<variable id="ssl_key" type="file">
-	  <name>SSL Key</name>
+	  <name>SSL Private Key</name>
 	  <value>/etc/planetlab/api_ssl.key</value>
-	  <description>The corresponding SSL private key used for
-	  signing the certificate, and for signing slice tickets. If
-	  not specified or non-existent, one will be
+	  <description>The SSL private key to use for encrypting HTTPS
+	  traffic. If non-existent, one will be
 	  generated.</description>
 	</variable>
 
-	<variable id="ssl_key_pub" type="file">
-	  <name>SSL Key</name>
-	  <value>/etc/planetlab/api_ssl.pub</value>
-	  <description>The corresponding SSL public key. If not
-	  specified or non-existent, one will be
-	  generated.</description>
+	<variable id="ssl_crt" type="file">
+	  <name>SSL Public Certificate</name>
+	  <value>/etc/planetlab/api_ssl.crt</value>
+	  <description>The corresponding SSL public certificate,
+	  signed by the root CA.</description>
 	</variable>
       </variablelist>
     </category>
@@ -412,20 +471,19 @@ $Id: plc_config.xml,v 1.12 2006/04/28 20:15:00 mlhuang Exp $
 	     be downloaded, or its contents replaced by a file upload,
 	     but the actual <value> shouldn't need to be changed.  -->
 
-	<variable id="ssl_crt" type="file">
-	  <name>SSL Certificate</name>
-	  <value>/etc/planetlab/www_ssl.crt</value>
-	  <description>The signed SSL certificate to use for HTTPS
-	  access. If not specified or non-existent, a self-signed
-	  certificate will be generated.</description>
+	<variable id="ssl_key" type="file">
+	  <name>SSL Private Key</name>
+	  <value>/etc/planetlab/www_ssl.key</value>
+	  <description>The SSL private key to use for encrypting HTTPS
+	  traffic. If non-existent, one will be
+	  generated.</description>
 	</variable>
 
-	<variable id="ssl_key" type="file">
-	  <name>SSL Key</name>
-	  <value>/etc/planetlab/www_ssl.key</value>
-	  <description>The corresponding SSL private key. If not
-	  specified or non-existent, one will be
-	  generated.</description>
+	<variable id="ssl_crt" type="file">
+	  <name>SSL Public Certificate</name>
+	  <value>/etc/planetlab/www_ssl.crt</value>
+	  <description>The corresponding SSL public certificate,
+	  signed by the root CA.</description>
 	</variable>
       </variablelist>
     </category>
@@ -481,20 +539,19 @@ $Id: plc_config.xml,v 1.12 2006/04/28 20:15:00 mlhuang Exp $
 	     be downloaded, or its contents replaced by a file upload,
 	     but the actual <value> shouldn't need to be changed.  -->
 
-	<variable id="ssl_crt" type="binary">
-	  <name>SSL Certificate</name>
-	  <value>/etc/planetlab/boot_ssl.crt</value>
-	  <description>The signed SSL certificate to use for HTTPS
-	  access. If not specified, or non-existent a self-signed
-	  certificate will be generated.</description>
+	<variable id="ssl_key" type="file">
+	  <name>SSL Private Key</name>
+	  <value>/etc/planetlab/boot_ssl.key</value>
+	  <description>The SSL private key to use for encrypting HTTPS
+	  traffic. If non-existent, one will be
+	  generated.</description>
 	</variable>
 
-	<variable id="ssl_key" type="binary">
-	  <name>SSL Key</name>
-	  <value>/etc/planetlab/boot_ssl.key</value>
-	  <description>The corresponding SSL private key. If not
-	  specified or non-existent, one will be
-	  generated.</description>
+	<variable id="ssl_crt" type="file">
+	  <name>SSL Public Certificate</name>
+	  <value>/etc/planetlab/boot_ssl.crt</value>
+	  <description>The corresponding SSL public certificate,
+	  signed by the root CA.</description>
 	</variable>
       </variablelist>
     </category>
@@ -581,6 +638,7 @@ $Id: plc_config.xml,v 1.12 2006/04/28 20:15:00 mlhuang Exp $
 
 	<!-- API server uses a few non-standard packages -->
 	<packagereq type="mandatory">PyXML</packagereq>
+	<packagereq type="mandatory">PlanetLabAuth</packagereq>
 
 	<!-- API server uses SSL to sign tickets -->
 	<packagereq type="mandatory">xmlsec1</packagereq>
