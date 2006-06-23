@@ -41,22 +41,22 @@
 <div class="toc">
 <p><b>Table of Contents</b></p>
 <dl>
-<dt><span class="section"><a href="#id225358">1. Overview</a></span></dt>
+<dt><span class="section"><a href="#id225357">1. Overview</a></span></dt>
 <dt><span class="section"><a href="#id225202">2. Installation</a></span></dt>
 <dt><span class="section"><a href="#id267666">3. Quickstart</a></span></dt>
 <dd><dl>
 <dt><span class="section"><a href="#ChangingTheConfiguration">3.1. Changing the configuration</a></span></dt>
-<dt><span class="section"><a href="#id268166">3.2. Installing nodes</a></span></dt>
-<dt><span class="section"><a href="#id268240">3.3. Administering nodes</a></span></dt>
-<dt><span class="section"><a href="#id268334">3.4. Creating a slice</a></span></dt>
+<dt><span class="section"><a href="#id268167">3.2. Installing nodes</a></span></dt>
+<dt><span class="section"><a href="#id268241">3.3. Administering nodes</a></span></dt>
+<dt><span class="section"><a href="#id268335">3.4. Creating a slice</a></span></dt>
 </dl></dd>
-<dt><span class="appendix"><a href="#id268409">A. Configuration variables</a></span></dt>
-<dt><span class="bibliography"><a href="#id270747">Bibliography</a></span></dt>
+<dt><span class="appendix"><a href="#id268410">A. Configuration variables</a></span></dt>
+<dt><span class="bibliography"><a href="#id271055">Bibliography</a></span></dt>
 </dl>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
-<a name="id225358"></a>1. Overview</h2></div></div></div>
+<a name="id225357"></a>1. Overview</h2></div></div></div>
 <p>MyPLC is a complete PlanetLab Central (PLC) portable
     installation contained within a <span><strong class="command">chroot</strong></span>
     jail. The default installation consists of a web server, an
@@ -214,12 +214,14 @@ chkconfig plc on</pre>
     failures occur, you should see output similar to the
     following:</p>
 <div class="example">
-<a name="id267787"></a><p class="title"><b>Example 4. A successful MyPLC startup.</b></p>
+<a name="id267786"></a><p class="title"><b>Example 4. A successful MyPLC startup.</b></p>
 <pre class="programlisting">Mounting PLC:                                              [  OK  ]
 PLC: Generating network files:                             [  OK  ]
 PLC: Starting system logger:                               [  OK  ]
 PLC: Starting database server:                             [  OK  ]
 PLC: Generating SSL certificates:                          [  OK  ]
+PLC: Configuring the API:                                  [  OK  ]
+PLC: Updating GPG keys:                                    [  OK  ]
 PLC: Generating SSH keys:                                  [  OK  ]
 PLC: Starting web server:                                  [  OK  ]
 PLC: Bootstrapping the database:                           [  OK  ]
@@ -341,7 +343,7 @@ PLC: Signing node packages:                                [  OK  ]
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="id268166"></a>3.2. Installing nodes</h3></div></div></div>
+<a name="id268167"></a>3.2. Installing nodes</h3></div></div></div>
 <p>Install your first node by clicking <code class="literal">Add
       Node</code> under the <code class="literal">Nodes</code> tab. Fill in
       all the appropriate details, then click
@@ -365,12 +367,12 @@ PLC: Signing node packages:                                [  OK  ]
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="id268240"></a>3.3. Administering nodes</h3></div></div></div>
+<a name="id268241"></a>3.3. Administering nodes</h3></div></div></div>
 <p>You may administer nodes as <code class="literal">root</code> by
       using the SSH key stored in
       <code class="filename">/etc/planetlab/root_ssh_key.rsa</code>.</p>
 <div class="example">
-<a name="id268262"></a><p class="title"><b>Example 5. Accessing nodes via SSH. Replace
+<a name="id268263"></a><p class="title"><b>Example 5. Accessing nodes via SSH. Replace
 	<code class="literal">node</code> with the hostname of the node.</b></p>
 <pre class="programlisting">ssh -i /etc/planetlab/root_ssh_key.rsa root@node</pre>
 </div>
@@ -393,7 +395,7 @@ PLC: Signing node packages:                                [  OK  ]
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="id268334"></a>3.4. Creating a slice</h3></div></div></div>
+<a name="id268335"></a>3.4. Creating a slice</h3></div></div></div>
 <p>Create a slice by clicking <code class="literal">Create Slice</code>
       under the <code class="literal">Slices</code> tab. Fill in all the
       appropriate details, then click <code class="literal">Create</code>. Add
@@ -408,7 +410,7 @@ PLC: Signing node packages:                                [  OK  ]
       to determine if it needs to create or delete any slices. You may
       accelerate this process manually if desired.</p>
 <div class="example">
-<a name="id268392"></a><p class="title"><b>Example 6. Forcing slice creation on a node.</b></p>
+<a name="id268393"></a><p class="title"><b>Example 6. Forcing slice creation on a node.</b></p>
 <pre class="programlisting"># Update slices.xml immediately
 service plc start crond
 
@@ -420,7 +422,7 @@ vserver pl_conf exec service pl_conf restart</pre>
 </div>
 <div class="appendix" lang="en">
 <h2 class="title" style="clear: both">
-<a name="id268409"></a>A. Configuration variables</h2>
+<a name="id268410"></a>A. Configuration variables</h2>
 <p>Listed below is the set of standard configuration variables
     and their default values, defined in the template
     <code class="filename">/etc/planetlab/default_config.xml</code>. Additional
@@ -524,6 +526,82 @@ vserver pl_conf exec service pl_conf restart</pre>
 		  Default: /etc/planetlab/secring.gpg</p>
 <p>The SSH private key used to access the root
 	  account on your nodes.</p>
+</dd>
+<dt><span class="term">PLC_ROOT_CA_SSL_KEY</span></dt>
+<dd>
+<p>
+		  Type: file</p>
+<p>
+		  Default: /etc/planetlab/root_ca_ssl.key</p>
+<p>The SSL private key used for signing all other
+	  generated certificates. If non-existent, one will be
+	  generated.</p>
+</dd>
+<dt><span class="term">PLC_ROOT_CA_SSL_KEY_PUB</span></dt>
+<dd>
+<p>
+		  Type: file</p>
+<p>
+		  Default: /etc/planetlab/root_ca_ssl.pub</p>
+<p>The corresponding SSL public key.</p>
+</dd>
+<dt><span class="term">PLC_ROOT_CA_SSL_CRT</span></dt>
+<dd>
+<p>
+		  Type: file</p>
+<p>
+		  Default: /etc/planetlab/root_ca_ssl.crt</p>
+<p>The corresponding SSL public
+	  certificate.</p>
+</dd>
+<dt><span class="term">PLC_MA_SA_NAMESPACE</span></dt>
+<dd>
+<p>
+		  Type: ip</p>
+<p>
+		  Default: test</p>
+<p>The namespace of your MA/SA. This should be a
+	  globally unique value assigned by PlanetLab
+	  Central.</p>
+</dd>
+<dt><span class="term">PLC_MA_SA_SSL_KEY</span></dt>
+<dd>
+<p>
+		  Type: file</p>
+<p>
+		  Default: /etc/planetlab/ma_sa_ssl.key</p>
+<p>The SSL private key used for signing documents
+	  with the signature of your MA/SA. If non-existent, one will
+	  be generated.</p>
+</dd>
+<dt><span class="term">PLC_MA_SA_SSL_KEY_PUB</span></dt>
+<dd>
+<p>
+		  Type: file</p>
+<p>
+		  Default: /etc/planetlab/ma_sa_ssl.pub</p>
+<p>The corresponding SSL public key.</p>
+</dd>
+<dt><span class="term">PLC_MA_SA_SSL_CRT</span></dt>
+<dd>
+<p>
+		  Type: file</p>
+<p>
+		  Default: /etc/planetlab/ma_sa_ssl.crt</p>
+<p>The corresponding SSL public certificate,
+	  signed by the root CA.</p>
+</dd>
+<dt><span class="term">PLC_MA_SA_API_CRT</span></dt>
+<dd>
+<p>
+		  Type: file</p>
+<p>
+		  Default: /etc/planetlab/ma_sa_api.xml</p>
+<p>The API Certificate for your MA/SA is the SSL
+	  public key for your MA/SA embedded in an XML document and
+	  signed by the root CA SSL private key. The API Certificate
+	  can be used by any PlanetLab node managed by any MA, to
+	  verify that your MA/SA public key is valid.</p>
 </dd>
 <dt><span class="term">PLC_NET_DNS1</span></dt>
 <dd>
@@ -755,36 +833,24 @@ vserver pl_conf exec service pl_conf restart</pre>
 	  web, and boot servers, and should not be
 	  changed.</p>
 </dd>
-<dt><span class="term">PLC_API_SSL_CRT</span></dt>
-<dd>
-<p>
-		  Type: file</p>
-<p>
-		  Default: /etc/planetlab/api_ssl.crt</p>
-<p>The signed SSL certificate to use for HTTPS
-	  access. If not specified or non-existent, a self-signed
-	  certificate will be generated.</p>
-</dd>
 <dt><span class="term">PLC_API_SSL_KEY</span></dt>
 <dd>
 <p>
 		  Type: file</p>
 <p>
 		  Default: /etc/planetlab/api_ssl.key</p>
-<p>The corresponding SSL private key used for
-	  signing the certificate, and for signing slice tickets. If
-	  not specified or non-existent, one will be
+<p>The SSL private key to use for encrypting HTTPS
+	  traffic. If non-existent, one will be
 	  generated.</p>
 </dd>
-<dt><span class="term">PLC_API_SSL_KEY_PUB</span></dt>
+<dt><span class="term">PLC_API_SSL_CRT</span></dt>
 <dd>
 <p>
 		  Type: file</p>
 <p>
-		  Default: /etc/planetlab/api_ssl.pub</p>
-<p>The corresponding SSL public key. If not
-	  specified or non-existent, one will be
-	  generated.</p>
+		  Default: /etc/planetlab/api_ssl.crt</p>
+<p>The corresponding SSL public certificate,
+	  signed by the root CA.</p>
 </dd>
 <dt><span class="term">PLC_WWW_ENABLED</span></dt>
 <dd>
@@ -841,25 +907,24 @@ vserver pl_conf exec service pl_conf restart</pre>
 <p>The TCP port number through which the protected
 	  portions of the web site should be accessed.</p>
 </dd>
-<dt><span class="term">PLC_WWW_SSL_CRT</span></dt>
-<dd>
-<p>
-		  Type: file</p>
-<p>
-		  Default: /etc/planetlab/www_ssl.crt</p>
-<p>The signed SSL certificate to use for HTTPS
-	  access. If not specified or non-existent, a self-signed
-	  certificate will be generated.</p>
-</dd>
 <dt><span class="term">PLC_WWW_SSL_KEY</span></dt>
 <dd>
 <p>
 		  Type: file</p>
 <p>
 		  Default: /etc/planetlab/www_ssl.key</p>
-<p>The corresponding SSL private key. If not
-	  specified or non-existent, one will be
+<p>The SSL private key to use for encrypting HTTPS
+	  traffic. If non-existent, one will be
 	  generated.</p>
+</dd>
+<dt><span class="term">PLC_WWW_SSL_CRT</span></dt>
+<dd>
+<p>
+		  Type: file</p>
+<p>
+		  Default: /etc/planetlab/www_ssl.crt</p>
+<p>The corresponding SSL public certificate,
+	  signed by the root CA.</p>
 </dd>
 <dt><span class="term">PLC_BOOT_ENABLED</span></dt>
 <dd>
@@ -908,31 +973,30 @@ vserver pl_conf exec service pl_conf restart</pre>
 	  portions of the boot server should be
 	  accessed.</p>
 </dd>
-<dt><span class="term">PLC_BOOT_SSL_CRT</span></dt>
-<dd>
-<p>
-		  Type: binary</p>
-<p>
-		  Default: /etc/planetlab/boot_ssl.crt</p>
-<p>The signed SSL certificate to use for HTTPS
-	  access. If not specified, or non-existent a self-signed
-	  certificate will be generated.</p>
-</dd>
 <dt><span class="term">PLC_BOOT_SSL_KEY</span></dt>
 <dd>
 <p>
-		  Type: binary</p>
+		  Type: file</p>
 <p>
 		  Default: /etc/planetlab/boot_ssl.key</p>
-<p>The corresponding SSL private key. If not
-	  specified or non-existent, one will be
+<p>The SSL private key to use for encrypting HTTPS
+	  traffic. If non-existent, one will be
 	  generated.</p>
+</dd>
+<dt><span class="term">PLC_BOOT_SSL_CRT</span></dt>
+<dd>
+<p>
+		  Type: file</p>
+<p>
+		  Default: /etc/planetlab/boot_ssl.crt</p>
+<p>The corresponding SSL public certificate,
+	  signed by the root CA.</p>
 </dd>
 </dl></div>
 </div>
 <div class="bibliography">
 <div class="titlepage"><div><div><h2 class="title">
-<a name="id270747"></a>Bibliography</h2></div></div></div>
+<a name="id271055"></a>Bibliography</h2></div></div></div>
 <div class="biblioentry">
 <a name="TechsGuide"></a><p>[1] <span class="author"><span class="firstname">Mark</span> <span class="surname">Huang</span>. </span><span class="title"><i><a href="http://www.planet-lab.org/doc/TechsGuide.php" target="_top">PlanetLab
       Technical Contact's Guide</a></i>. </span></p>

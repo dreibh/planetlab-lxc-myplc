@@ -117,6 +117,98 @@
     </listitem>
   </varlistentry>
   <varlistentry>
+    <term>PLC_ROOT_CA_SSL_KEY</term>
+    <listitem>
+      <para>
+		  Type: file</para>
+      <para>
+		  Default: /etc/planetlab/root_ca_ssl.key</para>
+      <para>The SSL private key used for signing all other
+	  generated certificates. If non-existent, one will be
+	  generated.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_ROOT_CA_SSL_KEY_PUB</term>
+    <listitem>
+      <para>
+		  Type: file</para>
+      <para>
+		  Default: /etc/planetlab/root_ca_ssl.pub</para>
+      <para>The corresponding SSL public key.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_ROOT_CA_SSL_CRT</term>
+    <listitem>
+      <para>
+		  Type: file</para>
+      <para>
+		  Default: /etc/planetlab/root_ca_ssl.crt</para>
+      <para>The corresponding SSL public
+	  certificate.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_MA_SA_NAMESPACE</term>
+    <listitem>
+      <para>
+		  Type: ip</para>
+      <para>
+		  Default: test</para>
+      <para>The namespace of your MA/SA. This should be a
+	  globally unique value assigned by PlanetLab
+	  Central.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_MA_SA_SSL_KEY</term>
+    <listitem>
+      <para>
+		  Type: file</para>
+      <para>
+		  Default: /etc/planetlab/ma_sa_ssl.key</para>
+      <para>The SSL private key used for signing documents
+	  with the signature of your MA/SA. If non-existent, one will
+	  be generated.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_MA_SA_SSL_KEY_PUB</term>
+    <listitem>
+      <para>
+		  Type: file</para>
+      <para>
+		  Default: /etc/planetlab/ma_sa_ssl.pub</para>
+      <para>The corresponding SSL public key.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_MA_SA_SSL_CRT</term>
+    <listitem>
+      <para>
+		  Type: file</para>
+      <para>
+		  Default: /etc/planetlab/ma_sa_ssl.crt</para>
+      <para>The corresponding SSL public certificate,
+	  signed by the root CA.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_MA_SA_API_CRT</term>
+    <listitem>
+      <para>
+		  Type: file</para>
+      <para>
+		  Default: /etc/planetlab/ma_sa_api.xml</para>
+      <para>The API Certificate for your MA/SA is the SSL
+	  public key for your MA/SA embedded in an XML document and
+	  signed by the root CA SSL private key. The API Certificate
+	  can be used by any PlanetLab node managed by any MA, to
+	  verify that your MA/SA public key is valid.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
     <term>PLC_NET_DNS1</term>
     <listitem>
       <para>
@@ -395,40 +487,26 @@
     </listitem>
   </varlistentry>
   <varlistentry>
-    <term>PLC_API_SSL_CRT</term>
-    <listitem>
-      <para>
-		  Type: file</para>
-      <para>
-		  Default: /etc/planetlab/api_ssl.crt</para>
-      <para>The signed SSL certificate to use for HTTPS
-	  access. If not specified or non-existent, a self-signed
-	  certificate will be generated.</para>
-    </listitem>
-  </varlistentry>
-  <varlistentry>
     <term>PLC_API_SSL_KEY</term>
     <listitem>
       <para>
 		  Type: file</para>
       <para>
 		  Default: /etc/planetlab/api_ssl.key</para>
-      <para>The corresponding SSL private key used for
-	  signing the certificate, and for signing slice tickets. If
-	  not specified or non-existent, one will be
+      <para>The SSL private key to use for encrypting HTTPS
+	  traffic. If non-existent, one will be
 	  generated.</para>
     </listitem>
   </varlistentry>
   <varlistentry>
-    <term>PLC_API_SSL_KEY_PUB</term>
+    <term>PLC_API_SSL_CRT</term>
     <listitem>
       <para>
 		  Type: file</para>
       <para>
-		  Default: /etc/planetlab/api_ssl.pub</para>
-      <para>The corresponding SSL public key. If not
-	  specified or non-existent, one will be
-	  generated.</para>
+		  Default: /etc/planetlab/api_ssl.crt</para>
+      <para>The corresponding SSL public certificate,
+	  signed by the root CA.</para>
     </listitem>
   </varlistentry>
   <varlistentry>
@@ -499,27 +577,26 @@
     </listitem>
   </varlistentry>
   <varlistentry>
-    <term>PLC_WWW_SSL_CRT</term>
-    <listitem>
-      <para>
-		  Type: file</para>
-      <para>
-		  Default: /etc/planetlab/www_ssl.crt</para>
-      <para>The signed SSL certificate to use for HTTPS
-	  access. If not specified or non-existent, a self-signed
-	  certificate will be generated.</para>
-    </listitem>
-  </varlistentry>
-  <varlistentry>
     <term>PLC_WWW_SSL_KEY</term>
     <listitem>
       <para>
 		  Type: file</para>
       <para>
 		  Default: /etc/planetlab/www_ssl.key</para>
-      <para>The corresponding SSL private key. If not
-	  specified or non-existent, one will be
+      <para>The SSL private key to use for encrypting HTTPS
+	  traffic. If non-existent, one will be
 	  generated.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_WWW_SSL_CRT</term>
+    <listitem>
+      <para>
+		  Type: file</para>
+      <para>
+		  Default: /etc/planetlab/www_ssl.crt</para>
+      <para>The corresponding SSL public certificate,
+	  signed by the root CA.</para>
     </listitem>
   </varlistentry>
   <varlistentry>
@@ -580,27 +657,26 @@
     </listitem>
   </varlistentry>
   <varlistentry>
-    <term>PLC_BOOT_SSL_CRT</term>
-    <listitem>
-      <para>
-		  Type: binary</para>
-      <para>
-		  Default: /etc/planetlab/boot_ssl.crt</para>
-      <para>The signed SSL certificate to use for HTTPS
-	  access. If not specified, or non-existent a self-signed
-	  certificate will be generated.</para>
-    </listitem>
-  </varlistentry>
-  <varlistentry>
     <term>PLC_BOOT_SSL_KEY</term>
     <listitem>
       <para>
-		  Type: binary</para>
+		  Type: file</para>
       <para>
 		  Default: /etc/planetlab/boot_ssl.key</para>
-      <para>The corresponding SSL private key. If not
-	  specified or non-existent, one will be
+      <para>The SSL private key to use for encrypting HTTPS
+	  traffic. If non-existent, one will be
 	  generated.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_BOOT_SSL_CRT</term>
+    <listitem>
+      <para>
+		  Type: file</para>
+      <para>
+		  Default: /etc/planetlab/boot_ssl.crt</para>
+      <para>The corresponding SSL public certificate,
+	  signed by the root CA.</para>
     </listitem>
   </varlistentry>
 </variablelist>
