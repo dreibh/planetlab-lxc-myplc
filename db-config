@@ -1,0 +1,643 @@
+#!/usr/bin/python
+#
+# Bootstraps the PLC database with a default administrator account and
+# a default site, defines default slice attribute types, and
+# creates/updates default system slices.
+#
+# Mark Huang <mlhuang@cs.princeton.edu>
+# Copyright (C) 2006 The Trustees of Princeton University
+#
+# $Id: api-config,v 1.12 2006/05/30 15:06:20 mlhuang Exp $
+#
+
+import plcapilib
+(plcapi, moreopts, argv) = plcapilib.plcapi(globals())
+from plc_config import PLCConfiguration
+import sys
+
+
+def main():
+    cfg = PLCConfiguration()
+    cfg.load()
+    variables = cfg.variables()
+
+    # Load variables into dictionaries
+    for category_id, (category, variablelist) in variables.iteritems():
+        globals()[category_id] = dict(zip(variablelist.keys(),
+                                       [variable['value'] for variable in variablelist.values()]))
+
+    # Create/update the default administrator account (should be
+    # person_id 2).
+    admin = { 'person_id': 2,
+              'first_name': "Default",
+              'last_name': "Administrator",
+              'email': plc['root_user'],
+              'password': plc['root_password'] }
+    persons = AdmGetPersons([admin['person_id']])
+    if not persons:
+        person_id = AdmAddPerson(admin['first_name'], admin['last_name'], admin)
+        if person_id != admin['person_id']:
+            # Huh? Someone deleted the account manually from the database.
+            AdmDeletePerson(person_id)
+            raise Exception, "Someone deleted the \"%s %s\" account from the database!" % \
+                  (admin['first_name'], admin['last_name'])
+        AdmSetPersonEnabled(person_id, True)
+    else:
+        person_id = persons[0]['person_id']
+        AdmUpdatePerson(person_id, admin)
+
+    # Create/update the default site (should be site_id 1)
+    if plc_www['port'] == '80':
+        url = "http://" + plc_www['host'] + "/"
+    elif plc_www['port'] == '443':
+        url = "https://" + plc_www['host'] + "/"
+    else:
+        url = "http://" + plc_www['host'] + ":" + plc_www['port'] + "/"
+    site = { 'site_id': 1,
+             'name': plc['name'] + " Central",
+             'abbreviated_name': plc['name'],
+             # XXX Default site slice_prefix/login_base must be "pl_"
+             # 'login_base': plc['slice_prefix'],
+             'login_base': "pl",
+             'is_public': False,
+             'url': url,
+             'max_slices': 100 }
+
+    sites = AdmGetSites([site['site_id']])
+    if not sites:
+        site_id = AdmAddSite(site['name'], site['abbreviated_name'], site['login_base'], site)
+        if site_id != site['site_id']:
+            AdmDeleteSite(site_id)
+            raise Exception, "Someone deleted the \"%s\" site from the database!" % \
+                  site['name']
+        sites = [site]
+
+    # Must call AdmUpdateSite() even after AdmAddSite() to update max_slices
+    site_id = sites[0]['site_id']
+    # XXX login_base cannot be updated
+    del site['login_base']
+    AdmUpdateSite(site_id, site)
+
+    # The default administrator account must be associated with a site
+    # in order to login.
+    AdmAddPersonToSite(admin['person_id'], site['site_id'])
+    AdmSetPersonPrimarySite(admin['person_id'], site['site_id'])
+
+    # Grant admin and PI roles to the default administrator account
+    AdmGrantRoleToPerson(admin['person_id'], 10)
+    AdmGrantRoleToPerson(admin['person_id'], 20)
+
+    # Setup default PlanetLabConf entries
+    default_conf_files = [
+        # NTP configuration
+        {'enabled': 1,
+         'source': 'PlanetLabConf/ntpconf.php',
+         'dest': '/etc/ntp.conf',
+         'file_permissions': '644',
+         'file_owner': 'root',
+         'file_group': 'root',
+         'preinstall_cmd': '',
+         'postinstall_cmd': '/etc/rc.d/init.d/ntpd restart',
+         'error_cmd': '',
+         'ignore_cmd_errors': 0,
+         'always_update': 0},
+        {'enabled': 1,
+         'source': 'PlanetLabConf/ntptickers.php',
+         'dest': '/etc/ntp/step-tickers',
+         'file_permissions': '644',
+         'file_owner': 'root',
+         'file_group': 'root',
+         'preinstall_cmd': '',
+         'postinstall_cmd': '/etc/rc.d/init.d/ntpd restart',
+         'error_cmd': '',
+         'ignore_cmd_errors': 0,
+         'always_update': 0},
+
+        # SSH server configuration
+        {'enabled': 1,
+         'source': 'PlanetLabConf/sshd_config',
+         'dest': '/etc/ssh/sshd_config',
+         'file_permissions': '600',
+         'file_owner': 'root',
+         'file_group': 'root',
+         'preinstall_cmd': '',
+         'postinstall_cmd': '/etc/init.d/sshd restart',
+         'error_cmd': '',
+         'ignore_cmd_errors': 0,
+         'always_update': 0},
+
+        # Administrative SSH keys
+        {'enabled': 1,
+         'source': 'PlanetLabConf/keys.php?root',
+         'dest': '/root/.ssh/authorized_keys',
+         'file_permissions': '644',
+         'file_owner': 'root',
+         'file_group': 'root',
+         'preinstall_cmd': '',
+         'postinstall_cmd': '',
+         'error_cmd': '',
+         'ignore_cmd_errors': 0,
+         'always_update': 0},
+        {'enabled': 1,
+         'source': 'PlanetLabConf/keys.php?site_admin',
+         'dest': '/home/site_admin/.ssh/authorized_keys',
+         'file_permissions': '644',
+         'file_owner': 'site_admin',
+         'file_group': 'site_admin',
+         'preinstall_cmd': 'grep -q site_admin /etc/passwd',
+         'postinstall_cmd': '',
+         'error_cmd': '',
+         'ignore_cmd_errors': 0,
+         'always_update': 0},
+        {'enabled': 1,
+         'source': 'PlanetLabConf/keys.php?role=admin',
+         'dest': '/home/pl_admin/.ssh/authorized_keys',
+         'file_permissions': '644',
+         'file_owner': 'pl_admin',
+         'file_group': 'pl_admin',
+         'preinstall_cmd': 'grep -q pl_admin /etc/passwd',
+         'postinstall_cmd': '',
+         'error_cmd': '',
+         'ignore_cmd_errors': 0,
+         'always_update': 0},
+
+        # Log rotation configuration
+        {'enabled': 1,
+         'source': 'PlanetLabConf/logrotate.conf',
+         'dest': '/etc/logrotate.conf',
+         'file_permissions': '644',
+         'file_owner': 'root',
+         'file_group': 'root',
+         'preinstall_cmd': '',
+         'postinstall_cmd': '',
+         'error_cmd': '',
+         'ignore_cmd_errors': 0,
+         'always_update': 0},
+
+        # updatedb/locate nightly cron job
+        {'enabled': 1,
+         'source': 'PlanetLabConf/slocate.cron',
+         'dest': '/etc/cron.daily/slocate.cron',
+         'file_permissions': '755',
+         'file_owner': 'root',
+         'file_group': 'root',
+         'preinstall_cmd': '',
+         'postinstall_cmd': '',
+         'error_cmd': '',
+         'ignore_cmd_errors': 0,
+         'always_update': 0},
+
+        # YUM configuration
+        {'enabled': 1,
+         'source': 'PlanetLabConf/yum.conf.php?gpgcheck=1',
+         'dest': '/etc/yum.conf',
+         'file_permissions': '644',
+         'file_owner': 'root',
+         'file_group': 'root',
+         'preinstall_cmd': '',
+         'postinstall_cmd': '',
+         'error_cmd': '',
+         'ignore_cmd_errors': 0,
+         'always_update': 0},
+        {'enabled': 1,
+         'source': 'PlanetLabConf/delete-rpm-list-production',
+         'dest': '/etc/planetlab/delete-rpm-list',
+         'file_permissions': '644',
+         'file_owner': 'root',
+         'file_group': 'root',
+         'preinstall_cmd': '',
+         'postinstall_cmd': '',
+         'error_cmd': '',
+         'ignore_cmd_errors': 0,
+         'always_update': 0},
+
+        # PLC configuration
+        {'enabled': 1,
+         'source': 'PlanetLabConf/get_plc_config.php',
+         'dest': '/etc/planetlab/plc_config',
+         'file_permissions': '644',
+         'file_owner': 'root',
+         'file_group': 'root',
+         'preinstall_cmd': '',
+         'postinstall_cmd': '',
+         'error_cmd': '',
+         'ignore_cmd_errors': 0,
+         'always_update': 0},
+        {'enabled': 1,
+         'source': 'PlanetLabConf/get_plc_config.php?python',
+         'dest': '/etc/planetlab/plc_config.py',
+         'file_permissions': '644',
+         'file_owner': 'root',
+         'file_group': 'root',
+         'preinstall_cmd': '',
+         'postinstall_cmd': '',
+         'error_cmd': '',
+         'ignore_cmd_errors': 0,
+         'always_update': 0},
+        {'enabled': 1,
+         'source': 'PlanetLabConf/get_plc_config.php?perl',
+         'dest': '/etc/planetlab/plc_config.pl',
+         'file_permissions': '644',
+         'file_owner': 'root',
+         'file_group': 'root',
+         'preinstall_cmd': '',
+         'postinstall_cmd': '',
+         'error_cmd': '',
+         'ignore_cmd_errors': 0,
+         'always_update': 0},
+        {'enabled': 1,
+         'source': 'PlanetLabConf/get_plc_config.php?php',
+         'dest': '/etc/planetlab/php/plc_config.php',
+         'file_permissions': '644',
+         'file_owner': 'root',
+         'file_group': 'root',
+         'preinstall_cmd': '',
+         'postinstall_cmd': '',
+         'error_cmd': '',
+         'ignore_cmd_errors': 0,
+         'always_update': 0},
+
+        # Node Manager configuration
+        {'enabled': 1,
+         'source': 'PlanetLabConf/pl_nm-v3.conf',
+         'dest': '/etc/planetlab/pl_nm.conf',
+         'file_permissions': '644',
+         'file_owner': 'root',
+         'file_group': 'root',
+         'preinstall_cmd': '',
+         'postinstall_cmd': '/etc/init.d/pl_nm restart',
+         'error_cmd': '',
+         'ignore_cmd_errors': 0,
+         'always_update': 0},
+        {'enabled': 1,
+         'source': 'PlanetLabConf/RootResources/plc_slice_pool.php',
+         'dest': '/home/pl_nm/RootResources/plc_slice_pool',
+         'file_permissions': '644',
+         'file_owner': 'pl_nm',
+         'file_group': 'pl_nm',
+         'preinstall_cmd': '',
+         'postinstall_cmd': '',
+         'error_cmd': '',
+         'ignore_cmd_errors': 0,
+         'always_update': 0},
+        {'enabled': 1,
+         'source': 'PlanetLabConf/RootResources/pl_conf.py',
+         'dest': '/home/pl_nm/RootResources/pl_conf',
+         'file_permissions': '644',
+         'file_owner': 'pl_nm',
+         'file_group': 'pl_nm',
+         'preinstall_cmd': '',
+         'postinstall_cmd': '/etc/init.d/pl_nm restart',
+         'error_cmd': '',
+         'ignore_cmd_errors': 0,
+         'always_update': 0},
+        {'enabled': 1,
+         'source': 'PlanetLabConf/RootResources/pl_netflow.py',
+         'dest': '/home/pl_nm/RootResources/pl_netflow',
+         'file_permissions': '644',
+         'file_owner': 'pl_nm',
+         'file_group': 'pl_nm',
+         'preinstall_cmd': '',
+         'postinstall_cmd': '',
+         'error_cmd': '',
+         'ignore_cmd_errors': 0,
+         'always_update': 0},
+
+        # Proper configuration
+        {'enabled': 1,
+         'source': 'PlanetLabConf/propd-NM-1.0.conf',
+         'dest': '/etc/proper/propd.conf',
+         'file_permissions': '644',
+         'file_owner': 'root',
+         'file_group': 'root',
+         'preinstall_cmd': '',
+         'postinstall_cmd': '/etc/init.d/proper restart',
+         'error_cmd': '',
+         'ignore_cmd_errors': 1,
+         'always_update': 0},
+
+        # Bandwidth cap
+        {'enabled': 1,
+         'source': 'PlanetLabConf/bwlimit.php',
+         'dest': '/etc/planetlab/bwcap',
+         'file_permissions': '644',
+         'file_owner': 'root',
+         'file_group': 'root',
+         'preinstall_cmd': '',
+         'postinstall_cmd': '/etc/init.d/pl_nm restart',
+         'error_cmd': '',
+         'ignore_cmd_errors': 1,
+         'always_update': 0},
+
+        # Proxy ARP setup
+        {'enabled': 1,
+         'source': 'PlanetLabConf/proxies.php',
+         'dest': '/etc/planetlab/proxies',
+         'file_permissions': '644',
+         'file_owner': 'root',
+         'file_group': 'root',
+         'preinstall_cmd': '',
+         'postinstall_cmd': '',
+         'error_cmd': '',
+         'ignore_cmd_errors': 0,
+         'always_update': 0},
+
+        # Firewall configuration
+        {'enabled': 1,
+         'source': 'PlanetLabConf/iptables',
+         'dest': '/etc/sysconfig/iptables',
+         'file_permissions': '600',
+         'file_owner': 'root',
+         'file_group': 'root',
+         'preinstall_cmd': '',
+         'postinstall_cmd': '',
+         'error_cmd': '',
+         'ignore_cmd_errors': 0,
+         'always_update': 0},
+        {'enabled': 1,
+         'source': 'PlanetLabConf/blacklist.php',
+         'dest': '/etc/planetlab/blacklist',
+         'file_permissions': '600',
+         'file_owner': 'root',
+         'file_group': 'root',
+         'preinstall_cmd': '',
+         'postinstall_cmd': '/sbin/iptables-restore --noflush < /etc/planetlab/blacklist',
+         'error_cmd': '',
+         'ignore_cmd_errors': 1,
+         'always_update': 1},
+
+        # /etc/issue
+        {'enabled': 1,
+         'source': 'PlanetLabConf/issue.php',
+         'dest': '/etc/issue',
+         'file_permissions': '644',
+         'file_owner': 'root',
+         'file_group': 'root',
+         'preinstall_cmd': '',
+         'postinstall_cmd': '',
+         'error_cmd': '',
+         'ignore_cmd_errors': 0,
+         'always_update': 0},
+
+        # Kernel parameters
+        {'enabled': 1,
+         'source': 'PlanetLabConf/sysctl.php',
+         'dest': '/etc/sysctl.conf',
+         'file_permissions': '644',
+         'file_owner': 'root',
+         'file_group': 'root',
+         'preinstall_cmd': '',
+         'postinstall_cmd': '/sbin/sysctl -e -p /etc/sysctl.conf',
+         'error_cmd': '',
+         'ignore_cmd_errors': 0,
+         'always_update': 1},
+
+        # Sendmail configuration
+        {'enabled': 1,
+         'source': 'PlanetLabConf/alpha-sendmail.mc',
+         'dest': '/etc/mail/sendmail.mc',
+         'file_permissions': '644',
+         'file_owner': 'root',
+         'file_group': 'root',
+         'preinstall_cmd': '',
+         'postinstall_cmd': '',
+         'error_cmd': '',
+         'ignore_cmd_errors': 0,
+         'always_update': 0},
+        {'enabled': 1,
+         'source': 'PlanetLabConf/alpha-sendmail.cf',
+         'dest': '/etc/mail/sendmail.cf',
+         'file_permissions': '644',
+         'file_owner': 'root',
+         'file_group': 'root',
+         'preinstall_cmd': '',
+         'postinstall_cmd': 'service sendmail restart',
+         'error_cmd': '',
+         'ignore_cmd_errors': 0,
+         'always_update': 0},
+
+        # GPG signing keys
+        {'enabled': 1,
+         'source': 'PlanetLabConf/RPM-GPG-KEY-fedora',
+         'dest': '/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora',
+         'file_permissions': '644',
+         'file_owner': 'root',
+         'file_group': 'root',
+         'preinstall_cmd': '',
+         'postinstall_cmd': 'rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-fedora',
+         'error_cmd': '',
+         'ignore_cmd_errors': 0,
+         'always_update': 0},
+        {'enabled': 1,
+         'source': 'PlanetLabConf/get_gpg_key.php',
+         'dest': '/etc/pki/rpm-gpg/RPM-GPG-KEY-planetlab',
+         'file_permissions': '644',
+         'file_owner': 'root',
+         'file_group': 'root',
+         'preinstall_cmd': '',
+         'postinstall_cmd': 'rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-planetlab',
+         'error_cmd': '',
+         'ignore_cmd_errors': 0,
+         'always_update': 0},
+
+        # Ping of death configuration
+        {'enabled': 1,
+         'source': 'PlanetLabConf/ipod.conf.php',
+         'dest': '/etc/ipod.conf',
+         'file_permissions': '644',
+         'file_owner': 'root',
+         'file_group': 'root',
+         'preinstall_cmd': '',
+         'postinstall_cmd': '',
+         'error_cmd': '',
+         'ignore_cmd_errors': 0,
+         'always_update': 0},
+
+        # sudo configuration
+        {'enabled': 1,
+         'source': 'PlanetLabConf/v3-sudoers.php',
+         'dest': '/etc/sudoers',
+         'file_permissions': '440',
+         'file_owner': 'root',
+         'file_group': 'root',
+         'preinstall_cmd': '',
+         'postinstall_cmd': '/usr/sbin/visudo -c',
+         'error_cmd': '',
+         'ignore_cmd_errors': 0,
+         'always_update': 0}]
+
+    # Get list of existing (enabled, global) files
+    conf_files = AdmGetConfFile()
+    conf_files = filter(lambda conf_file: conf_file['enabled'] and \
+                                          not conf_file['node_id'] and \
+                                          not conf_file['nodegroup_id'],
+                        conf_files)
+    dests = [conf_file['dest'] for conf_file in conf_files]
+    conf_files = dict(zip(dests, conf_files))
+
+    # Create/update default PlanetLabConf entries
+    for default_conf_file in default_conf_files:
+        if default_conf_file['dest'] not in dests:
+            AdmCreateConfFile(default_conf_file['enabled'],
+                              default_conf_file['source'],
+                              default_conf_file['dest'],
+                              default_conf_file['file_permissions'],
+                              default_conf_file['file_owner'],
+                              default_conf_file['file_group'],
+                              default_conf_file['preinstall_cmd'],
+                              default_conf_file['postinstall_cmd'],
+                              default_conf_file['error_cmd'],
+                              default_conf_file['ignore_cmd_errors'],
+                              default_conf_file['always_update'])
+        else:
+            conf_file = conf_files[default_conf_file['dest']]
+            AdmUpdateConfFile(conf_file['conf_file_id'], default_conf_file)
+
+    # Setup default slice attribute types
+    default_attribute_types = [
+        # Slice type (only vserver is supported)
+        {'name': "plc_slice_type",
+         'description': "Type of slice rspec to be created",
+         'is_exclusive': True, 'min_role_id': 20, 'max_per_slice': 1,
+         'value_fields': [{'description': "rspec class",
+                           'name': "type",
+                           'type': "string"}]},
+
+        # Slice initialization script
+        {'name': "initscript",
+         'description': "slice initialization script",
+         'is_exclusive': False, 'min_role_id': 10, 'max_per_slice': 1,
+         'value_fields': [{'description': "",
+                           'name': "initscript_id",
+                           'type': "integer"}]},
+
+        # CPU share (general_prop_share is deprecated)
+        {'name': "general_prop_share",
+         'description': "general share",
+         'is_exclusive': False, 'min_role_id': 10, 'max_per_slice': 1,
+         'value_fields': [{'description': "",
+                           'name': "general_prop_share",
+                           'type': "integer"}]},
+        {'name': "nm_cpu_share",
+         'description': "Number of CPU shares to be allocated to slice",
+         'is_exclusive': True, 'min_role_id': 10, 'max_per_slice': 1,
+         'value_fields': [{'description': "number of shares",
+                           'name': "cpu_share",
+                           'type': "integer"}]},
+
+        # Bandwidth limits
+        {'name': "nm_net_min_rate",
+         'description': "Minimum network Tx bandwidth",
+         'is_exclusive': True, 'min_role_id': 10, 'max_per_slice': 1,
+         'value_fields': [{'description': "rate (bps)",
+                           'name': "rate",
+                           'type': "integer"}]},
+        {'name': "nm_net_max_rate",
+         'description': "Maximum network Tx bandwidth",
+         'is_exclusive': True, 'min_role_id': 10, 'max_per_slice': 1,
+         'value_fields': [{'description': "rate (bps)",
+                           'name': "rate",
+                           'type': "integer"}]},
+        {'name': "nm_net_avg_rate",
+         'description': "Average daily network Tx bandwidth",
+         'is_exclusive': True, 'min_role_id': 10, 'max_per_slice': 1,
+         'value_fields': [{'description': "rate (bps)",
+                           'name': "rate",
+                           'type': "integer"}]},
+        {'name': "nm_net_exempt_min_rate",
+         'description': "Minimum network Tx bandwidth to Internet2 destinations",
+         'is_exclusive': True, 'min_role_id': 10, 'max_per_slice': 1,
+         'value_fields': [{'description': "rate (bps)",
+                           'name': "rate",
+                           'type': "integer"}]},
+        {'name': "nm_net_exempt_max_rate",
+         'description': "Maximum network Tx bandwidth to Internet2 destinations",
+         'is_exclusive': True, 'min_role_id': 10, 'max_per_slice': 1,
+         'value_fields': [{'description': "rate (bps)",
+                           'name': "rate",
+                           'type': "integer"}]},
+        {'name': "nm_net_exempt avg_rate",
+         'description': "Average daily network Tx bandwidth to Internet2 destinations",
+         'is_exclusive': True, 'min_role_id': 10, 'max_per_slice': 1,
+         'value_fields': [{'description': "rate (bps)",
+                           'name': "rate",
+                           'type': "integer"}]},
+
+        # Disk quota
+        {'name': "nm_disk_quota",
+         'description': "Disk quota",
+         'is_exclusive': True, 'min_role_id': 10, 'max_per_slice': 1,
+         'value_fields': [{'description': "Number of 1k disk blocks",
+                           'name': "quota",
+                           'type': "integer"}]},
+
+        # Special attributes applicable to Slice Creation Service (pl_conf) slice
+        {'name': "plc_agent_version",
+         'description': "Version of PLC agent (slice creation service) software to be deployed",
+         'is_exclusive': True, 'min_role_id': 10, 'max_per_slice': 1,
+         'value_fields': [{'description': "current version of PLC agent (SCS)",
+                           'name': "version",
+                           'type': "string"}]},
+        {'name': "plc_ticket_pubkey",
+         'description': "Public key used to verify PLC-signed tickets",
+         'is_exclusive': True, 'min_role_id': 10, 'max_per_slice': 1,
+         'value_fields': [{'description': "PEM-encoded public key",
+                           'name': "key",
+                           'type': "string"}]}]
+
+    # Get list of existing attribute types
+    attribute_types = SliceAttributeTypeList()
+
+    # Create/update default slice attribute types
+    for default_attribute_type in default_attribute_types:
+        if default_attribute_type['name'] not in attribute_types:
+            SliceAttributeTypeCreate(default_attribute_type['name'],
+                                     default_attribute_type['description'],
+                                     default_attribute_type['min_role_id'],
+                                     default_attribute_type['max_per_slice'],
+                                     default_attribute_type['is_exclusive'],
+                                     default_attribute_type['value_fields'])
+        else:
+            # XXX No way to update slice attribute types
+            pass
+
+    # Get contents of SSL public certificate used for signing slice tickets
+    try:
+        plc_ticket_pubkey = ""
+        for line in file(plc_ma_sa['ssl_key_pub']):
+            # Skip comments
+            if line[0:5] != "-----":
+                # XXX The embedded newlines matter, do not strip()!
+                plc_ticket_pubkey += line
+    except:
+        plc_ticket_pubkey = '%KEY%'
+
+    # Create/update system slices
+    slices = [{'name': "pl_conf",
+               'description': "PlanetLab Slice Creation Service (SCS)",
+               'url': url,
+               'attributes': {'plc_slice_type': {'type': "VServerSlice"},
+                              'plc_agent_version': {'version': "1.0"},
+                              'plc_ticket_pubkey': {'key': plc_ticket_pubkey}}},
+              {'name': "pl_conf_vserverslice",
+               'description': "Default attributes for vserver slices",
+               'url': url,
+               'attributes': {'nm_cpu_share': {'cpu_share': 32},
+                              'plc_slice_type': {'type': "VServerSlice"},
+                              'nm_disk_quota': {'quota': 5000000}}}]
+    for slice in slices:
+        try:
+            SliceInfo([slice['name']])
+        except:
+            SliceCreate(slice['name'])
+            SliceSetInstantiationMethod(slice['name'], 'plc-instantiated')
+        SliceUpdate(slice['name'], slice['url'], slice['description'])
+        # Renew forever
+        SliceRenew(slice['name'], sys.maxint)
+        # Create/update all attributes
+        for attribute, values in slice['attributes'].iteritems():
+            SliceAttributeSet(slice['name'], attribute, values)
+
+
+if __name__ == '__main__':
+    main()
