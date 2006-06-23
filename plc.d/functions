@@ -5,7 +5,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: functions,v 1.3 2006/04/10 15:53:49 mlhuang Exp $
+# $Id: functions,v 1.4 2006/04/25 21:18:19 mlhuang Exp $
 #
 
 export PATH=/sbin:/bin:/usr/bin:/usr/sbin
@@ -77,6 +77,13 @@ ssl_cname ()
 {
     openssl x509 -noout -in $1 -subject | \
 	sed -n -e 's@.*/CN=\([^/]*\).*@\1@p'
+}
+
+# Print the emailAddress of an SSL certificate
+ssl_email ()
+{
+    openssl x509 -noout -in $1 -subject | \
+	sed -n -e 's@.*/emailAddress=\([^/]*\).*@\1@p'
 }
 
 # Forcefully make a symlink
