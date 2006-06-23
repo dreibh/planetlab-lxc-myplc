@@ -7,12 +7,15 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: bootmanager,v 1.1 2006/04/06 21:51:59 mlhuang Exp $
+# $Id: bootmanager,v 1.2 2006/04/25 21:18:19 mlhuang Exp $
 #
 
 # Source function library and configuration
 . /etc/plc.d/functions
 . /etc/planetlab/plc_config
+
+# Be verbose
+set -x
 
 case "$1" in
     start)

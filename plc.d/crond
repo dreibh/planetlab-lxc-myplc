@@ -7,12 +7,15 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: crond,v 1.3 2006/05/22 21:12:17 mlhuang Exp $
+# $Id: crond,v 1.4 2006/05/26 19:57:30 mlhuang Exp $
 #
 
 # Source function library and configuration
 . /etc/plc.d/functions
 . /etc/planetlab/plc_config
+
+# Be verbose
+set -x
 
 case "$1" in
     start)
