@@ -116,7 +116,11 @@ install -D -m 755 plc_config.py $root/tmp/plc_config.py
 chroot $root sh -c 'cd /tmp; python plc_config.py build; python plc_config.py install'
 install -D -m 755 plc-config $root/usr/bin/plc-config
 install -D -m 755 api-config $root/usr/bin/api-config
+install -D -m 755 db-config $root/usr/bin/db-config
 install -D -m 755 dns-config $root/usr/bin/dns-config
+
+# Install OpenSSL configuration
+install -D -m 644 openssl.cnf $root/etc/planetlab/ssl/openssl.cnf
 
 # Install initscripts
 echo "* Installing initscripts"
