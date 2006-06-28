@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: ssl,v 1.5 2006/06/23 21:47:18 mlhuang Exp $
+# $Id: ssl,v 1.6 2006/06/28 20:44:17 alk Exp $
 #
 
 # Source function library and configuration
@@ -29,7 +29,7 @@ mkcert ()
 
     mkdir -p $(dirname $KEY)
     openssl req -config /etc/planetlab/ssl/openssl.cnf \
-	-new -extensions v3_req -days 365 -set_serial $RANDOM \
+	-new -extensions v3_req -days 3650 -set_serial $RANDOM \
 	-batch -subj "/CN=$CN" \
 	-nodes -keyout $KEY -out $csr
     check
@@ -105,7 +105,7 @@ case "$1" in
 	    mkcert "$PLC_NAME Management and Slice Authority" \
 		$PLC_MA_SA_SSL_KEY $PLC_MA_SA_SSL_CRT
 
-	    # make readable by apache to sign certificates
+	    # Make readable by apache so that the API can sign certificates
 	    chown apache $PLC_MA_SA_SSL_KEY
 	    chmod 600 $PLC_MA_SA_SSL_KEY
 
@@ -115,8 +115,11 @@ case "$1" in
 	    chmod 644 $PLC_MA_SA_SSL_KEY_PUB
 	fi
 
-	# Generate HTTPS certificate(s). We generate a certificate for
-	# each enabled server with a different hostname.
+	# Generate self-signed HTTPS certificate(s). These nice
+	# commands come from the mod_ssl spec file for Fedora Core
+	# 2. We generate a certificate for each enabled server
+	# with a different hostname. These self-signed
+	# certificates may be overridden later.
 	for server in WWW API BOOT ; do
 	    ssl_key=PLC_${server}_SSL_KEY
 	    ssl_crt=PLC_${server}_SSL_CRT
@@ -140,22 +143,27 @@ case "$1" in
 		fi
 	    done
 
-	    # Check if certificate is valid
+	    # Check if self-signed certificate is valid
 	    if [ -f ${!ssl_crt} ] ; then
-		verify=$(openssl verify -CAfile $PLC_ROOT_CA_SSL_CRT ${!ssl_crt})
-		# Delete if expired or hostname changed. These
-		# certificates do not necessarily have to be signed by
-		# the root CA; they may be signed by a third party,
-		# e.g., Entrust or Verisign.
-		if grep -q "expired" <<<$verify || \
-		    [ "$(ssl_cname ${!ssl_crt})" != "${!hostname}" ] ; then
-		    rm -f ${!ssl_crt}
+		verify=$(openssl verify ${!ssl_crt})
+		# If self-signed
+		if grep -q "self signed certificate" <<<$verify ; then
+		    # Delete if expired or hostname changed
+		    if grep -q "expired" <<<$verify || \
+			[ "$(ssl_cname ${!ssl_crt})" != "${!hostname}" ] ; then
+			rm -f ${!ssl_crt}
+		    fi
 		fi
 	    fi
 
-	    # Generate and sign certificate
+	    # Generate new self-signed certificate
 	    if [ ! -f ${!ssl_crt} ] ; then
-		mkcert ${!hostname} ${!ssl_key} ${!ssl_crt}
+		mkdir -p $(dirname ${!ssl_crt})
+		openssl req -new -x509 -days 3650 -set_serial $RANDOM \
+		    -batch -subj "/CN=${!hostname}" \
+		    -nodes -keyout ${!ssl_key} -out ${!ssl_crt}
+		check
+		chmod 644 ${!ssl_crt}
 	    fi
 	done
 
