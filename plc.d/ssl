@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: ssl,v 1.4 2006/04/25 21:18:19 mlhuang Exp $
+# $Id: ssl,v 1.5 2006/06/23 21:47:18 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -104,6 +104,10 @@ case "$1" in
 	if [ ! -f $PLC_MA_SA_SSL_CRT ] ; then
 	    mkcert "$PLC_NAME Management and Slice Authority" \
 		$PLC_MA_SA_SSL_KEY $PLC_MA_SA_SSL_CRT
+
+	    # make readable by apache to sign certificates
+	    chown apache $PLC_MA_SA_SSL_KEY
+	    chmod 600 $PLC_MA_SA_SSL_KEY
 
 	    # API requires a public key for slice ticket verification
 	    openssl rsa -pubout <$PLC_MA_SA_SSL_KEY >$PLC_MA_SA_SSL_KEY_PUB
