@@ -6,13 +6,27 @@
 #
 # description:	Manages all PLC services on this machine
 #
-# $Id: host.init,v 1.6 2006/04/20 09:01:00 thierry Exp $
+# $Id: host.init,v 1.7 2006/05/23 18:00:21 mlhuang Exp $
 #
 
 PATH=/sbin:/bin:/usr/bin:/usr/sbin
 
 # Source function library.
-. /etc/init.d/functions
+if [ -f /etc/init.d/functions ] ; then
+    . /etc/init.d/functions
+fi
+
+# If success() or failure() are not defined
+if ! type -type success >/dev/null || ! type -type failure >/dev/null ; then
+    success() {
+	echo -ne "[  OK  ]\r"
+	return 0
+    }
+    failure() {
+	echo -ne "[FAILED]\r"
+	return 1
+    }
+fi
 
 # Source configuration
 if [ -f /etc/sysconfig/plc -a -z "${PLC_ROOT}${PLC_DATA}" ] ; then
@@ -101,15 +115,13 @@ stop ()
     fi
 }
 
-mount_status ()
+mountstatus_plc ()
 {
-  lines=$(mount | grep $PLC_ROOT)
-  if [ -z "$lines" ] ; then
-    echo "==== $PLC_ROOT is *not* mounted"
-  else
-    echo "==== The following mount points remain active"
-    echo "$lines"
-  fi
+    for dir in $PLC_ROOT/proc $PLC_ROOT/data $PLC_ROOT ; do
+	if mounted $dir ; then
+	    echo $dir
+	fi
+    done
 }
 
 # Get command
@@ -129,12 +141,8 @@ case "$command" in
 	start $*
 	;;
 
-    mount|umount)
+    mount|umount|mountstatus)
         ${command}_plc $*
-	;;
-
-    mountstatus)
-        mount_status $*
 	;;
   
     *)
