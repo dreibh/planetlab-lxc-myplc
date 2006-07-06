@@ -1,13 +1,13 @@
 Vendor: PlanetLab
 Packager: PlanetLab Central <support@planet-lab.org>
-Distribution: PlanetLab 3.3
+Distribution: PlanetLab 4.0
 URL: http://cvs.planet-lab.org/cvs/myplc
 
 Summary: PlanetLab Central (PLC) Portable Installation
 Name: myplc
 Version: 0.5
 Release: 1%{?pldistro:.%{pldistro}}%{?date:.%{date}}
-License: BSD
+License: PlanetLab
 Group: Applications/Systems
 Source0: %{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
