@@ -73,15 +73,19 @@ if [ -x %{_sysconfdir}/init.d/plc ] ; then
 fi
 
 %post
-chkconfig --add plc
-chkconfig plc on
+if [ -x /sbin/chkconfig ] ; then
+    /sbin/chkconfig --add plc
+    /sbin/chkconfig plc on
+fi
 
 %preun
 # 0 = erase, 1 = upgrade
 if [ $1 -eq 0 ] ; then
-    service plc stop
-    chkconfig plc off
-    chkconfig --del plc
+    %{_sysconfdir}/init.d/plc stop
+    if [ -x /sbin/chkconfig ] ; then
+        /sbin/chkconfig plc off
+	/sbin/chkconfig --del plc
+    fi
 fi
 
 %files
