@@ -8,7 +8,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: api,v 1.3 2006/04/25 21:18:19 mlhuang Exp $
+# $Id: api,v 1.4 2006/06/23 21:41:31 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -27,6 +27,27 @@ case "$1" in
 	MESSAGE=$"Configuring the API"
 	dialog "$MESSAGE"
 
+	# Generate old DB configuration file
+	ln -sf plc_config /etc/planetlab/plc_db
+
+	# Make sure that the API maintenance account is protected by a
+	# password.
+	if [ -z "$PLC_API_MAINTENANCE_PASSWORD" ] ; then
+	    PLC_API_MAINTENANCE_PASSWORD=$(uuidgen)
+	    plc-config --category=plc_api --variable=maintenance_password --value="$PLC_API_MAINTENANCE_PASSWORD" --save
+	fi
+
+	# Make sure that all PLC servers are allowed to access the API
+	# through the maintenance account.
+	PLC_API_MAINTENANCE_SOURCES=$(
+	    for server in API BOOT WWW ; do
+		hostname=PLC_${server}_HOST
+		gethostbyname ${!hostname}
+	    done | sort -u
+	)
+	plc-config --category=plc_api --variable=maintenance_sources --value="$PLC_API_MAINTENANCE_SOURCES" --save
+
+	# Generate old API configuration file
 	api-config
 	check
 
