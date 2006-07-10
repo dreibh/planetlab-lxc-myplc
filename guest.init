@@ -6,7 +6,7 @@
 #
 # description:	Manages all PLC services on this machine
 #
-# $Id: guest.init,v 1.17 2006/04/27 21:50:00 mlhuang Exp $
+# $Id: guest.init,v 1.18 2006/06/23 21:48:41 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -35,79 +35,34 @@ reload ()
 {
     # Regenerate the main configuration file from default values
     # overlaid with site-specific and current values.
-    tmp=$(mktemp /tmp/plc_config.xml.XXXXXX)
-    plc-config --xml \
-	/etc/planetlab/default_config.xml \
-	/etc/planetlab/configs/* \
-	/etc/planetlab/plc_config.xml \
-	>$tmp
-    if [ $? -eq 0 ] ; then
-	mv $tmp /etc/planetlab/plc_config.xml
-	chmod 644 /etc/planetlab/plc_config.xml
-    else
-	echo "PLC: Warning: Invalid configuration file(s) detected"
-	rm -f $tmp
-    fi
-
-    # Shell constants
-    plc-config --shell >/etc/planetlab/plc_config
-    . /etc/planetlab/plc_config
-
-    # Generate various defaults
-    if [ -z "$PLC_DB_PASSWORD" ] ; then
-	PLC_DB_PASSWORD=$(uuidgen)
-	plc-config --category=plc_db --variable=password --value="$PLC_DB_PASSWORD" --save
-    fi
-
-    if [ -z "$PLC_API_MAINTENANCE_PASSWORD" ] ; then
-	PLC_API_MAINTENANCE_PASSWORD=$(uuidgen)
-	plc-config --category=plc_api --variable=maintenance_password --value="$PLC_API_MAINTENANCE_PASSWORD" --save
-    fi
-
-    # Need to configure network before resolving hostnames
-    /etc/plc.d/network start 3>/dev/null 4>/dev/null
-
-    PLC_API_MAINTENANCE_SOURCES=$(
-	for server in API BOOT WWW ; do
-	    hostname=PLC_${server}_HOST
-	    gethostbyname ${!hostname}
-	done | sort -u
+    files=(
+	/etc/planetlab/default_config.xml 
+	/etc/planetlab/configs/*
+	/etc/planetlab/plc_config.xml
     )
-    plc-config --category=plc_api --variable=maintenance_sources --value="$PLC_API_MAINTENANCE_SOURCES" --save
+    for file in "${files[@]}" ; do
+	if [ $file -nt /etc/planetlab/plc_config.xml ] ; then
+	    tmp=$(mktemp /tmp/plc_config.xml.XXXXXX)
+	    plc-config --xml "${files[@]}" >$tmp
+	    if [ $? -eq 0 ] ; then
+		mv $tmp /etc/planetlab/plc_config.xml
+		chmod 644 /etc/planetlab/plc_config.xml
+	    else
+		echo "PLC: Warning: Invalid configuration file(s) detected"
+		rm -f $tmp
+	    fi
+	    break
+	fi
+    done
 
-    # Save configuration
-    mkdir -p /etc/planetlab/php
-    plc-config --php >/etc/planetlab/php/plc_config.php
-    plc-config --shell >/etc/planetlab/plc_config
-
-    # For backward compatibility, until we can convert all code to use
-    # the now standardized variable names.
-
-    # DB constants are all named the same
-    ln -sf plc_config /etc/planetlab/plc_db
-
-    # PHP constants
-    cat >/etc/planetlab/php/site_constants.php <<"EOF"
-<?php
-include('plc_config.php');
-
-define('PL_API_SERVER', PLC_API_HOST);
-define('PL_API_PATH', PLC_API_PATH);
-define('PL_API_PORT', PLC_API_PORT);
-define('PL_API_CAPABILITY_AUTH_METHOD', 'capability');
-define('PL_API_CAPABILITY_PASS', PLC_API_MAINTENANCE_PASSWORD);
-define('PL_API_CAPABILITY_USERNAME', PLC_API_MAINTENANCE_USER);
-define('WWW_BASE', PLC_WWW_HOST);
-define('BOOT_BASE', PLC_BOOT_HOST);
-define('DEBUG', PLC_WWW_DEBUG);
-define('API_CALL_DEBUG', PLC_API_DEBUG);
-define('SENDMAIL', PLC_MAIL_ENABLED);
-define('PLANETLAB_SUPPORT_EMAIL', PLC_NAME . ' Support <' . PLC_MAIL_SUPPORT_ADDRESS . '>');
-define('PLANETLAB_SUPPORT_EMAIL_ONLY', PLC_MAIL_SUPPORT_ADDRESS);
-?>
-EOF
-
-    # API constants are written in plc.d/api
+    # Convert configuration to various formats
+    if [ /etc/planetlab/plc_config.xml -nt /etc/planetlab/plc_config ] ; then
+	plc-config --shell >/etc/planetlab/plc_config
+    fi
+    if [ /etc/planetlab/plc_config.xml -nt /etc/planetlab/php/plc_config.php ] ; then
+	mkdir -p /etc/planetlab/php
+	plc-config --php >/etc/planetlab/php/plc_config.php
+    fi
 }
 
 usage()
@@ -176,6 +131,8 @@ start ()
     for step in "${steps[@]}" ; do
 	if [ -x /etc/plc.d/$step ] ; then
 	    /etc/plc.d/$step start
+	    # Steps may alter the configuration, may need to regenerate
+	    reload
 	else
 	    echo "PLC: $step: unrecognized step" >&4
 	    exit 1
@@ -189,6 +146,8 @@ stop ()
 	step=${steps[$(($nsteps - $i))]}
 	if [ -x /etc/plc.d/$step ] ; then
 	    /etc/plc.d/$step stop
+	    # Steps may alter the configuration, may need to regenerate
+	    reload
 	else
 	    echo "PLC: $step: unrecognized step" >&4
 	    exit 1
