@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: postgresql,v 1.3 2006/05/02 23:52:50 mlhuang Exp $
+# $Id: postgresql,v 1.4 2006/06/23 20:29:22 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -35,7 +35,9 @@ postgresql_start ()
     if status postmaster && [ -f /var/lock/subsys/postgresql ] ; then
 	# The only way we can be sure is if we can access it
 	for i in $(seq 1 10) ; do
-	    psql -U postgres -c "" template1 && return 0
+	    # Must do this as the postgres user initially (before we
+	    # fix pg_hba.conf to passwordless localhost access).
+	    su -c 'psql -U postgres -c "" template1' postgres && return 0
 	    sleep 1
 	done
     fi
@@ -104,6 +106,10 @@ case "$1" in
 	check
 
 	# Create/update the unprivileged database user and password
+	if [ -z "$PLC_DB_PASSWORD" ] ; then
+	    PLC_DB_PASSWORD=$(uuidgen)
+	    plc-config --category=plc_db --variable=password --value="$PLC_DB_PASSWORD" --save
+	fi
 	if ! psql -U $PLC_DB_USER -c "" template1 >/dev/null 2>&1 ; then
 	    psql -U postgres -c "CREATE USER $PLC_DB_USER PASSWORD '$PLC_DB_PASSWORD'" template1
 	else
