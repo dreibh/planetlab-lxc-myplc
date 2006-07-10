@@ -6,7 +6,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: api-config,v 1.12 2006/05/30 15:06:20 mlhuang Exp $
+# $Id: api-config,v 1.13 2006/06/23 20:33:28 mlhuang Exp $
 #
 
 from plc_config import PLCConfiguration
@@ -28,9 +28,11 @@ def main():
         globals()[category_id] = dict(zip(variablelist.keys(),
                                        [variable['value'] for variable in variablelist.values()]))
 
-    # Get the issuer e-mail address of the root CA certificate
+    # Get the issuer e-mail address and public key from the root CA certificate
     root_ca_email = commands.getoutput("openssl x509 -in %s -noout -email" % \
-                                       plc['root_ca_ssl_crt'])
+                                       plc_ma_sa['ca_ssl_crt'])
+    root_ca_key_pub = commands.getoutput("openssl x509 -in %s -noout -pubkey" % \
+                                         plc_ma_sa['ca_ssl_crt'])
 
     # Verify API certificate
     if os.path.exists(plc_ma_sa['api_crt']):
@@ -38,36 +40,35 @@ def main():
         try:
             cert_xml = file(plc_ma_sa['api_crt']).read().strip()
             # Verify root CA signature
-            CertOps.authenticate_cert(cert_xml,
-                                      {root_ca_email:
-                                       file(plc['root_ca_ssl_key_pub']).read().strip()})
+            CertOps.authenticate_cert(cert_xml, {root_ca_email: root_ca_key_pub})
             # Check if MA/SA e-mail address has changed
             dom = xml.dom.minidom.parseString(cert_xml)
-            for issuer in dom.getElementsByTagName('issuer'):
-                if issuer.getAttribute('email') != plc_mail['support_address']:
+            for subject in dom.getElementsByTagName('subject'):
+                if subject.getAttribute('email') != plc_mail['support_address']:
                     raise Exception, "E-mail address '%s' in certificate '%s' does not match support address '%s'" % \
-                          (issuer.getAttribute('email'), plc_ma_sa['api_crt'], plc_mail['support_address'])
+                          (subject.getAttribute('email'), plc_ma_sa['api_crt'], plc_mail['support_address'])
         except Exception, e:
             # Delete invalid API certificate
             print "Warning: ", e
             os.unlink(plc_ma_sa['api_crt'])
 
-    # Generate API certificate
+    # Generate self-signed API certificate
     if not os.path.exists(plc_ma_sa['api_crt']):
         print "Generating new API certificate"
         try:
             cert = Certificate.Certificate('ticket-cert-0')
-            ma_sa_ssl_key_pub = file(plc_ma_sa['ssl_key_pub']).read().strip()
+            ma_sa_ssl_key_pub = commands.getoutput("openssl x509 -in %s -noout -pubkey" % \
+                                                   plc_ma_sa['ssl_crt'])
             cert.add_subject_pubkey(pubkey = ma_sa_ssl_key_pub, email = plc_mail['support_address'])
             root_ca_subject = commands.getoutput("openssl x509 -in %s -noout -subject" % \
-                                                 plc['root_ca_ssl_crt'])
+                                                 plc_ma_sa['ssl_crt'])
             m = re.search('/CN=([^/]*).*', root_ca_subject)
             if m is None:
-                root_ca_cn = plc['name'] + " Root CA"
+                root_ca_cn = plc['name'] + " Management and Slice Authority"
             else:
                 root_ca_cn = m.group(1)
             cert.set_issuer(email = root_ca_email, cn = root_ca_cn)
-            cert_xml = cert.sign(plc['root_ca_ssl_key'])
+            cert_xml = cert.sign(plc_ma_sa['ssl_key'])
             ma_sa_api_crt = file(plc_ma_sa['api_crt'], "w")
             ma_sa_api_crt.write(cert_xml)
             ma_sa_api_crt.close()
@@ -96,7 +97,7 @@ def main():
                      'MA_SA_NAMESPACE': plc_ma_sa['namespace'],
                      'SESSION_LENGTH_HOURS': "24",
                      'ROOT_CA_EMAIL': root_ca_email,
-                     'ROOT_CA_PUB_KEY': plc['root_ca_ssl_key_pub'],
+                     'ROOT_CA_PUB_KEY': plc_ma_sa['ca_ssl_key_pub'],
                      'API_CERT_PATH': plc_ma_sa['api_crt'],
                      'MA_SA_PRIVATE_KEY': plc_ma_sa['ssl_key'],
                      'PL_API_TICKET_KEY_FILE': plc_ma_sa['ssl_key']}

@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: ssl,v 1.6 2006/06/28 20:44:17 alk Exp $
+# $Id: ssl,v 1.7 2006/06/28 21:34:18 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -17,38 +17,63 @@
 # Be verbose
 set -x
 
-mkcert ()
+# Print the CNAME of an SSL certificate
+ssl_cname ()
 {
-    CN=$1
-    KEY=$2
-    CRT=$3
+    openssl x509 -noout -in $1 -subject | \
+	sed -n -e 's@.*/CN=\([^/]*\).*@\1@p'
+}
 
-    # Generate a temporary CSR. We could save the CSR, but it's not
-    # worth the trouble.
-    csr=$(mktemp /tmp/csr.XXXXXX)
+# Print the emailAddress of an SSL certificate
+ssl_email ()
+{
+    openssl x509 -noout -in $1 -subject | \
+	sed -n -e 's@.*/emailAddress=\([^/]*\).*@\1@p'
+}
 
-    mkdir -p $(dirname $KEY)
-    openssl req -config /etc/planetlab/ssl/openssl.cnf \
-	-new -extensions v3_req -days 3650 -set_serial $RANDOM \
-	-batch -subj "/CN=$CN" \
-	-nodes -keyout $KEY -out $csr
-    check
-    chmod 600 $KEY
+# Verify a certificate. If invalid, generate a new self-signed
+# certificate.
+verify_or_generate_certificate() {
+    crt=$1
+    key=$2
+    ca=$3
+    cname=$4
+    email=$5
 
-    # Generate and sign certificate from CSR
-    serial=$(cat /etc/planetlab/ssl/serial)
+    if [ -f $crt ] ; then
+	# Check if certificate is valid
+	verify=$(openssl verify -CAfile $ca $crt)
+	# Delete if invalid or if the subject has changed
+	if grep -q "error" <<<$verify || \
+	    [ "$(ssl_cname $crt)" != "$cname" ] || \
+	    [ "$(ssl_email $crt)" != "$email" ] ; then
+	    rm -f $crt $ca
+	fi
+    fi
 
-    openssl ca -config /etc/planetlab/ssl/openssl.cnf \
-	-keyfile $PLC_ROOT_CA_SSL_KEY \
-	-cert $PLC_ROOT_CA_SSL_CRT \
-	-batch -infiles $csr
-    check
+    if [ ! -f $crt ] ; then
+        # Set subject
+	subj=
+	if [ -n "$cname" ] ; then
+	    subj="$subj/CN=$cname"
+	fi
+	if [ -n "$email" ] ; then
+	    subj="$subj/emailAddress=$email"
+	fi
 
-    mv /etc/planetlab/ssl/$serial.pem $CRT
-    chmod 644 $CRT
+	# Generate new self-signed certificate
+	mkdir -p $(dirname $crt)
+	openssl req -new -x509 -days 3650 -set_serial $RANDOM \
+	    -batch -subj "$subj" \
+	    -nodes -keyout $key -out $crt
+	check
+	chmod 644 $crt
+    fi
 
-    # Delete CSR
-    rm -f $csr
+    if [ ! -f $ca ] ; then
+        # The certificate it self-signed, so it is its own CA
+	cp -a $crt $ca
+    fi
 }
 
 case "$1" in
@@ -56,73 +81,32 @@ case "$1" in
 	MESSAGE=$"Generating SSL certificates"
 	dialog "$MESSAGE"
 
-	# Check if root CA certificate is valid
-	if [ -f $PLC_ROOT_CA_SSL_CRT ] ; then
-	    verify=$(openssl verify $PLC_ROOT_CA_SSL_CRT)
-	    # If self signed, assume that we generated it
-	    if grep -q "self signed certificate" <<<$verify ; then
-		# Delete if expired or PLC name or e-mail address has changed
-		if grep -q "expired" <<<$verify || \
-		    [ "$(ssl_cname $PLC_ROOT_CA_SSL_CRT)" != "$PLC_NAME Root CA" ] || \
-		    [ "$(ssl_email $PLC_ROOT_CA_SSL_CRT)" != "$PLC_MAIL_SUPPORT_ADDRESS" ] ; then
-		    rm -f $PLC_ROOT_CA_SSL_CRT
-		fi
-	    fi
-	fi
+	# Verify or generate MA/SA certificate if necessary. This
+	# self-signed certificate may be overridden later.
+	verify_or_generate_certificate \
+	    $PLC_MA_SA_SSL_CRT $PLC_MA_SA_SSL_KEY $PLC_MA_SA_CA_SSL_CRT \
+	    "$PLC_NAME Management and Slice Authority" \
+	    $PLC_MAIL_SUPPORT_ADDRESS
 
-	# Generate root CA key pair and certificate
-	if [ ! -f $PLC_ROOT_CA_SSL_CRT ] ; then
-	    mkdir -p $(dirname $PLC_ROOT_CA_SSL_CRT)
-	    openssl req -config /etc/planetlab/ssl/openssl.cnf \
-		-new -x509 -extensions v3_ca -days 3650 -set_serial $RANDOM \
-		-batch -subj "/CN=$PLC_NAME Root CA/emailAddress=$PLC_MAIL_SUPPORT_ADDRESS" \
-		-nodes -keyout $PLC_ROOT_CA_SSL_KEY -out $PLC_ROOT_CA_SSL_CRT
-	    check
-	    chmod 600 $PLC_ROOT_CA_SSL_KEY
-	    chmod 644 $PLC_ROOT_CA_SSL_CRT
+	# Make MA/SA key readable by apache so that the API can sign
+	# certificates
+	chown apache $PLC_MA_SA_SSL_KEY
+	chmod 600 $PLC_MA_SA_SSL_KEY
 
-	    # API certificate verification requires a public key
-	    openssl rsa -pubout <$PLC_ROOT_CA_SSL_KEY >$PLC_ROOT_CA_SSL_KEY_PUB
-	    check
-	    chmod 644 $PLC_ROOT_CA_SSL_KEY_PUB
+	# Extract the public key of the root CA (if any) that signed
+	# the MA/SA certificate.
+	openssl x509 -in $PLC_MA_SA_CA_SSL_CRT -noout -pubkey >$PLC_MA_SA_CA_SSL_KEY_PUB
+	check
+	chmod 644 $PLC_MA_SA_CA_SSL_KEY_PUB
 
-	    # Reset DB
-	    >/etc/planetlab/ssl/index.txt
-	    echo "01" >/etc/planetlab/ssl/serial
-	fi
-
-	# Check if MA/SA certificate is valid
-	if [ -f $PLC_MA_SA_SSL_CRT ] ; then
-	    verify=$(openssl verify -CAfile $PLC_ROOT_CA_SSL_CRT $PLC_MA_SA_SSL_CRT)
-	    # Delete if expired or not signed correctly
-	    if grep -q "error" <<<$verify ; then
-		rm -f $PLC_MA_SA_SSL_CRT
-	    fi
-	fi
-
-	# Generate MA/SA key pair and certificate
-	if [ ! -f $PLC_MA_SA_SSL_CRT ] ; then
-	    mkcert "$PLC_NAME Management and Slice Authority" \
-		$PLC_MA_SA_SSL_KEY $PLC_MA_SA_SSL_CRT
-
-	    # Make readable by apache so that the API can sign certificates
-	    chown apache $PLC_MA_SA_SSL_KEY
-	    chmod 600 $PLC_MA_SA_SSL_KEY
-
-	    # API requires a public key for slice ticket verification
-	    openssl rsa -pubout <$PLC_MA_SA_SSL_KEY >$PLC_MA_SA_SSL_KEY_PUB
-	    check
-	    chmod 644 $PLC_MA_SA_SSL_KEY_PUB
-	fi
-
-	# Generate self-signed HTTPS certificate(s). These nice
-	# commands come from the mod_ssl spec file for Fedora Core
-	# 2. We generate a certificate for each enabled server
-	# with a different hostname. These self-signed
-	# certificates may be overridden later.
+	# Generate HTTPS certificates if necessary. We generate a
+	# certificate for each enabled server with a different
+	# hostname. These self-signed certificates may be overridden
+	# later.
 	for server in WWW API BOOT ; do
 	    ssl_key=PLC_${server}_SSL_KEY
 	    ssl_crt=PLC_${server}_SSL_CRT
+	    ca_ssl_crt=PLC_${server}_CA_SSL_CRT
 	    hostname=PLC_${server}_HOST
 
 	    # Check if we have already generated a certificate for
@@ -133,38 +117,22 @@ case "$1" in
 		fi
 		previous_ssl_key=PLC_${previous_server}_SSL_KEY
 		previous_ssl_crt=PLC_${previous_server}_SSL_CRT
+		previous_ca_ssl_crt=PLC_${previous_server}_CA_SSL_CRT
 		previous_hostname=PLC_${previous_server}_HOST
 
 		if [ -f ${!previous_ssl_crt} ] && \
 		    [ "$(ssl_cname ${!previous_ssl_crt})" = "${!hostname}" ] ; then
 		    cp -a ${!previous_ssl_key} ${!ssl_key}
 		    cp -a ${!previous_ssl_crt} ${!ssl_crt}
+		    cp -a ${!previous_ca_ssl_crt} ${!ca_ssl_crt}
 		    break
 		fi
 	    done
 
-	    # Check if self-signed certificate is valid
-	    if [ -f ${!ssl_crt} ] ; then
-		verify=$(openssl verify ${!ssl_crt})
-		# If self-signed
-		if grep -q "self signed certificate" <<<$verify ; then
-		    # Delete if expired or hostname changed
-		    if grep -q "expired" <<<$verify || \
-			[ "$(ssl_cname ${!ssl_crt})" != "${!hostname}" ] ; then
-			rm -f ${!ssl_crt}
-		    fi
-		fi
-	    fi
+	    verify_or_generate_certificate \
+		${!ssl_crt} ${!ssl_key} ${!ca_ssl_crt} \
+		${!hostname} $PLC_MAIL_SUPPORT_ADDRESS
 
-	    # Generate new self-signed certificate
-	    if [ ! -f ${!ssl_crt} ] ; then
-		mkdir -p $(dirname ${!ssl_crt})
-		openssl req -new -x509 -days 3650 -set_serial $RANDOM \
-		    -batch -subj "/CN=${!hostname}" \
-		    -nodes -keyout ${!ssl_key} -out ${!ssl_crt}
-		check
-		chmod 644 ${!ssl_crt}
-	    fi
 	done
 
 	# Install HTTPS certificates into both /etc/pki (Fedora Core
