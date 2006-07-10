@@ -5,7 +5,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: functions,v 1.4 2006/04/25 21:18:19 mlhuang Exp $
+# $Id: functions,v 1.5 2006/06/23 21:41:56 mlhuang Exp $
 #
 
 export PATH=/sbin:/bin:/usr/bin:/usr/sbin
@@ -70,20 +70,6 @@ plc_daemon ()
 gethostbyname ()
 {
     perl -MSocket -e '($a,$b,$c,$d,@addrs) = gethostbyname($ARGV[0]); print inet_ntoa($addrs[0]) . "\n";' $1 2>/dev/null
-}
-
-# Print the CNAME of an SSL certificate
-ssl_cname ()
-{
-    openssl x509 -noout -in $1 -subject | \
-	sed -n -e 's@.*/CN=\([^/]*\).*@\1@p'
-}
-
-# Print the emailAddress of an SSL certificate
-ssl_email ()
-{
-    openssl x509 -noout -in $1 -subject | \
-	sed -n -e 's@.*/emailAddress=\([^/]*\).*@\1@p'
 }
 
 # Forcefully make a symlink
