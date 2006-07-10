@@ -6,7 +6,7 @@ Default PLC configuration file
 Mark Huang <mlhuang@cs.princeton.edu>
 Copyright (C) 2006 The Trustees of Princeton University
 
-$Id: plc_config.xml,v 1.13 2006/05/23 18:14:47 mlhuang Exp $
+$Id: plc_config.xml,v 1.14 2006/06/23 20:31:09 mlhuang Exp $
 -->
 
 <!DOCTYPE configuration PUBLIC "-//PlanetLab Central//DTD PLC configuration//EN" "plc_config.dtd">
@@ -101,27 +101,6 @@ $Id: plc_config.xml,v 1.13 2006/05/23 18:14:47 mlhuang Exp $
 	  <description>The SSH private key used to access the root
 	  account on your nodes.</description>
 	</variable>
-
-	<variable id="root_ca_ssl_key" type="file">
-	  <name>Root CA SSL Private Key</name>
-	  <value>/etc/planetlab/root_ca_ssl.key</value>
-	  <description>The SSL private key used for signing all other
-	  generated certificates. If non-existent, one will be
-	  generated.</description>
-	</variable>
-
-	<variable id="root_ca_ssl_key_pub" type="file">
-	  <name>Root CA SSL Public Key</name>
-	  <value>/etc/planetlab/root_ca_ssl.pub</value>
-	  <description>The corresponding SSL public key.</description>
-	</variable>
-
-	<variable id="root_ca_ssl_crt" type="file">
-	  <name>Root CA SSL Public Certificate</name>
-	  <value>/etc/planetlab/root_ca_ssl.crt</value>
-	  <description>The corresponding SSL public
-	  certificate.</description>
-	</variable>
       </variablelist>
     </category>
 
@@ -148,27 +127,39 @@ $Id: plc_config.xml,v 1.13 2006/05/23 18:14:47 mlhuang Exp $
 	  be generated.</description>
 	</variable>
 
-	<variable id="ssl_key_pub" type="file">
-	  <name>SSL Public Key</name>
-	  <value>/etc/planetlab/ma_sa_ssl.pub</value>
-	  <description>The corresponding SSL public key.</description>
-	</variable>
-
 	<variable id="ssl_crt" type="file">
 	  <name>SSL Public Certificate</name>
 	  <value>/etc/planetlab/ma_sa_ssl.crt</value>
-	  <description>The corresponding SSL public certificate,
-	  signed by the root CA.</description>
+	  <description>The corresponding SSL public certificate. By
+	  default, this certificate is self-signed. You may replace
+	  the certificate later with one signed by the PLC root
+	  CA.</description>
+	</variable>
+
+	<variable id="ca_ssl_crt" type="file">
+	  <name>Root CA SSL Public Certificate</name>
+	  <value>/etc/planetlab/ma_sa_ca_ssl.crt</value>
+	  <description>If applicable, the certificate of the PLC root
+	  CA. If your MA/SA certificate is self-signed, then this file
+	  is the same as your MA/SA certificate.</description>
+	</variable>
+
+	<variable id="ca_ssl_key_pub" type="file">
+	  <name>Root CA SSL Public Key</name>
+	  <value>/etc/planetlab/ma_sa_ca_ssl.pub</value>
+	  <description>If applicable, the public key of the PLC root
+	  CA. If your MA/SA certificate is self-signed, then this file
+	  is the same as your MA/SA public key.</description>
 	</variable>
 
 	<variable id="api_crt" type="file">
 	  <name>API Certificate</name>
 	  <value>/etc/planetlab/ma_sa_api.xml</value>
-	  <description>The API Certificate for your MA/SA is the SSL
-	  public key for your MA/SA embedded in an XML document and
-	  signed by the root CA SSL private key. The API Certificate
-	  can be used by any PlanetLab node managed by any MA, to
-	  verify that your MA/SA public key is valid.</description>
+	  <description>The API Certificate is your MA/SA public key
+	  embedded in a digitally signed XML document. By default,
+	  this document is self-signed. You may replace this
+	  certificate later with one signed by the PLC root
+	  CA.</description>
 	</variable>
       </variablelist>
     </category>
@@ -412,8 +403,19 @@ $Id: plc_config.xml,v 1.13 2006/05/23 18:14:47 mlhuang Exp $
 	<variable id="ssl_crt" type="file">
 	  <name>SSL Public Certificate</name>
 	  <value>/etc/planetlab/api_ssl.crt</value>
-	  <description>The corresponding SSL public certificate,
-	  signed by the root CA.</description>
+	  <description>The corresponding SSL public certificate. By
+	  default, this certificate is self-signed. You may replace
+	  the certificate later with one signed by a root
+	  CA.</description>
+	</variable>
+
+	<variable id="ca_ssl_crt" type="file">
+	  <name>Root CA SSL Public Certificate</name>
+	  <value>/etc/planetlab/api_ca_ssl.crt</value>
+	  <description>The certificate of the root CA, if any, that
+	  signed your server certificate. If your server certificate is
+	  self-signed, then this file is the same as your server
+	  certificate.</description>
 	</variable>
       </variablelist>
     </category>
@@ -482,8 +484,19 @@ $Id: plc_config.xml,v 1.13 2006/05/23 18:14:47 mlhuang Exp $
 	<variable id="ssl_crt" type="file">
 	  <name>SSL Public Certificate</name>
 	  <value>/etc/planetlab/www_ssl.crt</value>
-	  <description>The corresponding SSL public certificate,
-	  signed by the root CA.</description>
+	  <description>The corresponding SSL public certificate for
+	  the HTTP server. By default, this certificate is
+	  self-signed. You may replace the certificate later with one
+	  signed by a root CA.</description>
+	</variable>
+
+	<variable id="ca_ssl_crt" type="file">
+	  <name>Root CA SSL Public Certificate</name>
+	  <value>/etc/planetlab/www_ca_ssl.crt</value>
+	  <description>The certificate of the root CA, if any, that
+	  signed your server certificate. If your server certificate is
+	  self-signed, then this file is the same as your server
+	  certificate.</description>
 	</variable>
       </variablelist>
     </category>
@@ -543,15 +556,25 @@ $Id: plc_config.xml,v 1.13 2006/05/23 18:14:47 mlhuang Exp $
 	  <name>SSL Private Key</name>
 	  <value>/etc/planetlab/boot_ssl.key</value>
 	  <description>The SSL private key to use for encrypting HTTPS
-	  traffic. If non-existent, one will be
-	  generated.</description>
+	  traffic.</description>
 	</variable>
 
 	<variable id="ssl_crt" type="file">
 	  <name>SSL Public Certificate</name>
 	  <value>/etc/planetlab/boot_ssl.crt</value>
-	  <description>The corresponding SSL public certificate,
-	  signed by the root CA.</description>
+	  <description>The corresponding SSL public certificate for
+	  the HTTP server. By default, this certificate is
+	  self-signed. You may replace the certificate later with one
+	  signed by a root CA.</description>
+	</variable>
+
+	<variable id="ca_ssl_crt" type="file">
+	  <name>Root CA SSL Public Certificate</name>
+	  <value>/etc/planetlab/boot_ca_ssl.crt</value>
+	  <description>The certificate of the root CA, if any, that
+	  signed your server certificate. If your server certificate is
+	  self-signed, then this file is the same as your server
+	  certificate.</description>
 	</variable>
       </variablelist>
     </category>
