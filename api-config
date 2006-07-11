@@ -6,7 +6,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: api-config,v 1.13 2006/06/23 20:33:28 mlhuang Exp $
+# $Id: api-config,v 1.14 2006/07/10 21:06:16 mlhuang Exp $
 #
 
 from plc_config import PLCConfiguration
@@ -83,6 +83,11 @@ def main():
         os.symlink(plc['root_ssh_key_pub'], "/etc/planetlab/node_root_key")
 
     # Old variable names littered throughout the API
+    if plc_mail['enabled'] == "true":
+        plc_mail_enabled = "1"
+    else:
+        plc_mail_enabled = "0"        
+
     old_variables = {'PL_API_SERVER': plc_api['host'],
                      'PL_API_PATH': plc_api['path'],
                      'PL_API_PORT': plc_api['port'],
@@ -94,6 +99,7 @@ def main():
                      'WWW_BASE': plc_www['host'],
                      'BOOT_BASE': plc_boot['host'],
 
+                     'PLC_MAIL_ENABLED': plc_mail_enabled,
                      'MA_SA_NAMESPACE': plc_ma_sa['namespace'],
                      'SESSION_LENGTH_HOURS': "24",
                      'ROOT_CA_EMAIL': root_ca_email,
