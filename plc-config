@@ -6,7 +6,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id$
+# $Id: plc-config,v 1.1.1.1 2006/03/27 17:36:46 mlhuang Exp $
 #
 
 import sys
@@ -71,6 +71,7 @@ def main():
                 "xml",
                 "variables",
                 "packages",
+                "groups",
                 "comps",
                 "category=", "variable=", "value=",
                 "group=", "package=", "type=",
@@ -96,6 +97,8 @@ def main():
             output = plc.output_variables
         elif opt == "--packages":
             output = plc.output_packages
+        elif opt == "--groups":
+            output = plc.output_groups
         elif opt == "--comps":
             output = plc.output_comps
         elif opt == "--category":

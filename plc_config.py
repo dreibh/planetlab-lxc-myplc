@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: plc_config.py,v 1.2 2006/04/04 22:09:25 mlhuang Exp $
+# $Id: plc_config.py,v 1.3 2006/04/18 15:32:48 thierry Exp $
 #
 
 import xml.dom.minidom
@@ -737,6 +737,19 @@ DO NOT EDIT. This file was automatically generated at
 
         if buf.tell():
             buf.write(os.linesep)
+
+        return buf.getvalue()
+
+
+    def output_groups(self, encoding = "utf-8"):
+        """
+        Return list of all package group names.
+        """
+
+        buf = codecs.lookup(encoding)[3](StringIO())
+
+        for (group, packages) in self._packages.values():
+            buf.write(group['name'] + os.linesep)
 
         return buf.getvalue()
 
