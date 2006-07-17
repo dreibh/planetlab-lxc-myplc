@@ -39,8 +39,8 @@ source code, and all the tools necessary to compile it.
 
 %build
 pushd myplc
-#./build_devel.sh
-#./build.sh
+./build_devel.sh
+./build.sh
 popd
 
 %install
@@ -117,6 +117,7 @@ fi
 if [ $1 -gt 0 ] ; then
     for dir in /var/lib/pgsql/data /etc/planetlab ; do
 	if [ -d /plc/data/$dir ] ; then
+	    echo "Preserving /plc/data/$dir"
 	    mv /plc/data/$dir /plc/data/$dir.rpmsave
 	fi
     done
@@ -142,6 +143,7 @@ touch /plc/data/etc/planetlab/default_config.xml
 if [ $1 -gt 0 ] ; then
     for dir in /var/lib/pgsql/data /etc/planetlab ; do
 	if [ -d /plc/data/$dir.rpmsave -a -d /plc/data/$dir ] ; then
+	    echo "Merging /plc/data/$dir"
 	    if tar -C /plc/data/$dir.rpmsave -cpf - . | \
 	       tar -C /plc/data/$dir -xpf - ; then
 		rm -rf /plc/data/$dir.rpmsave
