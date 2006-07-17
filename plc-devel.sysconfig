@@ -1,0 +1,3 @@
+PLC_ROOT=/plc/devel/root
+PLC_DATA=/plc/devel/data
+#PLC_OPTIONS="-v"
