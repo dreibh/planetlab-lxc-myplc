@@ -1,0 +1,151 @@
+# -*-Shell-script-*-
+#
+# Common functions for MyPLC build scripts (build_devel.sh and
+# build.sh)
+#
+# Mark Huang <mlhuang@cs.princeton.edu>
+# Copyright (C) 2006 The Trustees of Princeton University
+#
+# $Id: functions,v 1.6 2006/07/10 21:05:37 mlhuang Exp $
+#
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+
+# In both a normal CVS environment and a PlanetLab RPM
+# build environment, all of our dependencies are checked out into
+# directories at the same level as us.
+if [ -d ../build ] ; then
+    PATH=$PATH:../build
+    srcdir=..
+else
+    echo "Error: Could not find $(cd .. && pwd -P)/build/"
+    exit 1
+fi
+
+export PATH
+
+# Release and architecture to install
+PLC_DEVEL_FEDORA_RELEASE=4
+PLC_DEVEL_FEDORA_ARCH=i386
+
+# Fedora Core mirror from which to install filesystems
+PLC_DEVEL_FEDORA_URL=file:///usr/share/mirrors/fedora
+
+# Build myplc inside myplc-devel
+PLC_DEVEL_BOOTSTRAP=true
+
+# We may be running inside a myplc-devel environment, which can
+# override these defaults. Specifically, whether to build myplc inside
+# myplc-devel (PLC_DEVEL_BOOTSTRAP).
+if [ -f /etc/planetlab/plc_config ] ; then
+    . /etc/planetlab/plc_config
+fi
+
+usage()
+{
+    echo "Usage: build.sh [OPTION]..."
+    echo "	-l url		Fedora mirror location (default: $PLC_DEVEL_FEDORA_URL)"
+    echo "	-r release	Fedora release number (default: $PLC_DEVEL_FEDORA_RELEASE)"
+    echo "	-a arch		Fedora architecture (default: $PLC_DEVEL_FEDORA_ARCH)"
+    echo "	-h		This message"
+    exit 1
+}
+
+# Get options
+while getopts "l:r:a:h" opt ; do
+    case $opt in
+	l)
+	    PLC_DEVEL_FEDORA_URL=$OPTARG
+	    ;;
+	r)
+	    PLC_DEVEL_FEDORA_RELEASE=$OPTARG
+	    ;;
+	a)
+	    PLC_DEVEL_FEDORA_ARCH=$OPTARG
+	    ;;
+	h|*)
+	    usage
+	    ;;
+    esac
+done
+
+# Do not tolerate errors
+set -e
+
+# Be verbose
+set -x
+
+# Make a basic chroot at the specified location given the specified
+# configuration.
+make_chroot() {
+    root=$1
+    config=$2
+
+    # Get group list
+    groups=
+    while read group ; do
+	groups="$groups -g \"$group\""
+    done < <(./plc-config --groups $config)
+
+    # Get package list
+    packages=
+    while read package ; do
+	packages="$packages -p \"$package\""
+    done < <(./plc-config --packages $config)
+
+    # Install base system
+    eval mkfedora -v -l $PLC_DEVEL_FEDORA_URL -r $PLC_DEVEL_FEDORA_RELEASE -a $PLC_DEVEL_FEDORA_ARCH $packages $groups $root
+
+    # Disable all services in reference image
+    chroot $root sh -c "/sbin/chkconfig --list | awk '{ print \$1 }' | xargs -i /sbin/chkconfig {} off"
+
+    # FC2 minilogd starts up during shutdown and makes unmounting
+    # impossible. Just get rid of it.
+    rm -f $root/sbin/minilogd
+    ln -nsf /bin/true $root/sbin/minilogd
+}
+
+# Move specified directories out of the chroot and into a "data"
+# directory that will be bind mounted on /data inside the chroot.
+move_datadirs() {
+    root=$1
+    data=$2
+    shift 2
+
+    mkdir -p $root/data
+    for datadir in "$@" ; do
+	mkdir -p ${data}$datadir
+	if [ -d $root/$datadir -a ! -h $root/$datadir ] ; then
+	    (cd $root && find ./$datadir | cpio -p -d -u ../$data/)
+	fi
+	rm -rf $root/$datadir
+	mkdir -p $(dirname $root/$datadir)
+	ln -nsf /data$datadir $root/$datadir
+    done
+}
+
+# Make loopback filesystem from specified location
+make_image() {
+    root=$1
+    image=$2
+
+    # Leave about 100 MB free space and allow for about 20% inode overhead
+    bytes=$((($(du -sb $root | cut -f1) + 100000000) * 120 / 100))
+    bs=4096
+    blocks=$(($bytes / $bs))
+    dd bs=$bs count=$blocks if=/dev/zero of=$image
+    mkfs.ext3 -b $bs -j -F $image
+
+    # Temporarily mount it
+    tmp=$(mktemp -d tmp.XXXXXX)
+    mount -o loop $image $tmp
+    trap "umount $tmp; rmdir $tmp" ERR INT
+
+    # Move files to it
+    (cd $root && tar cpf - .) | (cd $tmp && tar xpf -)
+
+    # Unmount it
+    umount $tmp
+    rmdir $tmp
+    trap - ERR INT
+}

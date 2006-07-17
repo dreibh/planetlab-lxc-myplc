@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Default PLC build environment configuration file
+
+Mark Huang <mlhuang@cs.princeton.edu>
+Copyright (C) 2006 The Trustees of Princeton University
+
+$Id: plc_config.xml,v 1.14 2006/06/23 20:31:09 mlhuang Exp $
+-->
+
+<!DOCTYPE configuration PUBLIC "-//PlanetLab Central//DTD PLC configuration//EN" "plc_config.dtd">
+
+<configuration>
+  <variables>
+    <category id="plc_devel">
+      <name>Build Environment</name>
+      <description>These variables control the behavior of the
+      PlanetLab build environment.</description>
+
+      <variablelist>
+	<variable id="fedora_release" type="string">
+	  <name>Fedora Core Release Version</name>
+	  <value>4</value>
+	  <description>Version number of Fedora Core upon which to
+	  base the build environment. Warning: Currently, only Fedora
+	  Core 4 is supported.</description>
+	</variable>
+
+	<variable id="fedora_arch" type="string">
+	  <name>Fedora Core Base Architecture</name>
+	  <value>i386</value>
+	  <description>Base architecture of the build
+	  environment. Warning: Currently, only i386 is
+	  supported.</description>
+	</variable>
+
+	<variable id="fedora_url" type="string">
+	  <name>Fedora Core Mirror URL</name>
+	  <value>/usr/share/mirrors/fedora</value>
+	  <description>Fedora Core mirror from which to install
+	  filesystems.</description>
+	</variable>
+
+	<variable id="cvsroot" type="string">
+	  <name>CVS Root</name>
+	  <value>/cvs</value>
+	  <description>CVSROOT to use when checking out code.</description>
+	</variable>
+
+ 	<variable id="bootstrap" type="boolean">
+	  <name>Bootstrap Build</name>
+	  <value>false</value>
+	  <description>Controls whether MyPLC should be built inside
+	  of its own development environment.</description>
+	</variable>
+      </variablelist>
+    </category>
+  </variables>
+
+  <comps>
+    <group>
+      <id>development-libs</id>
+      <name>Development Libraries</name>
+      <default>true</default>
+      <description>The packages in this group are core libraries
+      needed to develop applications.</description>
+      <uservisible>true</uservisible>
+      <packagelist>
+	<!-- This is just a placeholder. The actual group is defined
+	     in the Fedora Core 4 comps.xml. -->
+      </packagelist>
+    </group>
+
+    <group>
+      <id>development-tools</id>
+      <name>Development Tools</name>
+      <default>true</default>
+      <description>These tools include core development tools such as
+      automake, gcc, perl, python, and debuggers.</description>
+      <uservisible>true</uservisible>
+      <packagelist>
+	<!-- This is just a placeholder. The actual group is defined
+	     in the Fedora Core 4 comps.xml. -->
+      </packagelist>
+    </group>
+
+    <group>
+      <id>legacy-software-development</id>
+      <name>Legacy Software Development</name>
+      <description>These packages provide compatibility support for
+      previous releases.</description>
+      <uservisible>true</uservisible>
+      <packagelist>
+	<!-- This is just a placeholder. The actual group is defined
+	     in the Fedora Core 4 comps.xml. -->
+      </packagelist>
+    </group>
+
+    <group>
+      <id>plc-build</id>
+      <name>PlanetLab Build Tools</name>
+      <description>Additional tools required to build PlanetLab
+      software.</description>
+      <packagelist>
+	<!-- kernel-vserver is intended for the vserver-reference, but
+	     serves the same useful purpose for MyPLC, namely, to
+	     Provide: kernel without actually installing anything. -->
+	<packagereq type="mandatory">kernel-vserver</packagereq>	
+
+	<!-- kernel -->
+	<packagereq type="mandatory">gnupg</packagereq>
+	<packagereq type="mandatory">diffutils</packagereq>
+
+	<!-- util-vserver -->
+	<packagereq type="mandatory">vconfig</packagereq>
+	<packagereq type="mandatory">iptables</packagereq>
+	<packagereq type="mandatory">wget</packagereq>
+	<packagereq type="mandatory">beecrypt-devel</packagereq>
+	<packagereq type="mandatory">tetex-latex</packagereq>
+	<packagereq type="mandatory">gcc-c++</packagereq>
+
+	<!-- ulogd -->
+	<packagereq type="mandatory">libpcap</packagereq>
+
+	<!-- iptables -->
+	<packagereq type="mandatory">linuxdoc-tools</packagereq>
+
+	<!-- vserver-reference -->
+	<packagereq type="mandatory">sudo</packagereq>
+	<packagereq type="mandatory">yum</packagereq>
+	<packagereq type="mandatory">createrepo</packagereq>
+
+	<!-- mysql -->
+	<packagereq type="mandatory">gperf</packagereq>
+	<packagereq type="mandatory">time</packagereq>
+
+	<!-- bootmanager -->
+	<packagereq type="mandatory">sharutils</packagereq>
+
+	<!-- bootcd -->
+	<packagereq type="mandatory">nasm</packagereq>
+	<packagereq type="mandatory">mkisofs</packagereq>
+	<packagereq type="mandatory">dosfstools</packagereq>
+
+	<!-- myplc -->
+	<packagereq type="mandatory">rsync</packagereq>
+      </packagelist>
+    </group>
+
+  </comps>
+
+</configuration>

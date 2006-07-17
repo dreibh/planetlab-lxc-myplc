@@ -6,7 +6,7 @@ URL: http://cvs.planet-lab.org/cvs/myplc
 Summary: PlanetLab Central (PLC) Portable Installation
 Name: myplc
 Version: 0.5
-Release: 1%{?pldistro:.%{pldistro}}%{?date:.%{date}}
+Release: 2%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 License: PlanetLab
 Group: Applications/Systems
 Source0: %{name}-%{version}.tar.gz
@@ -23,18 +23,34 @@ through a graphical interface. All PLC services are started up and
 shut down through a single System V init script installed in the host
 system.
 
+%package devel
+Summary: PlanetLab Central (PLC) Development Environment
+Group: Development/Tools
+AutoReqProv: no
+
+%description devel
+This package install a complete PlanetLab development environment
+contained within a chroot jail. The default installation consists of a
+local CVS repository bootstrapped with a snapshot of all PlanetLab
+source code, and all the tools necessary to compile it.
+
 %prep
 %setup -q
 
 %build
 pushd myplc
-./build.sh
+#./build_devel.sh
+#./build.sh
 popd
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
 pushd myplc
+
+#
+# myplc
+#
 
 # Install host startup script and configuration file
 install -D -m 755 host.init $RPM_BUILD_ROOT/%{_sysconfdir}/init.d/plc
@@ -50,6 +66,21 @@ install -D -m 644 root.img $RPM_BUILD_ROOT/plc/root.img
 
 # Install data directory
 find data | cpio -p -d -u $RPM_BUILD_ROOT/plc/
+
+#
+# myplc-devel
+#
+
+# Install host startup script and configuration file
+install -D -m 755 host.init $RPM_BUILD_ROOT/%{_sysconfdir}/init.d/plc-devel
+install -D -m 644 plc-devel.sysconfig $RPM_BUILD_ROOT/%{_sysconfdir}/sysconfig/plc-devel
+
+# Install root filesystem
+install -d -m 755 $RPM_BUILD_ROOT/plc/devel/root
+install -D -m 644 devel/root.img $RPM_BUILD_ROOT/plc/devel/root.img
+
+# Install data directory
+find devel/data | cpio -p -d -u $RPM_BUILD_ROOT/plc/
 
 popd
 
@@ -69,7 +100,32 @@ fi
 
 %pre
 if [ -x %{_sysconfdir}/init.d/plc ] ; then
-    service plc stop
+    %{_sysconfdir}/init.d/plc stop
+fi
+
+# Old versions of myplc used to ship with a bootstrapped database and
+# /etc/planetlab directory. Including generated files in the manifest
+# was dangerous; if /plc/data/var/lib/pgsql/data/base/1/16676 changed
+# names from one RPM build to another, it would be rpmsaved and thus
+# effectively deleted. Now we do not include these files in the
+# manifest. However, to avoid deleting these files in the process of
+# upgrading from one of these old versions of myplc, we must back up
+# the database and /etc/planetlab and restore them after the old
+# version has been uninstalled in %triggerpostun.
+
+# 0 = install, 1 = upgrade
+if [ $1 -gt 0 ] ; then
+    for dir in /var/lib/pgsql/data /etc/planetlab ; do
+	if [ -d /plc/data/$dir ] ; then
+	    mv /plc/data/$dir /plc/data/$dir.rpmsave
+	fi
+    done
+
+    # Except for the default configuration file and DTD, which really
+    # should be considered for upgrade.
+    mkdir -m 755 -p /plc/data/etc/planetlab
+    mv /plc/data/etc/planetlab.rpmsave/{default_config.xml,plc_config.dtd} \
+       /plc/data/etc/planetlab/ || :
 fi
 
 %post
@@ -78,6 +134,22 @@ if [ -x /sbin/chkconfig ] ; then
     /sbin/chkconfig plc on
 fi
 
+# Force a regeneration to take into account new variables
+touch /plc/data/etc/planetlab/default_config.xml
+
+%triggerpostun -- %{name}
+# 0 = erase, 1 = upgrade
+if [ $1 -gt 0 ] ; then
+    for dir in /var/lib/pgsql/data /etc/planetlab ; do
+	if [ -d /plc/data/$dir.rpmsave -a -d /plc/data/$dir ] ; then
+	    if tar -C /plc/data/$dir.rpmsave -cpf - . | \
+	       tar -C /plc/data/$dir -xpf - ; then
+		rm -rf /plc/data/$dir.rpmsave
+	    fi
+	fi
+    done
+fi    
+
 %preun
 # 0 = erase, 1 = upgrade
 if [ $1 -eq 0 ] ; then
@@ -85,6 +157,46 @@ if [ $1 -eq 0 ] ; then
     if [ -x /sbin/chkconfig ] ; then
         /sbin/chkconfig plc off
 	/sbin/chkconfig --del plc
+    fi
+fi
+
+%pre devel
+if [ -x %{_sysconfdir}/init.d/plc-devel ] ; then
+    %{_sysconfdir}/init.d/plc-devel stop
+fi
+
+# 0 = install, 1 = upgrade
+if [ $1 -gt 0 ] ; then
+    # Never overwrite /cvs
+    if [ -d /plc/devel/data/cvs ] ; then
+	echo "Preserving /plc/devel/data/cvs"
+	mv /plc/devel/data/cvs /plc/devel/data/cvs.rpmsave
+    fi
+fi
+
+%post devel
+if [ -x /sbin/chkconfig ] ; then
+    /sbin/chkconfig --add plc-devel
+    /sbin/chkconfig plc-devel on
+fi
+
+%triggerpostun -- %{name}
+# 0 = erase, 1 = upgrade
+if [ $1 -gt 0 ] ; then
+    if [ -d /plc/devel/data/cvs.rpmsave ] ; then
+	echo "Restoring /plc/devel/data/cvs"
+	mv /plc/devel/data/cvs /plc/devel/data/cvs.%{version}-%{release}
+	mv /plc/devel/data/cvs.rpmsave /plc/devel/data/cvs
+    fi
+fi    
+
+%preun devel
+# 0 = erase, 1 = upgrade
+if [ $1 -eq 0 ] ; then
+    %{_sysconfdir}/init.d/plc-devel stop
+    if [ -x /sbin/chkconfig ] ; then
+        /sbin/chkconfig plc-devel off
+	/sbin/chkconfig --del plc-devel
     fi
 fi
 
@@ -105,7 +217,40 @@ fi
 %dir /plc/data
 %config(noreplace) /plc/data/*
 
+%files devel
+%defattr(-,root,root,-)
+# Host startup script and configuration file
+%{_sysconfdir}/init.d/plc-devel
+%{_sysconfdir}/sysconfig/plc-devel
+
+# Root filesystem
+/plc/devel/root.img
+/plc/devel/root
+
+# Data directory
+%dir /plc/devel/data
+%config(noreplace) /plc/devel/data/*
+
 %changelog
+* Thu Jul 13 2006 Mark Huang <mlhuang@CS.Princeton.EDU> - 0.4-2, 0.5-2
+- MyPLC 0.4 RC2.
+- Build development environment (myplc-devel). Add support for
+  building myplc itself inside myplc-devel.
+- Move step-specific initialization to appropriate plc.d scripts
+- Fix postgresql startup failure when bootstrapping
+- Allow CA to be configured for each SSL certificate set. Stop doing
+  root CA stuff, this is outside the scope of MyPLC. MyPLC now only
+  generates self-signed certificates, but supports replacement of the
+  self-signed certificates with real certifcates signed by another CA,
+  as long as the CA is specified.
+- Self-sign the MA/SA SSL certificate (and by extension, the MA/SA API
+  certificate).
+- pl_mom: Workarounds for when NM queries time out.
+- plc_api: Honor PLC_MAIL_ENABLED.
+
+* Wed Jul  6 2006 Mark Huang <mlhuang@CS.Princeton.EDU> - 0.4-1, 0.5-1
+- First stable release of MyPLC 0.4 RC1.
+
 * Wed Apr  5 2006 Mark Huang <mlhuang@CS.Princeton.EDU> - 0.2-1
 - Basic functionality complete. Consolidate into a single package
   installed in /plc.
