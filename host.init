@@ -6,7 +6,7 @@
 #
 # description:	Manages all PLC services on this machine
 #
-# $Id: host.init,v 1.7 2006/05/23 18:00:21 mlhuang Exp $
+# $Id: host.init,v 1.8 2006/07/06 17:43:52 mlhuang Exp $
 #
 
 PATH=/sbin:/bin:/usr/bin:/usr/sbin
@@ -29,8 +29,12 @@ if ! type -type success >/dev/null || ! type -type failure >/dev/null ; then
 fi
 
 # Source configuration
-if [ -f /etc/sysconfig/plc -a -z "${PLC_ROOT}${PLC_DATA}" ] ; then
-    . /etc/sysconfig/plc
+SERVICE=$(basename $0)
+if [ ! -f /etc/sysconfig/$SERVICE ] ; then
+    SERVICE=plc
+fi
+if [ -f /etc/sysconfig/$SERVICE -a -z "${PLC_ROOT}${PLC_DATA}" ] ; then
+    . /etc/sysconfig/$SERVICE
 fi
 
 # Total number of errors
@@ -141,12 +145,16 @@ case "$command" in
 	start $*
 	;;
 
+    reload)
+	chroot $PLC_ROOT /sbin/service plc $PLC_OPTIONS reload $*
+	;;	
+
     mount|umount|mountstatus)
         ${command}_plc $*
 	;;
   
     *)
-	echo "Usage: $0 {start|stop|restart|mount|umount|mountstatus}"
+	echo "Usage: $0 {start|stop|restart|reload|mount|umount|mountstatus}"
 	RETVAL=1
 	;;
 esac
