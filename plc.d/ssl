@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: ssl,v 1.7 2006/06/28 21:34:18 mlhuang Exp $
+# $Id: ssl,v 1.8 2006/07/10 21:05:17 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -40,6 +40,12 @@ verify_or_generate_certificate() {
     cname=$4
     email=$5
 
+    # If the CA certificate does not exist, assume that the
+    # certificate is self-signed.
+    if [ ! -f $ca ] ; then
+	cp -a $crt $ca
+    fi
+
     if [ -f $crt ] ; then
 	# Check if certificate is valid
 	verify=$(openssl verify -CAfile $ca $crt)
@@ -68,10 +74,8 @@ verify_or_generate_certificate() {
 	    -nodes -keyout $key -out $crt
 	check
 	chmod 644 $crt
-    fi
 
-    if [ ! -f $ca ] ; then
-        # The certificate it self-signed, so it is its own CA
+	# The certificate it self-signed, so it is its own CA
 	cp -a $crt $ca
     fi
 }
