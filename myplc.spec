@@ -82,6 +82,10 @@ install -D -m 644 devel/root.img $RPM_BUILD_ROOT/plc/devel/root.img
 # Install data directory
 find devel/data | cpio -p -d -u $RPM_BUILD_ROOT/plc/
 
+# Make sure /cvs is never upgraded once installed by giving it a
+# unique name. A hard-linked copy is made in %post.
+mv $RPM_BUILD_ROOT/plc/devel/data/{cvs,cvs.%{version}-%{release}}
+
 popd
 
 %clean
@@ -112,6 +116,9 @@ fi
 # upgrading from one of these old versions of myplc, we must back up
 # the database and /etc/planetlab and restore them after the old
 # version has been uninstalled in %triggerpostun.
+#
+# This code can be removed once all myplc-0.4-1 installations have
+# been upgraded to at least myplc-0.4-2.
 
 # 0 = install, 1 = upgrade
 if [ $1 -gt 0 ] ; then
@@ -167,30 +174,17 @@ if [ -x %{_sysconfdir}/init.d/plc-devel ] ; then
     %{_sysconfdir}/init.d/plc-devel stop
 fi
 
-# 0 = install, 1 = upgrade
-if [ $1 -gt 0 ] ; then
-    # Never overwrite /cvs
-    if [ -d /plc/devel/data/cvs ] ; then
-	echo "Preserving /plc/devel/data/cvs"
-	mv /plc/devel/data/cvs /plc/devel/data/cvs.rpmsave
-    fi
-fi
-
 %post devel
 if [ -x /sbin/chkconfig ] ; then
     /sbin/chkconfig --add plc-devel
     /sbin/chkconfig plc-devel on
 fi
 
-%triggerpostun -- %{name}
-# 0 = erase, 1 = upgrade
-if [ $1 -gt 0 ] ; then
-    if [ -d /plc/devel/data/cvs.rpmsave ] ; then
-	echo "Restoring /plc/devel/data/cvs"
-	mv /plc/devel/data/cvs /plc/devel/data/cvs.%{version}-%{release}
-	mv /plc/devel/data/cvs.rpmsave /plc/devel/data/cvs
-    fi
-fi    
+# If /cvs does not already exist, make a hard-linked copy of this
+# version's /cvs repository.
+if [ ! -d /plc/devel/data/cvs ] ; then
+    cp -rl /plc/devel/data/{cvs.%{version}-%{release},cvs}
+fi
 
 %preun devel
 # 0 = erase, 1 = upgrade
