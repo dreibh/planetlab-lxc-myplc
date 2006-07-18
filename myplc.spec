@@ -84,7 +84,7 @@ find devel/data | cpio -p -d -u $RPM_BUILD_ROOT/plc/
 
 # Make sure /cvs is never upgraded once installed by giving it a
 # unique name. A hard-linked copy is made in %post.
-mv $RPM_BUILD_ROOT/plc/devel/data/{cvs,cvs.%{version}-%{release}}
+mv $RPM_BUILD_ROOT/plc/devel/data/{cvs,cvs-%{version}-%{release}}
 
 popd
 
@@ -183,7 +183,7 @@ fi
 # If /cvs does not already exist, make a hard-linked copy of this
 # version's /cvs repository.
 if [ ! -d /plc/devel/data/cvs ] ; then
-    cp -rl /plc/devel/data/{cvs.%{version}-%{release},cvs}
+    cp -rl /plc/devel/data/{cvs-%{version}-%{release},cvs}
 fi
 
 %preun devel
