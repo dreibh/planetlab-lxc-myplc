@@ -14,7 +14,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id$
+# $Id: build.sh,v 1.23 2006/07/17 21:31:31 mlhuang Exp $
 #
 
 . build.functions
@@ -45,7 +45,7 @@ if [ "$PLC_DEVEL_BOOTSTRAP" = "true" ] ; then
 
     # Build myplc inside myplc-devel. Make sure PLC_DEVEL_BOOTSTRAP is
     # false to avoid infinite recursion.
-    chroot devel/root sh -s <<EOF
+    chroot devel/root su - <<EOF
 set -x
 service plc start
 plc-config --category=plc_devel --variable=bootstrap --value="false" --save
