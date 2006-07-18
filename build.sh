@@ -14,7 +14,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: build.sh,v 1.23 2006/07/17 21:31:31 mlhuang Exp $
+# $Id$
 #
 
 . build.functions
@@ -62,10 +62,8 @@ EOF
     umount devel/root/data
     umount devel/root/proc
     umount devel/root/usr/share/mirrors/fedora || :
-
-    # Could leave it around, but it does consume a lot of disk space
-    # rm -rf devel/data/build
-    # mkdir -p devel/data/build
+    rm -rf devel/data/build
+    mkdir -p devel/data/build
 
     # No need to continue
     exit 0
