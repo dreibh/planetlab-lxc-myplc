@@ -139,29 +139,14 @@ datadirs=(
 
 move_datadirs root data "${datadirs[@]}"
 
+# Remove generated bootmanager script
+rm -f data/var/www/html/boot/bootmanager.sh
+
 # Initialize node RPMs directory. The PlanetLab-Bootstrap.tar.bz2
 # tarball already contains all of the node RPMs pre-installed. Only
 # updates or optional packages should be placed in this directory.
-if [ -n "$RPM_BUILD_DIR" ] ; then
-    echo "* myplc: Initializing node RPMs directory"
-    RPM_RPMS_DIR=$(cd $(dirname $RPM_BUILD_DIR)/RPMS && pwd -P)
-    mkdir -p data/var/www/html/install-rpms/planetlab
-    if [ -f $RPM_RPMS_DIR/yumgroups.xml ] ; then
-	install -D -m 644 $RPM_RPMS_DIR/yumgroups.xml \
-	    data/var/www/html/install-rpms/planetlab/yumgroups.xml
-    fi
-    # yum-2.0.x
-    if [ -x /usr/bin/yum-arch ] ; then
-	yum-arch data/var/www/html/install-rpms/planetlab
-    fi
-    # yum-2.4.x
-    if [ -x /usr/bin/createrepo ] ; then
-	if [ -f data/var/www/html/install-rpms/planetlab/yumgroups.xml ] ; then
-	    groupfile="-g yumgroups.xml"
-	fi
-	createrepo $groupfile data/var/www/html/install-rpms/planetlab
-    fi
-fi
+install -D -m 644 ../build/groups/v3_yumgroups.xml \
+    data/var/www/html/install-rpms/planetlab/yumgroups.xml
 
 # Make image out of directory
 echo "* myplc: Building loopback image"
