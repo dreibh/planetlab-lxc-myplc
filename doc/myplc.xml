@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
 "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd" [
-  <!ENTITY Variables SYSTEM "variables.xml">
+  <!ENTITY Variables SYSTEM "plc_variables.xml">
+  <!ENTITY DevelVariables SYSTEM "plc_devel_variables.xml">
 ]>
 <article>
   <articleinfo>
@@ -76,7 +77,7 @@
     </figure>
   </section>
 
-  <section>
+  <section id="Installation">
     <title>Installation</title>
 
     <para>Though internally composed of commodity software
@@ -88,12 +89,14 @@
     <example>
       <title>Installing MyPLC.</title>
 
-	<programlisting><![CDATA[# If your distribution supports RPM
-rpm -U myplc-0.3-1.planetlab.i386.rpm
+      <programlisting><![CDATA[# If your distribution supports RPM
+rpm -U http://build.planet-lab.org/build/myplc-0_4-rc1/RPMS/i386/myplc-0.4-1.planetlab.i386.rpm
 
 # If your distribution does not support RPM
+cd /tmp
+wget http://build.planet-lab.org/build/myplc-0_4-rc1/RPMS/i386/myplc-0.4-1.planetlab.i386.rpm
 cd /
-rpm2cpio myplc-0.3-1.planetlab.i386.rpm | cpio -diu]]></programlisting>
+rpm2cpio /tmp/myplc-0.4-1.planetlab.i386.rpm | cpio -diu]]></programlisting>
     </example>
 
     <para>MyPLC installs the following files and directories:</para>
@@ -103,8 +106,8 @@ rpm2cpio myplc-0.3-1.planetlab.i386.rpm | cpio -diu]]></programlisting>
       <listitem><para><filename>/plc/root.img</filename>: The main
       root filesystem of the MyPLC application. This file is an
       uncompressed ext3 filesystem that is loopback mounted on
-      <filename>/plc/root</filename> when MyPLC starts. The
-      filesystem, even when mounted, should be treated an opaque
+      <filename>/plc/root</filename> when MyPLC starts. This
+      filesystem, even when mounted, should be treated as an opaque
       binary that can and will be replaced in its entirety by any
       upgrade of MyPLC.</para></listitem>
 
@@ -117,13 +120,14 @@ rpm2cpio myplc-0.3-1.planetlab.i386.rpm | cpio -diu]]></programlisting>
       <listitem>
 	<para><filename>/plc/data</filename>: The directory where user
 	data and generated files are stored. This directory is bind
-	mounted into the <command>chroot</command> jail on
-	<filename>/data</filename>. Files in this directory are marked
-	with <command>%config(noreplace)</command> in the RPM. That
-	is, during an upgrade of MyPLC, if a file has not changed
-	since the last installation or upgrade of MyPLC, it is subject
-	to upgrade and replacement. If the file has chanegd, the new
-	version of the file will be created with a
+	mounted onto <filename>/plc/root/data</filename> so that it is
+	accessible as <filename>/data</filename> from within the
+	<command>chroot</command> jail. Files in this directory are
+	marked with <command>%config(noreplace)</command> in the
+	RPM. That is, during an upgrade of MyPLC, if a file has not
+	changed since the last installation or upgrade of MyPLC, it is
+	subject to upgrade and replacement. If the file has changed,
+	the new version of the file will be created with a
 	<filename>.rpmnew</filename> extension. Symlinks within the
 	MyPLC root filesystem ensure that the following directories
 	(relative to <filename>/plc/root</filename>) are stored
@@ -271,10 +275,12 @@ PLC: Signing node packages:                                [  OK  ]
       mounts, or your kernel may not support loopback mounting, bind
       mounting, or the ext3 filesystem. Try freeing at least one
       loopback device, or re-compiling your kernel to support loopback
-      mounting, bind mounting, and the ext3 filesystem. SELinux may
-      also be enabled. If you install MyPLC on Fedora Core 4 or 5, use
-      the <application>Security Level Configuration</application>
-      utility to configure SELinux to be
+      mounting, bind mounting, and the ext3 filesystem. If you see an
+      error similar to <literal>Permission denied while trying to open
+      /plc/root.img</literal>, then SELinux may be enabled. If you
+      installed MyPLC on Fedora Core 4 or 5, use the
+      <application>Security Level Configuration</application> utility
+      to configure SELinux to be
       <literal>Permissive</literal>.</para></listitem>
 
       <listitem><para><literal>Starting database server</literal>: If
@@ -476,6 +482,279 @@ vserver pl_conf exec service pl_conf restart]]></programlisting>
     </section>
   </section>
 
+  <section>
+    <title>Rebuilding and customizing MyPLC</title>
+
+    <para>The MyPLC package, though distributed as an RPM, is not a
+    traditional package that can be easily rebuilt from SRPM. The
+    requisite build environment is quite extensive and numerous
+    assumptions are made throughout the PlanetLab source code base,
+    that the build environment is based on Fedora Core 4 and that
+    access to a complete Fedora Core 4 mirror is available.</para>
+
+    <para>For this reason, it is recommended that you only rebuild
+    MyPLC (or any of its components) from within the MyPLC development
+    environment. The MyPLC development environment is similar to MyPLC
+    itself in that it is a portable filesystem contained within a
+    <command>chroot</command> jail. The filesystem contains all the
+    necessary tools required to rebuild MyPLC, as well as a snapshot
+    of the PlanetLab source code base in the form of a local CVS
+    repository.</para>
+
+    <section>
+      <title>Installation</title>
+
+      <para>Install the MyPLC development environment similarly to how
+      you would install MyPLC. You may install both packages on the same
+      host system if you wish. As with MyPLC, the MyPLC development
+      environment should be treated as a monolithic software
+      application, and any files present in the
+      <command>chroot</command> jail should not be modified directly, as
+      they are subject to upgrade.</para>
+
+      <example>
+	<title>Installing the MyPLC development environment.</title>
+
+	<programlisting><![CDATA[# If your distribution supports RPM
+	rpm -U http://build.planet-lab.org/build/myplc-0_4-rc2/RPMS/i386/myplc-devel-0.4-2.planetlab.i386.rpm
+
+	# If your distribution does not support RPM
+	cd /tmp
+	wget http://build.planet-lab.org/build/myplc-0_4-rc2/RPMS/i386/myplc-devel-0.4-2.planetlab.i386.rpm
+	cd /
+	rpm2cpio /tmp/myplc-devel-0.4-2.planetlab.i386.rpm | cpio -diu]]></programlisting>
+      </example>
+
+      <para>The MyPLC development environment installs the following
+      files and directories:</para>
+
+      <itemizedlist>
+	<listitem><para><filename>/plc/devel/root.img</filename>: The
+	main root filesystem of the MyPLC development environment. This
+	file is an uncompressed ext3 filesystem that is loopback mounted
+	on <filename>/plc/devel/root</filename> when the MyPLC
+	development environment is initialized. This filesystem, even
+	when mounted, should be treated as an opaque binary that can and
+	will be replaced in its entirety by any upgrade of the MyPLC
+	development environment.</para></listitem>
+
+	<listitem><para><filename>/plc/devel/root</filename>: The mount
+	point for
+	<filename>/plc/devel/root.img</filename>.</para></listitem>
+
+	<listitem>
+	  <para><filename>/plc/devel/data</filename>: The directory
+	  where user data and generated files are stored. This directory
+	  is bind mounted onto <filename>/plc/devel/root/data</filename>
+	  so that it is accessible as <filename>/data</filename> from
+	  within the <command>chroot</command> jail. Files in this
+	  directory are marked with
+	  <command>%config(noreplace)</command> in the RPM. Symlinks
+	  ensure that the following directories (relative to
+	  <filename>/plc/devel/root</filename>) are stored outside the
+	  root filesystem image:</para>
+
+	  <itemizedlist>
+	    <listitem><para><filename>/etc/planetlab</filename>: This
+	    directory contains the configuration files that define your
+	    MyPLC development environment.</para></listitem>
+	    
+	    <listitem><para><filename>/cvs</filename>: A
+	    snapshot of the PlanetLab source code is stored as a CVS
+	    repository in this directory. Files in this directory will
+	    <emphasis role="bold">not</emphasis> be updated by an upgrade of
+	    <filename>myplc-devel</filename>. See <xref
+	    linkend="UpdatingCVS" /> for more information about updating
+	    PlanetLab source code.</para></listitem>
+
+	    <listitem><para><filename>/build</filename>:
+	    Builds are stored in this directory. This directory is bind
+	    mounted onto <filename>/plc/devel/root/build</filename> so that
+	    it is accessible as <filename>/build</filename> from within the
+	    <command>chroot</command> jail. The build scripts in this
+	    directory are themselves source controlled; see <xref
+	    linkend="BuildingMyPLC" /> for more information about executing
+	    builds.</para></listitem>
+	  </itemizedlist>
+	</listitem>
+
+	<listitem>
+	  <para><filename>/etc/init.d/plc-devel</filename>: This file is
+	  a System V init script installed on your host filesystem, that
+	  allows you to start up and shut down the MyPLC development
+	  environment with a single command.</para>
+	</listitem>
+      </itemizedlist>
+    </section>
+
+    <section>
+      <title>Fedora Core 4 mirror requirement</title>
+
+      <para>The MyPLC development environment requires access to a
+      complete Fedora Core 4 i386 RPM repository, because several
+      different filesystems based upon Fedora Core 4 are constructed
+      during the process of building MyPLC. You may configure the
+      location of this repository via the
+      <envar>PLC_DEVEL_FEDORA_URL</envar> variable in
+      <filename>/plc/devel/data/etc/planetlab/plc_config.xml</filename>. The
+      value of the variable should be a URL that points to the top
+      level of a Fedora mirror that provides the
+      <filename>base</filename>, <filename>updates</filename>, and
+      <filename>extras</filename> repositories, e.g.,</para>
+
+      <itemizedlist>
+	<listitem><para><filename>file:///data/fedora</filename></para></listitem>
+	<listitem><para><filename>http://coblitz.planet-lab.org/pub/fedora</filename></para></listitem>
+	<listitem><para><filename>ftp://mirror.cs.princeton.edu/pub/mirrors/fedora</filename></para></listitem>
+	<listitem><para><filename>ftp://mirror.stanford.edu/pub/mirrors/fedora</filename></para></listitem>
+	<listitem><para><filename>http://rpmfind.net/linux/fedora</filename></para></listitem>
+      </itemizedlist>
+
+      <para>As implied by the list, the repository may be located on
+      the local filesystem, or it may be located on a remote FTP or
+      HTTP server. URLs beginning with <filename>file://</filename>
+      should exist at the specified location relative to the root of
+      the <command>chroot</command> jail. For optimum performance and
+      reproducibility, specify
+      <envar>PLC_DEVEL_FEDORA_URL=file:///data/fedora</envar> and
+      download all Fedora Core 4 RPMS into
+      <filename>/plc/devel/data/fedora</filename> on the host system
+      after installing <filename>myplc-devel</filename>. Use a tool
+      such as <command>wget</command> or <command>rsync</command> to
+      download the RPMS from a public mirror:</para>
+
+      <example>
+	<title>Setting up a local Fedora Core 4 repository.</title>
+	
+	<programlisting><![CDATA[mkdir -p /plc/devel/data/fedora
+cd /plc/devel/data/fedora
+
+for repo in core/4/i386/os core/updates/4/i386 extras/4/i386 ; do
+    wget -m -nH --cut-dirs=3 http://coblitz.planet-lab.org/pub/fedora/linux/$repo
+done]]></programlisting>
+      </example>
+      
+      <para>Change the repository URI and <command>--cut-dirs</command>
+      level as needed to produce a hierarchy that resembles:</para>
+
+      <programlisting><![CDATA[/plc/devel/data/fedora/core/4/i386/os
+/plc/devel/data/fedora/core/updates/4/i386
+/plc/devel/data/fedora/extras/4/i386]]></programlisting>
+
+      <para>A list of additional Fedora Core 4 mirrors is available at
+      <ulink url="http://fedora.redhat.com/Download/mirrors.html">http://fedora.redhat.com/Download/mirrors.html</ulink>.</para>
+    </section>
+
+    <section id="BuildingMyPLC">
+      <title>Building MyPLC</title>
+
+      <para>All PlanetLab source code modules are built and installed
+      as RPMS. A set of build scripts, checked into the
+      <filename>build/</filename> directory of the PlanetLab CVS
+      repository, eases the task of rebuilding PlanetLab source
+      code.</para>
+
+      <para>To build MyPLC, or any PlanetLab source code module, from
+      within the MyPLC development environment, execute the following
+      commands as root:</para>
+
+      <example>
+	<title>Building MyPLC.</title>
+	
+	<programlisting><![CDATA[# Initialize MyPLC development environment
+service plc-devel start
+
+# Enter development environment
+chroot /plc/devel/root su -
+
+# Check out build scripts into a directory named after the current
+# date. This is simply a convention, it need not be followed
+# exactly. See build/build.sh for an example of a build script that
+# names build directories after CVS tags.
+DATE=$(date +%Y.%m.%d)
+cd /build
+cvs -d /cvs checkout -d $DATE build
+
+# Build everything
+make -C $DATE]]></programlisting>
+      </example>
+
+      <para>If the build succeeds, a set of binary RPMS will be
+      installed under
+      <filename>/plc/devel/data/build/$DATE/RPMS/</filename> that you
+      may copy to the
+      <filename>/var/www/html/install-rpms/planetlab</filename>
+      directory of your MyPLC installation (see <xref
+      linkend="Installation" />).</para>
+    </section>
+
+    <section id="UpdatingCVS">
+      <title>Updating CVS</title>
+
+      <para>A complete snapshot of the PlanetLab source code is included
+      with the MyPLC development environment as a CVS repository in
+      <filename>/plc/devel/data/cvs</filename>. This CVS repository may
+      be accessed like any other CVS repository. It may be accessed
+      using an interface such as <ulink
+      url="http://www.freebsd.org/projects/cvsweb.html">CVSweb</ulink>,
+      and file permissions may be altered to allow for fine-grained
+      access control. Although the files are included with the
+      <filename>myplc-devel</filename> RPM, they are <emphasis
+      role="bold">not</emphasis> subject to upgrade once installed. New
+      versions of the <filename>myplc-devel</filename> RPM will install
+      updated snapshot repositories in
+      <filename>/plc/devel/data/cvs-%{version}-%{release}</filename>,
+      where <literal>%{version}-%{release}</literal> is replaced with
+      the version number of the RPM.</para>
+
+      <para>Because the CVS repository is not automatically upgraded,
+      if you wish to keep your local repository synchronized with the
+      public PlanetLab repository, it is highly recommended that you
+      use CVS's support for <ulink
+      url="http://ximbiot.com/cvs/wiki/index.php?title=CVS--Concurrent_Versions_System_v1.12.12.1:_Tracking_third-party_sources">vendor
+      branches</ulink> to track changes. Vendor branches ease the task
+      of merging upstream changes with your local modifications. To
+      import a new snapshot into your local repository (for example,
+      if you have just upgraded from
+      <filename>myplc-devel-0.4-2</filename> to
+      <filename>myplc-devel-0.4-3</filename> and you notice the new
+      repository in <filename>/plc/devel/data/cvs-0.4-3</filename>),
+      execute the following commands as root from within the MyPLC
+      development environment:</para>
+
+      <example>
+	<title>Updating /data/cvs from /data/cvs-0.4-3.</title>
+	
+	<para><emphasis role="bold">Warning</emphasis>: This may cause
+	severe, irreversible changes to be made to your local
+	repository. Always tag your local repository before
+	importing.</para>
+
+	<programlisting><![CDATA[# Initialize MyPLC development environment
+service plc-devel start
+
+# Enter development environment
+chroot /plc/devel/root su -
+
+# Tag current state
+cvs -d /cvs rtag before-myplc-0_4-3-merge
+
+# Export snapshot
+TMP=$(mktemp -d /data/export.XXXXXX)
+pushd $TMP
+cvs -d /data/cvs-0.4-3 export -r HEAD .
+cvs -d /cvs import -m "PlanetLab sources from myplc-0.4-3" -ko -I ! . planetlab myplc-0_4-3
+popd
+rm -rf $TMP]]></programlisting>
+      </example>
+
+      <para>If there any merge conflicts, use the command suggested by
+      CVS to help the merge. Explaining how to fix merge conflicts is
+      beyond the scope of this document; consult the CVS documentation
+      for more information on how to use CVS.</para>
+    </section>
+  </section>
+
   <appendix>
     <title>Configuration variables</title>
 
@@ -487,6 +766,12 @@ vserver pl_conf exec service pl_conf restart]]></programlisting>
     <filename>/etc/planetlab/configs/</filename>.</para>
 
     &Variables;
+  </appendix>
+
+  <appendix>
+    <title>Development environment configuration variables</title>
+
+    &DevelVariables;
   </appendix>
 
   <bibliography>

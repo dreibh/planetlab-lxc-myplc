@@ -117,39 +117,6 @@
     </listitem>
   </varlistentry>
   <varlistentry>
-    <term>PLC_ROOT_CA_SSL_KEY</term>
-    <listitem>
-      <para>
-		  Type: file</para>
-      <para>
-		  Default: /etc/planetlab/root_ca_ssl.key</para>
-      <para>The SSL private key used for signing all other
-	  generated certificates. If non-existent, one will be
-	  generated.</para>
-    </listitem>
-  </varlistentry>
-  <varlistentry>
-    <term>PLC_ROOT_CA_SSL_KEY_PUB</term>
-    <listitem>
-      <para>
-		  Type: file</para>
-      <para>
-		  Default: /etc/planetlab/root_ca_ssl.pub</para>
-      <para>The corresponding SSL public key.</para>
-    </listitem>
-  </varlistentry>
-  <varlistentry>
-    <term>PLC_ROOT_CA_SSL_CRT</term>
-    <listitem>
-      <para>
-		  Type: file</para>
-      <para>
-		  Default: /etc/planetlab/root_ca_ssl.crt</para>
-      <para>The corresponding SSL public
-	  certificate.</para>
-    </listitem>
-  </varlistentry>
-  <varlistentry>
     <term>PLC_MA_SA_NAMESPACE</term>
     <listitem>
       <para>
@@ -174,24 +141,40 @@
     </listitem>
   </varlistentry>
   <varlistentry>
-    <term>PLC_MA_SA_SSL_KEY_PUB</term>
-    <listitem>
-      <para>
-		  Type: file</para>
-      <para>
-		  Default: /etc/planetlab/ma_sa_ssl.pub</para>
-      <para>The corresponding SSL public key.</para>
-    </listitem>
-  </varlistentry>
-  <varlistentry>
     <term>PLC_MA_SA_SSL_CRT</term>
     <listitem>
       <para>
 		  Type: file</para>
       <para>
 		  Default: /etc/planetlab/ma_sa_ssl.crt</para>
-      <para>The corresponding SSL public certificate,
-	  signed by the root CA.</para>
+      <para>The corresponding SSL public certificate. By
+	  default, this certificate is self-signed. You may replace
+	  the certificate later with one signed by the PLC root
+	  CA.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_MA_SA_CA_SSL_CRT</term>
+    <listitem>
+      <para>
+		  Type: file</para>
+      <para>
+		  Default: /etc/planetlab/ma_sa_ca_ssl.crt</para>
+      <para>If applicable, the certificate of the PLC root
+	  CA. If your MA/SA certificate is self-signed, then this file
+	  is the same as your MA/SA certificate.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_MA_SA_CA_SSL_KEY_PUB</term>
+    <listitem>
+      <para>
+		  Type: file</para>
+      <para>
+		  Default: /etc/planetlab/ma_sa_ca_ssl.pub</para>
+      <para>If applicable, the public key of the PLC root
+	  CA. If your MA/SA certificate is self-signed, then this file
+	  is the same as your MA/SA public key.</para>
     </listitem>
   </varlistentry>
   <varlistentry>
@@ -201,11 +184,11 @@
 		  Type: file</para>
       <para>
 		  Default: /etc/planetlab/ma_sa_api.xml</para>
-      <para>The API Certificate for your MA/SA is the SSL
-	  public key for your MA/SA embedded in an XML document and
-	  signed by the root CA SSL private key. The API Certificate
-	  can be used by any PlanetLab node managed by any MA, to
-	  verify that your MA/SA public key is valid.</para>
+      <para>The API Certificate is your MA/SA public key
+	  embedded in a digitally signed XML document. By default,
+	  this document is self-signed. You may replace this
+	  certificate later with one signed by the PLC root
+	  CA.</para>
     </listitem>
   </varlistentry>
   <varlistentry>
@@ -505,8 +488,23 @@
 		  Type: file</para>
       <para>
 		  Default: /etc/planetlab/api_ssl.crt</para>
-      <para>The corresponding SSL public certificate,
-	  signed by the root CA.</para>
+      <para>The corresponding SSL public certificate. By
+	  default, this certificate is self-signed. You may replace
+	  the certificate later with one signed by a root
+	  CA.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_API_CA_SSL_CRT</term>
+    <listitem>
+      <para>
+		  Type: file</para>
+      <para>
+		  Default: /etc/planetlab/api_ca_ssl.crt</para>
+      <para>The certificate of the root CA, if any, that
+	  signed your server certificate. If your server certificate is
+	  self-signed, then this file is the same as your server
+	  certificate.</para>
     </listitem>
   </varlistentry>
   <varlistentry>
@@ -595,8 +593,23 @@
 		  Type: file</para>
       <para>
 		  Default: /etc/planetlab/www_ssl.crt</para>
-      <para>The corresponding SSL public certificate,
-	  signed by the root CA.</para>
+      <para>The corresponding SSL public certificate for
+	  the HTTP server. By default, this certificate is
+	  self-signed. You may replace the certificate later with one
+	  signed by a root CA.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_WWW_CA_SSL_CRT</term>
+    <listitem>
+      <para>
+		  Type: file</para>
+      <para>
+		  Default: /etc/planetlab/www_ca_ssl.crt</para>
+      <para>The certificate of the root CA, if any, that
+	  signed your server certificate. If your server certificate is
+	  self-signed, then this file is the same as your server
+	  certificate.</para>
     </listitem>
   </varlistentry>
   <varlistentry>
@@ -664,8 +677,7 @@
       <para>
 		  Default: /etc/planetlab/boot_ssl.key</para>
       <para>The SSL private key to use for encrypting HTTPS
-	  traffic. If non-existent, one will be
-	  generated.</para>
+	  traffic.</para>
     </listitem>
   </varlistentry>
   <varlistentry>
@@ -675,8 +687,23 @@
 		  Type: file</para>
       <para>
 		  Default: /etc/planetlab/boot_ssl.crt</para>
-      <para>The corresponding SSL public certificate,
-	  signed by the root CA.</para>
+      <para>The corresponding SSL public certificate for
+	  the HTTP server. By default, this certificate is
+	  self-signed. You may replace the certificate later with one
+	  signed by a root CA.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>PLC_BOOT_CA_SSL_CRT</term>
+    <listitem>
+      <para>
+		  Type: file</para>
+      <para>
+		  Default: /etc/planetlab/boot_ca_ssl.crt</para>
+      <para>The certificate of the root CA, if any, that
+	  signed your server certificate. If your server certificate is
+	  self-signed, then this file is the same as your server
+	  certificate.</para>
     </listitem>
   </varlistentry>
 </variablelist>

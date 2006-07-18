@@ -4,18 +4,18 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: Makefile,v 1.3 2006/04/24 22:14:56 mlhuang Exp $
+# $Id: Makefile,v 1.4 2006/04/28 20:16:04 mlhuang Exp $
 #
 
 vpath GenDoc.xsl ../../plc_www/doc
-vpath plc_config.xml ..
+vpath %_config.xml ..
 
 all: myplc.pdf myplc.php
 
 # Dependencies
-.myplc.xml.valid: architecture.eps architecture.png variables.xml
+.myplc.xml.valid: architecture.eps architecture.png plc_variables.xml plc_devel_variables.xml
 
-variables.xml: variables.xsl plc_config.xml
+%_variables.xml: variables.xsl %_config.xml
 	xsltproc $(XSLFLAGS) --output $@ $^
 
 # Validate the XML
