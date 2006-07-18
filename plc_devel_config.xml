@@ -6,7 +6,7 @@ Default PLC build environment configuration file
 Mark Huang <mlhuang@cs.princeton.edu>
 Copyright (C) 2006 The Trustees of Princeton University
 
-$Id: plc_config.xml,v 1.14 2006/06/23 20:31:09 mlhuang Exp $
+$Id: plc_devel_config.xml,v 1.1 2006/07/17 21:31:31 mlhuang Exp $
 -->
 
 <!DOCTYPE configuration PUBLIC "-//PlanetLab Central//DTD PLC configuration//EN" "plc_config.dtd">
@@ -37,7 +37,7 @@ $Id: plc_config.xml,v 1.14 2006/06/23 20:31:09 mlhuang Exp $
 
 	<variable id="fedora_url" type="string">
 	  <name>Fedora Core Mirror URL</name>
-	  <value>/usr/share/mirrors/fedora</value>
+	  <value>file:///usr/share/mirrors/fedora</value>
 	  <description>Fedora Core mirror from which to install
 	  filesystems.</description>
 	</variable>
