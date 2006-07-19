@@ -22,9 +22,13 @@
 <td align="left">April 7, 2006</td>
 <td align="left">MLH</td>
 </tr>
-<tr><td align="left" colspan="3">
-          <p>Initial draft.</p>
-        </td></tr>
+<tr><td align="left" colspan="3"><p>Initial draft.</p></td></tr>
+<tr>
+<td align="left">Revision 1.1</td>
+<td align="left">July 19, 2006</td>
+<td align="left">MLH</td>
+</tr>
+<tr><td align="left" colspan="3"><p>Add development environment.</p></td></tr>
 </table></div></div>
 <div><div class="abstract">
 <p class="title"><b>Abstract</b></p>
@@ -41,30 +45,30 @@
 <div class="toc">
 <p><b>Table of Contents</b></p>
 <dl>
-<dt><span class="section"><a href="#id225359">1. Overview</a></span></dt>
+<dt><span class="section"><a href="#id225375">1. Overview</a></span></dt>
 <dt><span class="section"><a href="#Installation">2. Installation</a></span></dt>
-<dt><span class="section"><a href="#id267678">3. Quickstart</a></span></dt>
+<dt><span class="section"><a href="#id267694">3. Quickstart</a></span></dt>
 <dd><dl>
 <dt><span class="section"><a href="#ChangingTheConfiguration">3.1. Changing the configuration</a></span></dt>
-<dt><span class="section"><a href="#id268186">3.2. Installing nodes</a></span></dt>
-<dt><span class="section"><a href="#id268260">3.3. Administering nodes</a></span></dt>
-<dt><span class="section"><a href="#id268354">3.4. Creating a slice</a></span></dt>
+<dt><span class="section"><a href="#id268201">3.2. Installing nodes</a></span></dt>
+<dt><span class="section"><a href="#id268275">3.3. Administering nodes</a></span></dt>
+<dt><span class="section"><a href="#id268369">3.4. Creating a slice</a></span></dt>
 </dl></dd>
-<dt><span class="section"><a href="#id268428">4. Rebuilding and customizing MyPLC</a></span></dt>
+<dt><span class="section"><a href="#id268444">4. Rebuilding and customizing MyPLC</a></span></dt>
 <dd><dl>
-<dt><span class="section"><a href="#id268453">4.1. Installation</a></span></dt>
-<dt><span class="section"><a href="#id268661">4.2. Fedora Core 4 mirror requirement</a></span></dt>
+<dt><span class="section"><a href="#id268469">4.1. Installation</a></span></dt>
+<dt><span class="section"><a href="#id268676">4.2. Fedora Core 4 mirror requirement</a></span></dt>
 <dt><span class="section"><a href="#BuildingMyPLC">4.3. Building MyPLC</a></span></dt>
 <dt><span class="section"><a href="#UpdatingCVS">4.4. Updating CVS</a></span></dt>
 </dl></dd>
-<dt><span class="appendix"><a href="#id269022">A. Configuration variables</a></span></dt>
-<dt><span class="appendix"><a href="#id271727">B. Development environment configuration variables</a></span></dt>
-<dt><span class="bibliography"><a href="#id271809">Bibliography</a></span></dt>
+<dt><span class="appendix"><a href="#id269037">A. Configuration variables</a></span></dt>
+<dt><span class="appendix"><a href="#id271742">B. Development environment configuration variables</a></span></dt>
+<dt><span class="bibliography"><a href="#id271824">Bibliography</a></span></dt>
 </dl>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
-<a name="id225359"></a>1. Overview</h2></div></div></div>
+<a name="id225375"></a>1. Overview</h2></div></div></div>
 <p>MyPLC is a complete PlanetLab Central (PLC) portable
     installation contained within a <span><strong class="command">chroot</strong></span>
     jail. The default installation consists of a web server, an
@@ -95,7 +99,7 @@
     no external dependencies, allowing it to be installed on
     practically any Linux 2.6 based distribution:</p>
 <div class="example">
-<a name="id225262"></a><p class="title"><b>Example 1. Installing MyPLC.</b></p>
+<a name="id225278"></a><p class="title"><b>Example 1. Installing MyPLC.</b></p>
 <pre class="programlisting"># If your distribution supports RPM
 rpm -U http://build.planet-lab.org/build/myplc-0_4-rc1/RPMS/i386/myplc-0.4-1.planetlab.i386.rpm
 
@@ -194,7 +198,7 @@ service plc stop</pre>
 	the <span><strong class="command">chkconfig</strong></span> command on a Red Hat or Fedora
 	host system:</p>
 <div class="example">
-<a name="id243553"></a><p class="title"><b>Example 3. Disabling automatic startup of MyPLC.</b></p>
+<a name="id243568"></a><p class="title"><b>Example 3. Disabling automatic startup of MyPLC.</b></p>
 <pre class="programlisting"># Disable automatic startup
 chkconfig plc off
 
@@ -219,13 +223,13 @@ chkconfig plc on</pre>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
-<a name="id267678"></a>3. Quickstart</h2></div></div></div>
+<a name="id267694"></a>3. Quickstart</h2></div></div></div>
 <p>Once installed, start MyPLC (see <a href="#StartingAndStoppingMyPLC" title="Example 2. Starting and stopping MyPLC.">Example 2, “Starting and stopping MyPLC.”</a>). MyPLC must be started as
     root. Observe the output of this command for any failures. If no
     failures occur, you should see output similar to the
     following:</p>
 <div class="example">
-<a name="id267798"></a><p class="title"><b>Example 4. A successful MyPLC startup.</b></p>
+<a name="id267814"></a><p class="title"><b>Example 4. A successful MyPLC startup.</b></p>
 <pre class="programlisting">Mounting PLC:                                              [  OK  ]
 PLC: Generating network files:                             [  OK  ]
 PLC: Starting system logger:                               [  OK  ]
@@ -356,7 +360,7 @@ PLC: Signing node packages:                                [  OK  ]
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="id268186"></a>3.2. Installing nodes</h3></div></div></div>
+<a name="id268201"></a>3.2. Installing nodes</h3></div></div></div>
 <p>Install your first node by clicking <code class="literal">Add
       Node</code> under the <code class="literal">Nodes</code> tab. Fill in
       all the appropriate details, then click
@@ -380,12 +384,12 @@ PLC: Signing node packages:                                [  OK  ]
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="id268260"></a>3.3. Administering nodes</h3></div></div></div>
+<a name="id268275"></a>3.3. Administering nodes</h3></div></div></div>
 <p>You may administer nodes as <code class="literal">root</code> by
       using the SSH key stored in
       <code class="filename">/etc/planetlab/root_ssh_key.rsa</code>.</p>
 <div class="example">
-<a name="id268281"></a><p class="title"><b>Example 5. Accessing nodes via SSH. Replace
+<a name="id268297"></a><p class="title"><b>Example 5. Accessing nodes via SSH. Replace
 	<code class="literal">node</code> with the hostname of the node.</b></p>
 <pre class="programlisting">ssh -i /etc/planetlab/root_ssh_key.rsa root@node</pre>
 </div>
@@ -408,7 +412,7 @@ PLC: Signing node packages:                                [  OK  ]
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="id268354"></a>3.4. Creating a slice</h3></div></div></div>
+<a name="id268369"></a>3.4. Creating a slice</h3></div></div></div>
 <p>Create a slice by clicking <code class="literal">Create Slice</code>
       under the <code class="literal">Slices</code> tab. Fill in all the
       appropriate details, then click <code class="literal">Create</code>. Add
@@ -423,7 +427,7 @@ PLC: Signing node packages:                                [  OK  ]
       to determine if it needs to create or delete any slices. You may
       accelerate this process manually if desired.</p>
 <div class="example">
-<a name="id268412"></a><p class="title"><b>Example 6. Forcing slice creation on a node.</b></p>
+<a name="id268427"></a><p class="title"><b>Example 6. Forcing slice creation on a node.</b></p>
 <pre class="programlisting"># Update slices.xml immediately
 service plc start crond
 
@@ -435,7 +439,7 @@ vserver pl_conf exec service pl_conf restart</pre>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
-<a name="id268428"></a>4. Rebuilding and customizing MyPLC</h2></div></div></div>
+<a name="id268444"></a>4. Rebuilding and customizing MyPLC</h2></div></div></div>
 <p>The MyPLC package, though distributed as an RPM, is not a
     traditional package that can be easily rebuilt from SRPM. The
     requisite build environment is quite extensive and numerous
@@ -452,7 +456,7 @@ vserver pl_conf exec service pl_conf restart</pre>
     repository.</p>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="id268453"></a>4.1. Installation</h3></div></div></div>
+<a name="id268469"></a>4.1. Installation</h3></div></div></div>
 <p>Install the MyPLC development environment similarly to how
       you would install MyPLC. You may install both packages on the same
       host system if you wish. As with MyPLC, the MyPLC development
@@ -461,15 +465,15 @@ vserver pl_conf exec service pl_conf restart</pre>
       <span><strong class="command">chroot</strong></span> jail should not be modified directly, as
       they are subject to upgrade.</p>
 <div class="example">
-<a name="id268472"></a><p class="title"><b>Example 7. Installing the MyPLC development environment.</b></p>
+<a name="id268487"></a><p class="title"><b>Example 7. Installing the MyPLC development environment.</b></p>
 <pre class="programlisting"># If your distribution supports RPM
-	rpm -U http://build.planet-lab.org/build/myplc-0_4-rc2/RPMS/i386/myplc-devel-0.4-2.planetlab.i386.rpm
+rpm -U http://build.planet-lab.org/build/myplc-0_4-rc2/RPMS/i386/myplc-devel-0.4-2.planetlab.i386.rpm
 
-	# If your distribution does not support RPM
-	cd /tmp
-	wget http://build.planet-lab.org/build/myplc-0_4-rc2/RPMS/i386/myplc-devel-0.4-2.planetlab.i386.rpm
-	cd /
-	rpm2cpio /tmp/myplc-devel-0.4-2.planetlab.i386.rpm | cpio -diu</pre>
+# If your distribution does not support RPM
+cd /tmp
+wget http://build.planet-lab.org/build/myplc-0_4-rc2/RPMS/i386/myplc-devel-0.4-2.planetlab.i386.rpm
+cd /
+rpm2cpio /tmp/myplc-devel-0.4-2.planetlab.i386.rpm | cpio -diu</pre>
 </div>
 <p>The MyPLC development environment installs the following
       files and directories:</p>
@@ -523,7 +527,7 @@ vserver pl_conf exec service pl_conf restart</pre>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="id268661"></a>4.2. Fedora Core 4 mirror requirement</h3></div></div></div>
+<a name="id268676"></a>4.2. Fedora Core 4 mirror requirement</h3></div></div></div>
 <p>The MyPLC development environment requires access to a
       complete Fedora Core 4 i386 RPM repository, because several
       different filesystems based upon Fedora Core 4 are constructed
@@ -555,7 +559,7 @@ vserver pl_conf exec service pl_conf restart</pre>
       such as <span><strong class="command">wget</strong></span> or <span><strong class="command">rsync</strong></span> to
       download the RPMS from a public mirror:</p>
 <div class="example">
-<a name="id268792"></a><p class="title"><b>Example 8. Setting up a local Fedora Core 4 repository.</b></p>
+<a name="id268807"></a><p class="title"><b>Example 8. Setting up a local Fedora Core 4 repository.</b></p>
 <pre class="programlisting">mkdir -p /plc/devel/data/fedora
 cd /plc/devel/data/fedora
 
@@ -583,7 +587,7 @@ done</pre>
       within the MyPLC development environment, execute the following
       commands as root:</p>
 <div class="example">
-<a name="id268858"></a><p class="title"><b>Example 9. Building MyPLC.</b></p>
+<a name="id268873"></a><p class="title"><b>Example 9. Building MyPLC.</b></p>
 <pre class="programlisting"># Initialize MyPLC development environment
 service plc-devel start
 
@@ -638,7 +642,7 @@ make -C $DATE</pre>
       execute the following commands as root from within the MyPLC
       development environment:</p>
 <div class="example">
-<a name="id268989"></a><p class="title"><b>Example 10. Updating /data/cvs from /data/cvs-0.4-3.</b></p>
+<a name="id269004"></a><p class="title"><b>Example 10. Updating /data/cvs from /data/cvs-0.4-3.</b></p>
 <p><span class="bold"><strong>Warning</strong></span>: This may cause
 	severe, irreversible changes to be made to your local
 	repository. Always tag your local repository before
@@ -668,7 +672,7 @@ rm -rf $TMP</pre>
 </div>
 <div class="appendix" lang="en">
 <h2 class="title" style="clear: both">
-<a name="id269022"></a>A. Configuration variables</h2>
+<a name="id269037"></a>A. Configuration variables</h2>
 <p>Listed below is the set of standard configuration variables
     and their default values, defined in the template
     <code class="filename">/etc/planetlab/default_config.xml</code>. Additional
@@ -1267,7 +1271,7 @@ rm -rf $TMP</pre>
 </div>
 <div class="appendix" lang="en">
 <h2 class="title" style="clear: both">
-<a name="id271727"></a>B. Development environment configuration variables</h2>
+<a name="id271742"></a>B. Development environment configuration variables</h2>
 <div class="variablelist"><dl>
 <dt><span class="term">PLC_DEVEL_FEDORA_RELEASE</span></dt>
 <dd>
@@ -1319,7 +1323,7 @@ rm -rf $TMP</pre>
 </div>
 <div class="bibliography">
 <div class="titlepage"><div><div><h2 class="title">
-<a name="id271809"></a>Bibliography</h2></div></div></div>
+<a name="id271824"></a>Bibliography</h2></div></div></div>
 <div class="biblioentry">
 <a name="TechsGuide"></a><p>[1] <span class="author"><span class="firstname">Mark</span> <span class="surname">Huang</span>. </span><span class="title"><i><a href="http://www.planet-lab.org/doc/TechsGuide.php" target="_top">PlanetLab
       Technical Contact's Guide</a></i>. </span></p>
