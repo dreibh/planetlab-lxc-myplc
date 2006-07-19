@@ -516,13 +516,13 @@ vserver pl_conf exec service pl_conf restart]]></programlisting>
 	<title>Installing the MyPLC development environment.</title>
 
 	<programlisting><![CDATA[# If your distribution supports RPM
-	rpm -U http://build.planet-lab.org/build/myplc-0_4-rc2/RPMS/i386/myplc-devel-0.4-2.planetlab.i386.rpm
+rpm -U http://build.planet-lab.org/build/myplc-0_4-rc2/RPMS/i386/myplc-devel-0.4-2.planetlab.i386.rpm
 
-	# If your distribution does not support RPM
-	cd /tmp
-	wget http://build.planet-lab.org/build/myplc-0_4-rc2/RPMS/i386/myplc-devel-0.4-2.planetlab.i386.rpm
-	cd /
-	rpm2cpio /tmp/myplc-devel-0.4-2.planetlab.i386.rpm | cpio -diu]]></programlisting>
+# If your distribution does not support RPM
+cd /tmp
+wget http://build.planet-lab.org/build/myplc-0_4-rc2/RPMS/i386/myplc-devel-0.4-2.planetlab.i386.rpm
+cd /
+rpm2cpio /tmp/myplc-devel-0.4-2.planetlab.i386.rpm | cpio -diu]]></programlisting>
       </example>
 
       <para>The MyPLC development environment installs the following
