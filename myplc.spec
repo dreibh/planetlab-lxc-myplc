@@ -230,6 +230,17 @@ fi
 %changelog
 * Thu Jul 13 2006 Mark Huang <mlhuang@CS.Princeton.EDU> - 0.4-2, 0.5-2
 - MyPLC 0.4 RC2.
+- Fix many spec files (License replaces Copyright).
+- Fix kernel build under gcc32 (module verification bug).
+- Fix vnet build under gcc32
+- Fix PlanetFlow. MySQL RPM postinstall script no longer starts the
+  server. Also, get hostnames list from PLC_WWW_HOST, not
+  www.planet-lab.org.
+- Fix pl_mom/bwmon to use cached values if NM is unresponsive
+- Fix pl_mom/swapmon reset logic to avoid endless loops
+- Remove ksymoops, add kernel-smp to standard PlanetLab package group
+- Add kernel-smp boot support to bootmanager
+- Add badblock search support to bootmanager
 - Build development environment (myplc-devel). Add support for
   building myplc itself inside myplc-devel.
 - Move step-specific initialization to appropriate plc.d scripts
