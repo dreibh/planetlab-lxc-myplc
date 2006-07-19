@@ -28,14 +28,15 @@
     <revhistory>
       <revision>
         <revnumber>1.0</revnumber>
-
         <date>April 7, 2006</date>
-
         <authorinitials>MLH</authorinitials>
-
-        <revdescription>
-          <para>Initial draft.</para>
-        </revdescription>
+        <revdescription><para>Initial draft.</para></revdescription>
+      </revision>
+      <revision>
+        <revnumber>1.1</revnumber>
+        <date>July 19, 2006</date>
+        <authorinitials>MLH</authorinitials>
+        <revdescription><para>Add development environment.</para></revdescription>
       </revision>
     </revhistory>
   </articleinfo>
