@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: ssl,v 1.8 2006/07/10 21:05:17 mlhuang Exp $
+# $Id: ssl,v 1.9 2006/07/17 21:28:55 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -135,8 +135,7 @@ case "$1" in
 
 	    verify_or_generate_certificate \
 		${!ssl_crt} ${!ssl_key} ${!ca_ssl_crt} \
-		${!hostname} $PLC_MAIL_SUPPORT_ADDRESS
-
+		${!hostname}
 	done
 
 	# Install HTTPS certificates into both /etc/pki (Fedora Core
