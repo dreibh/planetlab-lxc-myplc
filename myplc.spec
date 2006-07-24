@@ -115,7 +115,8 @@ fi
 # manifest. However, to avoid deleting these files in the process of
 # upgrading from one of these old versions of myplc, we must back up
 # the database and /etc/planetlab and restore them after the old
-# version has been uninstalled in %triggerpostun.
+# version has been uninstalled in %triggerpostun (also in %post, in
+# case we are force upgrading to the same version).
 #
 # This code can be removed once all myplc-0.4-1 installations have
 # been upgraded to at least myplc-0.4-2.
@@ -123,17 +124,11 @@ fi
 # 0 = install, 1 = upgrade
 if [ $1 -gt 0 ] ; then
     for dir in /var/lib/pgsql/data /etc/planetlab ; do
-	if [ -d /plc/data/$dir ] ; then
+	if [ -d /plc/data/$dir -a ! -d /plc/data/$dir.rpmsave ] ; then
 	    echo "Preserving /plc/data/$dir"
-	    mv /plc/data/$dir /plc/data/$dir.rpmsave
+	    cp -ra /plc/data/$dir{,.rpmsave}
 	fi
     done
-
-    # Except for the default configuration file and DTD, which really
-    # should be considered for upgrade.
-    mkdir -m 755 -p /plc/data/etc/planetlab
-    mv /plc/data/etc/planetlab.rpmsave/{default_config.xml,plc_config.dtd} \
-       /plc/data/etc/planetlab/ || :
 fi
 
 %post
@@ -141,6 +136,16 @@ if [ -x /sbin/chkconfig ] ; then
     /sbin/chkconfig --add plc
     /sbin/chkconfig plc on
 fi
+
+for dir in /var/lib/pgsql/data /etc/planetlab ; do
+    if [ -d /plc/data/$dir.rpmsave -a -d /plc/data/$dir ] ; then
+	echo "Merging /plc/data/$dir"
+	if tar -C /plc/data/$dir.rpmsave -cpf - . | \
+	    tar -C /plc/data/$dir -xpf - ; then
+	    rm -rf /plc/data/$dir.rpmsave
+	fi
+    fi
+done
 
 # Force a regeneration to take into account new variables
 touch /plc/data/etc/planetlab/default_config.xml
