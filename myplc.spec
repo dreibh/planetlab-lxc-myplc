@@ -39,8 +39,8 @@ source code, and all the tools necessary to compile it.
 
 %build
 pushd myplc
-./build_devel.sh
-./build.sh
+./build_devel.sh %{?cvstag:-t %{cvstag}}
+./build.sh %{?cvstag:-t %{cvstag}}
 popd
 
 %install

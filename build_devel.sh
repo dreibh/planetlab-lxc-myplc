@@ -14,7 +14,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id$
+# $Id: build_devel.sh,v 1.1 2006/07/17 21:31:31 mlhuang Exp $
 #
 
 . build.functions
@@ -40,8 +40,7 @@ for dir in * ; do
 	else
 	    ignore="-I !"
 	fi
-	date=$(date +%Y-%m-%d)
-	cvs -d $cvsroot import -m "Initial import" -ko $ignore $dir planetlab planetlab-$date
+	cvs -d $cvsroot import -m "Initial import" -ko $ignore $dir planetlab $TAG
 	popd
     fi
 done

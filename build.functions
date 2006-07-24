@@ -6,7 +6,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: functions,v 1.6 2006/07/10 21:05:37 mlhuang Exp $
+# $Id: build.functions,v 1.1 2006/07/17 21:31:31 mlhuang Exp $
 #
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
@@ -34,6 +34,9 @@ PLC_DEVEL_FEDORA_URL=file:///usr/share/mirrors/fedora
 # Build myplc inside myplc-devel
 PLC_DEVEL_BOOTSTRAP=true
 
+# Source tag to use for initial import of sources into local CVS
+TAG=planetlab-$(date +%Y-%m-%d)
+
 # We may be running inside a myplc-devel environment, which can
 # override these defaults. Specifically, whether to build myplc inside
 # myplc-devel (PLC_DEVEL_BOOTSTRAP).
@@ -43,16 +46,17 @@ fi
 
 usage()
 {
-    echo "Usage: build.sh [OPTION]..."
+    echo "Usage: $0 [OPTION]..."
     echo "	-l url		Fedora mirror location (default: $PLC_DEVEL_FEDORA_URL)"
     echo "	-r release	Fedora release number (default: $PLC_DEVEL_FEDORA_RELEASE)"
     echo "	-a arch		Fedora architecture (default: $PLC_DEVEL_FEDORA_ARCH)"
+    echo "	-t tag		Source tag (default: $TAG)"
     echo "	-h		This message"
     exit 1
 }
 
 # Get options
-while getopts "l:r:a:h" opt ; do
+while getopts "l:r:a:t:h" opt ; do
     case $opt in
 	l)
 	    PLC_DEVEL_FEDORA_URL=$OPTARG
@@ -62,6 +66,9 @@ while getopts "l:r:a:h" opt ; do
 	    ;;
 	a)
 	    PLC_DEVEL_FEDORA_ARCH=$OPTARG
+	    ;;
+	t)
+	    TAG=$OPTARG
 	    ;;
 	h|*)
 	    usage

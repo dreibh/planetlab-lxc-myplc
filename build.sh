@@ -51,8 +51,8 @@ service plc start
 plc-config --category=plc_devel --variable=bootstrap --value="false" --save
 service plc reload
 cd /
-cvs -d /cvs checkout build
-make -C /build myplc
+cvs -d /cvs checkout -r $TAG build
+make TAG=$TAG -C /build myplc
 EOF
 
     # Yoink the image that was just built
