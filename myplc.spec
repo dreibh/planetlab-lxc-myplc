@@ -124,9 +124,11 @@ fi
 # 0 = install, 1 = upgrade
 if [ $1 -gt 0 ] ; then
     for dir in /var/lib/pgsql/data /etc/planetlab ; do
-	if [ -d /plc/data/$dir -a ! -d /plc/data/$dir.rpmsave ] ; then
+	if [ -d /plc/data/$dir ] ; then
 	    echo "Preserving /plc/data/$dir"
-	    cp -ra /plc/data/$dir{,.rpmsave}
+	    mkdir -p /plc/data/$dir.rpmsave
+	    tar -C /plc/data/$dir -cpf - . | \
+	       tar -C /plc/data/$dir.rpmsave -xpf -
 	fi
     done
 fi
@@ -136,16 +138,6 @@ if [ -x /sbin/chkconfig ] ; then
     /sbin/chkconfig --add plc
     /sbin/chkconfig plc on
 fi
-
-for dir in /var/lib/pgsql/data /etc/planetlab ; do
-    if [ -d /plc/data/$dir.rpmsave -a -d /plc/data/$dir ] ; then
-	echo "Merging /plc/data/$dir"
-	if tar -C /plc/data/$dir.rpmsave -cpf - . | \
-	    tar -C /plc/data/$dir -xpf - ; then
-	    rm -rf /plc/data/$dir.rpmsave
-	fi
-    fi
-done
 
 # Force a regeneration to take into account new variables
 touch /plc/data/etc/planetlab/default_config.xml
