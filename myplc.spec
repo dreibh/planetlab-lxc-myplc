@@ -129,6 +129,10 @@ if [ $1 -gt 0 ] ; then
 	    mkdir -p /plc/data/$dir.rpmsave
 	    tar -C /plc/data/$dir -cpf - . | \
 	       tar -C /plc/data/$dir.rpmsave -xpf -
+
+	    # Except for the default configuration file and DTD, which
+	    # really should be considered for upgrade.
+	    rm -f /plc/data/$dir.rpmsave/{default_config.xml,plc_config.dtd}
 	fi
     done
 fi
