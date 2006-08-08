@@ -18,21 +18,73 @@ import sys
 import os
 import re
 import readline
+import getopt
 
 from plc_config import PLCConfiguration
 
 ####################
-release = "$Id"
+release = "$Id$"
 
-def_main_config = "/etc/planetlab/default_config.xml"
-def_site_config = "/etc/planetlab/configs/site.xml"
-def_consolidated_config = "/etc/planetlab/plc_config.xml"
+def init_flavour (flavour):
+    global service
+    global common_variables
+    if (flavour == "devel"):
+        service="plc-devel"
+        common_variables=("PLC_DEVEL_FEDORA_URL",
+                          "PLC_DEVEL_CVSROOT")
+        config_dir = "/plc/devel/data/etc/planetlab"
+    else:
+        service="plc"
+        common_variables=("PLC_NAME",
+                          "PLC_ROOT_USER",
+                          "PLC_ROOT_PASSWORD",
+                          "PLC_MAIL_SUPPORT_ADDRESS",
+                          "PLC_DB_HOST",
+                          "PLC_API_HOST",
+                          "PLC_WWW_HOST",
+                          "PLC_BOOT_HOST",
+                          "PLC_NET_DNS1",
+                          "PLC_NET_DNS2")
+        config_dir = "/etc/planetlab"
+    global def_main_config
+    def_main_config= "%s/default_config.xml" % config_dir
+    global def_site_config
+    def_site_config = "%s/configs/site.xml" % config_dir
+    global def_consolidated_config
+    def_consolidated_config = "%s/plc_config.xml" % config_dir
 
-command_usage="""Usage: %s [default-xml [site-xml [consolidated-xml]]]
+    global mainloop_usage
+    mainloop_usage= """Available commands
+c\tEdits commonly tuned variables
+e\tEdits all variables
+p\tPrints all locally-customized vars and values
+e <var>\tPrompts (edit) fro variable <var>
+p <var>\tShows current setting for <var>
+l\tlists all known variables
+w\tsaves & consolidates
+r\trestarts %s service
+q\tQuits without saving
+---
+Typical usage involves: c, [p,] w, r
+""" % service
+
+def usage ():
+    command_usage="Usage: %s [-d] [-v] [default-xml [site-xml [consolidated-xml]]]"% sys.argv[0]
+    init_flavour ("boot")
+    command_usage +="""
 \t default-xml defaults to %s
 \t site-xml defaults to %s
-\t consolidated-xml defaults to %s
-""" % (sys.argv[0],def_main_config,def_site_config, def_consolidated_config)
+\t consolidated-xml defaults to %s""" % (def_main_config,def_site_config, def_consolidated_config)
+    command_usage += """
+  Unless you specify the -d option, meaning you want to configure
+  myplc-devel instead of regular myplc, in which case""" 
+    init_flavour ("devel")
+    command_usage +="""
+\t default-xml defaults to %s
+\t site-xml defaults to %s
+\t consolidated-xml defaults to %s""" % (def_main_config,def_site_config, def_consolidated_config)
+    print(command_usage)
+    sys.exit(1)
 
 ####################
 variable_usage= """Special answers :
@@ -43,10 +95,6 @@ variable_usage= """Special answers :
 >\tSkips to next category
 ?\tThis help
 """
-
-def usage ():
-    print(command_usage)
-    sys.exit(1)
 
 ####################
 def get_value (config,  category_id, variable_id):
@@ -136,39 +184,15 @@ def consolidate (main_config, site_config, consolidated_config):
         
 ####################
 def restart_plc ():
-    print ("==================== Stopping plc")
-    os.system("service plc stop")
-    print ("==================== Starting plc")
-    os.system("service plc start")
+    print ("==================== Stopping %s" % service)
+    os.system("service %s stop" % service)
+    print ("==================== Starting %s" % service)
+    os.system("service %s start" % service)
 
 ####################
-mainloop_usage= """Available commands
-c\tEdits commonly tuned variables
-e\tEdits all variables
-p\tPrints all locally-customized vars and values
-e <var>\tPrompts (edit) fro variable <var>
-p <var>\tShows current setting for <var>
-l\tlists all known variables
-w\tsaves & consolidates
-r\trestarts plc service
-q\tQuits without saving
----
-Typical usage involves: c, [p,] w, r
-"""
 
 re_mainloop_var="^(?P<command>[pe])[ \t]+(?P<varname>\w+)$"
 matcher_mainloop_var=re.compile(re_mainloop_var)
-
-common_variables=("PLC_NAME",
-                  "PLC_ROOT_USER",
-                  "PLC_ROOT_PASSWORD",
-                  "PLC_MAIL_SUPPORT_ADDRESS",
-                  "PLC_DB_HOST",
-                  "PLC_API_HOST",
-                  "PLC_WWW_HOST",
-                  "PLC_BOOT_HOST",
-                  "PLC_NET_DNS1",
-                  "PLC_NET_DNS2")
 
 def mainloop (cdef, cread, cwrite,main_config, site_config, consolidated_config):
     while True:
@@ -233,15 +257,29 @@ def mainloop (cdef, cread, cwrite,main_config, site_config, consolidated_config)
 ####################
 def main ():
 
-    save = True
     command=sys.argv[0]
     argv = sys.argv[1:]
+
+    save = True
+    # default is myplc (non -devel) unless -d is specified
+    init_flavour("boot")
+    optlist,list = getopt.getopt(argv,":dhv")
+    for opt in optlist:
+        if opt[0] == "-h":
+            usage()
+        if opt[0] == "-v":
+            print ("This is %s - %s" %(command,release))
+            sys.exit(1)
+        if opt[0] == "-d":
+            init_flavour("devel")
+            argv=argv[1:]
+
     if len(argv) == 0:
         (main_config,site_config,consolidated_config) = (def_main_config, def_site_config, def_consolidated_config)
     elif len(argv) == 1:
-        (main_config,site_config,consolidated_config) = (argv[1], def_site_config, def_consolidated_config)
+        (main_config,site_config,consolidated_config) = (argv[0], def_site_config, def_consolidated_config)
     elif len(argv) == 2:
-        (main_config, site_config,consolidated_config)  = (argv[1], argv[2], def_consolidated_config)
+        (main_config, site_config,consolidated_config)  = (argv[0], argv[1], def_consolidated_config)
     elif len(argv) == 3:
         (main_config, site_config,consolidated_config)  = argv
     else:
