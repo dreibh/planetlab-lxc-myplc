@@ -143,9 +143,6 @@ if [ -x /sbin/chkconfig ] ; then
     /sbin/chkconfig plc on
 fi
 
-# Force a regeneration to take into account new variables
-touch /plc/data/etc/planetlab/default_config.xml
-
 %triggerpostun -- %{name}
 # 0 = erase, 1 = upgrade
 if [ $1 -gt 0 ] ; then
