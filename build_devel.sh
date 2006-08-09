@@ -14,7 +14,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: build_devel.sh,v 1.1 2006/07/17 21:31:31 mlhuang Exp $
+# $Id: build_devel.sh,v 1.2 2006/07/24 19:32:23 mlhuang Exp $
 #
 
 . build.functions
@@ -40,7 +40,7 @@ for dir in * ; do
 	else
 	    ignore="-I !"
 	fi
-	cvs -d $cvsroot import -m "Initial import" -ko $ignore $dir planetlab $TAG
+	cvs -d $cvsroot import -m "Initial import" -ko $ignore $dir planetlab $IMPORT_TAG
 	popd
     fi
 done

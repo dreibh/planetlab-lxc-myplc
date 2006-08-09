@@ -6,7 +6,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: build.functions,v 1.1 2006/07/17 21:31:31 mlhuang Exp $
+# $Id: build.functions,v 1.2 2006/07/24 19:32:23 mlhuang Exp $
 #
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
@@ -35,7 +35,10 @@ PLC_DEVEL_FEDORA_URL=file:///usr/share/mirrors/fedora
 PLC_DEVEL_BOOTSTRAP=true
 
 # Source tag to use for initial import of sources into local CVS
-TAG=planetlab-$(date +%Y-%m-%d)
+IMPORT_TAG=planetlab-$(date +%Y-%m-%d)
+
+# Source tag to use for building from local CVS
+BUILD_TAG=HEAD
 
 # We may be running inside a myplc-devel environment, which can
 # override these defaults. Specifically, whether to build myplc inside
@@ -68,7 +71,8 @@ while getopts "l:r:a:t:h" opt ; do
 	    PLC_DEVEL_FEDORA_ARCH=$OPTARG
 	    ;;
 	t)
-	    TAG=$OPTARG
+	    IMPORT_TAG=$OPTARG
+	    BUILD_TAG=$OPTARG
 	    ;;
 	h|*)
 	    usage
