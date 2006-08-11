@@ -107,7 +107,7 @@
   some known limitations to this, so here are a couple notes as a
   recommended reading before you proceed with the installation.</para>
 
-  <para> As of August 2006 9 (i.e <emphasis>myplc-0.5</emphasis>) :</para>
+  <para> As of 9 August 2006 (i.e <emphasis>myplc-0.5</emphasis>) :</para>
 
   <itemizedlist>
   <listitem><para> The software is vastly based on <emphasis>Fedora
@@ -137,260 +137,69 @@
   need to check your firewall configuration since you need, of course,
   to open up the <emphasis>http</emphasis> and
   <emphasis>https</emphasis> ports, so as to accept connections from
-  the managed nodes, and from the users desktops. </para> </listitem>
+  the managed nodes and from the users desktops. </para> </listitem>
 
   </itemizedlist>
   </section>
 
   <section id="Installation">
-    <title>Installation</title>
+    <title>Installating and using MyPLC</title>
 
     <para>Though internally composed of commodity software
     subpackages, MyPLC should be treated as a monolithic software
     application. MyPLC is distributed as single RPM package that has
     no external dependencies, allowing it to be installed on
-    practically any Linux 2.6 based distribution:</para>
+    practically any Linux 2.6 based distribution.</para>
 
-    <example>
+    <section>
       <title>Installing MyPLC.</title>
 
-      <programlisting><![CDATA[# If your distribution supports RPM
-rpm -U http://build.planet-lab.org/build/myplc-0_4-rc1/RPMS/i386/myplc-0.4-1.planetlab.i386.rpm
+      <itemizedlist>
+      <listitem> <para>If your distribution supports RPM:</para>
+      <programlisting><![CDATA[# rpm -U http://build.planet-lab.org/build/myplc-0_4-rc1/RPMS/i386/myplc-0.4-1.planetlab.i386.rpm]]></programlisting></listitem>
 
-# If your distribution does not support RPM
-cd /tmp
-wget http://build.planet-lab.org/build/myplc-0_4-rc1/RPMS/i386/myplc-0.4-1.planetlab.i386.rpm
-cd /
-rpm2cpio /tmp/myplc-0.4-1.planetlab.i386.rpm | cpio -diu]]></programlisting>
-    </example>
-
-    <para>MyPLC installs the following files and directories:</para>
-
-    <itemizedlist>
-
-      <listitem><para><filename>/plc/root.img</filename>: The main
-      root filesystem of the MyPLC application. This file is an
-      uncompressed ext3 filesystem that is loopback mounted on
-      <filename>/plc/root</filename> when MyPLC starts. This
-      filesystem, even when mounted, should be treated as an opaque
-      binary that can and will be replaced in its entirety by any
-      upgrade of MyPLC.</para></listitem>
-
-      <listitem><para><filename>/plc/root</filename>: The mount point
-      for <filename>/plc/root.img</filename>. Once the root filesystem
-      is mounted, all MyPLC services run in a
-      <command>chroot</command> jail based in this
-      directory.</para></listitem>
-
-      <listitem>
-	<para><filename>/plc/data</filename>: The directory where user
-	data and generated files are stored. This directory is bind
-	mounted onto <filename>/plc/root/data</filename> so that it is
-	accessible as <filename>/data</filename> from within the
-	<command>chroot</command> jail. Files in this directory are
-	marked with <command>%config(noreplace)</command> in the
-	RPM. That is, during an upgrade of MyPLC, if a file has not
-	changed since the last installation or upgrade of MyPLC, it is
-	subject to upgrade and replacement. If the file has changed,
-	the new version of the file will be created with a
-	<filename>.rpmnew</filename> extension. Symlinks within the
-	MyPLC root filesystem ensure that the following directories
-	(relative to <filename>/plc/root</filename>) are stored
-	outside the MyPLC filesystem image:</para>
-
-	<itemizedlist>
-	  <listitem><para><filename>/etc/planetlab</filename>: This
-	  directory contains the configuration files, keys, and
-	  certificates that define your MyPLC
-	  installation.</para></listitem>
-
-	  <listitem><para><filename>/var/lib/pgsql</filename>: This
-	  directory contains PostgreSQL database
-	  files.</para></listitem>
-
-	  <listitem><para><filename>/var/www/html/alpina-logs</filename>: This
-	  directory contains node installation logs.</para></listitem>
-
-	  <listitem><para><filename>/var/www/html/boot</filename>: This
-	  directory contains the Boot Manager, customized for your MyPLC
-	  installation, and its data files.</para></listitem>
-
-	  <listitem><para><filename>/var/www/html/download</filename>: This
-	  directory contains Boot CD images, customized for your MyPLC
-	  installation.</para></listitem>
-
-	  <listitem><para><filename>/var/www/html/install-rpms</filename>: This
-	  directory is where you should install node package updates,
-	  if any. By default, nodes are installed from the tarball
-	  located at
-	  <filename>/var/www/html/boot/PlanetLab-Bootstrap.tar.bz2</filename>,
-	  which is pre-built from the latest PlanetLab Central
-	  sources, and installed as part of your MyPLC
-	  installation. However, nodes will attempt to install any
-	  newer RPMs located in
-	  <filename>/var/www/html/install-rpms/planetlab</filename>,
-	  after initial installation and periodically thereafter. You
-	  must run <command>yum-arch</command> and
-	  <command>createrepo</command> to update the
-	  <command>yum</command> caches in this directory after
-	  installing a new RPM. PlanetLab Central cannot support any
-	  changes to this directory.</para></listitem>
-
-	  <listitem><para><filename>/var/www/html/xml</filename>: This
-	  directory contains various XML files that the Slice Creation
-	  Service uses to determine the state of slices. These XML
-	  files are refreshed periodically by <command>cron</command>
-	  jobs running in the MyPLC root.</para></listitem>
-	</itemizedlist>
-      </listitem>
-
-      <listitem>
-	<para><filename>/etc/init.d/plc</filename>: This file
-	is a System V init script installed on your host filesystem,
-	that allows you to start up and shut down MyPLC with a single
-	command. On a Red Hat or Fedora host system, it is customary to
-	use the <command>service</command> command to invoke System V
-	init scripts:</para>
-
-	<example id="StartingAndStoppingMyPLC">
-	  <title>Starting and stopping MyPLC.</title>
-
-	  <programlisting><![CDATA[# Starting MyPLC
-service plc start
-
-# Stopping MyPLC
-service plc stop]]></programlisting>
-	</example>
-
-	<para>Like all other registered System V init services, MyPLC is
-	started and shut down automatically when your host system boots
-	and powers off. You may disable automatic startup by invoking
-	the <command>chkconfig</command> command on a Red Hat or Fedora
-	host system:</para>
-
-	<example>
-	  <title>Disabling automatic startup of MyPLC.</title>
-
-	  <programlisting><![CDATA[# Disable automatic startup
-chkconfig plc off
-
-# Enable automatic startup
-chkconfig plc on]]></programlisting>
-	</example>
-      </listitem>
-
-      <listitem><para><filename>/etc/sysconfig/plc</filename>: This
-      file is a shell script fragment that defines the variables
-      <envar>PLC_ROOT</envar> and <envar>PLC_DATA</envar>. By default,
-      the values of these variables are <filename>/plc/root</filename>
-      and <filename>/plc/data</filename>, respectively. If you wish,
-      you may move your MyPLC installation to another location on your
-      host filesystem and edit the values of these variables
-      appropriately, but you will break the RPM upgrade
-      process. PlanetLab Central cannot support any changes to this
-      file.</para></listitem>
-
-      <listitem><para><filename>/etc/planetlab</filename>: This
-      symlink to <filename>/plc/data/etc/planetlab</filename> is
-      installed on the host system for convenience.</para></listitem>
-    </itemizedlist>
-  </section>
-
-  <section>
-    <title>Quickstart</title>
-
-    <para>Once installed, start MyPLC (see <xref
-    linkend="StartingAndStoppingMyPLC" />). MyPLC must be started as
-    root. Observe the output of this command for any failures. If no
-    failures occur, you should see output similar to the
-    following:</para>
-
-    <example>
-      <title>A successful MyPLC startup.</title>
-
-      <programlisting><![CDATA[Mounting PLC:                                              [  OK  ]
-PLC: Generating network files:                             [  OK  ]
-PLC: Starting system logger:                               [  OK  ]
-PLC: Starting database server:                             [  OK  ]
-PLC: Generating SSL certificates:                          [  OK  ]
-PLC: Configuring the API:                                  [  OK  ]
-PLC: Updating GPG keys:                                    [  OK  ]
-PLC: Generating SSH keys:                                  [  OK  ]
-PLC: Starting web server:                                  [  OK  ]
-PLC: Bootstrapping the database:                           [  OK  ]
-PLC: Starting DNS server:                                  [  OK  ]
-PLC: Starting crond:                                       [  OK  ]
-PLC: Rebuilding Boot CD:                                   [  OK  ]
-PLC: Rebuilding Boot Manager:                              [  OK  ]
-PLC: Signing node packages:                                [  OK  ]
-]]></programlisting>
-    </example>
-
-    <para>If <filename>/plc/root</filename> is mounted successfully, a
-    complete log file of the startup process may be found at
-    <filename>/plc/root/var/log/boot.log</filename>. Possible reasons
-    for failure of each step include:</para>
-
-    <itemizedlist>
-      <listitem><para><literal>Mounting PLC</literal>: If this step
-      fails, first ensure that you started MyPLC as root. Check
-      <filename>/etc/sysconfig/plc</filename> to ensure that
-      <envar>PLC_ROOT</envar> and <envar>PLC_DATA</envar> refer to the
-      right locations. You may also have too many existing loopback
-      mounts, or your kernel may not support loopback mounting, bind
-      mounting, or the ext3 filesystem. Try freeing at least one
-      loopback device, or re-compiling your kernel to support loopback
-      mounting, bind mounting, and the ext3 filesystem. If you see an
-      error similar to <literal>Permission denied while trying to open
-      /plc/root.img</literal>, then SELinux may be enabled. See <xref
-      linkend="Requirements" /> above for details.</para></listitem>
-
-      <listitem><para><literal>Starting database server</literal>: If
-      this step fails, check
-      <filename>/plc/root/var/log/pgsql</filename> and
-      <filename>/plc/root/var/log/boot.log</filename>. The most common
-      reason for failure is that the default PostgreSQL port, TCP port
-      5432, is already in use. Check that you are not running a
-      PostgreSQL server on the host system.</para></listitem>
-
-      <listitem><para><literal>Starting web server</literal>: If this
-      step fails, check
-      <filename>/plc/root/var/log/httpd/error_log</filename> and
-      <filename>/plc/root/var/log/boot.log</filename> for obvious
-      errors. The most common reason for failure is that the default
-      web ports, TCP ports 80 and 443, are already in use. Check that
-      you are not running a web server on the host
-      system.</para></listitem>
-
-      <listitem><para><literal>Bootstrapping the database</literal>:
-      If this step fails, it is likely that the previous step
-      (<literal>Starting web server</literal>) also failed. Another
-      reason that it could fail is if <envar>PLC_API_HOST</envar> (see
-      <xref linkend="ChangingTheConfiguration" />) does not resolve to
-      the host on which the API server has been enabled. By default,
-      all services, including the API server, are enabled and run on
-      the same host, so check that <envar>PLC_API_HOST</envar> is
-      either <filename>localhost</filename> or resolves to a local IP
-      address.</para></listitem>
-
-      <listitem><para><literal>Starting crond</literal>: If this step
-      fails, it is likely that the previous steps (<literal>Starting
-      web server</literal> and <literal>Bootstrapping the
-      database</literal>) also failed. If not, check
-      <filename>/plc/root/var/log/boot.log</filename> for obvious
-      errors. This step starts the <command>cron</command> service and
-      generates the initial set of XML files that the Slice Creation
-      Service uses to determine slice state.</para></listitem>
+      <listitem> <para>If your distribution does not support RPM:</para>
+<programlisting><![CDATA[# cd /tmp
+# wget http://build.planet-lab.org/build/myplc-0_4-rc1/RPMS/i386/myplc-0.4-1.planetlab.i386.rpm
+# cd /
+# rpm2cpio /tmp/myplc-0.4-1.planetlab.i386.rpm | cpio -diu]]></programlisting></listitem>
     </itemizedlist>
 
-    <para>If no failures occur, then MyPLC should be active with a
-    default configuration. Open a web browser on the host system and
-    visit <literal>http://localhost/</literal>, which should bring you
-    to the front page of your PLC installation. The password of the
-    default administrator account
-    <literal>root@localhost.localdomain</literal> (set by
-    <envar>PLC_ROOT_USER</envar>) is <literal>root</literal> (set by
-    <envar>PLC_ROOT_PASSWORD</envar>).</para>
+    <para> The <xref linkend="FilesInvolvedRuntime" /> below explains in
+    details the installation strategy and the miscellaneous files and
+    directories involved.</para>
+ 
+    </section>
+
+    <section id="QuickStart"> <title> QuickStart </title>
+
+    <para> On a Red Hat or Fedora host system, it is customary to use
+    the <command>service</command> command to invoke System V init
+    scripts. As the examples suggest, the service must be started as root:</para> 
+
+    <example><title>Starting MyPLC:</title>
+	  <programlisting><![CDATA[# service plc start]]></programlisting>
+    </example>
+    <example><title>Stopping MyPLC:</title>
+	  <programlisting><![CDATA[# service plc stop]]></programlisting>
+    </example>
+
+    <para> In <xref linkend="StartupSequence" />, we provide greater
+    details that might be helpful in the case where the service does
+    not seem to take off correctly.</para>
+
+    <para>Like all other registered System V init services, MyPLC is
+    started and shut down automatically when your host system boots
+    and powers off. You may disable automatic startup by invoking the
+    <command>chkconfig</command> command on a Red Hat or Fedora host
+    system:</para>
+
+    <example> <title>Disabling automatic startup of MyPLC.</title>
+    <programlisting><![CDATA[# chkconfig plc off]]></programlisting></example>
+    <example> <title>Re-enabling automatic startup of MyPLC.</title>
+    <programlisting><![CDATA[# chkconfig plc on]]></programlisting></example>
+
+    </section>
 
     <section id="ChangingTheConfiguration">
       <title>Changing the configuration</title>
@@ -398,7 +207,7 @@ PLC: Signing node packages:                                [  OK  ]
       <para>After verifying that MyPLC is working correctly, shut it
       down and begin changing some of the default variable
       values. Shut down MyPLC with <command>service plc stop</command>
-      (see <xref linkend="StartingAndStoppingMyPLC" />). With a text
+      (see <xref linkend="QuickStart" />). With a text
       editor, open the file
       <filename>/etc/planetlab/plc_config.xml</filename>. This file is
       a self-documenting configuration file written in XML. Variables
@@ -440,13 +249,14 @@ PLC: Signing node packages:                                [  OK  ]
 	system.</para></listitem>
       </itemizedlist>
 
-      <para>After changing these variables, save the file, then
-      restart MyPLC with <command>service plc start</command>. You
-      should notice that the password of the default administrator
-      account is no longer <literal>root</literal>, and that the
-      default site name includes the name of your PLC installation
-      instead of PlanetLab.</para>
-    </section>
+      <para>The full set of applicable variables is described in <xref
+      linkend="VariablesDevel" />. After changing these variables,
+      save the file, then restart MyPLC with <command>service plc
+      start</command>. You should notice that the password of the
+      default administrator account is no longer
+      <literal>root</literal>, and that the default site name includes
+      the name of your PLC installation instead of PlanetLab.</para>
+      </section>
 
     <section>
       <title>Installing nodes</title>
@@ -542,6 +352,208 @@ ssh -i /etc/planetlab/root_ssh_key.rsa root@node \
 vserver pl_conf exec service pl_conf restart]]></programlisting>
       </example>
     </section>
+
+  <section id="StartupSequence">
+    <title>Understanding the startup sequence</title>
+
+    <para>During service startup described in <xref
+    linkend="QuickStart" />, observe the output of this command for
+    any failures. If no failures occur, you should see output similar
+    to the following:</para>
+
+    <example>
+      <title>A successful MyPLC startup.</title>
+
+      <programlisting><![CDATA[Mounting PLC:                                              [  OK  ]
+PLC: Generating network files:                             [  OK  ]
+PLC: Starting system logger:                               [  OK  ]
+PLC: Starting database server:                             [  OK  ]
+PLC: Generating SSL certificates:                          [  OK  ]
+PLC: Configuring the API:                                  [  OK  ]
+PLC: Updating GPG keys:                                    [  OK  ]
+PLC: Generating SSH keys:                                  [  OK  ]
+PLC: Starting web server:                                  [  OK  ]
+PLC: Bootstrapping the database:                           [  OK  ]
+PLC: Starting DNS server:                                  [  OK  ]
+PLC: Starting crond:                                       [  OK  ]
+PLC: Rebuilding Boot CD:                                   [  OK  ]
+PLC: Rebuilding Boot Manager:                              [  OK  ]
+PLC: Signing node packages:                                [  OK  ]
+]]></programlisting>
+    </example>
+
+    <para>If <filename>/plc/root</filename> is mounted successfully, a
+    complete log file of the startup process may be found at
+    <filename>/plc/root/var/log/boot.log</filename>. Possible reasons
+    for failure of each step include:</para>
+
+    <itemizedlist>
+      <listitem><para><literal>Mounting PLC</literal>: If this step
+      fails, first ensure that you started MyPLC as root. Check
+      <filename>/etc/sysconfig/plc</filename> to ensure that
+      <envar>PLC_ROOT</envar> and <envar>PLC_DATA</envar> refer to the
+      right locations. You may also have too many existing loopback
+      mounts, or your kernel may not support loopback mounting, bind
+      mounting, or the ext3 filesystem. Try freeing at least one
+      loopback device, or re-compiling your kernel to support loopback
+      mounting, bind mounting, and the ext3 filesystem. If you see an
+      error similar to <literal>Permission denied while trying to open
+      /plc/root.img</literal>, then SELinux may be enabled. See <xref
+      linkend="Requirements" /> above for details.</para></listitem>
+
+      <listitem><para><literal>Starting database server</literal>: If
+      this step fails, check
+      <filename>/plc/root/var/log/pgsql</filename> and
+      <filename>/plc/root/var/log/boot.log</filename>. The most common
+      reason for failure is that the default PostgreSQL port, TCP port
+      5432, is already in use. Check that you are not running a
+      PostgreSQL server on the host system.</para></listitem>
+
+      <listitem><para><literal>Starting web server</literal>: If this
+      step fails, check
+      <filename>/plc/root/var/log/httpd/error_log</filename> and
+      <filename>/plc/root/var/log/boot.log</filename> for obvious
+      errors. The most common reason for failure is that the default
+      web ports, TCP ports 80 and 443, are already in use. Check that
+      you are not running a web server on the host
+      system.</para></listitem>
+
+      <listitem><para><literal>Bootstrapping the database</literal>:
+      If this step fails, it is likely that the previous step
+      (<literal>Starting web server</literal>) also failed. Another
+      reason that it could fail is if <envar>PLC_API_HOST</envar> (see
+      <xref linkend="ChangingTheConfiguration" />) does not resolve to
+      the host on which the API server has been enabled. By default,
+      all services, including the API server, are enabled and run on
+      the same host, so check that <envar>PLC_API_HOST</envar> is
+      either <filename>localhost</filename> or resolves to a local IP
+      address.</para></listitem>
+
+      <listitem><para><literal>Starting crond</literal>: If this step
+      fails, it is likely that the previous steps (<literal>Starting
+      web server</literal> and <literal>Bootstrapping the
+      database</literal>) also failed. If not, check
+      <filename>/plc/root/var/log/boot.log</filename> for obvious
+      errors. This step starts the <command>cron</command> service and
+      generates the initial set of XML files that the Slice Creation
+      Service uses to determine slice state.</para></listitem>
+    </itemizedlist>
+
+    <para>If no failures occur, then MyPLC should be active with a
+    default configuration. Open a web browser on the host system and
+    visit <literal>http://localhost/</literal>, which should bring you
+    to the front page of your PLC installation. The password of the
+    default administrator account
+    <literal>root@localhost.localdomain</literal> (set by
+    <envar>PLC_ROOT_USER</envar>) is <literal>root</literal> (set by
+    <envar>PLC_ROOT_PASSWORD</envar>).</para>
+    </section>
+
+    <section id="FilesInvolvedRuntime"> <title> Files and directories
+    involved in <emphasis>myplc</emphasis></title>
+    <para>MyPLC installs the following files and directories:</para>
+
+    <orderedlist>
+
+      <listitem><para><filename>/plc/root.img</filename>: The main
+      root filesystem of the MyPLC application. This file is an
+      uncompressed ext3 filesystem that is loopback mounted on
+      <filename>/plc/root</filename> when MyPLC starts. This
+      filesystem, even when mounted, should be treated as an opaque
+      binary that can and will be replaced in its entirety by any
+      upgrade of MyPLC.</para></listitem>
+
+      <listitem><para><filename>/plc/root</filename>: The mount point
+      for <filename>/plc/root.img</filename>. Once the root filesystem
+      is mounted, all MyPLC services run in a
+      <command>chroot</command> jail based in this
+      directory.</para></listitem>
+
+      <listitem>
+	<para><filename>/plc/data</filename>: The directory where user
+	data and generated files are stored. This directory is bind
+	mounted onto <filename>/plc/root/data</filename> so that it is
+	accessible as <filename>/data</filename> from within the
+	<command>chroot</command> jail. Files in this directory are
+	marked with <command>%config(noreplace)</command> in the
+	RPM. That is, during an upgrade of MyPLC, if a file has not
+	changed since the last installation or upgrade of MyPLC, it is
+	subject to upgrade and replacement. If the file has changed,
+	the new version of the file will be created with a
+	<filename>.rpmnew</filename> extension. Symlinks within the
+	MyPLC root filesystem ensure that the following directories
+	(relative to <filename>/plc/root</filename>) are stored
+	outside the MyPLC filesystem image:</para>
+
+	<itemizedlist>
+	  <listitem><para><filename>/etc/planetlab</filename>: This
+	  directory contains the configuration files, keys, and
+	  certificates that define your MyPLC
+	  installation.</para></listitem>
+
+	  <listitem><para><filename>/var/lib/pgsql</filename>: This
+	  directory contains PostgreSQL database
+	  files.</para></listitem>
+
+	  <listitem><para><filename>/var/www/html/alpina-logs</filename>: This
+	  directory contains node installation logs.</para></listitem>
+
+	  <listitem><para><filename>/var/www/html/boot</filename>: This
+	  directory contains the Boot Manager, customized for your MyPLC
+	  installation, and its data files.</para></listitem>
+
+	  <listitem><para><filename>/var/www/html/download</filename>: This
+	  directory contains Boot CD images, customized for your MyPLC
+	  installation.</para></listitem>
+
+	  <listitem><para><filename>/var/www/html/install-rpms</filename>: This
+	  directory is where you should install node package updates,
+	  if any. By default, nodes are installed from the tarball
+	  located at
+	  <filename>/var/www/html/boot/PlanetLab-Bootstrap.tar.bz2</filename>,
+	  which is pre-built from the latest PlanetLab Central
+	  sources, and installed as part of your MyPLC
+	  installation. However, nodes will attempt to install any
+	  newer RPMs located in
+	  <filename>/var/www/html/install-rpms/planetlab</filename>,
+	  after initial installation and periodically thereafter. You
+	  must run <command>yum-arch</command> and
+	  <command>createrepo</command> to update the
+	  <command>yum</command> caches in this directory after
+	  installing a new RPM. PlanetLab Central cannot support any
+	  changes to this directory.</para></listitem>
+
+	  <listitem><para><filename>/var/www/html/xml</filename>: This
+	  directory contains various XML files that the Slice Creation
+	  Service uses to determine the state of slices. These XML
+	  files are refreshed periodically by <command>cron</command>
+	  jobs running in the MyPLC root.</para></listitem>
+	</itemizedlist>
+      </listitem>
+
+      <listitem id="MyplcInitScripts">
+	<para><filename>/etc/init.d/plc</filename>: This file
+	is a System V init script installed on your host filesystem,
+	that allows you to start up and shut down MyPLC with a single
+	command, as described in <xref linkend="QuickStart" />.</para>
+      </listitem>
+
+      <listitem><para><filename>/etc/sysconfig/plc</filename>: This
+      file is a shell script fragment that defines the variables
+      <envar>PLC_ROOT</envar> and <envar>PLC_DATA</envar>. By default,
+      the values of these variables are <filename>/plc/root</filename>
+      and <filename>/plc/data</filename>, respectively. If you wish,
+      you may move your MyPLC installation to another location on your
+      host filesystem and edit the values of these variables
+      appropriately, but you will break the RPM upgrade
+      process. PlanetLab Central cannot support any changes to this
+      file.</para></listitem>
+
+      <listitem><para><filename>/etc/planetlab</filename>: This
+      symlink to <filename>/plc/data/etc/planetlab</filename> is
+      installed on the host system for convenience.</para></listitem>
+    </orderedlist>
+  </section>
   </section>
 
   <section id="DevelopmentEnvironment">
@@ -574,18 +586,20 @@ vserver pl_conf exec service pl_conf restart]]></programlisting>
       <command>chroot</command> jail should not be modified directly, as
       they are subject to upgrade.</para>
 
-      <example>
-	<title>Installing the MyPLC development environment.</title>
+      <itemizedlist>
+      <listitem> <para>If your distribution supports RPM:</para>
+      <programlisting><![CDATA[# rpm -U http://build.planet-lab.org/build/myplc-0_4-rc2/RPMS/i386/myplc-devel-0.4-2.planetlab.i386.rpm]]></programlisting></listitem>
 
-	<programlisting><![CDATA[# If your distribution supports RPM
-rpm -U http://build.planet-lab.org/build/myplc-0_4-rc2/RPMS/i386/myplc-devel-0.4-2.planetlab.i386.rpm
+      <listitem> <para>If your distribution does not support RPM:</para>
+<programlisting><![CDATA[# cd /tmp
+# wget http://build.planet-lab.org/build/myplc-0_4-rc2/RPMS/i386/myplc-devel-0.4-2.planetlab.i386.rpm
+# cd /
+# rpm2cpio /tmp/myplc-devel-0.4-2.planetlab.i386.rpm | cpio -diu]]></programlisting></listitem>
+    </itemizedlist>
+    </section>
 
-# If your distribution does not support RPM
-cd /tmp
-wget http://build.planet-lab.org/build/myplc-0_4-rc2/RPMS/i386/myplc-devel-0.4-2.planetlab.i386.rpm
-cd /
-rpm2cpio /tmp/myplc-devel-0.4-2.planetlab.i386.rpm | cpio -diu]]></programlisting>
-      </example>
+    <section id="FilesInvolvedDevel"> <title> Files and directories
+    involved in <emphasis>myplc-devl</emphasis></title>
 
       <para>The MyPLC development environment installs the following
       files and directories:</para>
@@ -688,12 +702,12 @@ rpm2cpio /tmp/myplc-devel-0.4-2.planetlab.i386.rpm | cpio -diu]]></programlistin
       <example>
 	<title>Setting up a local Fedora Core 4 repository.</title>
 	
-	<programlisting><![CDATA[mkdir -p /plc/devel/data/fedora
-cd /plc/devel/data/fedora
+	<programlisting><![CDATA[# mkdir -p /plc/devel/data/fedora
+# cd /plc/devel/data/fedora
 
-for repo in core/4/i386/os core/updates/4/i386 extras/4/i386 ; do
-    wget -m -nH --cut-dirs=3 http://coblitz.planet-lab.org/pub/fedora/linux/$repo
-done]]></programlisting>
+# for repo in core/4/i386/os core/updates/4/i386 extras/4/i386 ; do
+>     wget -m -nH --cut-dirs=3 http://coblitz.planet-lab.org/pub/fedora/linux/$repo
+> done]]></programlisting>
       </example>
       
       <para>Change the repository URI and <command>--cut-dirs</command>
@@ -715,6 +729,15 @@ done]]></programlisting>
       <filename>build/</filename> directory of the PlanetLab CVS
       repository, eases the task of rebuilding PlanetLab source
       code.</para>
+
+      <para> Before you try building MyPLC, you might check the
+      configuration, in a file named
+      <emphasis>plc_config.xml</emphasis> that relies on a very
+      similar model as MyPLC, located in
+      <emphasis>/etc/planetlab</emphasis> within the chroot jail, or
+      in <emphasis>/plc/devel/data/etc/planetlab</emphasis> from the
+      root context. The set of applicable variables is described in
+      <xref linkend="VariablesDevel" />. </para>
 
       <para>To build MyPLC, or any PlanetLab source code module, from
       within the MyPLC development environment, execute the following
@@ -817,7 +840,7 @@ rm -rf $TMP]]></programlisting>
     </section>
   </section>
 
-  <appendix>
+  <appendix id="VariablesRuntime">
     <title>Configuration variables (for <emphasis>myplc</emphasis>)</title>
 
     <para>Listed below is the set of standard configuration variables
@@ -830,7 +853,7 @@ rm -rf $TMP]]></programlisting>
     &Variables;
   </appendix>
 
-  <appendix>
+  <appendix id="VariablesDevel">
     <title>Development configuration variables (for <emphasis>myplc-devel</emphasis>)</title>
 
     &DevelVariables;
