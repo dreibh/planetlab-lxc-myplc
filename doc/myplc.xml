@@ -76,6 +76,65 @@
 	</caption>
       </mediaobject>
     </figure>
+
+    <section> <title> Purpose of the <emphasis> myplc-devel
+    </emphasis> package </title>
+    <para> The <emphasis>myplc</emphasis> package comes with all
+    required node software, rebuilt from the public PlanetLab CVS
+    repository. If for any reason you need to implement your own
+    customized version of this software, you can use the
+    <emphasis>myplc-devel</emphasis> package instead, for setting up
+    your own development environment, including a local CVS
+    repository; you can then freely manage your changes and rebuild
+    your customized version of <emphasis>myplc</emphasis>. We also
+    provide good practices, that will then allow you to resync your local
+    CVS repository with any further evolution on the mainstream public
+    PlanetLab software. </para> </section>
+
+    </section>
+
+
+  <section id="Requirements"> <title> Requirements </title>
+
+  <para> <emphasis>myplc</emphasis> and
+  <emphasis>myplc-devel</emphasis> were designed as
+  <command>chroot</command> jails so as to reduce the requirements on
+  your host operating system. So in theory, these distributions should
+  work on virtually any Linux 2.6 based distribution, whether it
+  supports rpm or not. </para>
+
+  <para> However, things are never that simple and there indeed are
+  some known limitations to this, so here are a couple notes as a
+  recommended reading before you proceed with installing</para>
+
+  <para> As of August 2006 9, so this should apply to
+  myplc-0.5.2 :</para>
+
+  <itemizedlist>
+
+  <listitem><para> The software is vastly based on <emphasis>Fedora
+  Core 4</emphasis>. Please note that the build server at Princeton
+  runs <emphasis>Fedora Core 2</emphasis>, togother with a upgraded
+  version of yum. 
+  </para></listitem>
+
+  <listitem><para> myplc and myplc-devel are known to work on both
+  <emphasis>Fedora Core 2</emphasis> and <emphasis>Fedora Core
+  4</emphasis>. Please note however that, on fc4 at least, it is
+  highly recommended to use the <application>Security Level
+  Configuration</application> utility and to <emphasis>switch off
+  SElinux</emphasis> on your box because : </para>
+
+  <itemizedlist>
+  <listitem><para>
+  myplc requires you to run SElinux as 'Permissive' at most
+	</para></listitem>
+  <listitem><para>
+  myplc-devel requires you to turn SElinux Off.
+	</para></listitem>
+  </itemizedlist>
+  </listitem>
+  </itemizedlist>
   </section>
 
   <section id="Installation">
@@ -278,11 +337,8 @@ PLC: Signing node packages:                                [  OK  ]
       loopback device, or re-compiling your kernel to support loopback
       mounting, bind mounting, and the ext3 filesystem. If you see an
       error similar to <literal>Permission denied while trying to open
-      /plc/root.img</literal>, then SELinux may be enabled. If you
-      installed MyPLC on Fedora Core 4 or 5, use the
-      <application>Security Level Configuration</application> utility
-      to configure SELinux to be
-      <literal>Permissive</literal>.</para></listitem>
+      /plc/root.img</literal>, then SELinux may be enabled. See <xref
+      linkend="Requirements" /> above for details.</para></listitem>
 
       <listitem><para><literal>Starting database server</literal>: If
       this step fails, check
@@ -483,7 +539,7 @@ vserver pl_conf exec service pl_conf restart]]></programlisting>
     </section>
   </section>
 
-  <section>
+  <section id="DevelopmentEnvironment">
     <title>Rebuilding and customizing MyPLC</title>
 
     <para>The MyPLC package, though distributed as an RPM, is not a
@@ -757,7 +813,7 @@ rm -rf $TMP]]></programlisting>
   </section>
 
   <appendix>
-    <title>Configuration variables</title>
+    <title>Configuration variables (for <emphasis>myplc</emphasis>)</title>
 
     <para>Listed below is the set of standard configuration variables
     and their default values, defined in the template
@@ -770,7 +826,7 @@ rm -rf $TMP]]></programlisting>
   </appendix>
 
   <appendix>
-    <title>Development environment configuration variables</title>
+    <title>Development configuration variables(for <emphasis>myplc-devel</emphasis>)</title>
 
     &DevelVariables;
   </appendix>
