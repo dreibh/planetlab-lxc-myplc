@@ -13,7 +13,7 @@
 <div class="titlepage">
 <div>
 <div><h1 class="title">
-<a name="id2612440"></a>MyPLC User's Guide</h1></div>
+<a name="id2795259"></a>MyPLC User's Guide</h1></div>
 <div><div class="author"><h3 class="author"><span class="firstname">Mark Huang</span></h3></div></div>
 <div><div class="revhistory"><table border="1" width="100%" summary="Revision history">
 <tr><th align="left" valign="top" colspan="3"><b>Revision History</b></th></tr>
@@ -45,33 +45,39 @@
 <div class="toc">
 <p><b>Table of Contents</b></p>
 <dl>
-<dt><span class="section"><a href="#id2681901">1. Overview</a></span></dt>
-<dd><dl><dt><span class="section"><a href="#id2659450">1.1.  Purpose of the <span class="emphasis"><em> myplc-devel
+<dt><span class="section"><a href="#id2864719">1. Overview</a></span></dt>
+<dd><dl><dt><span class="section"><a href="#id2842268">1.1.  Purpose of the <span class="emphasis"><em> myplc-devel
     </em></span> package </a></span></dt></dl></dd>
 <dt><span class="section"><a href="#Requirements">2.  Requirements </a></span></dt>
-<dt><span class="section"><a href="#Installation">3. Installation</a></span></dt>
-<dt><span class="section"><a href="#id2659848">4. Quickstart</a></span></dt>
+<dt><span class="section"><a href="#Installation">3. Installating and using MyPLC</a></span></dt>
 <dd><dl>
-<dt><span class="section"><a href="#ChangingTheConfiguration">4.1. Changing the configuration</a></span></dt>
-<dt><span class="section"><a href="#id2711256">4.2. Installing nodes</a></span></dt>
-<dt><span class="section"><a href="#id2711338">4.3. Administering nodes</a></span></dt>
-<dt><span class="section"><a href="#id2711439">4.4. Creating a slice</a></span></dt>
+<dt><span class="section"><a href="#id2841677">3.1. Installing MyPLC.</a></span></dt>
+<dt><span class="section"><a href="#QuickStart">3.2.  QuickStart </a></span></dt>
+<dt><span class="section"><a href="#ChangingTheConfiguration">3.3. Changing the configuration</a></span></dt>
+<dt><span class="section"><a href="#id2842715">3.4. Installing nodes</a></span></dt>
+<dt><span class="section"><a href="#id2842797">3.5. Administering nodes</a></span></dt>
+<dt><span class="section"><a href="#id2842898">3.6. Creating a slice</a></span></dt>
+<dt><span class="section"><a href="#StartupSequence">3.7. Understanding the startup sequence</a></span></dt>
+<dt><span class="section"><a href="#FilesInvolvedRuntime">3.8.  Files and directories
+    involved in <span class="emphasis"><em>myplc</em></span></a></span></dt>
 </dl></dd>
-<dt><span class="section"><a href="#DevelopmentEnvironment">5. Rebuilding and customizing MyPLC</a></span></dt>
+<dt><span class="section"><a href="#DevelopmentEnvironment">4. Rebuilding and customizing MyPLC</a></span></dt>
 <dd><dl>
-<dt><span class="section"><a href="#id2711557">5.1. Installation</a></span></dt>
-<dt><span class="section"><a href="#id2711788">5.2. Fedora Core 4 mirror requirement</a></span></dt>
-<dt><span class="section"><a href="#BuildingMyPLC">5.3. Building MyPLC</a></span></dt>
-<dt><span class="section"><a href="#UpdatingCVS">5.4. Updating CVS</a></span></dt>
+<dt><span class="section"><a href="#id2894620">4.1. Installation</a></span></dt>
+<dt><span class="section"><a href="#FilesInvolvedDevel">4.2.  Files and directories
+    involved in <span class="emphasis"><em>myplc-devl</em></span></a></span></dt>
+<dt><span class="section"><a href="#id2894876">4.3. Fedora Core 4 mirror requirement</a></span></dt>
+<dt><span class="section"><a href="#BuildingMyPLC">4.4. Building MyPLC</a></span></dt>
+<dt><span class="section"><a href="#UpdatingCVS">4.5. Updating CVS</a></span></dt>
 </dl></dd>
-<dt><span class="appendix"><a href="#id2712187">A. Configuration variables (for <span class="emphasis"><em>myplc</em></span>)</a></span></dt>
-<dt><span class="appendix"><a href="#id2715081">B. Development configuration variables (for <span class="emphasis"><em>myplc-devel</em></span>)</a></span></dt>
-<dt><span class="bibliography"><a href="#id2715252">Bibliography</a></span></dt>
+<dt><span class="appendix"><a href="#VariablesRuntime">A. Configuration variables (for <span class="emphasis"><em>myplc</em></span>)</a></span></dt>
+<dt><span class="appendix"><a href="#VariablesDevel">B. Development configuration variables (for <span class="emphasis"><em>myplc-devel</em></span>)</a></span></dt>
+<dt><span class="bibliography"><a href="#id2898373">Bibliography</a></span></dt>
 </dl>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
-<a name="id2681901"></a>1. Overview</h2></div></div></div>
+<a name="id2864719"></a>1. Overview</h2></div></div></div>
 <p>MyPLC is a complete PlanetLab Central (PLC) portable
     installation contained within a <span><strong class="command">chroot</strong></span>
     jail. The default installation consists of a web server, an
@@ -94,7 +100,7 @@
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="id2659450"></a>1.1.  Purpose of the <span class="emphasis"><em> myplc-devel
+<a name="id2842268"></a>1.1.  Purpose of the <span class="emphasis"><em> myplc-devel
     </em></span> package </h3></div></div></div>
 <p> The <span class="emphasis"><em>myplc</em></span> package comes with all
     required node software, rebuilt from the public PlanetLab CVS
@@ -121,7 +127,7 @@
 <p> However, things are never that simple and there indeed are
   some known limitations to this, so here are a couple notes as a
   recommended reading before you proceed with the installation.</p>
-<p> As of August 2006 9 (i.e <span class="emphasis"><em>myplc-0.5</em></span>) :</p>
+<p> As of 9 August 2006 (i.e <span class="emphasis"><em>myplc-0.5</em></span>) :</p>
 <div class="itemizedlist"><ul type="disc">
 <li><p> The software is vastly based on <span class="emphasis"><em>Fedora
   Core 4</em></span>. Please note that the build server at Princeton
@@ -148,149 +154,205 @@
   need to check your firewall configuration since you need, of course,
   to open up the <span class="emphasis"><em>http</em></span> and
   <span class="emphasis"><em>https</em></span> ports, so as to accept connections from
-  the managed nodes, and from the users desktops. </p></li>
+  the managed nodes and from the users desktops. </p></li>
 </ul></div>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
-<a name="Installation"></a>3. Installation</h2></div></div></div>
+<a name="Installation"></a>3. Installating and using MyPLC</h2></div></div></div>
 <p>Though internally composed of commodity software
     subpackages, MyPLC should be treated as a monolithic software
     application. MyPLC is distributed as single RPM package that has
     no external dependencies, allowing it to be installed on
-    practically any Linux 2.6 based distribution:</p>
-<div class="example">
-<a name="id2658859"></a><p class="title"><b>Example 1. Installing MyPLC.</b></p>
-<pre class="programlisting"># If your distribution supports RPM
-rpm -U http://build.planet-lab.org/build/myplc-0_4-rc1/RPMS/i386/myplc-0.4-1.planetlab.i386.rpm
-
-# If your distribution does not support RPM
-cd /tmp
-wget http://build.planet-lab.org/build/myplc-0_4-rc1/RPMS/i386/myplc-0.4-1.planetlab.i386.rpm
-cd /
-rpm2cpio /tmp/myplc-0.4-1.planetlab.i386.rpm | cpio -diu</pre>
-</div>
-<p>MyPLC installs the following files and directories:</p>
+    practically any Linux 2.6 based distribution.</p>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="id2841677"></a>3.1. Installing MyPLC.</h3></div></div></div>
 <div class="itemizedlist"><ul type="disc">
-<li><p><code class="filename">/plc/root.img</code>: The main
-      root filesystem of the MyPLC application. This file is an
-      uncompressed ext3 filesystem that is loopback mounted on
-      <code class="filename">/plc/root</code> when MyPLC starts. This
-      filesystem, even when mounted, should be treated as an opaque
-      binary that can and will be replaced in its entirety by any
-      upgrade of MyPLC.</p></li>
-<li><p><code class="filename">/plc/root</code>: The mount point
-      for <code class="filename">/plc/root.img</code>. Once the root filesystem
-      is mounted, all MyPLC services run in a
-      <span><strong class="command">chroot</strong></span> jail based in this
-      directory.</p></li>
 <li>
-<p><code class="filename">/plc/data</code>: The directory where user
-	data and generated files are stored. This directory is bind
-	mounted onto <code class="filename">/plc/root/data</code> so that it is
-	accessible as <code class="filename">/data</code> from within the
-	<span><strong class="command">chroot</strong></span> jail. Files in this directory are
-	marked with <span><strong class="command">%config(noreplace)</strong></span> in the
-	RPM. That is, during an upgrade of MyPLC, if a file has not
-	changed since the last installation or upgrade of MyPLC, it is
-	subject to upgrade and replacement. If the file has changed,
-	the new version of the file will be created with a
-	<code class="filename">.rpmnew</code> extension. Symlinks within the
-	MyPLC root filesystem ensure that the following directories
-	(relative to <code class="filename">/plc/root</code>) are stored
-	outside the MyPLC filesystem image:</p>
-<div class="itemizedlist"><ul type="circle">
-<li><p><code class="filename">/etc/planetlab</code>: This
-	  directory contains the configuration files, keys, and
-	  certificates that define your MyPLC
-	  installation.</p></li>
-<li><p><code class="filename">/var/lib/pgsql</code>: This
-	  directory contains PostgreSQL database
-	  files.</p></li>
-<li><p><code class="filename">/var/www/html/alpina-logs</code>: This
-	  directory contains node installation logs.</p></li>
-<li><p><code class="filename">/var/www/html/boot</code>: This
-	  directory contains the Boot Manager, customized for your MyPLC
-	  installation, and its data files.</p></li>
-<li><p><code class="filename">/var/www/html/download</code>: This
-	  directory contains Boot CD images, customized for your MyPLC
-	  installation.</p></li>
-<li><p><code class="filename">/var/www/html/install-rpms</code>: This
-	  directory is where you should install node package updates,
-	  if any. By default, nodes are installed from the tarball
-	  located at
-	  <code class="filename">/var/www/html/boot/PlanetLab-Bootstrap.tar.bz2</code>,
-	  which is pre-built from the latest PlanetLab Central
-	  sources, and installed as part of your MyPLC
-	  installation. However, nodes will attempt to install any
-	  newer RPMs located in
-	  <code class="filename">/var/www/html/install-rpms/planetlab</code>,
-	  after initial installation and periodically thereafter. You
-	  must run <span><strong class="command">yum-arch</strong></span> and
-	  <span><strong class="command">createrepo</strong></span> to update the
-	  <span><strong class="command">yum</strong></span> caches in this directory after
-	  installing a new RPM. PlanetLab Central cannot support any
-	  changes to this directory.</p></li>
-<li><p><code class="filename">/var/www/html/xml</code>: This
-	  directory contains various XML files that the Slice Creation
-	  Service uses to determine the state of slices. These XML
-	  files are refreshed periodically by <span><strong class="command">cron</strong></span>
-	  jobs running in the MyPLC root.</p></li>
+<p>If your distribution supports RPM:</p>
+<pre class="programlisting"># rpm -U http://build.planet-lab.org/build/myplc-0_4-rc1/RPMS/i386/myplc-0.4-1.planetlab.i386.rpm</pre>
+</li>
+<li>
+<p>If your distribution does not support RPM:</p>
+<pre class="programlisting"># cd /tmp
+# wget http://build.planet-lab.org/build/myplc-0_4-rc1/RPMS/i386/myplc-0.4-1.planetlab.i386.rpm
+# cd /
+# rpm2cpio /tmp/myplc-0.4-1.planetlab.i386.rpm | cpio -diu</pre>
+</li>
 </ul></div>
-</li>
-<li>
-<p><a name="MyplcInitScripts"></a><code class="filename">/etc/init.d/plc</code>: This file
-	is a System V init script installed on your host filesystem,
-	that allows you to start up and shut down MyPLC with a single
-	command. On a Red Hat or Fedora host system, it is customary to
-	use the <span><strong class="command">service</strong></span> command to invoke System V
-	init scripts:</p>
-<div class="example">
-<a name="StartingAndStoppingMyPLC"></a><p class="title"><b>Example 2. Starting and stopping MyPLC.</b></p>
-<pre class="programlisting"># Starting MyPLC
-service plc start
-
-# Stopping MyPLC
-service plc stop</pre>
+<p> The <a href="#FilesInvolvedRuntime" title="3.8.  Files and directories
+    involved in myplc">Section 3.8, “ Files and directories
+    involved in <span class="emphasis"><em>myplc</em></span>”</a> below explains in
+    details the installation strategy and the miscellaneous files and
+    directories involved.</p>
 </div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="QuickStart"></a>3.2.  QuickStart </h3></div></div></div>
+<p> On a Red Hat or Fedora host system, it is customary to use
+    the <span><strong class="command">service</strong></span> command to invoke System V init
+    scripts. As the examples suggest, the service must be started as root:</p>
+<div class="example">
+<a name="id2841851"></a><p class="title"><b>Example 1. Starting MyPLC:</b></p>
+<pre class="programlisting"># service plc start</pre>
+</div>
+<div class="example">
+<a name="id2841863"></a><p class="title"><b>Example 2. Stopping MyPLC:</b></p>
+<pre class="programlisting"># service plc stop</pre>
+</div>
+<p> In <a href="#StartupSequence" title="3.7. Understanding the startup sequence">Section 3.7, “Understanding the startup sequence”</a>, we provide greater
+    details that might be helpful in the case where the service does
+    not seem to take off correctly.</p>
 <p>Like all other registered System V init services, MyPLC is
-	started and shut down automatically when your host system boots
-	and powers off. You may disable automatic startup by invoking
-	the <span><strong class="command">chkconfig</strong></span> command on a Red Hat or Fedora
-	host system:</p>
+    started and shut down automatically when your host system boots
+    and powers off. You may disable automatic startup by invoking the
+    <span><strong class="command">chkconfig</strong></span> command on a Red Hat or Fedora host
+    system:</p>
 <div class="example">
-<a name="id2659778"></a><p class="title"><b>Example 3. Disabling automatic startup of MyPLC.</b></p>
-<pre class="programlisting"># Disable automatic startup
-chkconfig plc off
-
-# Enable automatic startup
-chkconfig plc on</pre>
+<a name="id2841901"></a><p class="title"><b>Example 3. Disabling automatic startup of MyPLC.</b></p>
+<pre class="programlisting"># chkconfig plc off</pre>
 </div>
-</li>
-<li><p><code class="filename">/etc/sysconfig/plc</code>: This
-      file is a shell script fragment that defines the variables
-      <code class="envar">PLC_ROOT</code> and <code class="envar">PLC_DATA</code>. By default,
-      the values of these variables are <code class="filename">/plc/root</code>
-      and <code class="filename">/plc/data</code>, respectively. If you wish,
-      you may move your MyPLC installation to another location on your
-      host filesystem and edit the values of these variables
-      appropriately, but you will break the RPM upgrade
-      process. PlanetLab Central cannot support any changes to this
-      file.</p></li>
-<li><p><code class="filename">/etc/planetlab</code>: This
-      symlink to <code class="filename">/plc/data/etc/planetlab</code> is
-      installed on the host system for convenience.</p></li>
+<div class="example">
+<a name="id2842528"></a><p class="title"><b>Example 4. Re-enabling automatic startup of MyPLC.</b></p>
+<pre class="programlisting"># chkconfig plc on</pre>
+</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="ChangingTheConfiguration"></a>3.3. Changing the configuration</h3></div></div></div>
+<p>After verifying that MyPLC is working correctly, shut it
+      down and begin changing some of the default variable
+      values. Shut down MyPLC with <span><strong class="command">service plc stop</strong></span>
+      (see <a href="#QuickStart" title="3.2.  QuickStart ">Section 3.2, “ QuickStart ”</a>). With a text
+      editor, open the file
+      <code class="filename">/etc/planetlab/plc_config.xml</code>. This file is
+      a self-documenting configuration file written in XML. Variables
+      are divided into categories. Variable identifiers must be
+      alphanumeric, plus underscore. A variable is referred to
+      canonically as the uppercase concatenation of its category
+      identifier, an underscore, and its variable identifier. Thus, a
+      variable with an <code class="literal">id</code> of
+      <code class="literal">slice_prefix</code> in the <code class="literal">plc</code>
+      category is referred to canonically as
+      <code class="envar">PLC_SLICE_PREFIX</code>.</p>
+<p>The reason for this convention is that during MyPLC
+      startup, <code class="filename">plc_config.xml</code> is translated into
+      several different languages—shell, PHP, and
+      Python—so that scripts written in each of these languages
+      can refer to the same underlying configuration. Most MyPLC
+      scripts are written in shell, so the convention for shell
+      variables predominates.</p>
+<p>The variables that you should change immediately are:</p>
+<div class="itemizedlist"><ul type="disc">
+<li><p><code class="envar">PLC_NAME</code>: Change this to the
+	name of your PLC installation.</p></li>
+<li><p><code class="envar">PLC_ROOT_PASSWORD</code>: Change this
+	to a more secure password.</p></li>
+<li><p><code class="envar">PLC_MAIL_SUPPORT_ADDRESS</code>:
+	Change this to the e-mail address at which you would like to
+	receive support requests.</p></li>
+<li><p><code class="envar">PLC_DB_HOST</code>,
+	<code class="envar">PLC_DB_IP</code>, <code class="envar">PLC_API_HOST</code>,
+	<code class="envar">PLC_API_IP</code>, <code class="envar">PLC_WWW_HOST</code>,
+	<code class="envar">PLC_WWW_IP</code>, <code class="envar">PLC_BOOT_HOST</code>,
+	<code class="envar">PLC_BOOT_IP</code>: Change all of these to the
+	preferred FQDN and external IP address of your host
+	system.</p></li>
+</ul></div>
+<p>The full set of applicable variables is described in <a href="#VariablesDevel" title="B. Development configuration variables (for myplc-devel)">Appendix B, <i>Development configuration variables (for <span class="emphasis"><em>myplc-devel</em></span>)</i></a>. After changing these variables,
+      save the file, then restart MyPLC with <span><strong class="command">service plc
+      start</strong></span>. You should notice that the password of the
+      default administrator account is no longer
+      <code class="literal">root</code>, and that the default site name includes
+      the name of your PLC installation instead of PlanetLab.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="id2842715"></a>3.4. Installing nodes</h3></div></div></div>
+<p>Install your first node by clicking <code class="literal">Add
+      Node</code> under the <code class="literal">Nodes</code> tab. Fill in
+      all the appropriate details, then click
+      <code class="literal">Add</code>. Download the node's configuration file
+      by clicking <code class="literal">Download configuration file</code> on
+      the <span class="bold"><strong>Node Details</strong></span> page for the
+      node. Save it to a floppy disk or USB key as detailed in [<a href="#TechsGuide" title="[TechsGuide]">1</a>].</p>
+<p>Follow the rest of the instructions in [<a href="#TechsGuide" title="[TechsGuide]">1</a>] for creating a Boot CD and installing
+      the node, except download the Boot CD image from the
+      <code class="filename">/download</code> directory of your PLC
+      installation, not from PlanetLab Central. The images located
+      here are customized for your installation. If you change the
+      hostname of your boot server (<code class="envar">PLC_BOOT_HOST</code>), or
+      if the SSL certificate of your boot server expires, MyPLC will
+      regenerate it and rebuild the Boot CD with the new
+      certificate. If this occurs, you must replace all Boot CDs
+      created before the certificate was regenerated.</p>
+<p>The installation process for a node has significantly
+      improved since PlanetLab 3.3. It should now take only a few
+      seconds for a new node to become ready to create slices.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="id2842797"></a>3.5. Administering nodes</h3></div></div></div>
+<p>You may administer nodes as <code class="literal">root</code> by
+      using the SSH key stored in
+      <code class="filename">/etc/planetlab/root_ssh_key.rsa</code>.</p>
+<div class="example">
+<a name="id2842820"></a><p class="title"><b>Example 5. Accessing nodes via SSH. Replace
+	<code class="literal">node</code> with the hostname of the node.</b></p>
+<pre class="programlisting">ssh -i /etc/planetlab/root_ssh_key.rsa root@node</pre>
+</div>
+<p>Besides the standard Linux log files located in
+      <code class="filename">/var/log</code>, several other files can give you
+      clues about any problems with active processes:</p>
+<div class="itemizedlist"><ul type="disc">
+<li><p><code class="filename">/var/log/pl_nm</code>: The log
+	file for the Node Manager.</p></li>
+<li><p><code class="filename">/vservers/pl_conf/var/log/pl_conf</code>:
+	The log file for the Slice Creation Service.</p></li>
+<li><p><code class="filename">/var/log/propd</code>: The log
+	file for Proper, the service which allows certain slices to
+	perform certain privileged operations in the root
+	context.</p></li>
+<li><p><code class="filename">/vservers/pl_netflow/var/log/netflow.log</code>:
+	The log file for PlanetFlow, the network traffic auditing
+	service.</p></li>
 </ul></div>
 </div>
 <div class="section" lang="en">
-<div class="titlepage"><div><div><h2 class="title" style="clear: both">
-<a name="id2659848"></a>4. Quickstart</h2></div></div></div>
-<p>Once installed, start MyPLC (see <a href="#StartingAndStoppingMyPLC" title="Example 2. Starting and stopping MyPLC.">Example 2, “Starting and stopping MyPLC.”</a>). MyPLC must be started as
-    root. Observe the output of this command for any failures. If no
-    failures occur, you should see output similar to the
-    following:</p>
+<div class="titlepage"><div><div><h3 class="title">
+<a name="id2842898"></a>3.6. Creating a slice</h3></div></div></div>
+<p>Create a slice by clicking <code class="literal">Create Slice</code>
+      under the <code class="literal">Slices</code> tab. Fill in all the
+      appropriate details, then click <code class="literal">Create</code>. Add
+      nodes to the slice by clicking <code class="literal">Manage Nodes</code>
+      on the <span class="bold"><strong>Slice Details</strong></span> page for
+      the slice.</p>
+<p>A <span><strong class="command">cron</strong></span> job runs every five minutes and
+      updates the file
+      <code class="filename">/plc/data/var/www/html/xml/slices-0.5.xml</code>
+      with information about current slice state. The Slice Creation
+      Service running on every node polls this file every ten minutes
+      to determine if it needs to create or delete any slices. You may
+      accelerate this process manually if desired.</p>
 <div class="example">
-<a name="id2659969"></a><p class="title"><b>Example 4. A successful MyPLC startup.</b></p>
+<a name="id2842960"></a><p class="title"><b>Example 6. Forcing slice creation on a node.</b></p>
+<pre class="programlisting"># Update slices.xml immediately
+service plc start crond
+
+# Kick the Slice Creation Service on a particular node.
+ssh -i /etc/planetlab/root_ssh_key.rsa root@node \
+vserver pl_conf exec service pl_conf restart</pre>
+</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="StartupSequence"></a>3.7. Understanding the startup sequence</h3></div></div></div>
+<p>During service startup described in <a href="#QuickStart" title="3.2.  QuickStart ">Section 3.2, “ QuickStart ”</a>, observe the output of this command for
+    any failures. If no failures occur, you should see output similar
+    to the following:</p>
+<div class="example">
+<a name="id2893858"></a><p class="title"><b>Example 7. A successful MyPLC startup.</b></p>
 <pre class="programlisting">Mounting PLC:                                              [  OK  ]
 PLC: Generating network files:                             [  OK  ]
 PLC: Starting system logger:                               [  OK  ]
@@ -343,7 +405,7 @@ PLC: Signing node packages:                                [  OK  ]
       If this step fails, it is likely that the previous step
       (<code class="literal">Starting web server</code>) also failed. Another
       reason that it could fail is if <code class="envar">PLC_API_HOST</code> (see
-      <a href="#ChangingTheConfiguration" title="4.1. Changing the configuration">Section 4.1, “Changing the configuration”</a>) does not resolve to
+      <a href="#ChangingTheConfiguration" title="3.3. Changing the configuration">Section 3.3, “Changing the configuration”</a>) does not resolve to
       the host on which the API server has been enabled. By default,
       all services, including the API server, are enabled and run on
       the same host, so check that <code class="envar">PLC_API_HOST</code> is
@@ -366,137 +428,102 @@ PLC: Signing node packages:                                [  OK  ]
     <code class="literal">root@localhost.localdomain</code> (set by
     <code class="envar">PLC_ROOT_USER</code>) is <code class="literal">root</code> (set by
     <code class="envar">PLC_ROOT_PASSWORD</code>).</p>
+</div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="ChangingTheConfiguration"></a>4.1. Changing the configuration</h3></div></div></div>
-<p>After verifying that MyPLC is working correctly, shut it
-      down and begin changing some of the default variable
-      values. Shut down MyPLC with <span><strong class="command">service plc stop</strong></span>
-      (see <a href="#StartingAndStoppingMyPLC" title="Example 2. Starting and stopping MyPLC.">Example 2, “Starting and stopping MyPLC.”</a>). With a text
-      editor, open the file
-      <code class="filename">/etc/planetlab/plc_config.xml</code>. This file is
-      a self-documenting configuration file written in XML. Variables
-      are divided into categories. Variable identifiers must be
-      alphanumeric, plus underscore. A variable is referred to
-      canonically as the uppercase concatenation of its category
-      identifier, an underscore, and its variable identifier. Thus, a
-      variable with an <code class="literal">id</code> of
-      <code class="literal">slice_prefix</code> in the <code class="literal">plc</code>
-      category is referred to canonically as
-      <code class="envar">PLC_SLICE_PREFIX</code>.</p>
-<p>The reason for this convention is that during MyPLC
-      startup, <code class="filename">plc_config.xml</code> is translated into
-      several different languages—shell, PHP, and
-      Python—so that scripts written in each of these languages
-      can refer to the same underlying configuration. Most MyPLC
-      scripts are written in shell, so the convention for shell
-      variables predominates.</p>
-<p>The variables that you should change immediately are:</p>
+<a name="FilesInvolvedRuntime"></a>3.8.  Files and directories
+    involved in <span class="emphasis"><em>myplc</em></span></h3></div></div></div>
+<p>MyPLC installs the following files and directories:</p>
+<div class="orderedlist"><ol type="1">
+<li><p><code class="filename">/plc/root.img</code>: The main
+      root filesystem of the MyPLC application. This file is an
+      uncompressed ext3 filesystem that is loopback mounted on
+      <code class="filename">/plc/root</code> when MyPLC starts. This
+      filesystem, even when mounted, should be treated as an opaque
+      binary that can and will be replaced in its entirety by any
+      upgrade of MyPLC.</p></li>
+<li><p><code class="filename">/plc/root</code>: The mount point
+      for <code class="filename">/plc/root.img</code>. Once the root filesystem
+      is mounted, all MyPLC services run in a
+      <span><strong class="command">chroot</strong></span> jail based in this
+      directory.</p></li>
+<li>
+<p><code class="filename">/plc/data</code>: The directory where user
+	data and generated files are stored. This directory is bind
+	mounted onto <code class="filename">/plc/root/data</code> so that it is
+	accessible as <code class="filename">/data</code> from within the
+	<span><strong class="command">chroot</strong></span> jail. Files in this directory are
+	marked with <span><strong class="command">%config(noreplace)</strong></span> in the
+	RPM. That is, during an upgrade of MyPLC, if a file has not
+	changed since the last installation or upgrade of MyPLC, it is
+	subject to upgrade and replacement. If the file has changed,
+	the new version of the file will be created with a
+	<code class="filename">.rpmnew</code> extension. Symlinks within the
+	MyPLC root filesystem ensure that the following directories
+	(relative to <code class="filename">/plc/root</code>) are stored
+	outside the MyPLC filesystem image:</p>
 <div class="itemizedlist"><ul type="disc">
-<li><p><code class="envar">PLC_NAME</code>: Change this to the
-	name of your PLC installation.</p></li>
-<li><p><code class="envar">PLC_ROOT_PASSWORD</code>: Change this
-	to a more secure password.</p></li>
-<li><p><code class="envar">PLC_MAIL_SUPPORT_ADDRESS</code>:
-	Change this to the e-mail address at which you would like to
-	receive support requests.</p></li>
-<li><p><code class="envar">PLC_DB_HOST</code>,
-	<code class="envar">PLC_DB_IP</code>, <code class="envar">PLC_API_HOST</code>,
-	<code class="envar">PLC_API_IP</code>, <code class="envar">PLC_WWW_HOST</code>,
-	<code class="envar">PLC_WWW_IP</code>, <code class="envar">PLC_BOOT_HOST</code>,
-	<code class="envar">PLC_BOOT_IP</code>: Change all of these to the
-	preferred FQDN and external IP address of your host
-	system.</p></li>
+<li><p><code class="filename">/etc/planetlab</code>: This
+	  directory contains the configuration files, keys, and
+	  certificates that define your MyPLC
+	  installation.</p></li>
+<li><p><code class="filename">/var/lib/pgsql</code>: This
+	  directory contains PostgreSQL database
+	  files.</p></li>
+<li><p><code class="filename">/var/www/html/alpina-logs</code>: This
+	  directory contains node installation logs.</p></li>
+<li><p><code class="filename">/var/www/html/boot</code>: This
+	  directory contains the Boot Manager, customized for your MyPLC
+	  installation, and its data files.</p></li>
+<li><p><code class="filename">/var/www/html/download</code>: This
+	  directory contains Boot CD images, customized for your MyPLC
+	  installation.</p></li>
+<li><p><code class="filename">/var/www/html/install-rpms</code>: This
+	  directory is where you should install node package updates,
+	  if any. By default, nodes are installed from the tarball
+	  located at
+	  <code class="filename">/var/www/html/boot/PlanetLab-Bootstrap.tar.bz2</code>,
+	  which is pre-built from the latest PlanetLab Central
+	  sources, and installed as part of your MyPLC
+	  installation. However, nodes will attempt to install any
+	  newer RPMs located in
+	  <code class="filename">/var/www/html/install-rpms/planetlab</code>,
+	  after initial installation and periodically thereafter. You
+	  must run <span><strong class="command">yum-arch</strong></span> and
+	  <span><strong class="command">createrepo</strong></span> to update the
+	  <span><strong class="command">yum</strong></span> caches in this directory after
+	  installing a new RPM. PlanetLab Central cannot support any
+	  changes to this directory.</p></li>
+<li><p><code class="filename">/var/www/html/xml</code>: This
+	  directory contains various XML files that the Slice Creation
+	  Service uses to determine the state of slices. These XML
+	  files are refreshed periodically by <span><strong class="command">cron</strong></span>
+	  jobs running in the MyPLC root.</p></li>
 </ul></div>
-<p>After changing these variables, save the file, then
-      restart MyPLC with <span><strong class="command">service plc start</strong></span>. You
-      should notice that the password of the default administrator
-      account is no longer <code class="literal">root</code>, and that the
-      default site name includes the name of your PLC installation
-      instead of PlanetLab.</p>
-</div>
-<div class="section" lang="en">
-<div class="titlepage"><div><div><h3 class="title">
-<a name="id2711256"></a>4.2. Installing nodes</h3></div></div></div>
-<p>Install your first node by clicking <code class="literal">Add
-      Node</code> under the <code class="literal">Nodes</code> tab. Fill in
-      all the appropriate details, then click
-      <code class="literal">Add</code>. Download the node's configuration file
-      by clicking <code class="literal">Download configuration file</code> on
-      the <span class="bold"><strong>Node Details</strong></span> page for the
-      node. Save it to a floppy disk or USB key as detailed in [<a href="#TechsGuide" title="[TechsGuide]">1</a>].</p>
-<p>Follow the rest of the instructions in [<a href="#TechsGuide" title="[TechsGuide]">1</a>] for creating a Boot CD and installing
-      the node, except download the Boot CD image from the
-      <code class="filename">/download</code> directory of your PLC
-      installation, not from PlanetLab Central. The images located
-      here are customized for your installation. If you change the
-      hostname of your boot server (<code class="envar">PLC_BOOT_HOST</code>), or
-      if the SSL certificate of your boot server expires, MyPLC will
-      regenerate it and rebuild the Boot CD with the new
-      certificate. If this occurs, you must replace all Boot CDs
-      created before the certificate was regenerated.</p>
-<p>The installation process for a node has significantly
-      improved since PlanetLab 3.3. It should now take only a few
-      seconds for a new node to become ready to create slices.</p>
-</div>
-<div class="section" lang="en">
-<div class="titlepage"><div><div><h3 class="title">
-<a name="id2711338"></a>4.3. Administering nodes</h3></div></div></div>
-<p>You may administer nodes as <code class="literal">root</code> by
-      using the SSH key stored in
-      <code class="filename">/etc/planetlab/root_ssh_key.rsa</code>.</p>
-<div class="example">
-<a name="id2711361"></a><p class="title"><b>Example 5. Accessing nodes via SSH. Replace
-	<code class="literal">node</code> with the hostname of the node.</b></p>
-<pre class="programlisting">ssh -i /etc/planetlab/root_ssh_key.rsa root@node</pre>
-</div>
-<p>Besides the standard Linux log files located in
-      <code class="filename">/var/log</code>, several other files can give you
-      clues about any problems with active processes:</p>
-<div class="itemizedlist"><ul type="disc">
-<li><p><code class="filename">/var/log/pl_nm</code>: The log
-	file for the Node Manager.</p></li>
-<li><p><code class="filename">/vservers/pl_conf/var/log/pl_conf</code>:
-	The log file for the Slice Creation Service.</p></li>
-<li><p><code class="filename">/var/log/propd</code>: The log
-	file for Proper, the service which allows certain slices to
-	perform certain privileged operations in the root
-	context.</p></li>
-<li><p><code class="filename">/vservers/pl_netflow/var/log/netflow.log</code>:
-	The log file for PlanetFlow, the network traffic auditing
-	service.</p></li>
-</ul></div>
-</div>
-<div class="section" lang="en">
-<div class="titlepage"><div><div><h3 class="title">
-<a name="id2711439"></a>4.4. Creating a slice</h3></div></div></div>
-<p>Create a slice by clicking <code class="literal">Create Slice</code>
-      under the <code class="literal">Slices</code> tab. Fill in all the
-      appropriate details, then click <code class="literal">Create</code>. Add
-      nodes to the slice by clicking <code class="literal">Manage Nodes</code>
-      on the <span class="bold"><strong>Slice Details</strong></span> page for
-      the slice.</p>
-<p>A <span><strong class="command">cron</strong></span> job runs every five minutes and
-      updates the file
-      <code class="filename">/plc/data/var/www/html/xml/slices-0.5.xml</code>
-      with information about current slice state. The Slice Creation
-      Service running on every node polls this file every ten minutes
-      to determine if it needs to create or delete any slices. You may
-      accelerate this process manually if desired.</p>
-<div class="example">
-<a name="id2711502"></a><p class="title"><b>Example 6. Forcing slice creation on a node.</b></p>
-<pre class="programlisting"># Update slices.xml immediately
-service plc start crond
-
-# Kick the Slice Creation Service on a particular node.
-ssh -i /etc/planetlab/root_ssh_key.rsa root@node \
-vserver pl_conf exec service pl_conf restart</pre>
-</div>
+</li>
+<li><p><a name="MyplcInitScripts"></a><code class="filename">/etc/init.d/plc</code>: This file
+	is a System V init script installed on your host filesystem,
+	that allows you to start up and shut down MyPLC with a single
+	command, as described in <a href="#QuickStart" title="3.2.  QuickStart ">Section 3.2, “ QuickStart ”</a>.</p></li>
+<li><p><code class="filename">/etc/sysconfig/plc</code>: This
+      file is a shell script fragment that defines the variables
+      <code class="envar">PLC_ROOT</code> and <code class="envar">PLC_DATA</code>. By default,
+      the values of these variables are <code class="filename">/plc/root</code>
+      and <code class="filename">/plc/data</code>, respectively. If you wish,
+      you may move your MyPLC installation to another location on your
+      host filesystem and edit the values of these variables
+      appropriately, but you will break the RPM upgrade
+      process. PlanetLab Central cannot support any changes to this
+      file.</p></li>
+<li><p><code class="filename">/etc/planetlab</code>: This
+      symlink to <code class="filename">/plc/data/etc/planetlab</code> is
+      installed on the host system for convenience.</p></li>
+</ol></div>
 </div>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
-<a name="DevelopmentEnvironment"></a>5. Rebuilding and customizing MyPLC</h2></div></div></div>
+<a name="DevelopmentEnvironment"></a>4. Rebuilding and customizing MyPLC</h2></div></div></div>
 <p>The MyPLC package, though distributed as an RPM, is not a
     traditional package that can be easily rebuilt from SRPM. The
     requisite build environment is quite extensive and numerous
@@ -513,7 +540,7 @@ vserver pl_conf exec service pl_conf restart</pre>
     repository.</p>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="id2711557"></a>5.1. Installation</h3></div></div></div>
+<a name="id2894620"></a>4.1. Installation</h3></div></div></div>
 <p>Install the MyPLC development environment similarly to how
       you would install MyPLC. You may install both packages on the same
       host system if you wish. As with MyPLC, the MyPLC development
@@ -521,17 +548,24 @@ vserver pl_conf exec service pl_conf restart</pre>
       application, and any files present in the
       <span><strong class="command">chroot</strong></span> jail should not be modified directly, as
       they are subject to upgrade.</p>
-<div class="example">
-<a name="id2711579"></a><p class="title"><b>Example 7. Installing the MyPLC development environment.</b></p>
-<pre class="programlisting"># If your distribution supports RPM
-rpm -U http://build.planet-lab.org/build/myplc-0_4-rc2/RPMS/i386/myplc-devel-0.4-2.planetlab.i386.rpm
-
-# If your distribution does not support RPM
-cd /tmp
-wget http://build.planet-lab.org/build/myplc-0_4-rc2/RPMS/i386/myplc-devel-0.4-2.planetlab.i386.rpm
-cd /
-rpm2cpio /tmp/myplc-devel-0.4-2.planetlab.i386.rpm | cpio -diu</pre>
+<div class="itemizedlist"><ul type="disc">
+<li>
+<p>If your distribution supports RPM:</p>
+<pre class="programlisting"># rpm -U http://build.planet-lab.org/build/myplc-0_4-rc2/RPMS/i386/myplc-devel-0.4-2.planetlab.i386.rpm</pre>
+</li>
+<li>
+<p>If your distribution does not support RPM:</p>
+<pre class="programlisting"># cd /tmp
+# wget http://build.planet-lab.org/build/myplc-0_4-rc2/RPMS/i386/myplc-devel-0.4-2.planetlab.i386.rpm
+# cd /
+# rpm2cpio /tmp/myplc-devel-0.4-2.planetlab.i386.rpm | cpio -diu</pre>
+</li>
+</ul></div>
 </div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="FilesInvolvedDevel"></a>4.2.  Files and directories
+    involved in <span class="emphasis"><em>myplc-devl</em></span></h3></div></div></div>
 <p>The MyPLC development environment installs the following
       files and directories:</p>
 <div class="itemizedlist"><ul type="disc">
@@ -565,14 +599,14 @@ rpm2cpio /tmp/myplc-devel-0.4-2.planetlab.i386.rpm | cpio -diu</pre>
 	    snapshot of the PlanetLab source code is stored as a CVS
 	    repository in this directory. Files in this directory will
 	    <span class="bold"><strong>not</strong></span> be updated by an upgrade of
-	    <code class="filename">myplc-devel</code>. See <a href="#UpdatingCVS" title="5.4. Updating CVS">Section 5.4, “Updating CVS”</a> for more information about updating
+	    <code class="filename">myplc-devel</code>. See <a href="#UpdatingCVS" title="4.5. Updating CVS">Section 4.5, “Updating CVS”</a> for more information about updating
 	    PlanetLab source code.</p></li>
 <li><p><code class="filename">/build</code>:
 	    Builds are stored in this directory. This directory is bind
 	    mounted onto <code class="filename">/plc/devel/root/build</code> so that
 	    it is accessible as <code class="filename">/build</code> from within the
 	    <span><strong class="command">chroot</strong></span> jail. The build scripts in this
-	    directory are themselves source controlled; see <a href="#BuildingMyPLC" title="5.3. Building MyPLC">Section 5.3, “Building MyPLC”</a> for more information about executing
+	    directory are themselves source controlled; see <a href="#BuildingMyPLC" title="4.4. Building MyPLC">Section 4.4, “Building MyPLC”</a> for more information about executing
 	    builds.</p></li>
 </ul></div>
 </li>
@@ -584,7 +618,7 @@ rpm2cpio /tmp/myplc-devel-0.4-2.planetlab.i386.rpm | cpio -diu</pre>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="id2711788"></a>5.2. Fedora Core 4 mirror requirement</h3></div></div></div>
+<a name="id2894876"></a>4.3. Fedora Core 4 mirror requirement</h3></div></div></div>
 <p>The MyPLC development environment requires access to a
       complete Fedora Core 4 i386 RPM repository, because several
       different filesystems based upon Fedora Core 4 are constructed
@@ -616,13 +650,13 @@ rpm2cpio /tmp/myplc-devel-0.4-2.planetlab.i386.rpm | cpio -diu</pre>
       such as <span><strong class="command">wget</strong></span> or <span><strong class="command">rsync</strong></span> to
       download the RPMS from a public mirror:</p>
 <div class="example">
-<a name="id2711929"></a><p class="title"><b>Example 8. Setting up a local Fedora Core 4 repository.</b></p>
-<pre class="programlisting">mkdir -p /plc/devel/data/fedora
-cd /plc/devel/data/fedora
+<a name="id2895018"></a><p class="title"><b>Example 8. Setting up a local Fedora Core 4 repository.</b></p>
+<pre class="programlisting"># mkdir -p /plc/devel/data/fedora
+# cd /plc/devel/data/fedora
 
-for repo in core/4/i386/os core/updates/4/i386 extras/4/i386 ; do
-    wget -m -nH --cut-dirs=3 http://coblitz.planet-lab.org/pub/fedora/linux/$repo
-done</pre>
+# for repo in core/4/i386/os core/updates/4/i386 extras/4/i386 ; do
+&gt;     wget -m -nH --cut-dirs=3 http://coblitz.planet-lab.org/pub/fedora/linux/$repo
+&gt; done</pre>
 </div>
 <p>Change the repository URI and <span><strong class="command">--cut-dirs</strong></span>
       level as needed to produce a hierarchy that resembles:</p>
@@ -634,17 +668,25 @@ done</pre>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="BuildingMyPLC"></a>5.3. Building MyPLC</h3></div></div></div>
+<a name="BuildingMyPLC"></a>4.4. Building MyPLC</h3></div></div></div>
 <p>All PlanetLab source code modules are built and installed
       as RPMS. A set of build scripts, checked into the
       <code class="filename">build/</code> directory of the PlanetLab CVS
       repository, eases the task of rebuilding PlanetLab source
       code.</p>
+<p> Before you try building MyPLC, you might check the
+      configuration, in a file named
+      <span class="emphasis"><em>plc_config.xml</em></span> that relies on a very
+      similar model as MyPLC, located in
+      <span class="emphasis"><em>/etc/planetlab</em></span> within the chroot jail, or
+      in <span class="emphasis"><em>/plc/devel/data/etc/planetlab</em></span> from the
+      root context. The set of applicable variables is described in
+      <a href="#VariablesDevel" title="B. Development configuration variables (for myplc-devel)">Appendix B, <i>Development configuration variables (for <span class="emphasis"><em>myplc-devel</em></span>)</i></a>. </p>
 <p>To build MyPLC, or any PlanetLab source code module, from
       within the MyPLC development environment, execute the following
       commands as root:</p>
 <div class="example">
-<a name="id2712005"></a><p class="title"><b>Example 9. Building MyPLC.</b></p>
+<a name="id2895119"></a><p class="title"><b>Example 9. Building MyPLC.</b></p>
 <pre class="programlisting"># Initialize MyPLC development environment
 service plc-devel start
 
@@ -667,11 +709,11 @@ make -C $DATE</pre>
       <code class="filename">/plc/devel/data/build/$DATE/RPMS/</code> that you
       may copy to the
       <code class="filename">/var/www/html/install-rpms/planetlab</code>
-      directory of your MyPLC installation (see <a href="#Installation" title="3. Installation">Section 3, “Installation”</a>).</p>
+      directory of your MyPLC installation (see <a href="#Installation" title="3. Installating and using MyPLC">Section 3, “Installating and using MyPLC”</a>).</p>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="UpdatingCVS"></a>5.4. Updating CVS</h3></div></div></div>
+<a name="UpdatingCVS"></a>4.5. Updating CVS</h3></div></div></div>
 <p>A complete snapshot of the PlanetLab source code is included
       with the MyPLC development environment as a CVS repository in
       <code class="filename">/plc/devel/data/cvs</code>. This CVS repository may
@@ -699,7 +741,7 @@ make -C $DATE</pre>
       execute the following commands as root from within the MyPLC
       development environment:</p>
 <div class="example">
-<a name="id2712156"></a><p class="title"><b>Example 10. Updating /data/cvs from /data/cvs-0.4-3.</b></p>
+<a name="id2895270"></a><p class="title"><b>Example 10. Updating /data/cvs from /data/cvs-0.4-3.</b></p>
 <p><span class="bold"><strong>Warning</strong></span>: This may cause
 	severe, irreversible changes to be made to your local
 	repository. Always tag your local repository before
@@ -729,7 +771,7 @@ rm -rf $TMP</pre>
 </div>
 <div class="appendix" lang="en">
 <h2 class="title" style="clear: both">
-<a name="id2712187"></a>A. Configuration variables (for <span class="emphasis"><em>myplc</em></span>)</h2>
+<a name="VariablesRuntime"></a>A. Configuration variables (for <span class="emphasis"><em>myplc</em></span>)</h2>
 <p>Listed below is the set of standard configuration variables
     and their default values, defined in the template
     <code class="filename">/etc/planetlab/default_config.xml</code>. Additional
@@ -1328,7 +1370,7 @@ rm -rf $TMP</pre>
 </div>
 <div class="appendix" lang="en">
 <h2 class="title" style="clear: both">
-<a name="id2715081"></a>B. Development configuration variables (for <span class="emphasis"><em>myplc-devel</em></span>)</h2>
+<a name="VariablesDevel"></a>B. Development configuration variables (for <span class="emphasis"><em>myplc-devel</em></span>)</h2>
 <div class="variablelist"><dl>
 <dt><span class="term">PLC_DEVEL_FEDORA_RELEASE</span></dt>
 <dd>
@@ -1380,10 +1422,11 @@ rm -rf $TMP</pre>
 </div>
 <div class="bibliography">
 <div class="titlepage"><div><div><h2 class="title">
-<a name="id2715252"></a>Bibliography</h2></div></div></div>
+<a name="id2898373"></a>Bibliography</h2></div></div></div>
 <div class="biblioentry">
 <a name="TechsGuide"></a><p>[1] <span class="author"><span class="firstname">Mark</span> <span class="surname">Huang</span>. </span><span class="title"><i><a href="http://www.planet-lab.org/doc/TechsGuide.php" target="_top">PlanetLab
       Technical Contact's Guide</a></i>. </span></p>
 </div>
 </div>
 </div><?php require('footer.php'); ?>
+dummy 1.11 for cathing up with the xml numbering
