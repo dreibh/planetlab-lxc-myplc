@@ -4,13 +4,15 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: Makefile,v 1.4 2006/04/28 20:16:04 mlhuang Exp $
+# $Id: Makefile,v 1.5 2006/07/18 22:41:44 mlhuang Exp $
 #
 
 vpath GenDoc.xsl ../../plc_www/doc
 vpath %_config.xml ..
 
 all: myplc.pdf myplc.php
+
+.PHONY: all
 
 # Dependencies
 .myplc.xml.valid: architecture.eps architecture.png plc_variables.xml plc_devel_variables.xml
@@ -43,7 +45,7 @@ endef
 $(foreach format,$(FORMATS),$(eval $(call docbook2,$(format))))
 
 docclean:
-	rm -f $(patsubst %,*.%,$(FORMATS)) *.pdf .*.xml.valid variables.xml
+	rm -f $(patsubst %,*.%,$(FORMATS)) *.pdf *.php .*.xml.valid variables.xml 
 
 clean: docclean
 
