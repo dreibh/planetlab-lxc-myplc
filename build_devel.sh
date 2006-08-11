@@ -14,7 +14,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: build_devel.sh,v 1.2 2006/07/24 19:32:23 mlhuang Exp $
+# $Id: build_devel.sh,v 1.3 2006/08/09 21:38:06 mlhuang Exp $
 #
 
 . build.functions
@@ -56,6 +56,7 @@ echo "* myplc-devel: Installing configuration scripts"
 install -D -m 755 plc_config.py devel/root/tmp/plc_config.py
 chroot devel/root sh -c 'cd /tmp; python plc_config.py build; python plc_config.py install'
 install -D -m 755 plc-config devel/root/usr/bin/plc-config
+install -D -m 755 plc-config-tty devel/root/usr/bin/plc-config-tty
 
 # Install initscripts
 echo "* myplc-devel: Installing initscripts"

@@ -14,7 +14,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id$
+# $Id: build.sh,v 1.28 2006/08/09 21:38:06 mlhuang Exp $
 #
 
 . build.functions
@@ -87,6 +87,7 @@ echo "* myplc: Installing configuration scripts"
 install -D -m 755 plc_config.py root/tmp/plc_config.py
 chroot root sh -c 'cd /tmp; python plc_config.py build; python plc_config.py install'
 install -D -m 755 plc-config root/usr/bin/plc-config
+install -D -m 755 plc-config-tty root/usr/bin/plc-config-tty
 install -D -m 755 api-config root/usr/bin/api-config
 install -D -m 755 db-config root/usr/bin/db-config
 install -D -m 755 dns-config root/usr/bin/dns-config
