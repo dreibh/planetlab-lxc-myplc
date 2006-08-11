@@ -105,13 +105,11 @@
 
   <para> However, things are never that simple and there indeed are
   some known limitations to this, so here are a couple notes as a
-  recommended reading before you proceed with installing</para>
+  recommended reading before you proceed with the installation.</para>
 
-  <para> As of August 2006 9, so this should apply to
-  myplc-0.5.2 :</para>
+  <para> As of August 2006 9 (i.e <emphasis>myplc-0.5</emphasis>) :</para>
 
   <itemizedlist>
-
   <listitem><para> The software is vastly based on <emphasis>Fedora
   Core 4</emphasis>. Please note that the build server at Princeton
   runs <emphasis>Fedora Core 2</emphasis>, togother with a upgraded
@@ -134,6 +132,13 @@
 	</para></listitem>
   </itemizedlist>
   </listitem>
+
+  <listitem> <para> In addition, as far as myplc is concerned, you
+  need to check your firewall configuration since you need, of course,
+  to open up the <emphasis>http</emphasis> and
+  <emphasis>https</emphasis> ports, so as to accept connections from
+  the managed nodes, and from the users desktops. </para> </listitem>
+
   </itemizedlist>
   </section>
 
@@ -826,7 +831,7 @@ rm -rf $TMP]]></programlisting>
   </appendix>
 
   <appendix>
-    <title>Development configuration variables(for <emphasis>myplc-devel</emphasis>)</title>
+    <title>Development configuration variables (for <emphasis>myplc-devel</emphasis>)</title>
 
     &DevelVariables;
   </appendix>
