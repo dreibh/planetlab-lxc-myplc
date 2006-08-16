@@ -34,14 +34,14 @@ if [ "$PLC_DEVEL_BOOTSTRAP" = "true" ] ; then
     # If we used a local mirror, bind mount it into the chroot so that
     # we can use it again.
     if [ "${PLC_DEVEL_FEDORA_URL:0:7}" = "file://" ] ; then
-	mkdir -p devel/data/fedora
-	mount -o bind,ro ${PLC_DEVEL_FEDORA_URL#file://} devel/data/fedora
+	mkdir -p devel/root/data/fedora
+	mount -o bind,ro ${PLC_DEVEL_FEDORA_URL#file://} devel/root/data/fedora
     fi
 
     # Clean up before exiting if anything goes wrong
-    trap "umount $PWD/devel/root/data;
-          umount $PWD/devel/root/proc;
-          umount $PWD/devel/root/usr/share/mirrors/fedora" ERR INT
+    trap "umount $PWD/devel/root/data/fedora;
+          umount $PWD/devel/root/data;
+          umount $PWD/devel/root/proc" ERR INT
 
     # Build myplc inside myplc-devel. Make sure PLC_DEVEL_BOOTSTRAP is
     # false to avoid infinite recursion.
