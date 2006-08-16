@@ -59,9 +59,9 @@ EOF
     mv devel/data/build/BUILD/myplc-*/myplc/root{,.img} devel/data/build/BUILD/myplc-*/myplc/data .
 
     # Clean up
+    umount devel/root/data/fedora || :
     umount devel/root/data
     umount devel/root/proc
-    umount devel/root/usr/share/mirrors/fedora || :
     rm -rf devel/data/build
     mkdir -p devel/data/build
 
