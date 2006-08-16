@@ -14,7 +14,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: build.sh,v 1.28 2006/08/09 21:38:06 mlhuang Exp $
+# $Id$
 #
 
 . build.functions
@@ -34,8 +34,8 @@ if [ "$PLC_DEVEL_BOOTSTRAP" = "true" ] ; then
     # If we used a local mirror, bind mount it into the chroot so that
     # we can use it again.
     if [ "${PLC_DEVEL_FEDORA_URL:0:7}" = "file://" ] ; then
-	mkdir -p devel/root/usr/share/mirrors/fedora
-	mount -o bind,ro ${PLC_DEVEL_FEDORA_URL#file://} devel/root/usr/share/mirrors/fedora
+	mkdir -p devel/data/fedora
+	mount -o bind,ro ${PLC_DEVEL_FEDORA_URL#file://} devel/data/fedora
     fi
 
     # Clean up before exiting if anything goes wrong
