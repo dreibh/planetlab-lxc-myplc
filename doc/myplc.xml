@@ -107,7 +107,7 @@
   some known limitations to this, so here are a couple notes as a
   recommended reading before you proceed with the installation.</para>
 
-  <para> As of 9 August 2006 (i.e <emphasis>myplc-0.5</emphasis>) :</para>
+  <para> As of 17 August 2006 (i.e <emphasis>myplc-0.5-2</emphasis>) :</para>
 
   <itemizedlist>
   <listitem><para> The software is vastly based on <emphasis>Fedora
@@ -201,21 +201,87 @@
 
     </section>
 
-    <section id="ChangingTheConfiguration">
+    <section id="Configuration">
       <title>Changing the configuration</title>
 
       <para>After verifying that MyPLC is working correctly, shut it
       down and begin changing some of the default variable
       values. Shut down MyPLC with <command>service plc stop</command>
-      (see <xref linkend="QuickStart" />). With a text
-      editor, open the file
-      <filename>/etc/planetlab/plc_config.xml</filename>. This file is
-      a self-documenting configuration file written in XML. Variables
-      are divided into categories. Variable identifiers must be
-      alphanumeric, plus underscore. A variable is referred to
-      canonically as the uppercase concatenation of its category
-      identifier, an underscore, and its variable identifier. Thus, a
-      variable with an <literal>id</literal> of
+      (see <xref linkend="QuickStart" />). </para>
+
+      <para> The preferred option for changing the configuration is to
+      use the <command>plc-config-tty</command> tool. This tools comes
+      with the root image, so you need to have it mounted first. The
+      full set of applicable variables is described in <xref
+      linkend="VariablesDevel" />, but using the <command>u</command>
+      guides you to the most useful ones. Here is sample session:
+      </para>
+
+      <example><title>Using plc-config-tty for configuration:</title>
+	  <programlisting><![CDATA[# service plc mount
+Mounting PLC:                                              [  OK  ]
+# chroot /plc/root su - 
+<plc> # plc-config-tty
+Config file /etc/planetlab/configs/site.xml located under a non-existing directory
+Want to create /etc/planetlab/configs [y]/n ? y
+Created directory /etc/planetlab/configs
+Enter command (u for usual changes, w to save, ? for help) u
+== PLC_NAME : [PlanetLab Test] OneLab
+== PLC_ROOT_USER : [root@localhost.localdomain] odie.inria.fr
+== PLC_ROOT_PASSWORD : [root] plain-passwd
+== PLC_MAIL_SUPPORT_ADDRESS : [root+support@localhost.localdomain] support@one-lab.org
+== PLC_DB_HOST : [localhost.localdomain] odie.inria.fr
+== PLC_API_HOST : [localhost.localdomain] odie.inria.fr
+== PLC_WWW_HOST : [localhost.localdomain] odie.inria.fr
+== PLC_BOOT_HOST : [localhost.localdomain] odie.inria.fr
+== PLC_NET_DNS1 : [127.0.0.1] 138.96.250.248
+== PLC_NET_DNS2 : [None] 138.96.250.249
+Enter command (u for usual changes, w to save, ? for help) w
+Wrote /etc/planetlab/configs/site.xml
+Merged
+        /etc/planetlab/default_config.xml
+and     /etc/planetlab/configs/site.xml
+into    /etc/planetlab/plc_config.xml
+You might want to type 'r' (restart plc) or 'q' (quit)
+Enter command (u for usual changes, w to save, ? for help) r
+==================== Stopping plc
+...
+==================== Starting plc
+...
+Enter command (u for usual changes, w to save, ? for help) q
+<plc> # exit
+# 
+]]></programlisting>
+    </example>
+
+      <para>If you used this method for configuring, you can skip to
+      the next section. As an alternative to using
+      <command>plc-config-tty</command>, you may also use a text
+      editor, but this requires some understanding on how the
+      configuration files are used within myplc. The
+      <emphasis>default</emphasis> configuration is stored in a file
+      named <filename>/etc/planetlab/default_config.xml</filename>,
+      that is designed to remain intact. You may store your local
+      changes in any file located in the <filename>configs/</filename>
+      sub-directory, that are loaded on top of the defaults. Finally
+      the file <filename>/etc/planetlab/plc_config.xml</filename> is
+      loaded, and the resulting configuration is stored in the latter
+      file, that is used as a reference.</para>
+
+      <para> Using a separate file for storing local changes only, as
+      <command>plc-config-tty</command> does, is not a workable option
+      with a text editor because it would involve tedious xml
+      re-assembling. So your local changes should go in
+      <filename>/etc/planetlab/plc_config.xml</filename>. Be warned
+      however that any change you might do this way could be lost if
+      you use <command>plc-config-tty</command> later on. </para>
+
+      <para>This file is a self-documenting configuration file written
+      in XML. Variables are divided into categories. Variable
+      identifiers must be alphanumeric, plus underscore. A variable is
+      referred to canonically as the uppercase concatenation of its
+      category identifier, an underscore, and its variable
+      identifier. Thus, a variable with an <literal>id</literal> of
       <literal>slice_prefix</literal> in the <literal>plc</literal>
       category is referred to canonically as
       <envar>PLC_SLICE_PREFIX</envar>.</para>
@@ -249,13 +315,29 @@
 	system.</para></listitem>
       </itemizedlist>
 
-      <para>The full set of applicable variables is described in <xref
-      linkend="VariablesDevel" />. After changing these variables,
+      <para> After changing these variables,
       save the file, then restart MyPLC with <command>service plc
       start</command>. You should notice that the password of the
       default administrator account is no longer
       <literal>root</literal>, and that the default site name includes
-      the name of your PLC installation instead of PlanetLab.</para>
+      the name of your PLC installation instead of PlanetLab. As a
+      side effect of these changes, the ISO images for the boot CDs
+      now have new names, so that you can freely remove the ones names
+      after 'PlanetLab Test', which is the default value of
+      <envar>PLC_NAME</envar> </para> 
+      </section>
+
+      <section> <title> Login as a real user </title>
+
+      <para>Now that myplc is up and running, you can connect to the
+      web site that by default runs on port 80. You can either
+      directly use the default administrator user that you configured
+      in <envar>PLC_ROOT_USER</envar> and
+      <envar>PLC_ROOT_PASSWORD</envar>, or create a real user through
+      the 'Joining' tab. Do not forget to  select both PI and tech
+      roles, and to select the only site created at this stage.
+      Login as the administrator to enable this user, then login as
+      the real user.</para>
       </section>
 
     <section>
@@ -422,7 +504,7 @@ PLC: Signing node packages:                                [  OK  ]
       If this step fails, it is likely that the previous step
       (<literal>Starting web server</literal>) also failed. Another
       reason that it could fail is if <envar>PLC_API_HOST</envar> (see
-      <xref linkend="ChangingTheConfiguration" />) does not resolve to
+      <xref linkend="Configuration" />) does not resolve to
       the host on which the API server has been enabled. By default,
       all services, including the API server, are enabled and run on
       the same host, so check that <envar>PLC_API_HOST</envar> is
@@ -597,6 +679,20 @@ PLC: Signing node packages:                                [  OK  ]
 # rpm2cpio /tmp/myplc-devel-0.4-2.planetlab.i386.rpm | cpio -diu]]></programlisting></listitem>
     </itemizedlist>
     </section>
+
+    <section>
+      <title>Configuration</title> 
+      
+      <para> The default configuration should work as-is on most
+      sites. Configuring the development package can be achieved in a
+      similar way as for <emphasis>myplc</emphasis>, as described in
+      <xref linkend="Configuration"
+      />. <command>plc-config-tty</command> supports a
+      <emphasis>-d</emphasis> option for supporting the
+      <emphasis>myplc-devel</emphasis> case, that can be useful in a
+      context where it would not guess it by itself.  Refer to <xref
+      linkend="VariablesDevel" /> for a list of variables.</para>
+      </section>
 
     <section id="FilesInvolvedDevel"> <title> Files and directories
     involved in <emphasis>myplc-devl</emphasis></title>
@@ -850,7 +946,23 @@ rm -rf $TMP]]></programlisting>
     templates that should be placed in
     <filename>/etc/planetlab/configs/</filename>.</para>
 
-    &Variables;
+    <para>This information is available online within
+    <command>plc-config-tty</command>, e.g.:</para>
+
+<example><title>Advanced usage of plc-config-tty</title>
+<programlisting><![CDATA[<plc> # plc-config-tty
+Enter command (u for usual changes, w to save, ? for help) V plc_dns
+========== Category = PLC_DNS
+### Enable DNS
+# Enable the internal DNS server. The server does not provide reverse
+# resolution and is not a production quality or scalable DNS solution.
+# Use the internal DNS server only for small deployments or for testing.
+PLC_DNS_ENABLED
+]]></programlisting></example>
+
+
+  <para> List of the <command>myplc</command> configuration variables:</para>
+   &Variables;
   </appendix>
 
   <appendix id="VariablesDevel">
