@@ -10,11 +10,12 @@
 # devel/data/cvs/ (local CVS repository)
 # devel/data/build/ (build area)
 # devel/data/etc/planetlab/ (configuration)
+# devel/data/root (root's home dir)
 #
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: build_devel.sh,v 1.3 2006/08/09 21:38:06 mlhuang Exp $
+# $Id: build_devel.sh,v 1.4 2006/08/11 18:34:59 thierry Exp $
 #
 
 . build.functions
@@ -64,10 +65,19 @@ find plc.d/functions | cpio -p -d -u devel/root/etc/
 install -D -m 755 guest.init devel/root/etc/init.d/plc
 chroot devel/root sh -c 'chkconfig --add plc; chkconfig plc on'
 
+# handle root's homedir and tweak root prompt
+echo "* myplc-devel: root's homedir and prompt"
+roothome=devel/data/root
+mkdir -p $roothome
+cat << EOF > $roothome/.profile
+export PS1="<plc-devel> \$PS1"
+EOF
+chmod 644 $roothome/.profile
+
 # Move "data" directories out of the installation
 echo "* myplc-devel: Moving data directories out of the installation"
 move_datadirs devel/root devel/data \
-    /etc/planetlab /build /cvs
+    /etc/planetlab /build /cvs /root
 
 # Make image out of directory
 echo "* myplc-devel: Building loopback image"

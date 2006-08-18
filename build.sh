@@ -10,11 +10,12 @@
 # root/ (mount point)
 # data/ (various data files)
 # data/etc/planetlab/ (configuration files)
+# data/root (root's homedir)
 #
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id$
+# $Id: build.sh,v 1.32 2006/08/16 21:44:48 mlhuang Exp $
 #
 
 . build.functions
@@ -126,9 +127,20 @@ echo "* myplc: Installing configuration file"
 install -D -m 444 $config data/etc/planetlab/default_config.xml
 install -D -m 444 plc_config.dtd data/etc/planetlab/plc_config.dtd
 
+# handle root's homedir and tweak root prompt
+echo "* myplc: root's homedir and prompt"
+roothome=data/root
+mkdir -p $roothome
+cat << EOF > $roothome/.profile
+export PS1="<plc> \$PS1"
+EOF
+chmod 644 $roothome/.profile
+
 # Move "data" directories out of the installation
+echo "* myplc: Moving data directories out of the installation"
 datadirs=(
 /etc/planetlab
+/root
 /var/lib/pgsql
 /var/www/html/alpina-logs
 /var/www/html/boot
