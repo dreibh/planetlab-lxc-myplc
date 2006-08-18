@@ -924,7 +924,7 @@ cvs -d /cvs rtag before-myplc-0_4-3-merge
 TMP=$(mktemp -d /data/export.XXXXXX)
 pushd $TMP
 cvs -d /data/cvs-0.4-3 export -r HEAD .
-cvs -d /cvs import -m "PlanetLab sources from myplc-0.4-3" -ko -I ! . planetlab myplc-0_4-3
+cvs -d /cvs import -m "Merging myplc-0.4-3" -ko -I ! . planetlab myplc-0_4-3
 popd
 rm -rf $TMP]]></programlisting>
       </example>
