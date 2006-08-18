@@ -20,8 +20,8 @@ import getopt
 from plc_config import PLCConfiguration
 
 ####################
-release_id = "$Id: plc-config-tty,v 1.6 2006/08/17 16:17:18 thierry Exp $"
-release_rev = "$Revision: 1.6 $"
+release_id = "$Id: plc-config-tty,v 1.7 2006/08/18 09:31:55 thierry Exp $"
+release_rev = "$Revision: 1.7 $"
 
 def init_flavour (flavour):
     global service
@@ -434,7 +434,7 @@ def main ():
         if opt[0] == "-h":
             usage()
         if opt[0] == "-v":
-            print ("This is %s - %s" %(command,release_id))
+            print ("This is %s - %s" %(command,release_rev))
             sys.exit(1)
         if opt[0] == "-d":
             init_flavour("devel")
