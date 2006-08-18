@@ -29,7 +29,7 @@
       <para>
 		  Type: string</para>
       <para>
-		  Default: file:///usr/share/mirrors/fedora</para>
+		  Default: file:///data/fedora</para>
       <para>Fedora Core mirror from which to install
 	  filesystems.</para>
     </listitem>

@@ -38,6 +38,15 @@
         <authorinitials>MLH</authorinitials>
         <revdescription><para>Add development environment.</para></revdescription>
       </revision>
+      <revision>
+        <revnumber>1.2</revnumber>
+        <date>August 18, 2006</date>
+        <authorinitials>TPT</authorinitials>
+        <revdescription>
+	<para>Review section on configuration and introduce <command>plc-config-tty</command>.</para>
+	<para>Present implementation details last.</para>
+	</revdescription>
+      </revision>
     </revhistory>
   </articleinfo>
 
@@ -227,7 +236,7 @@ Want to create /etc/planetlab/configs [y]/n ? y
 Created directory /etc/planetlab/configs
 Enter command (u for usual changes, w to save, ? for help) u
 == PLC_NAME : [PlanetLab Test] OneLab
-== PLC_ROOT_USER : [root@localhost.localdomain] odie.inria.fr
+== PLC_ROOT_USER : [root@localhost.localdomain] root@odie.inria.fr
 == PLC_ROOT_PASSWORD : [root] plain-passwd
 == PLC_MAIL_SUPPORT_ADDRESS : [root+support@localhost.localdomain] support@one-lab.org
 == PLC_DB_HOST : [localhost.localdomain] odie.inria.fr
@@ -255,7 +264,7 @@ Enter command (u for usual changes, w to save, ? for help) q
     </example>
 
       <para>If you used this method for configuring, you can skip to
-      the next section. As an alternative to using
+      the <xref linkend="LoginRealUser" />. As an alternative to using
       <command>plc-config-tty</command>, you may also use a text
       editor, but this requires some understanding on how the
       configuration files are used within myplc. The
@@ -327,7 +336,7 @@ Enter command (u for usual changes, w to save, ? for help) q
       <envar>PLC_NAME</envar> </para> 
       </section>
 
-      <section> <title> Login as a real user </title>
+      <section id="LoginRealUser"> <title> Login as a real user </title>
 
       <para>Now that myplc is up and running, you can connect to the
       web site that by default runs on port 80. You can either
@@ -509,7 +518,8 @@ PLC: Signing node packages:                                [  OK  ]
       all services, including the API server, are enabled and run on
       the same host, so check that <envar>PLC_API_HOST</envar> is
       either <filename>localhost</filename> or resolves to a local IP
-      address.</para></listitem>
+      address. Also check that <envar>PLC_ROOT_USER</envar> looks like
+      an e-mail address.</para></listitem>
 
       <listitem><para><literal>Starting crond</literal>: If this step
       fails, it is likely that the previous steps (<literal>Starting
@@ -610,6 +620,15 @@ PLC: Signing node packages:                                [  OK  ]
 	  Service uses to determine the state of slices. These XML
 	  files are refreshed periodically by <command>cron</command>
 	  jobs running in the MyPLC root.</para></listitem>
+
+	  <listitem><para><filename>/root</filename>: this is the
+	  location of the root-user's homedir, and for your
+	  convenience is stored under <filename>/data</filename> so
+	  that your local customizations survive across
+	  updates - this feature is inherited from the
+	  <command>myplc-devel</command> package, where it is probably
+	  more useful. </para></listitem> 
+
 	</itemizedlist>
       </listitem>
 
@@ -747,8 +766,12 @@ PLC: Signing node packages:                                [  OK  ]
 	    directory are themselves source controlled; see <xref
 	    linkend="BuildingMyPLC" /> for more information about executing
 	    builds.</para></listitem>
-	  </itemizedlist>
-	</listitem>
+
+	    <listitem><para><filename>/root</filename>: this is the
+	    location of the root-user's homedir, and for your
+	    convenience is stored under <filename>/data</filename> so
+	    that your local customizations survive across
+	    updates. </para></listitem> </itemizedlist> </listitem>
 
 	<listitem>
 	  <para><filename>/etc/init.d/plc-devel</filename>: This file is
@@ -891,12 +914,14 @@ make -C $DATE]]></programlisting>
       <para>Because the CVS repository is not automatically upgraded,
       if you wish to keep your local repository synchronized with the
       public PlanetLab repository, it is highly recommended that you
-      use CVS's support for <ulink
-      url="http://ximbiot.com/cvs/wiki/index.php?title=CVS--Concurrent_Versions_System_v1.12.12.1:_Tracking_third-party_sources">vendor
-      branches</ulink> to track changes. Vendor branches ease the task
-      of merging upstream changes with your local modifications. To
-      import a new snapshot into your local repository (for example,
-      if you have just upgraded from
+      use CVS's support for vendor branches to track changes, as
+      described <ulink
+      url="http://ximbiot.com/cvs/wiki/index.php?title=CVS--Concurrent_Versions_System_v1.12.12.1:_Tracking_third-party_sources">here</ulink>
+      and <ulink
+      url="http://cvsbook.red-bean.com/cvsbook.html#Tracking%20Third-Party%20Sources%20(Vendor%20Branches)">here</ulink>.
+      Vendor branches ease the task of merging upstream changes with
+      your local modifications. To import a new snapshot into your
+      local repository (for example, if you have just upgraded from
       <filename>myplc-devel-0.4-2</filename> to
       <filename>myplc-devel-0.4-3</filename> and you notice the new
       repository in <filename>/plc/devel/data/cvs-0.4-3</filename>),
@@ -929,12 +954,11 @@ popd
 rm -rf $TMP]]></programlisting>
       </example>
 
-      <para>If there any merge conflicts, use the command suggested by
-      CVS to help the merge. Explaining how to fix merge conflicts is
-      beyond the scope of this document; consult the CVS documentation
-      for more information on how to use CVS.</para>
-    </section>
-  </section>
+      <para>If there are any merge conflicts, use the command
+      suggested by CVS to help the merge. Explaining how to fix merge
+      conflicts is beyond the scope of this document; consult the CVS
+      documentation for more information on how to use CVS.</para>
+      </section> </section>
 
   <appendix id="VariablesRuntime">
     <title>Configuration variables (for <emphasis>myplc</emphasis>)</title>
