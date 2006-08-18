@@ -6,6 +6,11 @@
 #
 # -d is for the myplc-devel package
 
+# we use 3 instances of PLCConfiguration throughout:
+# cdef : models the defaults, from plc_default.xml
+# cread : merged from plc_default & configs/site.xml
+# cwrite : site.xml + pending changes
+
 import sys
 import os
 import re
@@ -15,8 +20,8 @@ import getopt
 from plc_config import PLCConfiguration
 
 ####################
-release_id = "$Id: plc-config-tty,v 1.5 2006/08/08 16:59:23 thierry Exp $"
-release_rev = "$Revision$"
+release_id = "$Id: plc-config-tty,v 1.6 2006/08/17 16:17:18 thierry Exp $"
+release_rev = "$Revision: 1.6 $"
 
 def init_flavour (flavour):
     global service
@@ -376,8 +381,12 @@ def mainloop (cdef, cread, cwrite, default_config, site_config, consolidated_con
             elif mode == 'CATEGORY':
                 prompt_variables_category(cdef,cread,cwrite,category_id,show_comments)
             elif mode == 'VARIABLE':
-                prompt_variable (cdef,cread,cwrite,category,variable,
-                                 show_comments,False)
+                try:
+                    prompt_variable (cdef,cread,cwrite,category,variable,
+                                     show_comments,False)
+                except Exception, inst:
+                    if (str(inst) != 'BailOut'):
+                        raise
         elif (command in "vVsSlL"):
             show_value=(command in "sSlL")
             (c1,c2,c3) = (cdef, cread, cwrite)
