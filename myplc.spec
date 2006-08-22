@@ -252,6 +252,16 @@ fi
 %endif
 
 %changelog
+* Tue Aug 22 2006 Mark Huang <mlhuang@CS.Princeton.EDU> - 0.4-3, 0.5-3
+- MyPLC 0.4 RC3.
+- Fix upgrade path from RC1.
+- Always regenerate plc_config.xml at first startup
+- Upgrade kernel, iptables, vnet to 2.6.17-1.2142_FC4-3.planetlab
+- Minor PlanetFlow fixes
+- pl_mom/swapmon: Minor fixes
+- bootcd: Added Supermicro IPMI support
+- bootmanager: Cleanup, fixed check for new disks
+
 * Wed Aug 09 2006 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr>
 - introduces variable %{build_devel} to allow custom sites to skip building
   the myplc-devel package.
