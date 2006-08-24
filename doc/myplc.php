@@ -13,7 +13,7 @@
 <div class="titlepage">
 <div>
 <div><h1 class="title">
-<a name="id2703030"></a>MyPLC User's Guide</h1></div>
+<a name="id2580765"></a>MyPLC User's Guide</h1></div>
 <div><div class="author"><h3 class="author"><span class="firstname">Mark Huang</span></h3></div></div>
 <div><div class="revhistory"><table border="1" width="100%" summary="Revision history">
 <tr><th align="left" valign="top" colspan="3"><b>Revision History</b></th></tr>
@@ -54,41 +54,42 @@
 <div class="toc">
 <p><b>Table of Contents</b></p>
 <dl>
-<dt><span class="section"><a href="#id2749839">1. Overview</a></span></dt>
-<dd><dl><dt><span class="section"><a href="#id2750165">1.1.  Purpose of the <span class="emphasis"><em> myplc-devel
+<dt><span class="section"><a href="#id2627573">1. Overview</a></span></dt>
+<dd><dl><dt><span class="section"><a href="#id2627899">1.1.  Purpose of the <span class="emphasis"><em> myplc-devel
     </em></span> package </a></span></dt></dl></dd>
 <dt><span class="section"><a href="#Requirements">2.  Requirements </a></span></dt>
 <dt><span class="section"><a href="#Installation">3. Installating and using MyPLC</a></span></dt>
 <dd><dl>
-<dt><span class="section"><a href="#id2749479">3.1. Installing MyPLC.</a></span></dt>
+<dt><span class="section"><a href="#id2627214">3.1. Installing MyPLC.</a></span></dt>
 <dt><span class="section"><a href="#QuickStart">3.2.  QuickStart </a></span></dt>
 <dt><span class="section"><a href="#Configuration">3.3. Changing the configuration</a></span></dt>
 <dt><span class="section"><a href="#LoginRealUser">3.4.  Login as a real user </a></span></dt>
-<dt><span class="section"><a href="#id2750676">3.5. Installing nodes</a></span></dt>
-<dt><span class="section"><a href="#id2801620">3.6. Administering nodes</a></span></dt>
-<dt><span class="section"><a href="#id2801720">3.7. Creating a slice</a></span></dt>
+<dt><span class="section"><a href="#id2628411">3.5. Installing nodes</a></span></dt>
+<dt><span class="section"><a href="#id2679354">3.6. Administering nodes</a></span></dt>
+<dt><span class="section"><a href="#id2679454">3.7. Creating a slice</a></span></dt>
 <dt><span class="section"><a href="#StartupSequence">3.8. Understanding the startup sequence</a></span></dt>
 <dt><span class="section"><a href="#FilesInvolvedRuntime">3.9.  Files and directories
     involved in <span class="emphasis"><em>myplc</em></span></a></span></dt>
 </dl></dd>
 <dt><span class="section"><a href="#DevelopmentEnvironment">4. Rebuilding and customizing MyPLC</a></span></dt>
 <dd><dl>
-<dt><span class="section"><a href="#id2802612">4.1. Installation</a></span></dt>
-<dt><span class="section"><a href="#id2802667">4.2. Configuration</a></span></dt>
+<dt><span class="section"><a href="#id2680347">4.1. Installation</a></span></dt>
+<dt><span class="section"><a href="#id2680401">4.2. Configuration</a></span></dt>
 <dt><span class="section"><a href="#FilesInvolvedDevel">4.3.  Files and directories
     involved in <span class="emphasis"><em>myplc-devl</em></span></a></span></dt>
-<dt><span class="section"><a href="#id2802931">4.4. Fedora Core 4 mirror requirement</a></span></dt>
+<dt><span class="section"><a href="#id2680665">4.4. Fedora Core 4 mirror requirement</a></span></dt>
 <dt><span class="section"><a href="#BuildingMyPLC">4.5. Building MyPLC</a></span></dt>
 <dt><span class="section"><a href="#UpdatingCVS">4.6. Updating CVS</a></span></dt>
 </dl></dd>
+<dt><span class="section"><a href="#id2681106">5.  More information : the FAQ wiki page</a></span></dt>
 <dt><span class="appendix"><a href="#VariablesRuntime">A. Configuration variables (for <span class="emphasis"><em>myplc</em></span>)</a></span></dt>
 <dt><span class="appendix"><a href="#VariablesDevel">B. Development configuration variables (for <span class="emphasis"><em>myplc-devel</em></span>)</a></span></dt>
-<dt><span class="bibliography"><a href="#id2806472">Bibliography</a></span></dt>
+<dt><span class="bibliography"><a href="#id2684223">Bibliography</a></span></dt>
 </dl>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
-<a name="id2749839"></a>1. Overview</h2></div></div></div>
+<a name="id2627573"></a>1. Overview</h2></div></div></div>
 <p>MyPLC is a complete PlanetLab Central (PLC) portable
     installation contained within a <span><strong class="command">chroot</strong></span>
     jail. The default installation consists of a web server, an
@@ -111,7 +112,7 @@
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="id2750165"></a>1.1.  Purpose of the <span class="emphasis"><em> myplc-devel
+<a name="id2627899"></a>1.1.  Purpose of the <span class="emphasis"><em> myplc-devel
     </em></span> package </h3></div></div></div>
 <p> The <span class="emphasis"><em>myplc</em></span> package comes with all
     required node software, rebuilt from the public PlanetLab CVS
@@ -178,7 +179,7 @@
     practically any Linux 2.6 based distribution.</p>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="id2749479"></a>3.1. Installing MyPLC.</h3></div></div></div>
+<a name="id2627214"></a>3.1. Installing MyPLC.</h3></div></div></div>
 <div class="itemizedlist"><ul type="disc">
 <li>
 <p>If your distribution supports RPM:</p>
@@ -205,11 +206,11 @@
     the <span><strong class="command">service</strong></span> command to invoke System V init
     scripts. As the examples suggest, the service must be started as root:</p>
 <div class="example">
-<a name="id2749652"></a><p class="title"><b>Example 1. Starting MyPLC:</b></p>
+<a name="id2627387"></a><p class="title"><b>Example 1. Starting MyPLC:</b></p>
 <pre class="programlisting"># service plc start</pre>
 </div>
 <div class="example">
-<a name="id2749665"></a><p class="title"><b>Example 2. Stopping MyPLC:</b></p>
+<a name="id2627399"></a><p class="title"><b>Example 2. Stopping MyPLC:</b></p>
 <pre class="programlisting"># service plc stop</pre>
 </div>
 <p> In <a href="#StartupSequence" title="3.8. Understanding the startup sequence">Section 3.8, “Understanding the startup sequence”</a>, we provide greater
@@ -221,11 +222,11 @@
     <span><strong class="command">chkconfig</strong></span> command on a Red Hat or Fedora host
     system:</p>
 <div class="example">
-<a name="id2750316"></a><p class="title"><b>Example 3. Disabling automatic startup of MyPLC.</b></p>
+<a name="id2628050"></a><p class="title"><b>Example 3. Disabling automatic startup of MyPLC.</b></p>
 <pre class="programlisting"># chkconfig plc off</pre>
 </div>
 <div class="example">
-<a name="id2750328"></a><p class="title"><b>Example 4. Re-enabling automatic startup of MyPLC.</b></p>
+<a name="id2628063"></a><p class="title"><b>Example 4. Re-enabling automatic startup of MyPLC.</b></p>
 <pre class="programlisting"># chkconfig plc on</pre>
 </div>
 </div>
@@ -243,7 +244,7 @@
       guides you to the most useful ones. Here is sample session:
       </p>
 <div class="example">
-<a name="id2750396"></a><p class="title"><b>Example 5. Using plc-config-tty for configuration:</b></p>
+<a name="id2628131"></a><p class="title"><b>Example 5. Using plc-config-tty for configuration:</b></p>
 <pre class="programlisting"># service plc mount
 Mounting PLC:                                              [  OK  ]
 # chroot /plc/root su - 
@@ -358,7 +359,7 @@ Enter command (u for usual changes, w to save, ? for help) q
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="id2750676"></a>3.5. Installing nodes</h3></div></div></div>
+<a name="id2628411"></a>3.5. Installing nodes</h3></div></div></div>
 <p>Install your first node by clicking <code class="literal">Add
       Node</code> under the <code class="literal">Nodes</code> tab. Fill in
       all the appropriate details, then click
@@ -382,12 +383,12 @@ Enter command (u for usual changes, w to save, ? for help) q
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="id2801620"></a>3.6. Administering nodes</h3></div></div></div>
+<a name="id2679354"></a>3.6. Administering nodes</h3></div></div></div>
 <p>You may administer nodes as <code class="literal">root</code> by
       using the SSH key stored in
       <code class="filename">/etc/planetlab/root_ssh_key.rsa</code>.</p>
 <div class="example">
-<a name="id2801642"></a><p class="title"><b>Example 6. Accessing nodes via SSH. Replace
+<a name="id2679376"></a><p class="title"><b>Example 6. Accessing nodes via SSH. Replace
 	<code class="literal">node</code> with the hostname of the node.</b></p>
 <pre class="programlisting">ssh -i /etc/planetlab/root_ssh_key.rsa root@node</pre>
 </div>
@@ -410,7 +411,7 @@ Enter command (u for usual changes, w to save, ? for help) q
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="id2801720"></a>3.7. Creating a slice</h3></div></div></div>
+<a name="id2679454"></a>3.7. Creating a slice</h3></div></div></div>
 <p>Create a slice by clicking <code class="literal">Create Slice</code>
       under the <code class="literal">Slices</code> tab. Fill in all the
       appropriate details, then click <code class="literal">Create</code>. Add
@@ -425,7 +426,7 @@ Enter command (u for usual changes, w to save, ? for help) q
       to determine if it needs to create or delete any slices. You may
       accelerate this process manually if desired.</p>
 <div class="example">
-<a name="id2801783"></a><p class="title"><b>Example 7. Forcing slice creation on a node.</b></p>
+<a name="id2679517"></a><p class="title"><b>Example 7. Forcing slice creation on a node.</b></p>
 <pre class="programlisting"># Update slices.xml immediately
 service plc start crond
 
@@ -441,7 +442,7 @@ vserver pl_conf exec service pl_conf restart</pre>
     any failures. If no failures occur, you should see output similar
     to the following:</p>
 <div class="example">
-<a name="id2801822"></a><p class="title"><b>Example 8. A successful MyPLC startup.</b></p>
+<a name="id2679556"></a><p class="title"><b>Example 8. A successful MyPLC startup.</b></p>
 <pre class="programlisting">Mounting PLC:                                              [  OK  ]
 PLC: Generating network files:                             [  OK  ]
 PLC: Starting system logger:                               [  OK  ]
@@ -637,7 +638,7 @@ PLC: Signing node packages:                                [  OK  ]
     repository.</p>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="id2802612"></a>4.1. Installation</h3></div></div></div>
+<a name="id2680347"></a>4.1. Installation</h3></div></div></div>
 <p>Install the MyPLC development environment similarly to how
       you would install MyPLC. You may install both packages on the same
       host system if you wish. As with MyPLC, the MyPLC development
@@ -661,7 +662,7 @@ PLC: Signing node packages:                                [  OK  ]
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="id2802667"></a>4.2. Configuration</h3></div></div></div>
+<a name="id2680401"></a>4.2. Configuration</h3></div></div></div>
 <p> The default configuration should work as-is on most
       sites. Configuring the development package can be achieved in a
       similar way as for <span class="emphasis"><em>myplc</em></span>, as described in
@@ -731,7 +732,7 @@ PLC: Signing node packages:                                [  OK  ]
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="id2802931"></a>4.4. Fedora Core 4 mirror requirement</h3></div></div></div>
+<a name="id2680665"></a>4.4. Fedora Core 4 mirror requirement</h3></div></div></div>
 <p>The MyPLC development environment requires access to a
       complete Fedora Core 4 i386 RPM repository, because several
       different filesystems based upon Fedora Core 4 are constructed
@@ -763,7 +764,7 @@ PLC: Signing node packages:                                [  OK  ]
       such as <span><strong class="command">wget</strong></span> or <span><strong class="command">rsync</strong></span> to
       download the RPMS from a public mirror:</p>
 <div class="example">
-<a name="id2803072"></a><p class="title"><b>Example 9. Setting up a local Fedora Core 4 repository.</b></p>
+<a name="id2680806"></a><p class="title"><b>Example 9. Setting up a local Fedora Core 4 repository.</b></p>
 <pre class="programlisting"># mkdir -p /plc/devel/data/fedora
 # cd /plc/devel/data/fedora
 
@@ -799,7 +800,7 @@ PLC: Signing node packages:                                [  OK  ]
       within the MyPLC development environment, execute the following
       commands as root:</p>
 <div class="example">
-<a name="id2803174"></a><p class="title"><b>Example 10. Building MyPLC.</b></p>
+<a name="id2680908"></a><p class="title"><b>Example 10. Building MyPLC.</b></p>
 <pre class="programlisting"># Initialize MyPLC development environment
 service plc-devel start
 
@@ -855,7 +856,7 @@ make -C $DATE</pre>
       execute the following commands as root from within the MyPLC
       development environment:</p>
 <div class="example">
-<a name="id2803332"></a><p class="title"><b>Example 11. Updating /data/cvs from /data/cvs-0.4-3.</b></p>
+<a name="id2681066"></a><p class="title"><b>Example 11. Updating /data/cvs from /data/cvs-0.4-3.</b></p>
 <p><span class="bold"><strong>Warning</strong></span>: This may cause
 	severe, irreversible changes to be made to your local
 	repository. Always tag your local repository before
@@ -883,6 +884,12 @@ rm -rf $TMP</pre>
       documentation for more information on how to use CVS.</p>
 </div>
 </div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="id2681106"></a>5.  More information : the FAQ wiki page</h2></div></div></div>
+<p> Please refer to, and feel free to contribute, <a href="https://wiki.planet-lab.org/twiki/bin/view/Planetlab/MyplcFAQ" target="_top">
+the FAQ page on the Princeton's wiki </a>.</p>
+</div>
 <div class="appendix" lang="en">
 <h2 class="title" style="clear: both">
 <a name="VariablesRuntime"></a>A. Configuration variables (for <span class="emphasis"><em>myplc</em></span>)</h2>
@@ -895,7 +902,7 @@ rm -rf $TMP</pre>
 <p>This information is available online within
     <span><strong class="command">plc-config-tty</strong></span>, e.g.:</p>
 <div class="example">
-<a name="id2803414"></a><p class="title"><b>Example A.1. Advanced usage of plc-config-tty</b></p>
+<a name="id2681165"></a><p class="title"><b>Example A.1. Advanced usage of plc-config-tty</b></p>
 <pre class="programlisting">&lt;plc&gt; # plc-config-tty
 Enter command (u for usual changes, w to save, ? for help) V plc_dns
 ========== Category = PLC_DNS
@@ -1551,7 +1558,7 @@ PLC_DNS_ENABLED
 </div>
 <div class="bibliography">
 <div class="titlepage"><div><div><h2 class="title">
-<a name="id2806472"></a>Bibliography</h2></div></div></div>
+<a name="id2684223"></a>Bibliography</h2></div></div></div>
 <div class="biblioentry">
 <a name="TechsGuide"></a><p>[1] <span class="author"><span class="firstname">Mark</span> <span class="surname">Huang</span>. </span><span class="title"><i><a href="http://www.planet-lab.org/doc/TechsGuide.php" target="_top">PlanetLab
       Technical Contact's Guide</a></i>. </span></p>

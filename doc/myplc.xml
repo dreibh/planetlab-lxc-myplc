@@ -960,6 +960,12 @@ rm -rf $TMP]]></programlisting>
       documentation for more information on how to use CVS.</para>
       </section> </section>
 
+<section><title> More information : the FAQ wiki page</title> 
+
+<para> Please refer to, and feel free to contribute, <ulink
+url="https://wiki.planet-lab.org/twiki/bin/view/Planetlab/MyplcFAQ">
+the FAQ page on the Princeton's wiki </ulink>.</para></section>
+
   <appendix id="VariablesRuntime">
     <title>Configuration variables (for <emphasis>myplc</emphasis>)</title>
 
@@ -983,7 +989,6 @@ Enter command (u for usual changes, w to save, ? for help) V plc_dns
 # Use the internal DNS server only for small deployments or for testing.
 PLC_DNS_ENABLED
 ]]></programlisting></example>
-
 
   <para> List of the <command>myplc</command> configuration variables:</para>
    &Variables;
