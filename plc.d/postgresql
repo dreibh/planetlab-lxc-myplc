@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: postgresql,v 1.4 2006/06/23 20:29:22 mlhuang Exp $
+# $Id: postgresql,v 1.4.2.3 2006/08/21 21:21:12 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -96,6 +96,8 @@ case "$1" in
 	(
 	    echo "host $PLC_DB_NAME $PLC_DB_USER $PLC_API_IP/32 password"
 	    echo "host $PLC_DB_NAME $PLC_DB_USER $PLC_WWW_IP/32 password"
+	    # Drupal also uses PostgreSQL
+	    echo "host drupal $PLC_DB_USER $PLC_WWW_IP/32 password"
 	) >>$pghba_conf
 
 	# Fix ownership (sed -i changes it)
@@ -115,12 +117,19 @@ case "$1" in
 	else
 	    psql -U postgres -c "ALTER USER $PLC_DB_USER WITH PASSWORD '$PLC_DB_PASSWORD'" template1
 	fi
+	check
 
-	# Create the database if necessary
+	# Create the databases if necessary
 	if ! psql -U $PLC_DB_USER -c "" $PLC_DB_NAME >/dev/null 2>&1 ; then
 	    createdb -U postgres $PLC_DB_NAME
-	    psql -U $PLC_DB_USER -f /usr/share/pl_db/plc_schema_3.sql $PLC_DB_NAME
+	    psql -U $PLC_DB_USER -f /usr/share/plc_api/$PLC_DB_NAME.sql $PLC_DB_NAME
 	fi
+	check
+	if ! psql -U $PLC_DB_USER -c "" drupal >/dev/null 2>&1 ; then
+	    createdb -U postgres --encoding=UNICODE --owner=$PLC_DB_USER drupal
+	    psql -U $PLC_DB_USER -f /var/www/html/database/database.pgsql drupal
+	fi
+	check
 
 	result "$MESSAGE"
 	;;
