@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env /usr/bin/plcsh
 #
 # Writes IP addresses and hostnames of PlanetLab nodes to
 # /etc/plc_hosts. Useful for dnsmasq, specify "addn-hosts
@@ -7,11 +7,9 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: api-config,v 1.10 2006/05/24 03:08:55 mlhuang Exp $
+# $Id: dns-config,v 1.1 2006/05/26 19:57:30 mlhuang Exp $
 #
 
-import plcapilib
-(plcapi, moreopts, argv) = plcapilib.plcapi(globals())
 from plc_config import PLCConfiguration
 import os, sys
 
@@ -53,24 +51,29 @@ def main():
 
     # Get the primary IP address for each node
     hosts = {}
-    nodes = AdmGetNodes([], ['node_id', 'hostname'])
-    plcapi.begin()
-    for node in nodes:
-        AdmGetAllNodeNetworks(node['node_id'])
-    nodenetworks_list = plcapi.commit()
-    if nodenetworks_list is not None:
-        for i, nodenetworks in enumerate(nodenetworks_list):
-            for nodenetwork in nodenetworks:
-                if nodenetwork['hostname']:
-                    hostname = nodenetwork['hostname']
-                else:
-                    hostname = nodes[i]['hostname']
-        
-                if hosts.has_key(nodenetwork['ip']):
-                    if hostname not in hosts[nodenetwork['ip']]:
-                        hosts[nodenetwork['ip']].append(hostname)
-                else:
-                    hosts[nodenetwork['ip']] = [hostname]
+
+    nodes = {}
+    for node in GetNodes():
+        nodes[node['node_id']] = node
+
+    nodenetwork_ids = set()
+    for node in nodes.values():
+        nodenetwork_ids.update(node['nodenetwork_ids'])
+
+    for nodenetwork in GetNodeNetworks(list(nodenetwork_ids)):
+        if not nodenetwork['ip']:
+            continue
+
+        if nodenetwork['hostname']:
+            hostname = nodenetwork['hostname']
+        else:
+            hostname = nodes[nodenetwork['node_id']]['hostname']
+
+        if hosts.has_key(nodenetwork['ip']):
+            if hostname not in hosts[nodenetwork['ip']]:
+                hosts[nodenetwork['ip']].append(hostname)
+        else:
+            hosts[nodenetwork['ip']] = [hostname]
     
     # Write /etc/plc_hosts
     plc_hosts = open("/etc/plc_hosts", "w")
