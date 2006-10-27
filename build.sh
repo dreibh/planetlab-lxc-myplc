@@ -15,7 +15,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: build.sh,v 1.32 2006/08/16 21:44:48 mlhuang Exp $
+# $Id$
 #
 
 . build.functions
@@ -75,13 +75,33 @@ fi
 # PLC_DEVEL_BOOTSTRAP is false.
 #
 
+# These directories are allowed to grow to unspecified size, so they
+# are stored as symlinks to the /data partition. mkfedora and yum
+# expect some of them to be real directories, however.
+datadirs=(
+/etc/planetlab
+/root
+/var/lib/pgsql
+/var/www/html/alpina-logs
+/var/www/html/boot
+/var/www/html/download
+/var/www/html/generated
+/var/www/html/install-rpms
+/var/www/html/xml
+/tmp
+/usr/tmp
+/var/tmp
+/var/log
+)
+for datadir in "${datadirs[@]}" ; do
+    # If we are being re-run, it may be a symlink
+    rm -f root/$datadir || :
+    mkdir -p root/$datadir
+done
+
 echo "* myplc: Installing base filesystem"
 mkdir -p root data
 make_chroot root plc_config.xml
-
-# Build schema
-echo "* myplc: Building database schema"
-make -C $srcdir/pl_db
 
 # Install configuration scripts
 echo "* myplc: Installing configuration scripts"
@@ -99,11 +119,6 @@ find plc.d | cpio -p -d -u root/etc/
 install -D -m 755 guest.init root/etc/init.d/plc
 chroot root sh -c 'chkconfig --add plc; chkconfig plc on'
 
-# Install DB schema and API code
-echo "* myplc: Installing DB schema and API code"
-mkdir -p root/usr/share
-rsync -a $srcdir/pl_db $srcdir/plc_api root/usr/share/
-
 # Install web scripts
 echo "* myplc: Installing web scripts"
 mkdir -p root/usr/bin
@@ -117,10 +132,13 @@ install -m 755 \
 echo "* myplc: Installing web pages"
 mkdir -p root/var/www/html
 # Exclude old cruft, unrelated GENI pages, and official documents
-rsync -a \
-    --exclude='*2002' --exclude='*2003' \
-    --exclude=geni --exclude=PDN --exclude=Talks \
-    $srcdir/plc_www/ root/var/www/html/
+rsync -a $srcdir/new_plc_www/ root/var/www/html/
+
+# Make the Drupal files upload directory owned by Apache
+chown apache:apache root/var/www/html/files
+
+# Install Drupal rewrite rules
+install -D -m 644 $srcdir/new_plc_www/drupal.conf root/etc/httpd/conf.d/drupal.conf
 
 # Install configuration file
 echo "* myplc: Installing configuration file"
@@ -138,19 +156,10 @@ chmod 644 $roothome/.profile
 
 # Move "data" directories out of the installation
 echo "* myplc: Moving data directories out of the installation"
-datadirs=(
-/etc/planetlab
-/root
-/var/lib/pgsql
-/var/www/html/alpina-logs
-/var/www/html/boot
-/var/www/html/download
-/var/www/html/generated
-/var/www/html/install-rpms
-/var/www/html/xml
-)
-
 move_datadirs root data "${datadirs[@]}"
+
+# Fix permissions on tmp directories
+chmod 1777 data/tmp data/usr/tmp data/var/tmp
 
 # Remove generated bootmanager script
 rm -f data/var/www/html/boot/bootmanager.sh
