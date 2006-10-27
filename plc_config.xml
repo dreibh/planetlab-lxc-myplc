@@ -6,7 +6,7 @@ Default PLC configuration file
 Mark Huang <mlhuang@cs.princeton.edu>
 Copyright (C) 2006 The Trustees of Princeton University
 
-$Id: plc_config.xml,v 1.14 2006/06/23 20:31:09 mlhuang Exp $
+$Id: plc_config.xml,v 1.15 2006/07/10 21:04:17 mlhuang Exp $
 -->
 
 <!DOCTYPE configuration PUBLIC "-//PlanetLab Central//DTD PLC configuration//EN" "plc_config.dtd">
@@ -290,7 +290,7 @@ $Id: plc_config.xml,v 1.14 2006/06/23 20:31:09 mlhuang Exp $
 
 	<variable id="name" type="string">
 	  <name>Database Name</name>
-	  <value>planetlab3</value>
+	  <value>planetlab4</value>
 	  <description>The name of the database to access.</description>
 	</variable>
 
@@ -346,13 +346,9 @@ $Id: plc_config.xml,v 1.14 2006/06/23 20:31:09 mlhuang Exp $
 
 	<variable id="port" type="int">
 	  <name>Port</name>
-	  <value>80</value>
+	  <value>443</value>
 	  <description>The TCP port number through which the API
-	  should be accessed. Warning: SSL (port 443) access is not
-	  fully supported by the website code yet. We recommend that
-	  port 80 be used for now and that the API server either run
-	  on the same machine as the web server, or that they both be
-	  on a secure wired network.</description>
+	  should be accessed.</description>
 	</variable>
 
 	<variable id="path" type="string">
@@ -634,9 +630,6 @@ $Id: plc_config.xml,v 1.14 2006/06/23 20:31:09 mlhuang Exp $
 	<!-- Almost all scripts are written in Python -->
 	<packagereq type="mandatory">python</packagereq>
 
-	<!-- For various Python scripts that access the API -->
-	<packagereq type="mandatory">plcapilib</packagereq>
-
 	<!-- Database server -->
 	<packagereq type="mandatory">postgresql</packagereq>
 	<packagereq type="mandatory">postgresql-server</packagereq>
@@ -660,6 +653,7 @@ $Id: plc_config.xml,v 1.14 2006/06/23 20:31:09 mlhuang Exp $
 	<packagereq type="mandatory">mod_python</packagereq>
 
 	<!-- API server uses a few non-standard packages -->
+	<packagereq type="mandatory">PLCAPI</packagereq>
 	<packagereq type="mandatory">PyXML</packagereq>
 	<packagereq type="mandatory">PlanetLabAuth</packagereq>
 
