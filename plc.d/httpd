@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: httpd,v 1.3 2006/06/23 20:29:22 mlhuang Exp $
+# $Id: httpd,v 1.4 2006/07/10 21:08:46 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -36,8 +36,8 @@ case "$1" in
 	dialog "$MESSAGE"
 
 	# Set the default include path
-	include_path=".:$DocumentRoot/includes:$DocumentRoot/generated:/etc/planetlab/php"
-	sed -i -e "s@;include_path = \"\.:.*\"@include_path = \"$include_path\"@" $php_ini
+	include_path=".:$DocumentRoot/planetlab/includes:/etc/planetlab/php:/usr/share/plc_api/php"
+	sed -i -e "s@[;]*include_path = \"\.:.*\"@include_path = \"$include_path\"@" $php_ini
 
 	# Disable default Listen directive
 	sed -i -e '/^Listen/d' $httpd_conf
@@ -83,8 +83,7 @@ case "$1" in
 Listen ${!http_port}
 <VirtualHost *:${!http_port}>
     Redirect /db https://$PLC_WWW_HOST:$PLC_WWW_SSL_PORT/db
-    # XXX Not yet until we can get rid of oldapi
-    # Redirect /$PLC_API_PATH https://$PLC_API_HOST:$PLC_API_PORT/$PLC_API_PATH
+    Redirect /$PLC_API_PATH https://$PLC_API_HOST:$PLC_API_PORT/$PLC_API_PATH
 </VirtualHost>
 EOF
 	    fi
@@ -105,9 +104,9 @@ EOF
 	    if [ "$PLC_API_ENABLED" = "1" ] ; then
 		cat <<EOF
 <Location $PLC_API_PATH>
-    SetHandler python-program
+    SetHandler mod_python
     PythonPath "sys.path + ['/usr/share/plc_api']"
-    PythonHandler mod_pythonXMLRPC
+    PythonHandler ModPython
 </Location>
 EOF
 	    else
