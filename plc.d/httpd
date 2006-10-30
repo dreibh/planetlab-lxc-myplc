@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: httpd,v 1.5 2006/10/27 20:29:04 mlhuang Exp $
+# $Id: httpd,v 1.6 2006/10/30 16:13:50 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -130,6 +130,7 @@ EOF
 	chown apache:apache $DocumentRoot/alpina-logs/nodes
 
 	# Make the Drupal files upload directory owned by Apache
+	mkdir -p $DocumentRoot/files
 	chown apache:apache $DocumentRoot/files
 
 	# Old style PHP constants
