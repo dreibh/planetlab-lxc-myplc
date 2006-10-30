@@ -131,11 +131,7 @@ install -m 755 \
 # Install web pages
 echo "* myplc: Installing web pages"
 mkdir -p root/var/www/html
-# Exclude old cruft, unrelated GENI pages, and official documents
 rsync -a $srcdir/new_plc_www/ root/var/www/html/
-
-# Make the Drupal files upload directory owned by Apache
-chown apache:apache root/var/www/html/files
 
 # Install Drupal rewrite rules
 install -D -m 644 $srcdir/new_plc_www/drupal.conf root/etc/httpd/conf.d/drupal.conf
