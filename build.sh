@@ -95,8 +95,10 @@ datadirs=(
 )
 for datadir in "${datadirs[@]}" ; do
     # If we are being re-run, it may be a symlink
-    rm -f root/$datadir || :
-    mkdir -p root/$datadir
+    if [ -h root/$datadir ] ; then
+	rm -f root/$datadir
+	mkdir -p root/$datadir
+    fi
 done
 
 echo "* myplc: Installing base filesystem"
