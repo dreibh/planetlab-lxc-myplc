@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: db-config,v 1.1 2006/06/23 20:33:44 mlhuang Exp $
+# $Id: db-config,v 1.2 2006/10/27 20:25:13 mlhuang Exp $
 #
 
 from plc_config import PLCConfiguration
@@ -88,7 +88,7 @@ def main():
     default_conf_files = [
         # NTP configuration
         {'enabled': True,
-         'source': 'PlanetLabConf/ntpconf.php',
+         'source': 'PlanetLabConf/ntp.conf.php',
          'dest': '/etc/ntp.conf',
          'file_permissions': '644',
          'file_owner': 'root',
@@ -99,7 +99,7 @@ def main():
          'ignore_cmd_errors': False,
          'always_update': False},
         {'enabled': True,
-         'source': 'PlanetLabConf/ntptickers.php',
+         'source': 'PlanetLabConf/ntp/step-tickers.php',
          'dest': '/etc/ntp/step-tickers',
          'file_permissions': '644',
          'file_owner': 'root',
@@ -256,7 +256,7 @@ def main():
 
         # Node Manager configuration
         {'enabled': True,
-         'source': 'PlanetLabConf/pl_nm-v3.conf',
+         'source': 'PlanetLabConf/pl_nm.conf',
          'dest': '/etc/planetlab/pl_nm.conf',
          'file_permissions': '644',
          'file_owner': 'root',
@@ -302,7 +302,7 @@ def main():
 
         # Proper configuration
         {'enabled': True,
-         'source': 'PlanetLabConf/propd-NM-1.0.conf',
+         'source': 'PlanetLabConf/propd.conf',
          'dest': '/etc/proper/propd.conf',
          'file_permissions': '644',
          'file_owner': 'root',
@@ -391,7 +391,7 @@ def main():
 
         # Sendmail configuration
         {'enabled': True,
-         'source': 'PlanetLabConf/alpha-sendmail.mc',
+         'source': 'PlanetLabConf/sendmail.mc',
          'dest': '/etc/mail/sendmail.mc',
          'file_permissions': '644',
          'file_owner': 'root',
@@ -402,7 +402,7 @@ def main():
          'ignore_cmd_errors': False,
          'always_update': False},
         {'enabled': True,
-         'source': 'PlanetLabConf/alpha-sendmail.cf',
+         'source': 'PlanetLabConf/sendmail.cf',
          'dest': '/etc/mail/sendmail.cf',
          'file_permissions': '644',
          'file_owner': 'root',
@@ -452,7 +452,7 @@ def main():
 
         # sudo configuration
         {'enabled': True,
-         'source': 'PlanetLabConf/v3-sudoers.php',
+         'source': 'PlanetLabConf/sudoers',
          'dest': '/etc/sudoers',
          'file_permissions': '440',
          'file_owner': 'root',
@@ -475,7 +475,6 @@ def main():
 
     # Create/update default PlanetLabConf entries
     for default_conf_file in default_conf_files:
-        print "Considering", default_conf_file['dest']
         if default_conf_file['dest'] not in dests:
             AddConfFile(default_conf_file)
         else:
@@ -550,7 +549,7 @@ def main():
     # Get contents of SSL public certificate used for signing slice tickets
     try:
         plc_ticket_pubkey = ""
-        for line in file(plc_ma_sa['ssl_key_pub']):
+        for line in file(plc_ma_sa['ca_ssl_key_pub']):
             # Skip comments
             if line[0:5] != "-----":
                 # XXX The embedded newlines matter, do not strip()!
@@ -559,33 +558,45 @@ def main():
         plc_ticket_pubkey = '%KEY%'
 
     # Create/update system slices
-    slices = [{'name': "pl_conf",
-               'description': "PlanetLab Slice Creation Service (SCS)",
-               'url': url,
-               'instantiation': "plc-instantiated",
-               # Renew forever
-               'expires': sys.maxint,
-               'attributes': {'plc_slice_type': "VServerSlice",
-                              'plc_agent_version': "1.0",
-                              'plc_ticket_pubkey': plc_ticket_pubkey}},
-              {'name': "pl_conf_vserverslice",
-               'description': "Default attributes for vserver slices",
-               'url': url,
-               'instantiation': "plc-instantiated",
-               # Renew forever
-               'expires': sys.maxint,
-               'attributes': {'nm_cpu_share': "32",
-                              'plc_slice_type': "VServerSlice",
-                              'nm_disk_quota': "5000000"}}]
-    for slice in slices:
-        try:
-            UpdateSlice(slice['name'], slice)
-        except:
-            AddSlice(slice)
-        # Create/update all attributes
-        for attribute, value in slice['attributes'].iteritems():
-            AddSliceAttribute(slice['name'], attribute, value)
+    default_slices = [
+        {'name': "pl_conf",
+         'description': "PlanetLab Slice Creation Service (SCS)",
+         'url': url,
+         'instantiation': "plc-instantiated",
+         # Renew forever
+         'expires': sys.maxint,
+         'attributes': {'plc_slice_type': "VServerSlice",
+                        'plc_agent_version': "1.0",
+                        'plc_ticket_pubkey': plc_ticket_pubkey}},
+        {'name': "pl_conf_vserverslice",
+         'description': "Default attributes for vserver slices",
+         'url': url,
+         'instantiation': "plc-instantiated",
+         # Renew forever
+         'expires': sys.maxint,
+         'attributes': {'nm_cpu_share': "32",
+                        'plc_slice_type': "VServerSlice",
+                        'nm_disk_quota': "5000000"}}]
 
+    for default_slice in default_slices:
+        slice = GetSlices([default_slice['name']])[0]
+        if slice:
+            UpdateSlice(default_slice['name'], default_slice)
+        else:
+            AddSlice(slice)
+            slice = GetSlices([default_slice['name']])[0]
+
+        # Create/update all attributes
+        slice_attributes = {}
+        if slice['slice_attribute_ids']:
+            for slice_attribute in GetSliceAttributes(slice['slice_attribute_ids']):
+                slice_attributes[slice_attribute['name']] = slice_attribute
+
+        for name, value in default_slice['attributes'].iteritems():
+            if name not in slice_attributes:
+                AddSliceAttribute(slice['name'], name, value)
+            else:
+                UpdateSliceAttribute(slice_attributes[name]['slice_attribute_id'], value)
 
 if __name__ == '__main__':
     main()
