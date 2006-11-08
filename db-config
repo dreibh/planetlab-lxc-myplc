@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: db-config,v 1.2 2006/10/27 20:25:13 mlhuang Exp $
+# $Id: db-config,v 1.3 2006/11/06 22:03:05 mlhuang Exp $
 #
 
 from plc_config import PLCConfiguration
@@ -579,11 +579,12 @@ def main():
                         'nm_disk_quota': "5000000"}}]
 
     for default_slice in default_slices:
-        slice = GetSlices([default_slice['name']])[0]
-        if slice:
-            UpdateSlice(default_slice['name'], default_slice)
+        slices = GetSlices([default_slice['name']])
+        if slices:
+            slice = slices[0]
+            UpdateSlice(slice['slice_id'], default_slice)
         else:
-            AddSlice(slice)
+            AddSlice(default_slice)
             slice = GetSlices([default_slice['name']])[0]
 
         # Create/update all attributes
