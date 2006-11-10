@@ -6,7 +6,7 @@ Default PLC configuration file
 Mark Huang <mlhuang@cs.princeton.edu>
 Copyright (C) 2006 The Trustees of Princeton University
 
-$Id: plc_config.xml,v 1.15 2006/07/10 21:04:17 mlhuang Exp $
+$Id: plc_config.xml,v 1.16 2006/10/27 20:26:49 mlhuang Exp $
 -->
 
 <!DOCTYPE configuration PUBLIC "-//PlanetLab Central//DTD PLC configuration//EN" "plc_config.dtd">
@@ -643,7 +643,8 @@ $Id: plc_config.xml,v 1.15 2006/07/10 21:04:17 mlhuang Exp $
 	     access the DB directly. -->
 	<packagereq type="mandatory">php</packagereq>
 	<packagereq type="mandatory">php-pgsql</packagereq>
-	<packagereq type="mandatory">php-xmlrpc</packagereq>
+	<!-- PLCAPI replaces php-xmlrpc -->
+	<!-- <packagereq type="mandatory">php-xmlrpc</packagereq> -->
 
 	<!-- Need GD for ImageCreate(), etc. -->
 	<packagereq type="mandatory">gd</packagereq>	
