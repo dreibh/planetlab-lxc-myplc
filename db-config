@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: db-config,v 1.3 2006/11/06 22:03:05 mlhuang Exp $
+# $Id: db-config,v 1.4 2006/11/08 23:34:28 mlhuang Exp $
 #
 
 from plc_config import PLCConfiguration
@@ -53,9 +53,7 @@ def main():
     site = { 'site_id': 1,
              'name': plc['name'] + " Central",
              'abbreviated_name': plc['name'],
-             # XXX Default site slice_prefix/login_base must be "pl_"
-             # 'login_base': plc['slice_prefix'],
-             'login_base': "pl",
+             'login_base': plc['slice_prefix'],
              'is_public': False,
              'url': url,
              'max_slices': 100 }
@@ -69,10 +67,8 @@ def main():
                   site['name']
         sites = [site]
 
-    # Must call AdmUpdateSite() even after AdmAddSite() to update max_slices
+    # Must call UpdateSite() even after AddSite() to update max_slices
     site_id = sites[0]['site_id']
-    # XXX login_base cannot be updated
-    del site['login_base']
     UpdateSite(site_id, site)
 
     # The default administrator account must be associated with a site
@@ -254,52 +250,6 @@ def main():
          'ignore_cmd_errors': False,
          'always_update': False},
 
-        # Node Manager configuration
-        {'enabled': True,
-         'source': 'PlanetLabConf/pl_nm.conf',
-         'dest': '/etc/planetlab/pl_nm.conf',
-         'file_permissions': '644',
-         'file_owner': 'root',
-         'file_group': 'root',
-         'preinstall_cmd': '',
-         'postinstall_cmd': '/etc/init.d/pl_nm restart',
-         'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False},
-        {'enabled': True,
-         'source': 'PlanetLabConf/RootResources/plc_slice_pool.php',
-         'dest': '/home/pl_nm/RootResources/plc_slice_pool',
-         'file_permissions': '644',
-         'file_owner': 'pl_nm',
-         'file_group': 'pl_nm',
-         'preinstall_cmd': '',
-         'postinstall_cmd': '',
-         'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False},
-        {'enabled': True,
-         'source': 'PlanetLabConf/RootResources/pl_conf.py',
-         'dest': '/home/pl_nm/RootResources/pl_conf',
-         'file_permissions': '644',
-         'file_owner': 'pl_nm',
-         'file_group': 'pl_nm',
-         'preinstall_cmd': '',
-         'postinstall_cmd': '/etc/init.d/pl_nm restart',
-         'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False},
-        {'enabled': True,
-         'source': 'PlanetLabConf/RootResources/pl_netflow.py',
-         'dest': '/home/pl_nm/RootResources/pl_netflow',
-         'file_permissions': '644',
-         'file_owner': 'pl_nm',
-         'file_group': 'pl_nm',
-         'preinstall_cmd': '',
-         'postinstall_cmd': '',
-         'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False},
-
         # Proper configuration
         {'enabled': True,
          'source': 'PlanetLabConf/propd.conf',
@@ -309,19 +259,6 @@ def main():
          'file_group': 'root',
          'preinstall_cmd': '',
          'postinstall_cmd': '/etc/init.d/proper restart',
-         'error_cmd': '',
-         'ignore_cmd_errors': True,
-         'always_update': False},
-
-        # Bandwidth cap
-        {'enabled': True,
-         'source': 'PlanetLabConf/bwlimit.php',
-         'dest': '/etc/planetlab/bwcap',
-         'file_permissions': '644',
-         'file_owner': 'root',
-         'file_group': 'root',
-         'preinstall_cmd': '',
-         'postinstall_cmd': '/etc/init.d/pl_nm restart',
          'error_cmd': '',
          'ignore_cmd_errors': True,
          'always_update': False},
@@ -484,55 +421,63 @@ def main():
     # Setup default slice attribute types
     default_attribute_types = [
         # Slice type (only vserver is supported)
-        {'name': "plc_slice_type",
-         'description': "Type of slice rspec to be created",
+        {'name': "type",
+         'description': "Type of slice (e.g. vserver)",
          'min_role_id': 20},
+
+        # Slice enabled (1) or suspended (0)
+        {'name': "enabled",
+         'description': "Slice enabled (1) or suspended (0)",
+         'min_role_id': 10},
+
+        # Slice reference image
+        {'name': "vref",
+         'description': "Reference image",
+         'min_role_id': 30},
 
         # Slice initialization script
         {'name': "initscript",
-         'description': "slice initialization script",
+         'description': "Slice initialization script",
          'min_role_id': 10},
 
-        # CPU share (general_prop_share is deprecated)
-        {'name': "general_prop_share",
-         'description': "general share",
+        # CPU share
+        {'name': "cpu_min",
+         'description': "Minimum CPU share (ms/s)",
          'min_role_id': 10},
-        {'name': "nm_cpu_share",
-         'description': "Number of CPU shares to be allocated to slice",
+        {'name': "cpu_share",
+         'description': "Number of CPU shares",
          'min_role_id': 10},
 
         # Bandwidth limits
-        {'name': "nm_net_min_rate",
-         'description': "Minimum network Tx bandwidth (bps)",
+        {'name': "net_min",
+         'description': "Minimum bandwidth (bps)",
          'min_role_id': 10},
-        {'name': "nm_net_max_rate",
-         'description': "Maximum network Tx bandwidth (bps)",
+        {'name': "net_max",
+         'description': "Maximum bandwidth (bps)",
          'min_role_id': 10},
-        {'name': "nm_net_avg_rate",
-         'description': "Average daily network Tx bandwidth (bps)",
+        {'name': "net_avg",
+         'description': "Average bandwidth (bps)",
          'min_role_id': 10},
-        {'name': "nm_net_exempt_min_rate",
-         'description': "Minimum network Tx bandwidth to Internet2 destinations (bps)",
+        {'name': "net_share",
+         'description': "Number of bandwidth shares",
          'min_role_id': 10},
-        {'name': "nm_net_exempt_max_rate",
-         'description': "Maximum network Tx bandwidth to Internet2 destinations (bps)",
+        {'name': "net2_min",
+         'description': "Minimum bandwidth over routes exempt from node bandwidth limits (bps)",
          'min_role_id': 10},
-        {'name': "nm_net_exempt avg_rate",
-         'description': "Average daily network Tx bandwidth to Internet2 destinations (bps)",
+        {'name': "net2_max",
+         'description': "Maximum bandwidth over routes exempt from node bandwidth limits (bps)",
+         'min_role_id': 10},
+        {'name': "net2_avg",
+         'description': "Average bandwidth over routes exempt from node bandwidth limits (bps)",
+         'min_role_id': 10},
+        {'name': "net2_share",
+         'description': "Number of bandwidth shares over routes exempt from node bandwidth limits",
          'min_role_id': 10},
 
         # Disk quota
-        {'name': "nm_disk_quota",
-         'description': "Disk quota (1k disk blocks)",
+        {'name': "disk_max",
+         'description': "Disk quota (bytes)",
          'min_role_id': 10},
-
-        # Special attributes applicable to Slice Creation Service (pl_conf) slice
-        {'name': "plc_agent_version",
-         'description': "Version of PLC agent (slice creation service) software to be deployed",
-         'min_role_id': 10},
-        {'name': "plc_ticket_pubkey",
-         'description': "Public key used to verify PLC-signed tickets",
-         'min_role_id': 10}
         ]
 
     # Get list of existing attribute types
@@ -546,37 +491,15 @@ def main():
         else:
             UpdateSliceAttributeType(default_attribute_type['name'], default_attribute_type)
 
-    # Get contents of SSL public certificate used for signing slice tickets
-    try:
-        plc_ticket_pubkey = ""
-        for line in file(plc_ma_sa['ca_ssl_key_pub']):
-            # Skip comments
-            if line[0:5] != "-----":
-                # XXX The embedded newlines matter, do not strip()!
-                plc_ticket_pubkey += line
-    except:
-        plc_ticket_pubkey = '%KEY%'
-
     # Create/update system slices
     default_slices = [
-        {'name': "pl_conf",
-         'description': "PlanetLab Slice Creation Service (SCS)",
-         'url': url,
+        {'name': plc['slice_prefix'] + "_netflow",
+         'description': "PlanetFlow Traffic Auditing Service",
          'instantiation': "plc-instantiated",
          # Renew forever
          'expires': sys.maxint,
-         'attributes': {'plc_slice_type': "VServerSlice",
-                        'plc_agent_version': "1.0",
-                        'plc_ticket_pubkey': plc_ticket_pubkey}},
-        {'name': "pl_conf_vserverslice",
-         'description': "Default attributes for vserver slices",
-         'url': url,
-         'instantiation': "plc-instantiated",
-         # Renew forever
-         'expires': sys.maxint,
-         'attributes': {'nm_cpu_share': "32",
-                        'plc_slice_type': "VServerSlice",
-                        'nm_disk_quota': "5000000"}}]
+         'attributes': {'reference': "planetflow"}},
+        ]
 
     for default_slice in default_slices:
         slices = GetSlices([default_slice['name']])
@@ -601,3 +524,8 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+# Local variables:
+# tab-width: 4
+# mode: python
+# End:
