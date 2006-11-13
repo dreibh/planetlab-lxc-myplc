@@ -6,7 +6,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: api-config,v 1.14 2006/07/10 21:06:16 mlhuang Exp $
+# $Id: api-config,v 1.15 2006/07/11 20:57:25 mlhuang Exp $
 #
 
 from plc_config import PLCConfiguration
@@ -74,56 +74,6 @@ def main():
             ma_sa_api_crt.close()
         except Exception, e:
             print "Warning: Could not generate API certificate: ", e
-
-    # For backward compatibility, until we can convert all code to use
-    # the now standardized variable names.
-
-    # API expects root SSH public key to be at /etc/planetlab/node_root_key
-    if not os.path.exists("/etc/planetlab/node_root_key"):
-        os.symlink(plc['root_ssh_key_pub'], "/etc/planetlab/node_root_key")
-
-    # Old variable names littered throughout the API
-    if plc_mail['enabled'] == "true":
-        plc_mail_enabled = "1"
-    else:
-        plc_mail_enabled = "0"        
-
-    old_variables = {'PL_API_SERVER': plc_api['host'],
-                     'PL_API_PATH': plc_api['path'],
-                     'PL_API_PORT': plc_api['port'],
-                     'PL_API_CAPABILITY_AUTH_METHOD': "capability",
-                     'PL_API_CAPABILITY_PASS': plc_api['maintenance_password'],
-                     'PL_API_CAPABILITY_USERNAME': plc_api['maintenance_user'],
-                     'PLANETLAB_SUPPORT_EMAIL': plc_mail['support_address'],
-                     'BOOT_MESSAGES_EMAIL': plc_mail['boot_address'],
-                     'WWW_BASE': plc_www['host'],
-                     'BOOT_BASE': plc_boot['host'],
-
-                     'PLC_MAIL_ENABLED': plc_mail_enabled,
-                     'MA_SA_NAMESPACE': plc_ma_sa['namespace'],
-                     'SESSION_LENGTH_HOURS': "24",
-                     'ROOT_CA_EMAIL': root_ca_email,
-                     'ROOT_CA_PUB_KEY': plc_ma_sa['ca_ssl_key_pub'],
-                     'API_CERT_PATH': plc_ma_sa['api_crt'],
-                     'MA_SA_PRIVATE_KEY': plc_ma_sa['ssl_key'],
-                     'PL_API_TICKET_KEY_FILE': plc_ma_sa['ssl_key']}
-
-    # The format of an "allowed maintenance source" specification is
-    #
-    # ip:max_role_id:organization_id:password
-    #
-    # It is unlikely that we will let federated sites use the
-    # maintenance account to access each others' APIs, so we always
-    # set organization_id to -1.
-    old_variables['PL_API_CAPABILITY_SOURCES'] = " ".join(
-        ["%s:-1:-1:%s" % (ip, plc_api['maintenance_password']) \
-         for ip in plc_api['maintenance_sources'].split()])
-
-    old_config = open("/etc/planetlab/plc_api", "w")
-    for name, value in old_variables.iteritems():
-        old_config.write("%s='%s'\n" % (name, value))
-    old_config.close()
-
 
 if __name__ == '__main__':
     main()
