@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: db-config,v 1.4 2006/11/08 23:34:28 mlhuang Exp $
+# $Id$
 #
 
 from plc_config import PLCConfiguration
@@ -250,6 +250,52 @@ def main():
          'ignore_cmd_errors': False,
          'always_update': False},
 
+        # Node Manager configuration
+        {'enabled': True,
+         'source': 'PlanetLabConf/pl_nm.conf',
+         'dest': '/etc/planetlab/pl_nm.conf',
+         'file_permissions': '644',
+         'file_owner': 'root',
+         'file_group': 'root',
+         'preinstall_cmd': '',
+         'postinstall_cmd': '/etc/init.d/pl_nm restart',
+         'error_cmd': '',
+         'ignore_cmd_errors': False,
+         'always_update': False},
+        {'enabled': True,
+         'source': 'PlanetLabConf/RootResources/plc_slice_pool.php',
+         'dest': '/home/pl_nm/RootResources/plc_slice_pool',
+         'file_permissions': '644',
+         'file_owner': 'pl_nm',
+         'file_group': 'pl_nm',
+         'preinstall_cmd': '',
+         'postinstall_cmd': '',
+         'error_cmd': '',
+         'ignore_cmd_errors': False,
+         'always_update': False},
+        {'enabled': True,
+         'source': 'PlanetLabConf/RootResources/pl_conf.py',
+         'dest': '/home/pl_nm/RootResources/pl_conf',
+         'file_permissions': '644',
+         'file_owner': 'pl_nm',
+         'file_group': 'pl_nm',
+         'preinstall_cmd': '',
+         'postinstall_cmd': '/etc/init.d/pl_nm restart',
+         'error_cmd': '',
+         'ignore_cmd_errors': False,
+         'always_update': False},
+        {'enabled': True,
+         'source': 'PlanetLabConf/RootResources/pl_netflow.py',
+         'dest': '/home/pl_nm/RootResources/pl_netflow',
+         'file_permissions': '644',
+         'file_owner': 'pl_nm',
+         'file_group': 'pl_nm',
+         'preinstall_cmd': '',
+         'postinstall_cmd': '',
+         'error_cmd': '',
+         'ignore_cmd_errors': False,
+         'always_update': False},
+
         # Proper configuration
         {'enabled': True,
          'source': 'PlanetLabConf/propd.conf',
@@ -259,6 +305,19 @@ def main():
          'file_group': 'root',
          'preinstall_cmd': '',
          'postinstall_cmd': '/etc/init.d/proper restart',
+         'error_cmd': '',
+         'ignore_cmd_errors': True,
+         'always_update': False},
+
+        # Bandwidth cap
+        {'enabled': True,
+         'source': 'PlanetLabConf/bwlimit.php',
+         'dest': '/etc/planetlab/bwcap',
+         'file_permissions': '644',
+         'file_owner': 'root',
+         'file_group': 'root',
+         'preinstall_cmd': '',
+         'postinstall_cmd': '/etc/init.d/pl_nm restart',
          'error_cmd': '',
          'ignore_cmd_errors': True,
          'always_update': False},
@@ -476,8 +535,19 @@ def main():
 
         # Disk quota
         {'name': "disk_max",
-         'description': "Disk quota (bytes)",
+         'description': "Disk quota (1k disk blocks)",
          'min_role_id': 10},
+
+        # Special attributes applicable to Slice Creation Service (pl_conf) slice
+        {'name': "plc_slice_type",
+         'description': "Type of slice rspec to be created",
+         'min_role_id': 20},
+        {'name': "plc_agent_version",
+         'description': "Version of PLC agent (slice creation service) software to be deployed",
+         'min_role_id': 10},
+        {'name': "plc_ticket_pubkey",
+         'description': "Public key used to verify PLC-signed tickets",
+         'min_role_id': 10}
         ]
 
     # Get list of existing attribute types
@@ -491,14 +561,49 @@ def main():
         else:
             UpdateSliceAttributeType(default_attribute_type['name'], default_attribute_type)
 
+    # Get contents of SSL public certificate used for signing slice tickets
+    try:
+        plc_ticket_pubkey = ""
+        for line in file(plc_ma_sa['ca_ssl_key_pub']):
+            # Skip comments
+            if line[0:5] != "-----":
+                # XXX The embedded newlines matter, do not strip()!
+                plc_ticket_pubkey += line
+    except:
+        plc_ticket_pubkey = '%KEY%'
+
     # Create/update system slices
     default_slices = [
-        {'name': plc['slice_prefix'] + "_netflow",
-         'description': "PlanetFlow Traffic Auditing Service",
+        # Required for old Node Manager
+        {'name': "pl_conf",
+         'description': "PlanetLab Slice Creation Service (SCS)",
+         'url': url,
          'instantiation': "plc-instantiated",
          # Renew forever
          'expires': sys.maxint,
-         'attributes': {'reference': "planetflow"}},
+         'attributes': {'plc_slice_type': "VServerSlice",
+                        'plc_agent_version': "1.0",
+                        'plc_ticket_pubkey': plc_ticket_pubkey}},
+
+        # Required for old Node Manager
+        {'name': "pl_conf_vserverslice",
+         'description': "Default attributes for vserver slices",
+         'url': url,
+         'instantiation': "plc-instantiated",
+         # Renew forever
+         'expires': sys.maxint,
+         'attributes': {'cpu_share': "32",
+                        'plc_slice_type': "VServerSlice",
+                        'disk_max': "5000000"}},
+
+         # PlanetFlow
+        {'name': plc['slice_prefix'] + "_netflow",
+         'description': "PlanetFlow Traffic Auditing Service",
+         'url': url,
+         'instantiation': "plc-instantiated",
+         # Renew forever
+         'expires': sys.maxint,
+         'attributes': {'vref': "planetflow"}},
         ]
 
     for default_slice in default_slices:
