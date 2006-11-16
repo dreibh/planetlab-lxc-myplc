@@ -484,9 +484,14 @@ def main():
          'description': "Type of slice (e.g. vserver)",
          'min_role_id': 20},
 
+        # System slice
+        {'name': "system",
+         'description': "Is a default system slice (1) or not (0 or unset)",
+         'min_role_id': 10},
+
         # Slice enabled (1) or suspended (0)
         {'name': "enabled",
-         'description': "Slice enabled (1) or suspended (0)",
+         'description': "Slice enabled (1 or unset) or suspended (0)",
          'min_role_id': 10},
 
         # Slice reference image
@@ -603,7 +608,7 @@ def main():
          'instantiation': "plc-instantiated",
          # Renew forever
          'expires': sys.maxint,
-         'attributes': {'vref': "planetflow"}},
+         'attributes': {'system': "1", 'vref': "planetflow"}},
         ]
 
     for default_slice in default_slices:
