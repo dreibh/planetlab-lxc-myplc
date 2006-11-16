@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: postgresql,v 1.4.2.3 2006/08/21 21:21:12 mlhuang Exp $
+# $Id: postgresql,v 1.6 2006/10/27 20:29:20 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -121,7 +121,7 @@ case "$1" in
 
 	# Create the databases if necessary
 	if ! psql -U $PLC_DB_USER -c "" $PLC_DB_NAME >/dev/null 2>&1 ; then
-	    createdb -U postgres $PLC_DB_NAME
+	    createdb -U postgres --encoding=UNICODE --owner=$PLC_DB_USER $PLC_DB_NAME
 	    psql -U $PLC_DB_USER -f /usr/share/plc_api/$PLC_DB_NAME.sql $PLC_DB_NAME
 	fi
 	check
