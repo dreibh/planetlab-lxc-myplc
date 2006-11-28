@@ -360,7 +360,7 @@ def main():
          'postinstall_cmd': '/sbin/iptables-restore --noflush < /etc/planetlab/blacklist',
          'error_cmd': '',
          'ignore_cmd_errors': True,
-         'always_update': True},
+         'always_update': False},
 
         # /etc/issue
         {'enabled': True,
@@ -386,7 +386,7 @@ def main():
          'postinstall_cmd': '/sbin/sysctl -e -p /etc/sysctl.conf',
          'error_cmd': '',
          'ignore_cmd_errors': False,
-         'always_update': True},
+         'always_update': False},
 
         # Sendmail configuration
         {'enabled': True,
