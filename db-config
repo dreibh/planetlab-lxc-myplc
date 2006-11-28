@@ -250,6 +250,7 @@ def main():
          'ignore_cmd_errors': False,
          'always_update': False},
 
+        # XXX Required for old Node Manager
         # Node Manager configuration
         {'enabled': True,
          'source': 'PlanetLabConf/pl_nm.conf',
@@ -296,6 +297,7 @@ def main():
          'ignore_cmd_errors': False,
          'always_update': False},
 
+        # XXX Required for old Node Manager
         # Proper configuration
         {'enabled': True,
          'source': 'PlanetLabConf/propd.conf',
@@ -309,6 +311,7 @@ def main():
          'ignore_cmd_errors': True,
          'always_update': False},
 
+        # XXX Required for old Node Manager
         # Bandwidth cap
         {'enabled': True,
          'source': 'PlanetLabConf/bwlimit.php',
@@ -543,6 +546,12 @@ def main():
          'description': "Disk quota (1k disk blocks)",
          'min_role_id': 10},
 
+        # Proper operations
+        {'name': "proper_op",
+         'description': "Proper operation (e.g. bind_socket)",
+         'min_role_id': 10},
+
+        # XXX Required for old Node Manager
         # Special attributes applicable to Slice Creation Service (pl_conf) slice
         {'name': "plc_slice_type",
          'description': "Type of slice rspec to be created",
@@ -579,27 +588,27 @@ def main():
 
     # Create/update system slices
     default_slices = [
-        # Required for old Node Manager
+        # XXX Required for old Node Manager
         {'name': "pl_conf",
          'description': "PlanetLab Slice Creation Service (SCS)",
          'url': url,
          'instantiation': "plc-instantiated",
          # Renew forever
          'expires': sys.maxint,
-         'attributes': {'plc_slice_type': "VServerSlice",
-                        'plc_agent_version': "1.0",
-                        'plc_ticket_pubkey': plc_ticket_pubkey}},
+         'attributes': [('plc_slice_type', "VServerSlice"),
+                        ('plc_agent_version', "1.0"),
+                        ('plc_ticket_pubkey', plc_ticket_pubkey)]},
 
-        # Required for old Node Manager
+        # XXX Required for old Node Manager
         {'name': "pl_conf_vserverslice",
          'description': "Default attributes for vserver slices",
          'url': url,
          'instantiation': "plc-instantiated",
          # Renew forever
          'expires': sys.maxint,
-         'attributes': {'cpu_share': "32",
-                        'plc_slice_type': "VServerSlice",
-                        'disk_max': "5000000"}},
+         'attributes': [('cpu_share', "32"),
+                        ('plc_slice_type', "VServerSlice"),
+                        ('disk_max', "5000000")]},
 
          # PlanetFlow
         {'name': plc['slice_prefix'] + "_netflow",
@@ -608,8 +617,13 @@ def main():
          'instantiation': "plc-instantiated",
          # Renew forever
          'expires': sys.maxint,
-         'attributes': {'system': "1", 'vref': "planetflow"}},
+         'attributes': [('system', "1"),
+                        ('vref', "planetflow"),
+                        ('proper_op', "open file=/etc/passwd, flags=r"),
+                        ('proper_op', "create_socket"),
+                        ('proper_op', "bind_socket")]},
         ]
+         
 
     for default_slice in default_slices:
         slices = GetSlices([default_slice['name']])
@@ -621,16 +635,19 @@ def main():
             slice = GetSlices([default_slice['name']])[0]
 
         # Create/update all attributes
-        slice_attributes = {}
+        slice_attributes = []
         if slice['slice_attribute_ids']:
+            # Delete unknown attributes
             for slice_attribute in GetSliceAttributes(slice['slice_attribute_ids']):
-                slice_attributes[slice_attribute['name']] = slice_attribute
+                if (slice_attribute['name'], slice_attribute['value']) \
+                   not in default_slice['attributes']:
+                    DeleteSliceAttribute(slice_attribute['slice_attribute_id'])
+                else:
+                    slice_attributes.append((slice_attribute['name'], slice_attribute['value']))
 
-        for name, value in default_slice['attributes'].iteritems():
-            if name not in slice_attributes:
+        for (name, value) in default_slice['attributes']:
+            if (name, value) not in slice_attributes:
                 AddSliceAttribute(slice['name'], name, value)
-            else:
-                UpdateSliceAttribute(slice_attributes[name]['slice_attribute_id'], value)
 
 if __name__ == '__main__':
     main()
