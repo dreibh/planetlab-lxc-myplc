@@ -85,6 +85,7 @@ datadirs=(
 /var/www/html/alpina-logs
 /var/www/html/boot
 /var/www/html/download
+/var/www/html/files
 /var/www/html/generated
 /var/www/html/install-rpms
 /var/www/html/xml
