@@ -219,11 +219,16 @@
       (see <xref linkend="QuickStart" />). </para>
 
       <para> The preferred option for changing the configuration is to
-      use the <command>plc-config-tty</command> tool. This tools comes
+      use the <command>plc-config-tty</command> tool. This tool comes
       with the root image, so you need to have it mounted first. The
       full set of applicable variables is described in <xref
       linkend="VariablesDevel" />, but using the <command>u</command>
-      guides you to the most useful ones. Here is sample session:
+      guides you to the most useful ones. Note that if you
+      plan on federating with other PLCs, <emphasis> it is strongly
+      recommended that you change the <command> PLC_NAME
+      </command> and <command> PLC_SLICE_PREFIX </command>
+      settings. </emphasis>
+      Here is sample session:
       </para>
 
       <example><title>Using plc-config-tty for configuration:</title>
@@ -236,13 +241,12 @@ Want to create /etc/planetlab/configs [y]/n ? y
 Created directory /etc/planetlab/configs
 Enter command (u for usual changes, w to save, ? for help) u
 == PLC_NAME : [PlanetLab Test] OneLab
-== PLC_ROOT_USER : [root@localhost.localdomain] root@odie.inria.fr
+== PLC_SLICE_PREFIX : [pl] thone
+== PLC_ROOT_USER : [root@localhost.localdomain] root@onelab-plc.inria.fr
 == PLC_ROOT_PASSWORD : [root] plain-passwd
+== PLC_MAIL_ENABLED : [false] true
 == PLC_MAIL_SUPPORT_ADDRESS : [root+support@localhost.localdomain] support@one-lab.org
-== PLC_DB_HOST : [localhost.localdomain] odie.inria.fr
-== PLC_API_HOST : [localhost.localdomain] odie.inria.fr
-== PLC_WWW_HOST : [localhost.localdomain] odie.inria.fr
-== PLC_BOOT_HOST : [localhost.localdomain] odie.inria.fr
+== PLC_BOOT_HOST : [localhost.localdomain] onelab-plc.inria.fr
 == PLC_NET_DNS1 : [127.0.0.1] 138.96.250.248
 == PLC_NET_DNS2 : [None] 138.96.250.249
 Enter command (u for usual changes, w to save, ? for help) w
