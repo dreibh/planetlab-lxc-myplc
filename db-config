@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id$
+# $Id: db-config,v 1.10 2006/11/28 21:45:53 mlhuang Exp $
 #
 
 from plc_config import PLCConfiguration
@@ -587,7 +587,7 @@ def main():
         plc_ticket_pubkey = '%KEY%'
 
     # Create/update system slices
-    default_slices = [
+    legacy_slices = [
         # XXX Required for old Node Manager
         {'name': "pl_conf",
          'description': "PlanetLab Slice Creation Service (SCS)",
@@ -609,7 +609,8 @@ def main():
          'attributes': [('cpu_share', "32"),
                         ('plc_slice_type', "VServerSlice"),
                         ('disk_max', "5000000")]},
-
+        ]
+    default_slices = [
          # PlanetFlow
         {'name': plc['slice_prefix'] + "_netflow",
          'description': "PlanetFlow Traffic Auditing Service",
@@ -624,7 +625,18 @@ def main():
                         ('proper_op', "bind_socket")]},
         ]
          
-
+    ### leaving slice_prefix to default 
+    if plc['slice_prefix'] == 'pl':
+        # create them with default slices
+        default_slices += legacy_slices
+    else:
+        # we use another slice prefix : disable legacy slices if already created
+        for legacy_slice in legacy_slices:
+            try:
+                DeleteSlice(legacy_slice['name'])
+            except:
+                pass
+    
     for default_slice in default_slices:
         slices = GetSlices([default_slice['name']])
         if slices:
