@@ -20,28 +20,28 @@ import getopt
 from plc_config import PLCConfiguration
 
 ####################
-release_id = "$Id: plc-config-tty,v 1.8 2006/08/18 14:34:45 thierry Exp $"
-release_rev = "$Revision: 1.8 $"
+release_id = "$Id: plc-config-tty,v 1.9 2006/12/08 08:42:14 thierry Exp $"
+release_rev = "$Revision: 1.9 $"
 
 def init_flavour (flavour):
     global service
-    global common_variables
+    global usual_variables
     if (flavour == "devel"):
         service="plc-devel"
-        common_variables=("PLC_DEVEL_FEDORA_URL",
+        usual_variables=("PLC_DEVEL_FEDORA_URL",
                           "PLC_DEVEL_CVSROOT")
         config_dir = "/plc/devel/data/etc/planetlab"
     else:
         service="plc"
-        common_variables=("PLC_NAME",
+        usual_variables=("PLC_NAME",
                           "PLC_SLICE_PREFIX",
                           "PLC_ROOT_USER",
                           "PLC_ROOT_PASSWORD",
                           "PLC_MAIL_ENABLED",
                           "PLC_MAIL_SUPPORT_ADDRESS",
-                          "PLC_DB_HOST",
-                          "PLC_API_HOST",
-                          "PLC_WWW_HOST",
+#                          "PLC_DB_HOST",
+#                          "PLC_API_HOST",
+#                          "PLC_WWW_HOST",
                           "PLC_BOOT_HOST",
                           "PLC_NET_DNS1",
                           "PLC_NET_DNS2",
@@ -368,7 +368,7 @@ def mainloop (cdef, cread, cwrite, default_config, site_config, consolidated_con
             print ("You might want to type 'r' (restart plc) or 'q' (quit)")
         elif (command == "u"):
             try:
-                for varname in common_variables:
+                for varname in usual_variables:
                     (category,variable) = cdef.locate_varname(varname)
                     prompt_variable(cdef, cread, cwrite, category, variable, False)
             except Exception, inst:
