@@ -335,7 +335,7 @@
       <para>
 		  Type: string</para>
       <para>
-		  Default: planetlab3</para>
+		  Default: planetlab4</para>
       <para>The name of the database to access.</para>
     </listitem>
   </varlistentry>
@@ -412,13 +412,9 @@
       <para>
 		  Type: int</para>
       <para>
-		  Default: 80</para>
+		  Default: 443</para>
       <para>The TCP port number through which the API
-	  should be accessed. Warning: SSL (port 443) access is not
-	  fully supported by the website code yet. We recommend that
-	  port 80 be used for now and that the API server either run
-	  on the same machine as the web server, or that they both be
-	  on a secure wired network.</para>
+	  should be accessed.</para>
     </listitem>
   </varlistentry>
   <varlistentry>
