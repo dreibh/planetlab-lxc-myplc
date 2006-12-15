@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: gpg,v 1.6 2006/05/18 17:34:10 mlhuang Exp $
+# $Id: gpg,v 1.7 2006/06/23 20:29:22 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -48,6 +48,8 @@ EOF
 	    check
 	    rm -f /dev/random
 	    mknod /dev/random c 1 8
+	    # Make GPG key readable by apache so that the API can sign peer requests
+	    chown apache $PLC_ROOT_GPG_KEY
 	    chmod 644 $PLC_ROOT_GPG_KEY_PUB
 	    chmod 600 $PLC_ROOT_GPG_KEY
 	else
