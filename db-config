@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: db-config,v 1.11 2006/12/12 10:13:31 thierry Exp $
+# $Id: db-config,v 1.12 2006/12/12 16:33:45 thierry Exp $
 #
 
 from plc_config import PLCConfiguration
@@ -661,6 +661,86 @@ def main():
         for (name, value) in default_slice['attributes']:
             if (name, value) not in slice_attributes:
                 AddSliceAttribute(slice['name'], name, value)
+
+    # Load default email templates
+    email_templates = [
+    {'message_id': 'JOIN_REQUEST_APPROVED',
+     'subject': "Your request to join PlanetLab has been approved",
+     'template': """
+      Your request to join PlanetLab has been approved!
+
+      At this point PI and tech contact accounts have been created
+      and enabled. You will not be able to create slices until at
+      least one node is up and running correctly. To use these
+      accounts, you must first reset your password to obtain a
+      new one. Once logged in, please change your password.
+
+      Instructions for setting up your nodes can be found at:
+      http://%s/consortium/setup_procedure.php
+
+      Please direct any questions to PlanetLab Support, thank you!
+
+      %s
+      http://%s
+      """
+    },
+    {'message_id': 'JOIN_REQUEST_APPROVED_PL',
+     'subject': "The join request for %s has been approved",
+     'template':"""
+      The join request for %s has been approved.
+
+      To view the details of this site, visit:
+      https://%s/db/sites/detail.php?site_id=%d
+      """
+    },
+    {'message_id': 'ACCOUNT_REGISTERED',
+     'subject': "New account registration from %s at %s",
+     'template': """
+      %s has signed up for a new PlanetLab account at %s, but
+      has not yet been enabled. The following roles have been
+      requested:%s
+
+      If this account includes a PI role, we require an email from
+      the current PI at that site indicating this is acceptable.
+      If this account includes Admin role, another PlanetLab administrator
+      will have to enable the account. For User and Tech roles, any site PI
+      can enable the account.
+
+      If this account is registered at a site that does not have a PI,
+      this email is also being sent to PlanetLab support for further
+      followup.
+
+      To view details and enable this account, visit:
+      https://%s/db/accounts/detail.php?person_id=%s
+
+      %s
+      http://%s
+      """
+    },
+    {'message_id': 'PASSWORD_RESET_INITIATE',
+     'subject': "PlanetLab password reset",
+     'template': """
+     Someone initiated a password reset on your PlanetLab account. If this
+     was you, you may continue with the reset, by visiting:
+
+     https://%s/db/login/reset_passwd.php?key=%s&id=%s
+
+     If this was not you, please contact PlanetLab support about this
+     request. Please do not share the above link with anyone, as it can be
+     used to gain access to your account. If responding to support, delete
+     the link before sending. Thank you.
+
+     %s
+     http://%s
+     """
+    }
+    ]
+    
+    for template in email_templates:
+	messages = GetMessages([template['message_id']])
+	if not messages:
+		AddMessage(template)	
+	
 
 if __name__ == '__main__':
     main()
