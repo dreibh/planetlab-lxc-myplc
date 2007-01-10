@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: gpg,v 1.7 2006/06/23 20:29:22 mlhuang Exp $
+# $Id: gpg,v 1.8 2006/12/15 20:16:16 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -19,6 +19,9 @@ set -x
 
 case "$1" in
     start)
+	# Make temporary GPG home directory
+	homedir=$(mktemp -d /tmp/gpg.XXXXXX)
+
 	if [ ! -f $PLC_ROOT_GPG_KEY_PUB -o ! -f $PLC_ROOT_GPG_KEY ] ; then
 	    # Generate new GPG keyring
 	    MESSAGE=$"Generating GPG keys"
@@ -31,8 +34,8 @@ case "$1" in
 	    # avoid running out of entropy.
 	    rm -f /dev/random
 	    mknod /dev/random c 1 9
-	    gpg --homedir=/root --no-tty --yes \
-		--batch --gen-key <<EOF
+	    gpg --homedir=$homedir --no-permission-warning --batch --no-tty --yes \
+		--gen-key <<EOF
 Key-Type: DSA
 Key-Length: 1024
 Subkey-Type: ELG-E
@@ -48,10 +51,6 @@ EOF
 	    check
 	    rm -f /dev/random
 	    mknod /dev/random c 1 8
-	    # Make GPG key readable by apache so that the API can sign peer requests
-	    chown apache $PLC_ROOT_GPG_KEY
-	    chmod 644 $PLC_ROOT_GPG_KEY_PUB
-	    chmod 600 $PLC_ROOT_GPG_KEY
 	else
 	    # Update GPG UID
 	    MESSAGE=$"Updating GPG keys"
@@ -66,14 +65,20 @@ EOF
 		    break
 		fi
 	    done < <(
-		gpg --homedir=/etc/planetlab --no-permission-warning --no-tty --yes \
+		gpg --homedir=$homedir --no-permission-warning --batch --no-tty --yes \
+		    --no-default-keyring \
+		    --secret-keyring=$PLC_ROOT_GPG_KEY \
+		    --keyring=$PLC_ROOT_GPG_KEY_PUB \
 		    --list-public-keys --with-colons
 		check
 	    )
 	    IFS=$OLDIFS
 
 	    # Add a new UID if appropriate. GPG will detect and merge duplicates.
-	    gpg --homedir=/etc/planetlab --no-permission-warning --no-tty --yes \
+	    gpg --homedir=$homedir --no-permission-warning --batch --no-tty --yes \
+		--no-default-keyring \
+		--secret-keyring=$PLC_ROOT_GPG_KEY \
+		--keyring=$PLC_ROOT_GPG_KEY_PUB \
 		--command-fd 0 --status-fd 1 --edit-key $fingerprint <<EOF
 adduid
 $PLC_NAME Central
@@ -86,7 +91,10 @@ EOF
 
 	# Install the key in the RPM database
 	mkdir -p /etc/pki/rpm-gpg
-	gpg --homedir=/etc/planetlab --no-permission-warning --no-tty --yes \
+	gpg --homedir=$homedir --no-permission-warning --batch --no-tty --yes \
+	    --no-default-keyring \
+	    --secret-keyring=$PLC_ROOT_GPG_KEY \
+	    --keyring=$PLC_ROOT_GPG_KEY_PUB \
 	    --export --armor >"/etc/pki/rpm-gpg/RPM-GPG-KEY-$PLC_NAME"
 	check
 	if rpm -q gpg-pubkey ; then
@@ -95,6 +103,15 @@ EOF
 	fi
 	rpm --import /etc/pki/rpm-gpg/*
 	check
+
+	# Make GPG key readable by apache so that the API can sign peer requests
+	chown apache $PLC_ROOT_GPG_KEY
+	chmod 644 $PLC_ROOT_GPG_KEY_PUB
+	chmod 600 $PLC_ROOT_GPG_KEY
+	check
+
+	# Cleanup
+	rm -rf $homedir
 
 	result "$MESSAGE"
 	;;
