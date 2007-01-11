@@ -15,10 +15,31 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: build_devel.sh,v 1.4 2006/08/11 18:34:59 thierry Exp $
+# $Id: build_devel.sh,v 1.5 2006/08/18 14:35:52 thierry Exp $
 #
 
 . build.functions
+
+# These directories are allowed to grow to unspecified size, so they
+# are stored as symlinks to the /data partition. mkfedora and yum
+# expect some of them to be real directories, however.
+datadirs=(
+/etc/planetlab
+/build
+/cvs
+/root
+/tmp
+/usr/tmp
+/var/tmp
+/var/log
+)
+for datadir in "${datadirs[@]}" ; do
+    # If we are being re-run, it may be a symlink
+    if [ -h devel/root/$datadir ] ; then
+	rm -f devel/root/$datadir
+	mkdir -p devel/root/$datadir
+    fi
+done
 
 echo "* myplc-devel: Installing base filesystem"
 mkdir -p devel/root
@@ -76,8 +97,7 @@ chmod 644 $roothome/.profile
 
 # Move "data" directories out of the installation
 echo "* myplc-devel: Moving data directories out of the installation"
-move_datadirs devel/root devel/data \
-    /etc/planetlab /build /cvs /root
+move_datadirs devel/root devel/data "${datadirs[@]}"
 
 # Make image out of directory
 echo "* myplc-devel: Building loopback image"
