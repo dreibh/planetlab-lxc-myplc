@@ -15,7 +15,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: build_devel.sh,v 1.5 2006/08/18 14:35:52 thierry Exp $
+# $Id: build_devel.sh,v 1.6 2007/01/11 21:49:52 mlhuang Exp $
 #
 
 . build.functions
@@ -98,6 +98,9 @@ chmod 644 $roothome/.profile
 # Move "data" directories out of the installation
 echo "* myplc-devel: Moving data directories out of the installation"
 move_datadirs devel/root devel/data "${datadirs[@]}"
+
+# Fix permissions on tmp directories
+chmod 1777 devel/data/tmp devel/data/usr/tmp devel/data/var/tmp
 
 # Make image out of directory
 echo "* myplc-devel: Building loopback image"
