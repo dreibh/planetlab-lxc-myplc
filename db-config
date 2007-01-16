@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id$
+# $Id: db-config,v 1.15 2007/01/16 17:23:26 mlhuang Exp $
 #
 
 from plc_config import PLCConfiguration
@@ -729,7 +729,7 @@ Someone has requested that the password of your %(PLC_NAME)s account
 %(email)s be reset. If this person was you, you may continue with the
 reset by visiting:
 
-https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/persons/reset_password.php?email=%(email)s&key=%(verification_key)s
+https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/persons/reset_password.php?id=%(person_id)d&key=%(verification_key)s
 
 If you did not request that your password be reset, please contact
 %(PLC_NAME)s Support <%(PLC_MAIL_SUPPORT_ADDRESS)s>. Do not quote or
