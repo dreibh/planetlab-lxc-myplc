@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: mail,v 1.2 2006/04/25 21:18:19 mlhuang Exp $
+# $Id: mail,v 1.3 2006/06/23 20:29:22 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -25,6 +25,10 @@ case "$1" in
 
 	MESSAGE=$"Starting mail server"
 	dialog "$MESSAGE"
+
+	# Add apache to list of users that can send mail as others
+	# without a warning, so that the API can send out mail.
+	echo "apache" >/etc/mail/trusted-users
 
 	service sendmail start
 	check
