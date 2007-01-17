@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: db-config,v 1.15 2007/01/16 17:23:26 mlhuang Exp $
+# $Id$
 #
 
 from plc_config import PLCConfiguration
@@ -677,24 +677,11 @@ message, or contact %(PLC_NAME)s Support <%(PLC_MAIL_SUPPORT_ADDRESS)s>.
 """
          },
 
-        {'message_id': 'New administrator account',
-         'subject': "New administrator account registration from %(first_name)s %(last_name)s <%(email)s>",
-         'template': """
-%(first_name)s %(last_name)s <%(email)s> has signed up for a new
-administrator account.
-
-Only current %(PLC_NAME)s administrators may enable new administrator
-accounts. To deny the request or enable the account, visit:
-
-https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/persons/index.php?id=%(person_id)d
-"""
-         },
-
         {'message_id': 'New PI account',
          'subject': "New PI account registration from %(first_name)s %(last_name)s <%(email)s> at %(site_name)s",
          'template': """
 %(first_name)s %(last_name)s <%(email)s> has signed up for a new
-%(PLC_NAME) account at %(site_name)s and has requested a PI role. PIs
+%(PLC_NAME)s account at %(site_name)s and has requested a PI role. PIs
 are responsible for enabling user accounts, creating slices, and
 ensuring that all users abide by the %(PLC_NAME)s Acceptable Use
 Policy.
@@ -713,7 +700,7 @@ https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/persons/index.php?id=%(person_i
          'subject': "New account registration from %(first_name)s %(last_name)s <%(email)s> at %(site_name)s",
          'template': """
 %(first_name)s %(last_name)s <%(email)s> has signed up for a new
-%(PLC_NAME) account at %(site_name)s and has requested the following
+%(PLC_NAME)s account at %(site_name)s and has requested the following
 roles: %(roles)s.
 
 To deny the request or enable the account, visit:
