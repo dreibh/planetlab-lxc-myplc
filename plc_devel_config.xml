@@ -6,7 +6,7 @@ Default PLC build environment configuration file
 Mark Huang <mlhuang@cs.princeton.edu>
 Copyright (C) 2006 The Trustees of Princeton University
 
-$Id: plc_devel_config.xml,v 1.5 2006/11/09 15:46:48 mlhuang Exp $
+$Id: plc_devel_config.xml,v 1.6 2006/11/10 06:35:50 mlhuang Exp $
 -->
 
 <!DOCTYPE configuration PUBLIC "-//PlanetLab Central//DTD PLC configuration//EN" "plc_config.dtd">
@@ -107,6 +107,10 @@ $Id: plc_devel_config.xml,v 1.5 2006/11/09 15:46:48 mlhuang Exp $
 	     serves the same useful purpose for MyPLC, namely, to
 	     Provide: kernel without actually installing anything. -->
 	<packagereq type="mandatory">kernel-vserver</packagereq>	
+
+	<!-- Build script sends mail on failure -->
+	<packagereq type="mandatory">mailx</packagereq>
+	<packagereq type="mandatory">sendmail</packagereq>
 
 	<!-- kernel -->
 	<packagereq type="mandatory">gnupg</packagereq>
