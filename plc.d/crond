@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: crond,v 1.5 2006/06/23 20:29:22 mlhuang Exp $
+# $Id: crond,v 1.6 2006/12/12 22:23:04 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -30,6 +30,7 @@ case "$1" in
 	else
 	    MAILTO=
 	fi
+
 	cat >/etc/cron.d/plc.cron <<EOF
 SHELL=/bin/bash
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
@@ -37,24 +38,36 @@ MAILTO=$MAILTO
 HOME=/
 
 # minute hour day-of-month month day-of-week user command
-*/5 * * * * root gen-slices-xml-05.py
-*/15 * * * * root gen-sites-xml.py
-*/15 * * * * root gen-static-content.py
-*/15 * * * * root dns-config
-5 5 * * * root vacuumdb -U postgres --all --analyze --quiet
 EOF
 
-        # Run them once at startup
-	gen-slices-xml-05.py
-	check
-	gen-sites-xml.py
-	check
-	gen-static-content.py
-	check
-	dns-config
-	check
-	vacuumdb -U postgres --all --analyze --quiet
-	check
+        # Run all jobs once at startup
+
+	if [ "$PLC_BOOT_ENABLED" = "1" ] ; then
+	    echo "*/5 * * * * root gen-slices-xml-05.py" >>/etc/cron.d/plc.cron
+	    echo "*/15 * * * * root gen-sites-xml.py" >>/etc/cron.d/plc.cron
+	    gen-slices-xml-05.py
+	    check
+	    gen-sites-xml.py
+	    check
+	fi
+
+	if [ "$PLC_WWW_ENABLED" = "1" ] ; then
+	    echo "*/15 * * * * root gen-static-content.py" >>/etc/cron.d/plc.cron
+	    gen-static-content.py
+	    check
+	fi
+
+	if [ "$PLC_DNS_ENABLED" = "1" ] ; then
+	    echo "*/15 * * * * root dns-config" >>/etc/cron.d/plc.cron
+	    dns-config
+	    check
+	fi
+
+	if [ "$PLC_DB_ENABLED" = "1" ] ; then
+	    echo "5 5 * * * root vacuumdb -U postgres --all --analyze --quiet" >>/etc/cron.d/plc.cron
+	    vacuumdb -U postgres --all --analyze --quiet
+	    check
+	fi
 
 	plc_daemon crond
 	check
