@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: postgresql,v 1.6 2006/10/27 20:29:20 mlhuang Exp $
+# $Id: postgresql,v 1.7 2006/11/16 18:50:32 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -147,7 +147,9 @@ case "$1" in
 
 	# Shut down the server
 	service postgresql stop
-	check
+
+	# /etc/init.d/postgresql fails if it is not running
+	[ "$PLC_DB_ENABLED" = 1 ] && check
 
 	result "$MESSAGE"
 	;;
