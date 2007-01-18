@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: db,v 1.1 2006/06/23 21:41:42 mlhuang Exp $
+# $Id: db,v 1.2 2006/10/27 20:27:04 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -22,7 +22,7 @@ export PGPORT=$PLC_DB_PORT
 
 case "$1" in
     start)
-	if [ "$PLC_API_ENABLED" != "1" ] ; then
+	if [ "$PLC_DB_ENABLED" != "1" ] ; then
 	    exit 0
 	fi
 
@@ -41,10 +41,6 @@ case "$1" in
 DELETE FROM variable WHERE name = 'site_name';
 INSERT INTO variable (name, value) VALUES ('site_name', 's:${#PLC_NAME}:"$PLC_NAME";');
 EOF
-
-	# Bootstrap the DB
-	db-config
-	check
 
 	result "$MESSAGE"
 	;;
