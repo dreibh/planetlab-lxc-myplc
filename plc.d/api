@@ -8,7 +8,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: api,v 1.4 2006/06/23 21:41:31 mlhuang Exp $
+# $Id: api,v 1.5 2006/07/10 21:08:06 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -46,10 +46,6 @@ case "$1" in
 	    done | sort -u
 	)
 	plc-config --category=plc_api --variable=maintenance_sources --value="$PLC_API_MAINTENANCE_SOURCES" --save
-
-	# Generate old API configuration file
-	api-config
-	check
 
 	result "$MESSAGE"
 	;;

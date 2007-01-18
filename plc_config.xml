@@ -6,7 +6,7 @@ Default PLC configuration file
 Mark Huang <mlhuang@cs.princeton.edu>
 Copyright (C) 2006 The Trustees of Princeton University
 
-$Id: plc_config.xml,v 1.16 2006/10/27 20:26:49 mlhuang Exp $
+$Id: plc_config.xml,v 1.17 2006/11/10 19:03:48 mlhuang Exp $
 -->
 
 <!DOCTYPE configuration PUBLIC "-//PlanetLab Central//DTD PLC configuration//EN" "plc_config.dtd">
@@ -100,66 +100,6 @@ $Id: plc_config.xml,v 1.16 2006/10/27 20:26:49 mlhuang Exp $
 	  <value>/etc/planetlab/secring.gpg</value>
 	  <description>The SSH private key used to access the root
 	  account on your nodes.</description>
-	</variable>
-      </variablelist>
-    </category>
-
-    <category id="plc_ma_sa">
-      <name>Management and Slice Authority</name>
-      <description>These variables control how your site interacts
-      with other PlanetLab sites as a Management Authority (MA) and/or
-      Slice Authority (SA).</description>
-
-      <variablelist>
-	<variable id="namespace" type="ip">
-	  <name>Namespace</name>
-	  <value>test</value>
-	  <description>The namespace of your MA/SA. This should be a
-	  globally unique value assigned by PlanetLab
-	  Central.</description>
-	</variable>
-
-	<variable id="ssl_key" type="file">
-	  <name>SSL Private Key</name>
-	  <value>/etc/planetlab/ma_sa_ssl.key</value>
-	  <description>The SSL private key used for signing documents
-	  with the signature of your MA/SA. If non-existent, one will
-	  be generated.</description>
-	</variable>
-
-	<variable id="ssl_crt" type="file">
-	  <name>SSL Public Certificate</name>
-	  <value>/etc/planetlab/ma_sa_ssl.crt</value>
-	  <description>The corresponding SSL public certificate. By
-	  default, this certificate is self-signed. You may replace
-	  the certificate later with one signed by the PLC root
-	  CA.</description>
-	</variable>
-
-	<variable id="ca_ssl_crt" type="file">
-	  <name>Root CA SSL Public Certificate</name>
-	  <value>/etc/planetlab/ma_sa_ca_ssl.crt</value>
-	  <description>If applicable, the certificate of the PLC root
-	  CA. If your MA/SA certificate is self-signed, then this file
-	  is the same as your MA/SA certificate.</description>
-	</variable>
-
-	<variable id="ca_ssl_key_pub" type="file">
-	  <name>Root CA SSL Public Key</name>
-	  <value>/etc/planetlab/ma_sa_ca_ssl.pub</value>
-	  <description>If applicable, the public key of the PLC root
-	  CA. If your MA/SA certificate is self-signed, then this file
-	  is the same as your MA/SA public key.</description>
-	</variable>
-
-	<variable id="api_crt" type="file">
-	  <name>API Certificate</name>
-	  <value>/etc/planetlab/ma_sa_api.xml</value>
-	  <description>The API Certificate is your MA/SA public key
-	  embedded in a digitally signed XML document. By default,
-	  this document is self-signed. You may replace this
-	  certificate later with one signed by the PLC root
-	  CA.</description>
 	</variable>
       </variablelist>
     </category>
@@ -656,7 +596,6 @@ $Id: plc_config.xml,v 1.16 2006/10/27 20:26:49 mlhuang Exp $
 	<!-- API server uses a few non-standard packages -->
 	<packagereq type="mandatory">PLCAPI</packagereq>
 	<packagereq type="mandatory">PyXML</packagereq>
-	<packagereq type="mandatory">PlanetLabAuth</packagereq>
 
 	<!-- API server uses SSL to sign tickets -->
 	<packagereq type="mandatory">xmlsec1</packagereq>

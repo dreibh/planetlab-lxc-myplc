@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: ssl,v 1.9 2006/07/17 21:28:55 mlhuang Exp $
+# $Id: ssl,v 1.10 2006/07/24 19:30:45 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -84,24 +84,6 @@ case "$1" in
     start)
 	MESSAGE=$"Generating SSL certificates"
 	dialog "$MESSAGE"
-
-	# Verify or generate MA/SA certificate if necessary. This
-	# self-signed certificate may be overridden later.
-	verify_or_generate_certificate \
-	    $PLC_MA_SA_SSL_CRT $PLC_MA_SA_SSL_KEY $PLC_MA_SA_CA_SSL_CRT \
-	    "$PLC_NAME Management and Slice Authority" \
-	    $PLC_MAIL_SUPPORT_ADDRESS
-
-	# Make MA/SA key readable by apache so that the API can sign
-	# certificates
-	chown apache $PLC_MA_SA_SSL_KEY
-	chmod 600 $PLC_MA_SA_SSL_KEY
-
-	# Extract the public key of the root CA (if any) that signed
-	# the MA/SA certificate.
-	openssl x509 -in $PLC_MA_SA_CA_SSL_CRT -noout -pubkey >$PLC_MA_SA_CA_SSL_KEY_PUB
-	check
-	chmod 644 $PLC_MA_SA_CA_SSL_KEY_PUB
 
 	# Generate HTTPS certificates if necessary. We generate a
 	# certificate for each enabled server with a different
