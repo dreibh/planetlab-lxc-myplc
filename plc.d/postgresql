@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: postgresql,v 1.7 2006/11/16 18:50:32 mlhuang Exp $
+# $Id: postgresql,v 1.8 2007/01/18 22:09:14 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -94,6 +94,7 @@ case "$1" in
 	PLC_API_IP=$(gethostbyname $PLC_API_HOST)
 	PLC_WWW_IP=$(gethostbyname $PLC_WWW_HOST)
 	(
+	    echo "host $PLC_DB_NAME $PLC_DB_USER 127.0.0.1/32 password"
 	    echo "host $PLC_DB_NAME $PLC_DB_USER $PLC_API_IP/32 password"
 	    echo "host $PLC_DB_NAME $PLC_DB_USER $PLC_WWW_IP/32 password"
 	    # Drupal also uses PostgreSQL
