@@ -5,7 +5,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: functions,v 1.5 2006/06/23 21:41:56 mlhuang Exp $
+# $Id: functions,v 1.6 2006/07/10 21:05:37 mlhuang Exp $
 #
 
 export PATH=/sbin:/bin:/usr/bin:/usr/sbin
@@ -78,6 +78,30 @@ symlink ()
     mkdir -p $(dirname $2)
     rm -f $2
     ln -s $1 $2
+}
+
+# Argument(s) or stdin to lowercase stdout
+lower ()
+{
+    if [ ${#*} -ge 1 ] ; then
+	tr A-Z a-z <<EOF
+$*
+EOF
+    else
+	tr A-Z a-z
+    fi
+}
+
+# Argument(s) or stdin to uppercase stdout
+upper ()
+{
+    if [ ${#*} -ge 1 ] ; then
+	tr a-z A-Z <<EOF
+$*
+EOF
+    else
+	tr a-z A-Z
+    fi
 }
 
 # Make copies of stdout and stderr. The plc initscript redirects
