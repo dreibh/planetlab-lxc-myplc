@@ -6,7 +6,7 @@ Default PLC build environment configuration file
 Mark Huang <mlhuang@cs.princeton.edu>
 Copyright (C) 2006 The Trustees of Princeton University
 
-$Id: plc_devel_config.xml,v 1.6 2006/11/10 06:35:50 mlhuang Exp $
+$Id: plc_devel_config.xml,v 1.7 2007/01/17 22:35:51 mlhuang Exp $
 -->
 
 <!DOCTYPE configuration PUBLIC "-//PlanetLab Central//DTD PLC configuration//EN" "plc_config.dtd">
@@ -126,6 +126,7 @@ $Id: plc_devel_config.xml,v 1.6 2006/11/10 06:35:50 mlhuang Exp $
 
 	<!-- ulogd -->
 	<packagereq type="mandatory">libpcap</packagereq>
+	<packagereq type="mandatory">libpcap-devel</packagereq>
 
 	<!-- iptables -->
 	<packagereq type="mandatory">linuxdoc-tools</packagereq>
