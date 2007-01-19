@@ -5,7 +5,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: functions,v 1.6 2006/07/10 21:05:37 mlhuang Exp $
+# $Id: functions,v 1.7 2007/01/19 17:12:45 mlhuang Exp $
 #
 
 export PATH=/sbin:/bin:/usr/bin:/usr/sbin
@@ -84,9 +84,7 @@ symlink ()
 lower ()
 {
     if [ ${#*} -ge 1 ] ; then
-	tr A-Z a-z <<EOF
-$*
-EOF
+	tr A-Z a-z <<<$*
     else
 	tr A-Z a-z
     fi
@@ -96,9 +94,7 @@ EOF
 upper ()
 {
     if [ ${#*} -ge 1 ] ; then
-	tr a-z A-Z <<EOF
-$*
-EOF
+	tr a-z A-Z <<<$*
     else
 	tr a-z A-Z
     fi
