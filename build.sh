@@ -20,61 +20,6 @@
 
 . build.functions
 
-#
-# Build myplc inside myplc-devel. Infinite recursion is avoided only
-# if PLC_DEVEL_BOOTSTRAP is false in the default configuration file.
-#
-
-if [ "$PLC_DEVEL_BOOTSTRAP" = "true" ] ; then
-    # So that we don't pollute the actual myplc-devel image, we use
-    # the directory that was used to build the image instead of the
-    # image itself, and mount everything by hand.
-    mount -o bind,rw devel/data devel/root/data
-    mount -t proc none devel/root/proc
-
-    # If we used a local mirror, bind mount it into the chroot so that
-    # we can use it again.
-    if [ "${PLC_DEVEL_FEDORA_URL:0:7}" = "file://" ] ; then
-	mkdir -p devel/root/data/fedora
-	mount -o bind,ro ${PLC_DEVEL_FEDORA_URL#file://} devel/root/data/fedora
-    fi
-
-    # Clean up before exiting if anything goes wrong
-    trap "umount $PWD/devel/root/data/fedora;
-          umount $PWD/devel/root/data;
-          umount $PWD/devel/root/proc" ERR INT
-
-    # Build myplc inside myplc-devel. Make sure PLC_DEVEL_BOOTSTRAP is
-    # false to avoid infinite recursion.
-    chroot devel/root su - <<EOF
-set -x
-service plc start
-plc-config --category=plc_devel --variable=bootstrap --value="false" --save
-service plc reload
-cd /
-cvs -d /cvs checkout -r $BUILD_TAG build
-make TAG=$BUILD_TAG -C /build myplc
-EOF
-
-    # Yoink the image that was just built
-    mv devel/data/build/BUILD/myplc-*/myplc/root{,.img} devel/data/build/BUILD/myplc-*/myplc/data .
-
-    # Clean up
-    umount devel/root/data/fedora || :
-    umount devel/root/data
-    umount devel/root/proc
-    rm -rf devel/data/build
-    mkdir -p devel/data/build
-
-    # No need to continue
-    exit 0
-fi
-
-#
-# Build myplc in the host environment. This section is executed if
-# PLC_DEVEL_BOOTSTRAP is false.
-#
-
 # These directories are allowed to grow to unspecified size, so they
 # are stored as symlinks to the /data partition. mkfedora and yum
 # expect some of them to be real directories, however.
