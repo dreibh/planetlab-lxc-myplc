@@ -15,7 +15,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: build_devel.sh,v 1.6 2007/01/11 21:49:52 mlhuang Exp $
+# $Id: build_devel.sh,v 1.7 2007/01/12 14:48:02 mlhuang Exp $
 #
 
 . build.functions
@@ -25,8 +25,6 @@
 # expect some of them to be real directories, however.
 datadirs=(
 /etc/planetlab
-/build
-/cvs
 /root
 /tmp
 /usr/tmp
@@ -44,29 +42,6 @@ done
 echo "* myplc-devel: Installing base filesystem"
 mkdir -p devel/root
 make_chroot devel/root plc_devel_config.xml
-
-# Import everything (including ourself) into a private CVS tree
-echo "* myplc-devel: Building CVS repository"
-cvsroot=$PWD/devel/data/cvs
-mkdir -p $cvsroot
-cvs -d $cvsroot init
-
-myplc=$(basename $PWD)
-pushd ..
-for dir in * ; do
-    if [ ! -d $cvsroot/$dir ] ; then
-	pushd $dir
-	if [ "$dir" = "$myplc" ] ; then
-	    # Ignore generated files
-	    ignore="-I ! -I devel -I root -I root.img -I data" 
-	else
-	    ignore="-I !"
-	fi
-	cvs -d $cvsroot import -m "Initial import" -ko $ignore $dir planetlab $IMPORT_TAG
-	popd
-    fi
-done
-popd
 
 # Install configuration file
 echo "* myplc-devel: Installing configuration file"
@@ -86,14 +61,28 @@ find plc.d/functions | cpio -p -d -u devel/root/etc/
 install -D -m 755 guest.init devel/root/etc/init.d/plc
 chroot devel/root sh -c 'chkconfig --add plc; chkconfig plc on'
 
-# handle root's homedir and tweak root prompt
-echo "* myplc-devel: root's homedir and prompt"
-roothome=devel/data/root
-mkdir -p $roothome
-cat << EOF > $roothome/.profile
-export PS1="<plc-devel> \$PS1"
+# Add a build user with the same ID as the current build user, who can
+# then cross-mount their home directory into the image and build MyPLC
+# in their home directory.
+echo "* myplc-devel: Adding build user"
+uid=${SUDO_UID:-2000}
+gid=${SUDO_GID:-2000}
+if ! grep -q "Automated Build" devel/root/etc/passwd ; then
+    chroot devel/root <<EOF
+groupadd -g $gid build
+useradd -c "Automated Build" -u $uid -g $gid -n -d /data/build -M -s /bin/bash build
 EOF
-chmod 644 $roothome/.profile
+fi
+
+# Copy build scripts to build home directory
+mkdir -p devel/data/build
+rsync -a $srcdir/build/ devel/data/build/
+
+# Allow build user to build certain RPMs as root
+cat >devel/root/etc/sudoers <<EOF
+root	ALL=(ALL) ALL
+build	ALL=(root) NOPASSWD: /usr/bin/rpmbuild
+EOF
 
 # Move "data" directories out of the installation
 echo "* myplc-devel: Moving data directories out of the installation"
