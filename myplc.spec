@@ -12,11 +12,6 @@ Group: Applications/Systems
 Source0: %{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
-# for preventing myplc-devel from being built
-# *should* support invokation like rpmbuild --define "build_level 0" 
-# *but* this does not seem to work : so just set to 0 here
-%{!?build_level: %define build_devel 1}
-
 %define debug_package %{nil}
 
 %description
@@ -28,33 +23,12 @@ through a graphical interface. All PLC services are started up and
 shut down through a single System V init script installed in the host
 system.
 
-%if %{build_devel}
-%package devel
-Summary: PlanetLab Central (PLC) Development Environment
-Group: Development/Tools
-AutoReqProv: no
-%endif
-
-%if %{build_devel}
-%description devel
-This package install a complete PlanetLab development environment
-contained within a chroot jail. The default installation consists of a
-local CVS repository bootstrapped with a snapshot of all PlanetLab
-source code, and all the tools necessary to compile it.
-%endif
-
 %prep
 %setup -q
 
 %build
 pushd myplc
-%if %{build_devel}
-echo -n "XXXXXXXXXXXXXXX myplc::build_devel " ; date
-./build_devel.sh %{?cvstag:-t %{cvstag}}
-%endif
-echo -n "XXXXXXXXXXXXXXX myplc::build " ; date
-./build.sh %{?cvstag:-t %{cvstag}}
-echo -n "XXXXXXXXXXXXXXX myplc::endbuild " ; date
+./build.sh
 popd
 
 %install
@@ -80,29 +54,6 @@ install -D -m 644 root.img $RPM_BUILD_ROOT/plc/root.img
 
 # Install data directory
 find data | cpio -p -d -u $RPM_BUILD_ROOT/plc/
-
-#
-# myplc-devel
-#
-
-%if %{build_devel}
-
-# Install host startup script and configuration file
-install -D -m 755 host.init $RPM_BUILD_ROOT/%{_sysconfdir}/init.d/plc-devel
-install -D -m 644 plc-devel.sysconfig $RPM_BUILD_ROOT/%{_sysconfdir}/sysconfig/plc-devel
-
-# Install root filesystem
-install -d -m 755 $RPM_BUILD_ROOT/plc/devel/root
-install -D -m 644 devel/root.img $RPM_BUILD_ROOT/plc/devel/root.img
-
-# Install data directory
-find devel/data | cpio -p -d -u $RPM_BUILD_ROOT/plc/
-
-# Make sure /cvs is never upgraded once installed by giving it a
-# unique name. A hard-linked copy is made in %post.
-mv $RPM_BUILD_ROOT/plc/devel/data/{cvs,cvs-%{version}-%{release}}
-
-%endif
 
 popd
 
@@ -185,39 +136,6 @@ if [ $1 -eq 0 ] ; then
     fi
 fi
 
-%if %{build_devel}
-%pre devel
-if [ -x %{_sysconfdir}/init.d/plc-devel ] ; then
-    %{_sysconfdir}/init.d/plc-devel stop
-fi
-%endif
-
-%if %{build_devel}
-%post devel
-if [ -x /sbin/chkconfig ] ; then
-    /sbin/chkconfig --add plc-devel
-    /sbin/chkconfig plc-devel on
-fi
-
-# If /cvs does not already exist, make a hard-linked copy of this
-# version's /cvs repository.
-if [ ! -d /plc/devel/data/cvs ] ; then
-    cp -rl /plc/devel/data/{cvs-%{version}-%{release},cvs}
-fi
-%endif
-
-%if %{build_devel}
-%preun devel
-# 0 = erase, 1 = upgrade
-if [ $1 -eq 0 ] ; then
-    %{_sysconfdir}/init.d/plc-devel stop
-    if [ -x /sbin/chkconfig ] ; then
-        /sbin/chkconfig plc-devel off
-	/sbin/chkconfig --del plc-devel
-    fi
-fi
-%endif
-
 %files
 %defattr(-,root,root,-)
 # Host startup script and configuration file
@@ -235,23 +153,11 @@ fi
 %dir /plc/data
 %config(noreplace) /plc/data/*
 
-%if %{build_devel}
-%files devel
-%defattr(-,root,root,-)
-# Host startup script and configuration file
-%{_sysconfdir}/init.d/plc-devel
-%{_sysconfdir}/sysconfig/plc-devel
-
-# Root filesystem
-/plc/devel/root.img
-/plc/devel/root
-
-# Data directory
-%dir /plc/devel/data
-%config(noreplace) /plc/devel/data/*
-%endif
-
 %changelog
+* Fri Jan 19 2007 Mark Huang <mlhuang@CS.Princeton.EDU> - 0.5-3
+- Split off myplc-devel into separate spec file, so that it can be
+  built standalone.
+
 * Tue Aug 22 2006 Mark Huang <mlhuang@CS.Princeton.EDU> - 0.4-3, 0.5-3
 - MyPLC 0.4 RC3.
 - Fix upgrade path from RC1.
