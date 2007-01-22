@@ -20,8 +20,8 @@ import getopt
 from plc_config import PLCConfiguration
 
 ####################
-release_id = "$Id: plc-config-tty,v 1.9 2006/12/08 08:42:14 thierry Exp $"
-release_rev = "$Revision: 1.9 $"
+release_id = "$Id: plc-config-tty,v 1.10 2006/12/12 10:14:44 thierry Exp $"
+release_rev = "$Revision: 1.10 $"
 
 def init_flavour (flavour):
     global service
@@ -34,18 +34,18 @@ def init_flavour (flavour):
     else:
         service="plc"
         usual_variables=("PLC_NAME",
-                          "PLC_SLICE_PREFIX",
-                          "PLC_ROOT_USER",
-                          "PLC_ROOT_PASSWORD",
-                          "PLC_MAIL_ENABLED",
-                          "PLC_MAIL_SUPPORT_ADDRESS",
-#                          "PLC_DB_HOST",
-#                          "PLC_API_HOST",
-#                          "PLC_WWW_HOST",
-                          "PLC_BOOT_HOST",
-                          "PLC_NET_DNS1",
-                          "PLC_NET_DNS2",
-                          )
+                         "PLC_SLICE_PREFIX",
+                         "PLC_ROOT_USER",
+                         "PLC_ROOT_PASSWORD",
+                         "PLC_MAIL_ENABLED",
+                         "PLC_MAIL_SUPPORT_ADDRESS",
+                         "PLC_DB_HOST",
+                         "PLC_API_HOST",
+                         "PLC_WWW_HOST",
+                         "PLC_BOOT_HOST",
+                         "PLC_NET_DNS1",
+                         "PLC_NET_DNS2",
+                         )
         config_dir = "/etc/planetlab"
     global def_default_config
     def_default_config= "%s/default_config.xml" % config_dir
