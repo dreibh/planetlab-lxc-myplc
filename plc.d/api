@@ -8,7 +8,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id$
+# $Id: api,v 1.8 2007/01/19 20:05:05 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -47,10 +47,6 @@ case "$1" in
         ) | sort -u))
 	PLC_API_MAINTENANCE_SOURCES=${PLC_API_MAINTENANCE_SOURCES[*]}
 	plc-config --category=plc_api --variable=maintenance_sources --value="$PLC_API_MAINTENANCE_SOURCES" --save
-
-	# Bootstrap the DB
-	db-config
-	check
 
 	result "$MESSAGE"
 	;;

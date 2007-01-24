@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: db,v 1.2 2006/10/27 20:27:04 mlhuang Exp $
+# $Id$
 #
 
 # Source function library and configuration
@@ -41,6 +41,10 @@ case "$1" in
 DELETE FROM variable WHERE name = 'site_name';
 INSERT INTO variable (name, value) VALUES ('site_name', 's:${#PLC_NAME}:"$PLC_NAME";');
 EOF
+
+	# Bootstrap the DB
+	db-config
+	check
 
 	result "$MESSAGE"
 	;;
