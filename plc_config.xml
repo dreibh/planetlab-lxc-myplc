@@ -6,7 +6,7 @@ Default PLC configuration file
 Mark Huang <mlhuang@cs.princeton.edu>
 Copyright (C) 2006 The Trustees of Princeton University
 
-$Id: plc_config.xml,v 1.17 2006/11/10 19:03:48 mlhuang Exp $
+$Id: plc_config.xml,v 1.18 2007/01/18 18:44:18 mlhuang Exp $
 -->
 
 <!DOCTYPE configuration PUBLIC "-//PlanetLab Central//DTD PLC configuration//EN" "plc_config.dtd">
@@ -589,6 +589,7 @@ $Id: plc_config.xml,v 1.17 2006/11/10 19:03:48 mlhuang Exp $
 	<!-- Need GD for ImageCreate(), etc. -->
 	<packagereq type="mandatory">gd</packagereq>	
 	<packagereq type="mandatory">php-gd</packagereq>	
+	<packagereq type="mandatory">perl-GD</packagereq>	
 
 	<!-- API server is implemented in mod_python -->
 	<packagereq type="mandatory">mod_python</packagereq>
