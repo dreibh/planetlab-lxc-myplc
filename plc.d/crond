@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: crond,v 1.6 2006/12/12 22:23:04 mlhuang Exp $
+# $Id: crond,v 1.7 2007/01/18 22:10:33 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -53,6 +53,7 @@ EOF
 
 	if [ "$PLC_WWW_ENABLED" = "1" ] ; then
 	    echo "*/15 * * * * root gen-static-content.py" >>/etc/cron.d/plc.cron
+	    echo "00 * * * * wget -O - -q http://localhost/cron.php" >>/etc/cron.d/plc.cron
 	    gen-static-content.py
 	    check
 	fi
