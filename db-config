@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id$
+# $Id: db-config,v 1.17 2007/01/17 22:35:31 mlhuang Exp $
 #
 
 from plc_config import PLCConfiguration
@@ -662,6 +662,18 @@ def main():
             if (name, value) not in slice_attributes:
                 AddSliceAttribute(slice['name'], name, value)
 
+    installfailed = """
+Once the node meets these requirements, please reinitiate the install
+by visiting:
+
+https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/nodes/?id=%(node_id)d
+
+Click the Reinstall link, then reboot the node.
+
+If you have already performed this step and are still receiving this
+message, please reply so that we may investigate the problem.
+"""
+
     # Load default message templates
     message_templates = [
         {'message_id': 'Verify account',
@@ -739,6 +751,140 @@ https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/persons/index.php?id=%(person_i
 If you did not request that your password be reset, please contact
 %(PLC_NAME)s Support <%(PLC_MAIL_SUPPORT_ADDRESS)s>. Do not quote or
 otherwise include any of this text in any correspondence.
+"""
+         },
+
+        # Boot Manager messages
+        {'message_id': "installfinished",
+         'subject': "%(hostname)s completed installation",
+         'template': """
+%(hostname)s just completed installation.
+
+The node should be usable in a couple of minutes if installation was
+successful.
+"""
+         },
+
+        {'message_id': "insufficientdisk",
+         'subject': "%(hostname)s does not have sufficient disk space",
+         'template': """
+%(hostname)s failed to boot because it does not have sufficent disk
+space, or because its disk controller was not recognized.
+
+Please replace the current disk or disk controller or install
+additional disks to meet the current hardware requirements.
+""" + installfailed
+         },
+
+        {'message_id': "insufficientmemory",
+         'subject': "%(hostname)s does not have sufficient memory",
+         'template': """
+%(hostname)s failed to boot because it does not have sufficent
+memory.
+
+Please install additional memory to meet the current hardware
+requirements.
+""" + installfailed
+         },
+
+        {'message_id': "authfail",
+         'subject': "%(hostname)s failed to authenticate",
+         'template':
+"""
+%(hostname)s failed to authenticate for the following reason:
+
+%(fault)s
+
+The most common reason for authentication failure is that the
+authentication key stored in the node configuration file, does not
+match the key on record. Regenerate the node configuration file by
+visiting:
+
+https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/nodes/?id=%(node_id)d
+
+Click the Configuration File link, and save the downloaded file as
+plnode.txt on either a floppy disk or a USB flash drive. Click the
+Boot link, then reboot the node.
+
+If you have already performed this step and are still receiving this
+message, please reply so that we may investigate the problem.
+"""
+         },
+
+        {'message_id': "notinstalled",
+         'subject': "%(hostname)s is not installed",
+         'template':
+"""
+%(hostname)s failed to boot because it has either never been
+installed, or the installation is corrupt.
+
+Please check if the hard drive has failed, and replace it if so. After
+doing so, visit:
+
+https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/nodes/?id=%(node_id)d
+
+Click the Reinstall link, then reboot the node.
+
+If you have already performed this step and are still receiving this
+message, please reply so that we may investigate the problem.
+"""
+         },
+
+        {'message_id': "hostnamenotresolve",
+         'subject': "%(hostname)s does not resolve",
+         'template':
+"""
+%(hostname)s failed to boot because its hostname does not resolve, or
+does resolve but does not match its configured IP address.
+
+Please check the network settings for the node, especially its
+hostname, IP address, and DNS servers, by visiting:
+
+https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/nodes/?id=%(node_id)d
+
+Correct any errors, click the Reinstall link, then reboot the node.
+
+If you have already performed this step and are still receiving this
+message, please reply so that we may investigate the problem.
+"""
+         },
+
+        # XXX N.B. I don't think these are necessary, since there's no
+        # way that the Boot Manager would even be able to contact the
+        # API to send these messages.
+
+        {'message_id': "noconfig",
+         'subject': "%(hostname)s does not have a configuration file",
+         'template': """
+%(hostname)s failed to boot because it could not find a PlanetLab
+configuration file. To create this file, visit:
+
+https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/nodes/?id=%(node_id)d
+
+Click the Configuration File link, and save the downloaded file as
+plnode.txt on either a floppy disk or a USB flash drive. Click the
+Reinstall link, then reboot the node.
+
+If you have already performed this step and are still receiving this
+message, please reply so that we may investigate the problem.
+"""
+         },
+
+        {'message_id': "nodetectednetwork",
+         'subject': "%(hostname)s has unsupported network hardware",
+         'template':
+"""
+
+%(hostname)s failed to boot because it has network hardware that is
+unsupported by the current production kernel. If it has booted
+successfully in the past, please try re-installing it by visiting:
+
+https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/nodes/?id=%(node_id)d
+
+Click the Reinstall link, then reboot the node.
+
+If you have already performed this step and are still receiving this
+message, please reply so that we may investigate the problem.
 """
          },
         ]
