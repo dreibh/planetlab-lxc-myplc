@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id$
+# $Id: db,v 1.4 2007/01/24 21:05:30 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -20,11 +20,60 @@ set -x
 # Export so that we do not have to specify -p to psql invocations
 export PGPORT=$PLC_DB_PORT
 
+### updates the subversion column in plc_db_version by applying
+### all migrations scripts in /usr/share/plc_api/migrations/nnn-up-*.sql
+### between the current_subversion+1 and the last one
+### migration indices must be contiguous
+function migrate_db () {
+
+    ### check for (or create) the subversion column in plc_db_version
+    psql -U $PLC_DB_USER -c 'select (subversion) from plc_db_version' $PLC_DB_NAME > /dev/null
+    [ "$?" = 0 ] || psql -U $PLC_DB_USER -c 'ALTER TABLE plc_db_version ADD subversion integer DEFAULT 0' $PLC_DB_NAME
+
+    # get current subversion - OUCH, THIS IS UGLY
+    current_subversion=$(psql -U $PLC_DB_USER -c 'select (subversion) from plc_db_version' $PLC_DB_NAME | \
+			 grep '^  *[0-9][0-9]*$')
+    current_subversion=$(($current_subversion))
+    upgrade_index=$current_subversion
+			 
+    while true; do
+        upgrade_index=$(printf "%03d" $(($upgrade_index+1)))
+	upgrade_scripts=$(ls -1 /usr/share/plc_api/migrations/${upgrade_index}-up-*.sql 2> /dev/null)
+	if [ -z "$upgrade_scripts" ] ; then
+	    echo "DB current migration is $current_subversion"
+	    psql -U $PLC_DB_USER -c "UPDATE plc_db_version SET subversion=$current_subversion" $PLC_DB_NAME
+	    break
+	else
+	    for script in $upgrade_scripts; do
+	        echo "Applying migration script $script"
+		psql -U $PLC_DB_USER -f $script $PLC_DB_NAME 
+	    done
+	    current_subversion=$(($upgrade_index))
+	fi
+    done
+}
+
+#### dumps the database for future restoration
+# uses /root/dumps since /root is mounted on /data/root
+function dump_db () {
+
+    dump=/root/dumps/$(date +'%Y-%m-%d-%H-%M.sql')
+    mkdir -p $(dirname $dump)
+    pg_dump --user=$PLC_DB_USER $PLC_DB_NAME > $dump
+    
+}
+
+function clean_dumps () {
+    find /root/dumps -name '[0-9]*.sql' -atime +15 | xargs rm
+}
+
+##########
+if [ "$PLC_DB_ENABLED" != "1" ] ; then
+  exit 0
+fi
+
 case "$1" in
     start)
-	if [ "$PLC_DB_ENABLED" != "1" ] ; then
-	    exit 0
-	fi
 
 	MESSAGE=$"Bootstrapping the database"
 	dialog "$MESSAGE"
@@ -46,8 +95,45 @@ EOF
 	db-config
 	check
 
+	# Handle migrations
+	migrate_db
+
 	result "$MESSAGE"
 	;;
+
+    migrate)
+
+	MESSAGE=$"Migrating the database"
+	dialog "$MESSAGE"
+
+	migrate_db
+	result "$MESSAGE"
+	;;
+
+    dump)
+
+      	MESSAGE=$"Dumping the database"
+	dialog "$MESSAGE"
+
+	dump_db
+	result "$MESSAGE"
+	;;
+
+    clean-dump)
+
+      	MESSAGE=$"Cleaning old database dumps"
+	dialog "$MESSAGE"
+
+	clean_dumps
+	result "$MESSAGE"
+	;;
+
+    *)
+        echo "Usage: $0 [start|migrate|dump|clean-dump]"
+	exit 1
+	;;
+
+      
 esac
 
 exit $ERRORS
