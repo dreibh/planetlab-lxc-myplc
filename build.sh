@@ -15,7 +15,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: build.sh,v 1.38 2007/01/20 04:06:02 mlhuang Exp $
+# $Id: build.sh,v 1.39 2007/01/22 16:50:48 mlhuang Exp $
 #
 
 . build.functions
@@ -31,6 +31,7 @@ datadirs=(
 /var/www/html/boot
 /var/www/html/download
 /var/www/html/files
+/var/www/html/sites
 /var/www/html/generated
 /var/www/html/install-rpms
 /var/www/html/xml
