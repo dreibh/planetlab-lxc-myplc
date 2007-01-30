@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: packages,v 1.4 2006/07/19 14:15:15 mlhuang Exp $
+# $Id: packages,v 1.5 2007/01/30 15:09:22 thierry Exp $
 #
 
 # Source function library and configuration
@@ -19,7 +19,7 @@ set -x
 
 case "$1" in
     start)
-	MESSAGE=$"Signing node packages"
+	MESSAGE=$"Signing and indexing node packages"
 	dialog "$MESSAGE"
 
 	shopt -s nullglob
@@ -84,6 +84,8 @@ case "$1" in
 
 	for repository in $repositories ; do
 	    rm -rf $repository/signed-stamps
+	    rm -rf $repository/repodata
+	    rm -rf $repository/headers
 	done
 	;;
     *)
