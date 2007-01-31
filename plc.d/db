@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: db,v 1.5 2007/01/30 11:29:36 thierry Exp $
+# $Id$
 #
 
 # Source function library and configuration
@@ -20,71 +20,57 @@ set -x
 # Export so that we do not have to specify -p to psql invocations
 export PGPORT=$PLC_DB_PORT
 
-### updates the subversion column in plc_db_version by applying
-### all migrations scripts in /usr/share/plc_api/migrations/nnn-up-*
-### between the current_subversion+1 and the last one
-### migration indices must be contiguous
-function migrate_db () {
-
-    ### check for (or create) the subversion column in plc_db_version
-    psql -U $PLC_DB_USER -c 'select (subversion) from plc_db_version' $PLC_DB_NAME > /dev/null
-    [ "$?" = 0 ] || psql -U $PLC_DB_USER -c 'ALTER TABLE plc_db_version ADD subversion integer DEFAULT 0' $PLC_DB_NAME
-
-    # get current subversion - OUCH, THIS IS UGLY
-    current_subversion=$(psql -U $PLC_DB_USER -c 'select (subversion) from plc_db_version' $PLC_DB_NAME | \
-			 grep '^  *[0-9][0-9]*$')
-    current_subversion=$(($current_subversion))
-    upgrade_index=$current_subversion
-			 
-    while true; do
-        upgrade_index=$(printf "%03d" $(($upgrade_index+1)))
-	upgrade_scripts=$(ls -1 /usr/share/plc_api/migrations/${upgrade_index}-up-* 2> /dev/null)
-	if [ -z "$upgrade_scripts" ] ; then
-	    echo "DB current migration is $current_subversion"
-	    psql -U $PLC_DB_USER -c "UPDATE plc_db_version SET subversion=$current_subversion" $PLC_DB_NAME
-	    break
-	else
-	    for script in $upgrade_scripts; do
-	        # is this an sql script
-	        if [ $(basename "$script") != $(basename $script .sql) ] ; then
-		    echo "Applying SQL migration script $script"
-		    psql -U $PLC_DB_USER -f "$script" $PLC_DB_NAME
-		elif [ -x "$script" ] ; then
-		    echo "Running executable migration script $script"
-		    "$script"
-		else
-		    echo "WARNING - script $script ignored"
-		fi		    
-	    done
-	    current_subversion=$(($upgrade_index))
+# Updates the database by applying all migration scripts in
+# /usr/share/plc_api/migrations/N-up-*, where N is greater than the
+# current subversion. At least one of the migration scripts with the
+# same N must update plc_db_version.subversion.
+function migrate_db()
+{
+    subversion=$(psql -U $PLC_DB_USER --quiet --tuples-only --no-align -c \
+	         "SELECT subversion FROM plc_db_version LIMIT 1" \
+	         $PLC_DB_NAME 2>/dev/null || echo 0)
+    shopt -s nullglob
+    for file in /usr/share/plc_api/migrations/[0-9]*-up-* ; do
+	script=$(basename $file)
+	index=${script%-up*}
+	extension=${script##*.}
+	if [ $index -gt $subversion ] ; then
+	    if [ "$extension" = "sql" ] ; then
+		psql -U $PLC_DB_USER -f $file $PLC_DB_NAME
+	    elif [ -x $file ] ; then
+		$file
+	    fi
+	    check
 	fi
     done
 }
 
-#### dumps the database for future restoration
-# uses /root/dumps since /root is mounted on /data/root
-function dump_db () {
-
-    dump=/root/dumps/$(date +'%Y-%m-%d-%H-%M.sql')
-    mkdir -p $(dirname $dump)
-    pg_dump --user=$PLC_DB_USER $PLC_DB_NAME > $dump
-    
+# Dumps the database
+function dump_db()
+{
+    dump=/var/lib/pgsql/backups/$(date +"$PLC_DB_NAME.%Y-%m-%d-%H-%M.sql")
+    pg_dump -U $PLC_DB_USER $PLC_DB_NAME > $dump
+    check
 }
 
-function clean_dumps () {
-    find /root/dumps -name '[0-9]*.sql' -atime +15 | xargs rm
+# Clean up old backups
+function clean_dumps()
+{
+    find /var/lib/pgsql/backups -name "$PLC_DB_NAME.*.sql" -atime +15 | xargs rm -f
+    check
 }
 
-##########
 if [ "$PLC_DB_ENABLED" != "1" ] ; then
-  exit 0
+    exit 0
 fi
 
 case "$1" in
     start)
-
 	MESSAGE=$"Bootstrapping the database"
 	dialog "$MESSAGE"
+
+	# Apply schema updates
+	migrate_db
 
 	# Update the maintenance account username. This can't be
 	# done through the api-config script since it uses the
@@ -103,14 +89,10 @@ EOF
 	db-config
 	check
 
-	# Handle migrations
-	migrate_db
-
 	result "$MESSAGE"
 	;;
 
     migrate)
-
 	MESSAGE=$"Migrating the database"
 	dialog "$MESSAGE"
 
@@ -119,7 +101,6 @@ EOF
 	;;
 
     dump)
-
       	MESSAGE=$"Dumping the database"
 	dialog "$MESSAGE"
 
@@ -128,7 +109,6 @@ EOF
 	;;
 
     clean-dump)
-
       	MESSAGE=$"Cleaning old database dumps"
 	dialog "$MESSAGE"
 
@@ -140,8 +120,6 @@ EOF
         echo "Usage: $0 [start|migrate|dump|clean-dump]"
 	exit 1
 	;;
-
-      
 esac
 
 exit $ERRORS
