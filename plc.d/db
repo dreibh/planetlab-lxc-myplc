@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: db,v 1.4 2007/01/24 21:05:30 mlhuang Exp $
+# $Id: db,v 1.5 2007/01/30 11:29:36 thierry Exp $
 #
 
 # Source function library and configuration
@@ -21,7 +21,7 @@ set -x
 export PGPORT=$PLC_DB_PORT
 
 ### updates the subversion column in plc_db_version by applying
-### all migrations scripts in /usr/share/plc_api/migrations/nnn-up-*.sql
+### all migrations scripts in /usr/share/plc_api/migrations/nnn-up-*
 ### between the current_subversion+1 and the last one
 ### migration indices must be contiguous
 function migrate_db () {
@@ -38,15 +38,23 @@ function migrate_db () {
 			 
     while true; do
         upgrade_index=$(printf "%03d" $(($upgrade_index+1)))
-	upgrade_scripts=$(ls -1 /usr/share/plc_api/migrations/${upgrade_index}-up-*.sql 2> /dev/null)
+	upgrade_scripts=$(ls -1 /usr/share/plc_api/migrations/${upgrade_index}-up-* 2> /dev/null)
 	if [ -z "$upgrade_scripts" ] ; then
 	    echo "DB current migration is $current_subversion"
 	    psql -U $PLC_DB_USER -c "UPDATE plc_db_version SET subversion=$current_subversion" $PLC_DB_NAME
 	    break
 	else
 	    for script in $upgrade_scripts; do
-	        echo "Applying migration script $script"
-		psql -U $PLC_DB_USER -f $script $PLC_DB_NAME 
+	        # is this an sql script
+	        if [ $(basename "$script") != $(basename $script .sql) ] ; then
+		    echo "Applying SQL migration script $script"
+		    psql -U $PLC_DB_USER -f "$script" $PLC_DB_NAME
+		elif [ -x "$script" ] ; then
+		    echo "Running executable migration script $script"
+		    "$script"
+		else
+		    echo "WARNING - script $script ignored"
+		fi		    
 	    done
 	    current_subversion=$(($upgrade_index))
 	fi
