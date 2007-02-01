@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: db-config,v 1.17 2007/01/17 22:35:31 mlhuang Exp $
+# $Id: db-config,v 1.18 2007/01/30 23:11:14 mlhuang Exp $
 #
 
 from plc_config import PLCConfiguration
@@ -516,29 +516,41 @@ def main():
          'min_role_id': 10},
 
         # Bandwidth limits
-        {'name': "net_min",
-         'description': "Minimum bandwidth (bps)",
-         'min_role_id': 10},
-        {'name': "net_max",
-         'description': "Maximum bandwidth (bps)",
-         'min_role_id': 10},
-        {'name': "net_avg",
-         'description': "Average bandwidth (bps)",
-         'min_role_id': 10},
+        #{'name': "net_min",
+        # 'description': "Minimum bandwidth (bps)",
+        # 'min_role_id': 10},
+        #{'name': "net_max",
+        # 'description': "Maximum bandwidth (bps)",
+        # 'min_role_id': 10},
+        #{'name': "net_avg",
+        # 'description': "Average bandwidth (bps)",
+        # 'min_role_id': 10},
         {'name': "net_share",
          'description': "Number of bandwidth shares",
          'min_role_id': 10},
-        {'name': "net2_min",
-         'description': "Minimum bandwidth over routes exempt from node bandwidth limits (bps)",
-         'min_role_id': 10},
-        {'name': "net2_max",
-         'description': "Maximum bandwidth over routes exempt from node bandwidth limits (bps)",
-         'min_role_id': 10},
-        {'name': "net2_avg",
-         'description': "Average bandwidth over routes exempt from node bandwidth limits (bps)",
-         'min_role_id': 10},
+        #{'name': "net2_min",
+        # 'description': "Minimum bandwidth over routes exempt from node bandwidth limits (bps)",
+        # 'min_role_id': 10},
+        #{'name': "net2_max",
+        # 'description': "Maximum bandwidth over routes exempt from node bandwidth limits (bps)",
+        # 'min_role_id': 10},
+        #{'name': "net2_avg",
+        # 'description': "Average bandwidth over routes exempt from node bandwidth limits (bps)",
+        # 'min_role_id': 10},
         {'name': "net2_share",
          'description': "Number of bandwidth shares over routes exempt from node bandwidth limits",
+         'min_role_id': 10},
+        {'name': "KByteMax",
+         'description': "Maximum daily network Tx KByte limit.",
+         'min_role_id': 10},
+        {'name': "KByteThresh",
+         'description': "Threshold KByte limit before warning and throttling.",
+         'min_role_id': 10},
+        {'name': "KByteMaxI2",
+         'description': "Maximum daily network Tx KByte limit to I2 hosts.",
+         'min_role_id': 10},
+        {'name': "KByteThreshI2",
+         'description': "Threshold KByte limit to I2 hosts before warning and throttling.",
          'min_role_id': 10},
 
         # Disk quota
