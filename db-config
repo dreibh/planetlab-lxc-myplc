@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: db-config,v 1.20 2007/02/02 19:43:01 faiyaza Exp $
+# $Id: db-config,v 1.21 2007/02/02 19:56:21 mlhuang Exp $
 #
 
 from plc_config import PLCConfiguration
@@ -581,17 +581,6 @@ def main():
         else:
             UpdateSliceAttributeType(default_attribute_type['name'], default_attribute_type)
 
-    # Get contents of SSL public certificate used for signing slice tickets
-    try:
-        plc_ticket_pubkey = ""
-        for line in file(plc_ma_sa['ca_ssl_key_pub']):
-            # Skip comments
-            if line[0:5] != "-----":
-                # XXX The embedded newlines matter, do not strip()!
-                plc_ticket_pubkey += line
-    except:
-        plc_ticket_pubkey = '%KEY%'
-
     # Create/update system slices
     legacy_slices = [
         # XXX Required for old Node Manager
@@ -603,7 +592,7 @@ def main():
          'expires': sys.maxint,
          'attributes': [('plc_slice_type', "VServerSlice"),
                         ('plc_agent_version', "1.0"),
-                        ('plc_ticket_pubkey', plc_ticket_pubkey)]},
+                        ('plc_ticket_pubkey', "")]},
 
         # XXX Required for old Node Manager
         {'name': "pl_conf_vserverslice",
