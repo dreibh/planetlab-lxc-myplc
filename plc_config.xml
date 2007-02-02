@@ -6,7 +6,7 @@ Default PLC configuration file
 Mark Huang <mlhuang@cs.princeton.edu>
 Copyright (C) 2006 The Trustees of Princeton University
 
-$Id: plc_config.xml,v 1.18 2007/01/18 18:44:18 mlhuang Exp $
+$Id: plc_config.xml,v 1.19 2007/01/26 02:48:57 mlhuang Exp $
 -->
 
 <!DOCTYPE configuration PUBLIC "-//PlanetLab Central//DTD PLC configuration//EN" "plc_config.dtd">
@@ -596,6 +596,7 @@ $Id: plc_config.xml,v 1.18 2007/01/18 18:44:18 mlhuang Exp $
 
 	<!-- API server uses a few non-standard packages -->
 	<packagereq type="mandatory">PLCAPI</packagereq>
+	<packagereq type="mandatory">SOAPpy</packagereq>
 	<packagereq type="mandatory">PyXML</packagereq>
 
 	<!-- API server uses SSL to sign tickets -->
