@@ -6,7 +6,7 @@ Default PLC build environment configuration file
 Mark Huang <mlhuang@cs.princeton.edu>
 Copyright (C) 2006 The Trustees of Princeton University
 
-$Id: plc_devel_config.xml,v 1.7 2007/01/17 22:35:51 mlhuang Exp $
+$Id: plc_devel_config.xml,v 1.8 2007/01/19 19:19:55 mef Exp $
 -->
 
 <!DOCTYPE configuration PUBLIC "-//PlanetLab Central//DTD PLC configuration//EN" "plc_config.dtd">
@@ -155,6 +155,8 @@ $Id: plc_devel_config.xml,v 1.7 2007/01/17 22:35:51 mlhuang Exp $
 	<packagereq type="mandatory">docbook-utils-pdf</packagereq>
 	<packagereq type="mandatory">postgresql-devel</packagereq>
 	<packagereq type="mandatory">php-devel</packagereq>
+	<packagereq type="mandatory">SOAPpy</packagereq>
+	<packagereq type="mandatory">PyXML</packagereq>
       </packagelist>
     </group>
 
