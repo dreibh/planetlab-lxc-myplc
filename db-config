@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: db-config,v 1.19 2007/02/01 21:09:22 faiyaza Exp $
+# $Id: db-config,v 1.20 2007/02/02 19:43:01 faiyaza Exp $
 #
 
 from plc_config import PLCConfiguration
@@ -522,10 +522,10 @@ def main():
         {'name': "net_max_rate",
          'description': "Maximum bandwidth (kbps)",
          'min_role_id': 10},
-        {'name': "net_i2min_rate",
+        {'name': "net_i2_min_rate",
          'description': "Minimum bandwidth over I2 routes (kbps)",
          'min_role_id': 10},
-        {'name': "net_i2max_rate",
+        {'name': "net_i2_max_rate",
          'description': "Maximum bandwidth over I2 routes (kbps)",
          'min_role_id': 10},
         {'name': "net_max_kbyte",
@@ -534,20 +534,19 @@ def main():
         {'name': "net_thresh_kbyte",
          'description': "KByte limit before warning and throttling.",
          'min_role_id': 10},
-        {'name': "net_i2max_kbyte",
+        {'name': "net_i2_max_kbyte",
          'description': "Maximum daily network Tx KByte limit to I2 hosts.",
          'min_role_id': 10},
-        {'name': "net_i2thresh_kbyte",
+        {'name': "net_i2_thresh_kbyte",
          'description': "KByte limit to I2 hosts before warning and throttling.",
          'min_role_id': 10},
         {'name': "net_share",
          'description': "Number of bandwidth shares",
          'min_role_id': 10},
-        {'name': "net_i2share",
+        {'name': "net_i2_share",
          'description': "Number of bandwidth shares over I2 routes",
          'min_role_id': 10},
  
-
         # Disk quota
         {'name': "disk_max",
          'description': "Disk quota (1k disk blocks)",
