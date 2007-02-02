@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: httpd,v 1.7 2006/10/30 22:38:22 mlhuang Exp $
+# $Id: httpd,v 1.8 2007/01/25 20:27:18 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -132,6 +132,26 @@ EOF
 	# Make the Drupal files upload directory owned by Apache
 	mkdir -p $DocumentRoot/files
 	chown apache:apache $DocumentRoot/files
+
+	# Symlink any (real) files or directories in
+	# /data/var/www/html/* to /var/www/html/. We could descend
+	# into subdirectories, but the code to do so properly would be
+	# madness.
+	for file in /data/$DocumentRoot/* ; do
+	    if [ -e "$file" -a ! -h "$file" ] ; then
+		base=$(basename "$file")
+		if [ ! -e "$DocumentRoot/$base" ] ; then
+		    ln -nsf "$file" "$DocumentRoot/$base"
+		fi
+	    fi
+	done
+
+	# Cleanup broken symlinks
+	for file in $DocumentRoot/* ; do
+	    if [ -h "$file" -a ! -e "$file" ] ; then
+		rm -f "$file"
+	    fi
+	done
 
 	# Old style PHP constants
 	mkdir -p /etc/planetlab/php
