@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: packages,v 1.5 2007/01/30 15:09:22 thierry Exp $
+# $Id: packages,v 1.6 2007/01/30 15:56:53 thierry Exp $
 #
 
 # Source function library and configuration
@@ -34,25 +34,35 @@ case "$1" in
 	fi
 
 	for repository in $repositories ; do
-            # Sign all RPMS. setsid detaches rpm from the terminal,
-            # allowing the (hopefully blank) GPG password to be
-            # entered from stdin instead of /dev/tty.
 	    packages=
 	    stamps=
-	    # create a stamp once the package gets signed
+	    yum_arch=0
+	    createrepo=0
+
+	    # Create a stamp once the package gets signed
 	    mkdir $repository/signed-stamps
 
 	    for package in $repository/*.rpm ; do
 	        stamp=$repository/signed-stamps/$(basename $package).signed
-		# is package newer than stamp ?
+		# If package is newer than signature stamp
 		if [ $package -nt $stamp ] ; then
 		    packages="$packages $package"
 		    stamps="$stamps $stamp"
-		else
-		    echo "Package $package already signed - skipped"
+		fi
+		# Or yum-arch headers
+		if [ $package -nt $repository/headers/header.info ] ; then
+		    yum_arch=1
+		fi
+		# Or createrepo database
+		if [ $package -nt $repository/repodata/repomd.xml ] ; then
+		    createrepo=1
 		fi
 	    done
+
 	    if [ -n "$packages" ] ; then
+		# Sign RPMS. setsid detaches rpm from the terminal,
+                # allowing the (hopefully blank) GPG password to be
+                # entered from stdin instead of /dev/tty.
 		echo | setsid rpm \
 		    --define "_signature gpg" \
 		    --define "_gpg_path /etc/planetlab" \
@@ -64,10 +74,22 @@ case "$1" in
 	    # Update yum metadata. yum-arch createrepo sometimes leaves behind
 	    # .oldheaders and .olddata directories accidentally.
 	    rm -rf $repository/{.oldheaders,.olddata}
-	    yum-arch $repository
-	    check
-	    createrepo -g yumgroups.xml $repository
-	    check
+
+	    # Old command is yum-arch
+	    if [ $yum_arch -eq 1 ] ; then
+		yum-arch $repository
+		check
+	    fi
+
+	    # New command is createrepo
+	    if [ $createrepo -eq 1 ] ; then
+		if [ -f $repository/yumgroups.xml ] ; then
+		    createrepo -g yumgroups.xml $repository
+		else
+		    createrepo $repository
+		fi
+		check
+	    fi
 	done
 
 	result "$MESSAGE"
