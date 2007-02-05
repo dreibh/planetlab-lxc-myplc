@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: httpd,v 1.8 2007/01/25 20:27:18 mlhuang Exp $
+# $Id: httpd,v 1.9 2007/02/02 15:37:25 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -65,7 +65,10 @@ case "$1" in
 		if [ "$server" = "$previous_server" ] ; then
 		    break
 		fi
-		previous_hostname=PLC_${previous_server}_HOST
+		previous_enabled=PLC_${previous_server}_ENABLED
+		if [ "${!previous_enabled}" != "1" ] ; then
+		    continue
+		fi
 		previous_http_port=PLC_${previous_server}_PORT
 		previous_https_port=PLC_${previous_server}_SSL_PORT
 
@@ -77,16 +80,20 @@ case "$1" in
 		fi
 	    done
 
-	    # Listen on these ports
+	    # HTTP configuration
 	    if [ $skip_http -eq 0 -a -n "${!http_port}" ] ; then
 		cat <<EOF
 Listen ${!http_port}
+# Make sure that the admin web pages and API are always accessed via SSL
 <VirtualHost *:${!http_port}>
     Redirect /db https://$PLC_WWW_HOST:$PLC_WWW_SSL_PORT/db
+    Redirect /planetlab https://$PLC_WWW_HOST:$PLC_WWW_SSL_PORT/planetlab
     Redirect /$PLC_API_PATH https://$PLC_API_HOST:$PLC_API_PORT/$PLC_API_PATH
 </VirtualHost>
 EOF
 	    fi
+
+	    # HTTPS configuration
 	    if [ $skip_https -eq 0 -a -n "${!https_port}" ] ; then
 		# XXX Cannot support NameVirtualHost over SSL. If
 		# the API, boot, and web servers are all running
@@ -122,6 +129,10 @@ EOF
 <Location /db>
     Deny from all
 </Location>
+<Location /planetlab>
+    Deny from all
+</Location>
+Redirect /index.php http://$PLC_WWW_HOST:$PLC_WWW_PORT/
 EOF
 	    fi
 	) >>$plc_conf
