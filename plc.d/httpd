@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: httpd,v 1.9 2007/02/02 15:37:25 mlhuang Exp $
+# $Id: httpd,v 1.10 2007/02/05 19:56:26 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -34,6 +34,15 @@ case "$1" in
 
 	MESSAGE=$"Starting web server"
 	dialog "$MESSAGE"
+
+	# Set the document root to /data/var/www/html (static files
+	# only, no Drupal or admin pages) if the web server should not
+	# run on this machine.
+	if [ "$PLC_WWW_ENABLED" != "1" ] ; then
+	    sed -i -e "s@^DocumentRoot.*@DocumentRoot \"/data$DocumentRoot\"@" $httpd_conf
+	else
+	    sed -i -e "s@^DocumentRoot.*@DocumentRoot \"$DocumentRoot\"@" $httpd_conf
+	fi
 
 	# Set the default include path
 	include_path=".:$DocumentRoot/planetlab/includes:$DocumentRoot/generated:/etc/planetlab/php:/usr/share/plc_api/php"
