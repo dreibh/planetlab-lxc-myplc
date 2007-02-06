@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: httpd,v 1.10 2007/02/05 19:56:26 mlhuang Exp $
+# $Id: httpd,v 1.11 2007/02/06 16:24:13 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -36,12 +36,14 @@ case "$1" in
 	dialog "$MESSAGE"
 
 	# Set the document root to /data/var/www/html (static files
-	# only, no Drupal or admin pages) if the web server should not
-	# run on this machine.
+	# and PlanetLabConf only, no Drupal or admin pages) if the web
+	# server should not run on this machine.
 	if [ "$PLC_WWW_ENABLED" != "1" ] ; then
 	    sed -i -e "s@^DocumentRoot.*@DocumentRoot \"/data$DocumentRoot\"@" $httpd_conf
+	    ln -nsf $DocumentRoot/PlanetLabConf /data$DocumentRoot/PlanetLabConf
 	else
 	    sed -i -e "s@^DocumentRoot.*@DocumentRoot \"$DocumentRoot\"@" $httpd_conf
+	    rm -f /data$DocumentRoot/PlanetLabConf
 	fi
 
 	# Set the default include path
@@ -135,13 +137,7 @@ EOF
 
 	    if [ "$PLC_WWW_ENABLED" != "1" ] ; then
 		cat <<EOF
-<Location /db>
-    Deny from all
-</Location>
-<Location /planetlab>
-    Deny from all
-</Location>
-Redirect /index.php http://$PLC_WWW_HOST:$PLC_WWW_PORT/
+Redirect /index.html http://$PLC_WWW_HOST:$PLC_WWW_PORT/
 EOF
 	    fi
 	) >>$plc_conf
