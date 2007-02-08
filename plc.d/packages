@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: packages,v 1.6 2007/01/30 15:56:53 thierry Exp $
+# $Id: packages,v 1.7 2007/02/04 01:05:28 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -19,6 +19,10 @@ set -x
 
 case "$1" in
     start)
+	if [ "$PLC_BOOT_ENABLED" != "1" ] ; then
+	    exit 0
+	fi
+
 	MESSAGE=$"Signing and indexing node packages"
 	dialog "$MESSAGE"
 
