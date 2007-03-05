@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id$
+# $Id: db,v 1.7 2007/01/31 19:53:20 mlhuang Exp $
 #
 
 # Source function library and configuration
@@ -51,12 +51,15 @@ function dump_db()
     dump=/var/lib/pgsql/backups/$(date +"$PLC_DB_NAME.%Y-%m-%d-%H-%M.sql")
     pg_dump -U $PLC_DB_USER $PLC_DB_NAME > $dump
     check
+    dump=/var/lib/pgsql/backups/$(date +"drupal.%Y-%m-%d-%H-%M.sql")
+    pg_dump -U $PLC_DB_USER drupal > $dump
+    check
 }
 
 # Clean up old backups
 function clean_dumps()
 {
-    find /var/lib/pgsql/backups -name "$PLC_DB_NAME.*.sql" -atime +15 | xargs rm -f
+    find /var/lib/pgsql/backups '(' -name "$PLC_DB_NAME.*.sql" -o -name "drupal.*.sql" ')' -a -atime +15 | xargs rm -f
     check
 }
 
@@ -101,7 +104,7 @@ EOF
 	;;
 
     dump)
-      	MESSAGE=$"Dumping the database"
+      	MESSAGE=$"Dumping the databases in /var/lib/pgsql/backups"
 	dialog "$MESSAGE"
 
 	dump_db
