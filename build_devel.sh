@@ -15,7 +15,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: build_devel.sh,v 1.7 2007/01/12 14:48:02 mlhuang Exp $
+# $Id: build_devel.sh,v 1.8 2007/01/20 04:02:43 mlhuang Exp $
 #
 
 . build.functions
@@ -68,10 +68,9 @@ echo "* myplc-devel: Adding build user"
 uid=${SUDO_UID:-2000}
 gid=${SUDO_GID:-2000}
 if ! grep -q "Automated Build" devel/root/etc/passwd ; then
-    chroot devel/root <<EOF
-groupadd -g $gid build
-useradd -c "Automated Build" -u $uid -g $gid -n -d /data/build -M -s /bin/bash build
-EOF
+    chroot devel/root sh -c "groupadd -o -g $gid build; \
+useradd -o -c 'Automated Build' -u $uid -g $gid -n -d /data/build -M -s /bin/bash build; \
+exit 0"
 fi
 
 # Copy build scripts to build home directory
