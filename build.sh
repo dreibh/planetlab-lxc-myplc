@@ -15,7 +15,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: build.sh,v 1.39 2007/01/22 16:50:48 mlhuang Exp $
+# $Id: build.sh,v 1.40 2007/01/30 16:03:20 mlhuang Exp $
 #
 
 . build.functions
@@ -111,7 +111,7 @@ rm -f data/var/www/html/boot/bootmanager.sh
 # Initialize node RPMs directory. The PlanetLab-Bootstrap.tar.bz2
 # tarball already contains all of the node RPMs pre-installed. Only
 # updates or optional packages should be placed in this directory.
-install -D -m 644 ../build/groups/v3_yumgroups.xml \
+install -D -m 644 ../build/groups/v4_yumgroups.xml \
     data/var/www/html/install-rpms/planetlab/yumgroups.xml
 
 # Make image out of directory
