@@ -6,7 +6,7 @@ Default PLC build environment configuration file
 Mark Huang <mlhuang@cs.princeton.edu>
 Copyright (C) 2006 The Trustees of Princeton University
 
-$Id: plc_devel_config.xml,v 1.8 2007/01/19 19:19:55 mef Exp $
+$Id: plc_devel_config.xml,v 1.9 2007/02/02 04:32:36 mlhuang Exp $
 -->
 
 <!DOCTYPE configuration PUBLIC "-//PlanetLab Central//DTD PLC configuration//EN" "plc_config.dtd">
@@ -103,6 +103,9 @@ $Id: plc_devel_config.xml,v 1.8 2007/01/19 19:19:55 mef Exp $
       <description>Additional tools required to build PlanetLab
       software.</description>
       <packagelist>
+	<!-- Basics -->
+	<packagereq type="mandatory">findutils</packagereq>
+
 	<!-- kernel-vserver is intended for the vserver-reference, but
 	     serves the same useful purpose for MyPLC, namely, to
 	     Provide: kernel without actually installing anything. -->
