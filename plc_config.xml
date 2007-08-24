@@ -6,7 +6,7 @@ Default PLC configuration file
 Mark Huang <mlhuang@cs.princeton.edu>
 Copyright (C) 2006 The Trustees of Princeton University
 
-$Id: plc_config.xml,v 1.20 2007/02/02 23:40:43 mlhuang Exp $
+$Id: plc_config.xml,v 1.21 2007/08/24 07:19:27 mef Exp $
 -->
 
 <!DOCTYPE configuration PUBLIC "-//PlanetLab Central//DTD PLC configuration//EN" "plc_config.dtd">
@@ -571,6 +571,7 @@ $Id: plc_config.xml,v 1.20 2007/02/02 23:40:43 mlhuang Exp $
 
 	<!-- Almost all scripts are written in Python -->
 	<packagereq type="mandatory">python</packagereq>
+	<packagereq type="mandatory">python-devel</packagereq>
 
 	<!-- Database server -->
 	<packagereq type="mandatory">postgresql</packagereq>
