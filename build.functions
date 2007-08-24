@@ -6,7 +6,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: build.functions,v 1.6 2007/08/16 21:42:02 mef Exp $
+# $Id: build.functions,v 1.7 2007/08/24 06:46:39 mef Exp $
 #
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
@@ -28,7 +28,9 @@ export PATH
 PLC_DEVEL_FEDORA_RELEASE=$([ -f "/etc/fedora-release" ] && awk ' { if ($3=="Core") print $4; else print $3 } ' /etc/fedora-release || echo 4)
 PLC_DEVEL_FEDORA_ARCH=$(uname -i)
 # Fedora Core mirror from which to install filesystems
-PLC_DEVEL_FEDORA_URL=file:///data/fedora
+# xxx don't set URL... mkfedora will pick up the right thing
+#PLC_DEVEL_FEDORA_URL=file:///data/fedora
+PLC_DEVEL_FEDORA_URL=
 
 # We may be running inside a myplc-devel environment, which can
 # override these defaults.
@@ -89,7 +91,11 @@ make_chroot() {
     done < <(./plc-config --packages $config)
 
     # Install base system
-    eval mkfedora -v -l $PLC_DEVEL_FEDORA_URL -r $PLC_DEVEL_FEDORA_RELEASE -a $PLC_DEVEL_FEDORA_ARCH $packages $groups $root
+    if [ ! -z "$PLC_DEVEL_FEDORA_URL" ] ; then
+       eval mkfedora -v -l $PLC_DEVEL_FEDORA_URL -r $PLC_DEVEL_FEDORA_RELEASE -a $PLC_DEVEL_FEDORA_ARCH $packages $groups $root
+    else
+       eval mkfedora -v -r $PLC_DEVEL_FEDORA_RELEASE -a $PLC_DEVEL_FEDORA_ARCH $packages $groups $root
+    fi
 
     # Disable all services in reference image
     chroot $root sh -c "/sbin/chkconfig --list | awk '{ print \$1 }' | xargs -i /sbin/chkconfig {} off"
