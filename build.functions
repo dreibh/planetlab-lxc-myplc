@@ -6,7 +6,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: build.functions,v 1.8 2007/08/24 07:11:36 mef Exp $
+# $Id: build.functions,v 1.9 2007/08/28 21:52:14 mef Exp $
 #
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
@@ -26,6 +26,7 @@ export PATH
 
 # Release and architecture to install
 PLC_DEVEL_FEDORA_RELEASE=$([ -f "/etc/fedora-release" ] && awk ' { if ($2=="Core") print $4; else print $3 } ' /etc/fedora-release || echo 4)
+[ $PLC_DEVEL_FEDORA_RELEASE -lt 4 ] && PLC_DEVEL_FEDORA_RELEASE=4
 PLC_DEVEL_FEDORA_ARCH=$(uname -i)
 # Fedora Core mirror from which to install filesystems
 # xxx don't set URL... mkfedora will pick up the right thing
