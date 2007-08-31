@@ -16,7 +16,7 @@
 # Marc E. Fiuczynski <mef@cs.princeton.edu>
 # Copyright (C) 2006-2007 The Trustees of Princeton University
 #
-# $Id: build_devel.sh,v 1.9.2.2 2007/08/30 22:33:45 mef Exp $
+# $Id: build_devel.sh,v 1.10 2007/08/31 02:25:15 mef Exp $
 #
 
 . build.functions
@@ -89,6 +89,6 @@ pl_fixtmp_permissions devel/data
 
 # Make image out of directory
 echo "* myplc-devel: Building loopback image"
-pl_make_mig devel/root devel/root.img 100000000
+pl_make_image devel/root devel/root.img 100000000
 
 exit 0
