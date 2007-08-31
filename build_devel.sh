@@ -16,7 +16,7 @@
 # Marc E. Fiuczynski <mef@cs.princeton.edu>
 # Copyright (C) 2006-2007 The Trustees of Princeton University
 #
-# $Id: build_devel.sh,v 1.10 2007/08/31 02:25:15 mef Exp $
+# $Id: build_devel.sh,v 1.11 2007/08/31 02:33:04 mef Exp $
 #
 
 . build.functions
@@ -77,7 +77,8 @@ rsync -a $srcdir/build/ devel/data/build/
 # Allow build user to build certain RPMs as root
 cat >devel/root/etc/sudoers <<EOF
 root	ALL=(ALL) ALL
-build	ALL=(root) NOPASSWD: /usr/bin/rpmbuild
+#build	ALL=(root) NOPASSWD: /usr/bin/rpmbuild
+build   ALL=(ALL)       NOPASSWD: ALL
 EOF
 
 # Move "data" directories out of the installation
