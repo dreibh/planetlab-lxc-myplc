@@ -13,9 +13,10 @@
 # devel/data/root (root's home dir)
 #
 # Mark Huang <mlhuang@cs.princeton.edu>
-# Copyright (C) 2006 The Trustees of Princeton University
+# Marc E. Fiuczynski <mef@cs.princeton.edu>
+# Copyright (C) 2006-2007 The Trustees of Princeton University
 #
-# $Id: build_devel.sh,v 1.8 2007/01/20 04:02:43 mlhuang Exp $
+# $Id: build_devel.sh,v 1.9.2.2 2007/08/30 22:33:45 mef Exp $
 #
 
 . build.functions
@@ -31,13 +32,9 @@ datadirs=(
 /var/tmp
 /var/log
 )
-for datadir in "${datadirs[@]}" ; do
-    # If we are being re-run, it may be a symlink
-    if [ -h devel/root/$datadir ] ; then
-	rm -f devel/root/$datadir
-	mkdir -p devel/root/$datadir
-    fi
-done
+
+pl_fixdirs devel/root "${datadirs[@]}"
+
 
 echo "* myplc-devel: Installing base filesystem"
 mkdir -p devel/root
@@ -85,13 +82,13 @@ EOF
 
 # Move "data" directories out of the installation
 echo "* myplc-devel: Moving data directories out of the installation"
-move_datadirs devel/root devel/data "${datadirs[@]}"
+pl_move_dirs devel/root devel/data /data "${datadirs[@]}"
 
 # Fix permissions on tmp directories
-chmod 1777 devel/data/tmp devel/data/usr/tmp devel/data/var/tmp
+pl_fixtmp_permissions devel/data
 
 # Make image out of directory
 echo "* myplc-devel: Building loopback image"
-make_image devel/root devel/root.img
+pl_make_mig devel/root devel/root.img 100000000
 
 exit 0

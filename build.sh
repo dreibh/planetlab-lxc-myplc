@@ -3,7 +3,7 @@
 # Builds MyPLC, either inside the MyPLC development environment in
 # devel/root (if PLC_DEVEL_BOOTSTRAP is true), or in the current host
 # environment (may be itself a MyPLC development environment or a
-# Fedora Core 4 environment with the appropriate development packages
+# Fedora environment with the appropriate development packages
 # installed).
 #
 # root.img (loopback image)
@@ -13,9 +13,10 @@
 # data/root (root's homedir)
 #
 # Mark Huang <mlhuang@cs.princeton.edu>
-# Copyright (C) 2006 The Trustees of Princeton University
+# Marc E. Fiuczynski <mef@cs.princeton.edu>
+# Copyright (C) 2006-2007 The Trustees of Princeton University
 #
-# $Id: build.sh,v 1.40 2007/01/30 16:03:20 mlhuang Exp $
+# $Id: build.sh,v 1.41.2.1 2007/08/30 16:39:08 mef Exp $
 #
 
 . build.functions
@@ -40,13 +41,8 @@ datadirs=(
 /var/tmp
 /var/log
 )
-for datadir in "${datadirs[@]}" ; do
-    # If we are being re-run, it may be a symlink
-    if [ -h root/$datadir ] ; then
-	rm -f root/$datadir
-	mkdir -p root/$datadir
-    fi
-done
+
+pl_fixdirs root "${datadirs[@]}"
 
 echo "* myplc: Installing base filesystem"
 mkdir -p root data
@@ -100,10 +96,10 @@ chmod 644 $roothome/.profile
 
 # Move "data" directories out of the installation
 echo "* myplc: Moving data directories out of the installation"
-move_datadirs root data "${datadirs[@]}"
+pl_move_dirs root data /data "${datadirs[@]}"
 
 # Fix permissions on tmp directories
-chmod 1777 data/tmp data/usr/tmp data/var/tmp
+pl_fixtmp_permissions data
 
 # Remove generated bootmanager script
 rm -f data/var/www/html/boot/bootmanager.sh
@@ -111,11 +107,11 @@ rm -f data/var/www/html/boot/bootmanager.sh
 # Initialize node RPMs directory. The PlanetLab-Bootstrap.tar.bz2
 # tarball already contains all of the node RPMs pre-installed. Only
 # updates or optional packages should be placed in this directory.
-install -D -m 644 ../build/groups/v4_yumgroups.xml \
+install -D -m 644 $pl_YUMGROUPSXML \
     data/var/www/html/install-rpms/planetlab/yumgroups.xml
 
 # Make image out of directory
 echo "* myplc: Building loopback image"
-make_image root root.img
+pl_make_image root root.img 100000000
 
 exit 0
