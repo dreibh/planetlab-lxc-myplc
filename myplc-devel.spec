@@ -16,7 +16,7 @@ AutoReqProv: no
 %define debug_package %{nil}
 
 %description
-This package install a complete PlanetLab development environment
+This package installs a complete PlanetLab development environment
 contained within a chroot jail. The default installation consists of
 all the tools necessary to compile MyPLC.
 
