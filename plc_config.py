@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: plc_config.py,v 1.3 2006/04/18 15:32:48 thierry Exp $
+# $Id: plc_config.py,v 1.4 2006/07/17 21:29:15 mlhuang Exp $
 #
 
 import xml.dom.minidom
@@ -798,6 +798,6 @@ class TrimTextElement(xml.dom.minidom.Element):
 
 if __name__ == '__main__':
     import sys
-    if len(sys.argv) > 1 and sys.argv[1] in ['build', 'install']:
+    if len(sys.argv) > 1 and sys.argv[1] in ['build', 'install', 'uninstall']:
         from distutils.core import setup
         setup(py_modules=["plc_config"])
