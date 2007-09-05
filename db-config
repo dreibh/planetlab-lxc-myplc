@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: db-config,v 1.22 2007/02/02 23:40:22 mlhuang Exp $
+# $Id: db-config,v 1.23 2007/07/02 18:44:10 tmack Exp $
 #
 
 from plc_config import PLCConfiguration
@@ -663,7 +663,7 @@ by visiting:
 
 https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/nodes/?id=%(node_id)d
 
-Click the Reinstall link, then reboot the node.
+Update the BootState to 'Reinstall', then reboot the node.
 
 If you have already performed this step and are still receiving this
 message, please reply so that we may investigate the problem.
@@ -792,17 +792,27 @@ requirements.
 
 The most common reason for authentication failure is that the
 authentication key stored in the node configuration file, does not
-match the key on record. Regenerate the node configuration file by
-visiting:
+match the key on record. 
 
-https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/nodes/?id=%(node_id)d
+There are two possible steps to resolve the problem.
 
-Click the Configuration File link, and save the downloaded file as
-plnode.txt on either a floppy disk or a USB flash drive. Click the
-Boot link, then reboot the node.
+1. If you have used an All-in-one BootCD that includes the plnode.txt file,
+    then please check your machine for any old boot media, either in the
+    floppy drive, or on a USB stick.  It is likely that an old configuration
+    is being used instead of the new configuration stored on the BootCD.
+Or, 
+2. If you are using Generic BootCD image, then regenerate the node 
+    configuration file by visiting:
+
+    https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/nodes/?id=%(node_id)d
+
+    Under 'Download', follow the 'Download plnode.txt file for %(hostname)s'
+	option, and save the downloaded file as plnode.txt on either a floppy 
+	disk or a USB flash drive.  Be sure the 'Boot State' is set to 'Boot', 
+	and, then reboot the node.
 
 If you have already performed this step and are still receiving this
-message, please reply so that we may investigate the problem.
+message, please reply so that we can help investigate the problem.
 """
          },
 
@@ -818,7 +828,7 @@ doing so, visit:
 
 https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/nodes/?id=%(node_id)d
 
-Click the Reinstall link, then reboot the node.
+Change the 'Boot State' to 'Reinstall', and then reboot the node.
 
 If you have already performed this step and are still receiving this
 message, please reply so that we may investigate the problem.
@@ -837,7 +847,8 @@ hostname, IP address, and DNS servers, by visiting:
 
 https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/nodes/?id=%(node_id)d
 
-Correct any errors, click the Reinstall link, then reboot the node.
+Correct any errors, and change the 'Boot State' to 'Reinstall', and then
+reboot the node.
 
 If you have already performed this step and are still receiving this
 message, please reply so that we may investigate the problem.
@@ -857,8 +868,8 @@ configuration file. To create this file, visit:
 https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/nodes/?id=%(node_id)d
 
 Click the Configuration File link, and save the downloaded file as
-plnode.txt on either a floppy disk or a USB flash drive. Click the
-Reinstall link, then reboot the node.
+plnode.txt on either a floppy disk or a USB flash drive.  Change the 
+'Boot State' to 'Reinstall', and then reboot the node.
 
 If you have already performed this step and are still receiving this
 message, please reply so that we may investigate the problem.
@@ -876,7 +887,7 @@ successfully in the past, please try re-installing it by visiting:
 
 https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/nodes/?id=%(node_id)d
 
-Click the Reinstall link, then reboot the node.
+Change the 'Boot State' to 'Reinstall', and then reboot the node.
 
 If you have already performed this step and are still receiving this
 message, please reply so that we may investigate the problem.
