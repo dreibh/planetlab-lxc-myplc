@@ -6,7 +6,7 @@ Default PLC build environment configuration file
 Mark Huang <mlhuang@cs.princeton.edu>
 Copyright (C) 2006 The Trustees of Princeton University
 
-$Id: plc_devel_config.xml,v 1.9 2007/02/02 04:32:36 mlhuang Exp $
+$Id: plc_devel_config.xml,v 1.10 2007/08/24 07:19:27 mef Exp $
 -->
 
 <!DOCTYPE configuration PUBLIC "-//PlanetLab Central//DTD PLC configuration//EN" "plc_config.dtd">
@@ -130,6 +130,9 @@ $Id: plc_devel_config.xml,v 1.9 2007/02/02 04:32:36 mlhuang Exp $
 	<!-- ulogd -->
 	<packagereq type="mandatory">libpcap</packagereq>
 	<packagereq type="mandatory">libpcap-devel</packagereq>
+	<packagereq type="mandatory">mysql</packagereq>
+	<packagereq type="mandatory">mysql-devel</packagereq>
+	<packagereq type="mandatory">mysql-server</packagereq>
 
 	<!-- iptables -->
 	<packagereq type="mandatory">linuxdoc-tools</packagereq>
