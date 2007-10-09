@@ -27,14 +27,14 @@ system.
 %setup -q
 
 %build
-pushd myplc
+pushd MyPLC
 ./build.sh
 popd
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
-pushd myplc
+pushd MyPLC
 
 #
 # myplc
