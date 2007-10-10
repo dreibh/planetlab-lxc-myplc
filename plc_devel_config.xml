@@ -127,6 +127,11 @@ $Id: plc_devel_config.xml,v 1.10 2007/08/24 07:19:27 mef Exp $
 	<packagereq type="mandatory">tetex-latex</packagereq>
 	<packagereq type="mandatory">gcc-c++</packagereq>
 
+	<!-- vsys -->
+	<packagereq type="mandatory">ocaml</packagereq>
+	<packagereq type="mandatory">ocaml-ocamldoc</packagereq>
+	<packagereq type="mandatory">inotify-tools-devel</packagereq>
+
 	<!-- ulogd -->
 	<packagereq type="mandatory">libpcap</packagereq>
 	<packagereq type="mandatory">libpcap-devel</packagereq>
