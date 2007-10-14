@@ -162,12 +162,13 @@ $Id: plc_devel_config.xml,v 1.10 2007/08/24 07:19:27 mef Exp $
 	<!-- myplc -->
 	<packagereq type="mandatory">rsync</packagereq>
 
-	<!-- new_plc_api -->
+	<!-- PLCAPI -->
 	<packagereq type="mandatory">docbook-utils-pdf</packagereq>
 	<packagereq type="mandatory">postgresql-devel</packagereq>
 	<packagereq type="mandatory">php-devel</packagereq>
 	<packagereq type="mandatory">SOAPpy</packagereq>
 	<packagereq type="mandatory">PyXML</packagereq>
+	<packagereq type="mandatory">expat-devel</packagereq>
       </packagelist>
     </group>
 
