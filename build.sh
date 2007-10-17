@@ -64,21 +64,21 @@ install -D -m 755 guest.init root/etc/init.d/plc
 chroot root sh -c 'chkconfig --add plc; chkconfig plc on'
 
 # Install web scripts
-echo "* myplc: Installing web scripts"
-mkdir -p root/usr/bin
-install -m 755 \
-    $srcdir/plc/scripts/gen-sites-xml.py \
-    $srcdir/plc/scripts/gen-slices-xml-05.py \
-    $srcdir/plc/scripts/gen-static-content.py \
-    root/usr/bin/
+#echo "* myplc: Installing web scripts"
+#mkdir -p root/usr/bin
+#install -m 755 \
+    #$srcdir/plc/scripts/gen-sites-xml.py \
+    #$srcdir/plc/scripts/gen-slices-xml-05.py \
+    #$srcdir/plc/scripts/gen-static-content.py \
+    #root/usr/bin/
 
 # Install web pages
 echo "* myplc: Installing web pages"
 mkdir -p root/var/www/html
-rsync -a $srcdir/new_plc_www/ root/var/www/html/
+rsync -a $srcdir/WWW/ root/var/www/html/
 
 # Install Drupal rewrite rules
-install -D -m 644 $srcdir/new_plc_www/drupal.conf root/etc/httpd/conf.d/drupal.conf
+install -D -m 644 $srcdir/WWW/drupal.conf root/etc/httpd/conf.d/drupal.conf
 
 # Install configuration file
 echo "* myplc: Installing configuration file"
