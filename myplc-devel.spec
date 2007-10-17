@@ -24,14 +24,14 @@ all the tools necessary to compile MyPLC.
 %setup -q
 
 %build
-pushd myplc
+pushd MyPLC
 ./build_devel.sh
 popd
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
-pushd myplc
+pushd MyPLC
 
 # Install host startup script and configuration file
 install -D -m 755 host.init $RPM_BUILD_ROOT/%{_sysconfdir}/init.d/plc-devel
