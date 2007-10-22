@@ -13,6 +13,7 @@ Source0: %{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 AutoReqProv: no
 
+# group this according to the requirements of the different packages we build
 Requires: beecrypt-devel
 Requires: bzip2
 Requires: coreutils
@@ -28,7 +29,9 @@ Requires: dnsmasq
 Requires: docbook-utils-pdf
 Requires: dosfstools
 Requires: doxygen
+Requires: expat-devel
 Requires: expect
+Requires: findutils
 Requires: gcc-c++
 Requires: gd
 Requires: glibc
@@ -37,6 +40,7 @@ Requires: gnupg
 Requires: gperf
 Requires: gzip
 Requires: httpd
+Requires: inotify-tools-devel
 Requires: install
 Requires: iptables
 Requires: less
@@ -55,6 +59,8 @@ Requires: mysql-devel
 Requires: mysql-server
 Requires: nasm
 Requires: ncurses-devel
+Requires: ocaml
+Requires: ocaml-ocamldoc
 Requires: openssh
 Requires: openssl
 Requires: php
@@ -67,6 +73,8 @@ Requires: postgresql-python
 Requires: postgresql-server
 Requires: python
 Requires: python-devel
+Requires: python-pycurl
+Requires: python-psycopg2
 Requires: PyXML
 Requires: readline-devel
 Requires: redhat-rpm-config
@@ -77,6 +85,7 @@ Requires: rsync
 Requires: sendmail
 Requires: sendmail-cf
 Requires: sharutils
+Requires: SOAPpy
 Requires: sudo
 Requires: svn
 Requires: tar
