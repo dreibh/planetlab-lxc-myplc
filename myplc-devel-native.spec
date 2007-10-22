@@ -152,6 +152,7 @@ fi
 %preun
 # 0 = erase, 1 = upgrade
 if [ $1 -eq 0 ] ; then
+	echo "NOTE: should remove build user from /etc/sudoers"
 fi
 
 %files
