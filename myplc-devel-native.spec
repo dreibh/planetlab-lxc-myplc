@@ -41,7 +41,6 @@ Requires: gperf
 Requires: gzip
 Requires: httpd
 Requires: inotify-tools-devel
-Requires: install
 Requires: iptables
 Requires: less
 Requires: libpcap
@@ -50,7 +49,6 @@ Requires: libtool
 Requires: linuxdoc-tools
 Requires: mailx
 Requires: make
-Requires: metadata
 Requires: mkisofs
 Requires: mod_python
 Requires: mod_ssl
@@ -109,10 +107,12 @@ necessary to compile MyPLC.
 %setup -q
 
 %build
+
 rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/etc
 
 %install
+
 touch $RPM_BUILD_ROOT/etc/myplc-devel-native
 
 %clean
