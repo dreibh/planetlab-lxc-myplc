@@ -87,7 +87,7 @@ Requires: sendmail-cf
 Requires: sharutils
 Requires: SOAPpy
 Requires: sudo
-Requires: svn
+Requires: subversion
 Requires: tar
 Requires: tetex-latex
 Requires: time
