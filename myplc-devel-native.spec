@@ -6,7 +6,7 @@ URL: http://svn.planet-lab.org/svn/MyPLC
 Summary: PlanetLab Central (PLC) Development Environment
 Name: myplc-devel-native
 Version: 0.1
-Release: 1%{?pldistro:.%{pldistro}}%{?date:.%{date}}
+Release: 2%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 License: PlanetLab
 Group: Development/Tools
 Source0: %{name}-%{version}.tar.gz
