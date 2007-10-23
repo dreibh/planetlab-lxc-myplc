@@ -43,13 +43,13 @@ install -D -m 755 guest.init ${tmpdir}/etc/init.d/plc
 
 
 # Install web scripts
-echo "* myplc: Installing web scripts"
-mkdir -p ${tmpdir}/usr/bin
-install -m 755 \
-    $srcdir/plc/scripts/gen-sites-xml.py \
-    $srcdir/plc/scripts/gen-slices-xml-05.py \
-    $srcdir/plc/scripts/gen-static-content.py \
-    ${tmpdir}/usr/bin/
+#echo "* myplc: Installing web scripts"
+#mkdir -p ${tmpdir}/usr/bin
+#install -m 755 \
+#    $srcdir/plc/scripts/gen-sites-xml.py \
+#    $srcdir/plc/scripts/gen-slices-xml-05.py \
+#    $srcdir/plc/scripts/gen-static-content.py \
+#    ${tmpdir}/usr/bin/
 
 # Install configuration file
 echo "* myplc: Installing configuration file"

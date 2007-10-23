@@ -165,9 +165,9 @@ fi
 /usr/bin/plc-config-tty
 /usr/bin/db-config
 /usr/bin/dns-config
-/usr/bin/gen-sites-xml.py*
-/usr/bin/gen-slices-xml-05.py*
-/usr/bin/gen-static-content.py*
+#/usr/bin/gen-sites-xml.py*
+#/usr/bin/gen-slices-xml-05.py*
+#/usr/bin/gen-static-content.py*
 /etc/plc.d
 /etc/planetlab
 /var/www/html/install-rpms/planetlab
