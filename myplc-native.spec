@@ -71,7 +71,7 @@ system.
 %setup -q
 
 %build
-pushd myplc
+pushd MyPLC
 rm -rf $RPM_BUILD_ROOT
 ./build-native.sh $RPM_BUILD_ROOT
 popd
