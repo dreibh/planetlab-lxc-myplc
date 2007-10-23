@@ -38,6 +38,7 @@ Requires: glibc
 Requires: glibc-common
 Requires: gnupg
 Requires: gperf
+Requires: graphviz
 Requires: gzip
 Requires: httpd
 Requires: inotify-tools-devel
