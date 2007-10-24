@@ -41,11 +41,15 @@ Requires: gperf
 Requires: graphviz
 Requires: gzip
 Requires: httpd
+%if "%{fedora}" >= "6"
 Requires: inotify-tools-devel
+%endif
 Requires: iptables
 Requires: less
 Requires: libpcap
+%if "%{fedora}" >= "6"
 Requires: libpcap-devel
+%endif
 Requires: libtool
 Requires: linuxdoc-tools
 Requires: mailx
@@ -72,8 +76,10 @@ Requires: postgresql-python
 Requires: postgresql-server
 Requires: python
 Requires: python-devel
+%if "%{fedora}" >= "5"
 Requires: python-pycurl
 Requires: python-psycopg2
+%endif
 Requires: PyXML
 Requires: readline-devel
 Requires: redhat-rpm-config
