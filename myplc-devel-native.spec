@@ -41,7 +41,7 @@ Requires: gperf
 Requires: graphviz
 Requires: gzip
 Requires: httpd
-%if "%{fedora}" >= "6"
+%if "%{fedora}" >= "7"
 Requires: inotify-tools-devel
 %endif
 Requires: iptables
