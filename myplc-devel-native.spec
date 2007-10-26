@@ -41,13 +41,13 @@ Requires: gperf
 Requires: graphviz
 Requires: gzip
 Requires: httpd
-%if "%{fedora}" >= "7"
+%if "%{distro}" == "Fedora" && "%{release}" >= "7"
 Requires: inotify-tools-devel
 %endif
 Requires: iptables
 Requires: less
 Requires: libpcap
-%if "%{fedora}" >= "6"
+%if ("%{distro}" == "Fedora" && "%{release}" >= "6") || ("%{distro}" == "CentOS" && "%{release}" >= "5")
 Requires: libpcap-devel
 %endif
 Requires: libtool
@@ -76,7 +76,7 @@ Requires: postgresql-python
 Requires: postgresql-server
 Requires: python
 Requires: python-devel
-%if "%{fedora}" >= "5"
+%if ("%{distro}" == "Fedora" && "%{release}" >= "5") || ("%{distro}" == "CentOS" && "%{release}" >= "5")
 Requires: python-pycurl
 Requires: python-psycopg2
 %endif
