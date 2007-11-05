@@ -50,7 +50,7 @@ Requires: libpcap
 %if "%{distroname}" == "Fedora" && "%{distrorelease}" >= "6"
 Requires: libpcap-devel
 %endif
-%if "%{distroname}" == "CentOS" && "%{distrorelease}" >= "5")
+%if "%{distroname}" == "CentOS" && "%{distrorelease}" >= "5"
 Requires: libpcap-devel
 %endif
 Requires: libtool
