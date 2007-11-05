@@ -41,14 +41,23 @@ Requires: gperf
 Requires: graphviz
 Requires: gzip
 Requires: httpd
-%if "%{distroname}" == "Fedora" && "%{distrorelease}" >= "7"
+%if "%{distroname}" == "Fedora" 
+%if "%{distrorelease}" >= "7"
 Requires: inotify-tools-devel
+%endif
 %endif
 Requires: iptables
 Requires: less
 Requires: libpcap
-%if ("%{distroname}" == "Fedora" && "%{distrorelease}" >= "6") || ("%{distroname}" == "CentOS" && "%{distrorelease}" >= "5")
+%if "%{distroname}" == "Fedora" 
+%if "%{distrorelease}" >= "6"
 Requires: libpcap-devel
+%endif
+%endif
+%if "%{distroname}" == "CentOS" 
+%if "%{distrorelease}" >= "5")
+Requires: libpcap-devel
+%endif
 %endif
 Requires: libtool
 Requires: linuxdoc-tools
@@ -76,9 +85,17 @@ Requires: postgresql-python
 Requires: postgresql-server
 Requires: python
 Requires: python-devel
-%if ("%{distroname}" == "Fedora" && "%{distrorelease}" >= "5") || ("%{distroname}" == "CentOS" && "%{distrorelease}" >= "5")
+%if "%{distroname}" == "Fedora"
+%if "%{distrorelease}" >= "5"
 Requires: python-pycurl
 Requires: python-psycopg2
+%endif
+%endif
+%if "%{distroname}" == "CentOS" 
+%if "%{distrorelease}" >= "5")
+Requires: python-pycurl
+Requires: python-psycopg2
+%endif
 %endif
 Requires: PyXML
 Requires: readline-devel
