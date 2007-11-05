@@ -47,10 +47,7 @@ Requires: inotify-tools-devel
 Requires: iptables
 Requires: less
 Requires: libpcap
-%if "%{distroname}" == "Fedora" && "%{distrorelease}" >= "6"
-Requires: libpcap-devel
-%endif
-%if "%{distroname}" == "CentOS" && "%{distrorelease}" >= "5"
+%if ("%{distroname}" == "Fedora" && "%{distrorelease}" >= "6") || ("%{distroname}" == "CentOS" && "%{distrorelease}" >= "5")
 Requires: libpcap-devel
 %endif
 Requires: libtool
@@ -79,11 +76,7 @@ Requires: postgresql-python
 Requires: postgresql-server
 Requires: python
 Requires: python-devel
-%if "%{distroname}" == "Fedora" && "%{distrorelease}" >= "5"
-Requires: python-pycurl
-Requires: python-psycopg2
-%endif
-%if "%{distroname}" == "CentOS" && "%{distrorelease}" >= "5"
+%if ("%{distroname}" == "Fedora" && "%{distrorelease}" >= "5") || ("%{distroname}" == "CentOS" && "%{distrorelease}" >= "5")
 Requires: python-pycurl
 Requires: python-psycopg2
 %endif
