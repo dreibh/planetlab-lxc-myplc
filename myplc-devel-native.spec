@@ -41,13 +41,13 @@ Requires: gperf
 Requires: graphviz
 Requires: gzip
 Requires: httpd
-%if "%{distro}" == "Fedora" && "%{release}" >= "7"
+%if "%{distroname}" == "Fedora" && "%{distrorelease}" >= "7"
 Requires: inotify-tools-devel
 %endif
 Requires: iptables
 Requires: less
 Requires: libpcap
-%if ("%{distro}" == "Fedora" && "%{release}" >= "6") || ("%{distro}" == "CentOS" && "%{release}" >= "5")
+%if ("%{distroname}" == "Fedora" && "%{distrorelease}" >= "6") || ("%{distroname}" == "CentOS" && "%{distrorelease}" >= "5")
 Requires: libpcap-devel
 %endif
 Requires: libtool
@@ -76,7 +76,7 @@ Requires: postgresql-python
 Requires: postgresql-server
 Requires: python
 Requires: python-devel
-%if ("%{distro}" == "Fedora" && "%{release}" >= "5") || ("%{distro}" == "CentOS" && "%{release}" >= "5")
+%if ("%{distroname}" == "Fedora" && "%{distrorelease}" >= "5") || ("%{distroname}" == "CentOS" && "%{distrorelease}" >= "5")
 Requires: python-pycurl
 Requires: python-psycopg2
 %endif
@@ -140,14 +140,30 @@ fi
 
 %post
 
+if [ -h "/sbin/new-kernel-pkg" ] ; then
+	filename=$(readlink -f /sbin/new-kernel-pkg)
+	if [ "$filename" == "/sbin/true"] ; then
+		echo "WARNING: /sbin/new-kernel-pkg symlinked to /sbin/true"
+		echo "\tmost likely /etc/rpm/macros has /sbin/new-kernel-pkg declared in _netsharedpath."
+		echo "\tPlease remove /sbin/new-kernel-pkg from _netsharedpath and reintall mkinitrd."
+		exit 1
+	fi
+fi
+
 uid=2000
 gid=2000
 
+# add a "build" user to the system
 builduser=$(grep "^build" /etc/passwd | wc -l)
 if [ $builduser -eq 0 ] ; then
 	groupadd -o -g $gid build;
 	useradd -o -c 'Automated Build' -u $uid -g $gid -n -M -s /bin/bash build;
 fi
+
+# myplc-devel on a shared box requires that we set up max loop devices
+for i in $(seq 0 255) ; do
+	mknod -m 640 /dev/loop$i b 7 $i
+done
 
 # Allow build user to build certain RPMs as root
 buildsudo=$(grep "^build.*ALL=(ALL).*NOPASSWD:.*ALL"  /etc/sudoers | wc -l)
@@ -155,6 +171,11 @@ if [ $buildsudo -eq 0 ] ; then
 	echo "build   ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers
 fi
 
+# Don't requiretty for sudo. Needed to build myplc from cron job
+ttysudo=$(grep "^Defaults.*requiretty" /etc/sudoers | wc -l)
+if [ $ttysudo -eq 1 ] ; then
+	sed -i 's,^Defaults.*requiretty,#Defaults requiretty,' /etc/sudoers
+fi
 
 %preun
 # 0 = erase, 1 = upgrade
