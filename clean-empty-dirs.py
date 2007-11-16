@@ -1,6 +1,6 @@
 #!/usr/bin/python
 ###
-### $Id: clean-empty-dirs.py 495 2007-06-11 07:20:50Z thierry $
+### $Id$
 ###
 ### utility script for cleaning empty directories
 ### useful to clean up /var/tmp/bootmedium

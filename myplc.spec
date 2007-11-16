@@ -1,7 +1,7 @@
 #
-# $Id: myplc.spec 1087 2007-11-15 14:25:23Z thierry $
+# $Id$
 #
-%define url $URL: svn+ssh://thierry@svn.planet-lab.org/svn/PLCAPI/trunk/PLCAPI.spec $
+%define url $URL$
 
 %define name myplc
 %define version 4.0

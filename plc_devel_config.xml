@@ -6,7 +6,7 @@ Default PLC build environment configuration file
 Mark Huang <mlhuang@cs.princeton.edu>
 Copyright (C) 2006 The Trustees of Princeton University
 
-$Id: plc_devel_config.xml 1078 2007-11-15 13:38:27Z thierry $
+$Id$
 -->
 
 <!DOCTYPE configuration PUBLIC "-//PlanetLab Central//DTD PLC configuration//EN" "plc_config.dtd">

@@ -6,7 +6,7 @@ PLC configuration file-to-DocBook conversion stylesheet
 Mark Huang <mlhuang@cs.princeton.edu>
 Copyright (C) 2006 The Trustees of Princeton University
 
-$Id: GenDoc.xsl,v 1.8 2005/10/10 17:46:36 mlhuang Exp $
+$Id$
 -->
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version='1.0'>

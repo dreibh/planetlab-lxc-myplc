@@ -1,5 +1,5 @@
 # 
-# $Id: Makefile 1078 2007-11-15 13:38:27Z thierry $
+# $Id$
 #
 
 BINARIES = plc-config plc-config-tty db-config dns-config refresh-peer.py plc-map.py clean-empty-dirs.py mtail.py

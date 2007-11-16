@@ -9,7 +9,7 @@
 # Marc E. Fiuczynski <mef@cs.princeton.edu>
 # Copyright (C) 2007 The Trustees of Princeton University
 #
-# $Id: build-native.sh,v 1.1.2.5 2007/08/31 17:46:11 mef Exp $
+# $Id$
 #
 
 . build.functions

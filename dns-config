@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: dns-config 129 2007-03-20 12:04:03Z thierry $
+# $Id$
 #
 
 from plc_config import PLCConfiguration

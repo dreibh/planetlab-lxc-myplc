@@ -5,7 +5,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: functions 545 2007-06-18 10:56:31Z thierry $
+# $Id$
 #
 
 export PATH=/sbin:/bin:/usr/bin:/usr/sbin

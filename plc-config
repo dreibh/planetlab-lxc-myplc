@@ -6,7 +6,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: plc-config 1078 2007-11-15 13:38:27Z thierry $
+# $Id$
 #
 
 import sys

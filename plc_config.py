@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: plc_config.py 1078 2007-11-15 13:38:27Z thierry $
+# $Id$
 #
 
 import xml.dom.minidom

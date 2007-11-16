@@ -6,7 +6,7 @@
 #
 # description:	Manages all PLC services on this machine
 #
-# $Id: guest.init 635 2007-07-05 11:08:14Z thierry $
+# $Id$
 #
 
 # Source function library and configuration

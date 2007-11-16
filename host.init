@@ -6,7 +6,7 @@
 #
 # description:	Manages all PLC services on this machine
 #
-# $Id: host.init 1078 2007-11-15 13:38:27Z thierry $
+# $Id$
 #
 
 PATH=/sbin:/bin:/usr/bin:/usr/sbin

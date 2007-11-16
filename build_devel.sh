@@ -15,7 +15,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: build_devel.sh 1078 2007-11-15 13:38:27Z thierry $
+# $Id$
 #
 
 echo "$0" not supported anymore

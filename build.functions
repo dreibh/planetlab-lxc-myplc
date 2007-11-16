@@ -6,7 +6,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: build.functions 1086 2007-11-15 14:17:45Z thierry $
+# $Id$
 #
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin

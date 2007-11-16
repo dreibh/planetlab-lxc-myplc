@@ -12,7 +12,7 @@ from optparse import OptionParser
 
 class mtail:
 
-    subversion_id = "$Id: mtail.py 571 2007-06-22 21:38:07Z thierry $"
+    subversion_id = "$Id$"
 
     default_time_format = "%H:%M:%S"
     

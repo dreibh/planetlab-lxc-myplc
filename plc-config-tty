@@ -20,8 +20,8 @@ import getopt
 from plc_config import PLCConfiguration
 
 ####################
-release_id = "$Id: plc-config-tty 635 2007-07-05 11:08:14Z thierry $"
-release_rev = "$Revision: 635 $"
+release_id = "$Id$"
+release_rev = "$Revision$"
 
 def init_flavour (flavour):
     global service

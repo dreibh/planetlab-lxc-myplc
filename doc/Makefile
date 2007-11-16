@@ -4,7 +4,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: Makefile 704 2007-07-20 14:15:43Z thierry $
+# $Id$
 #
 
 vpath GenDoc.xsl ../../plc_www/doc

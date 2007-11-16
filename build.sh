@@ -15,7 +15,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: build.sh 1095 2007-11-16 09:52:30Z thierry $
+# $Id$
 #
 
 . build.functions
