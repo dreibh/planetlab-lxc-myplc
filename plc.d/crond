@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: crond,v 1.9 2007/02/07 23:21:27 mlhuang Exp $
+# $Id: crond 1078 2007-11-15 13:38:27Z thierry $
 #
 
 # Source function library and configuration
@@ -36,26 +36,26 @@ SHELL=/bin/bash
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
 MAILTO=$MAILTO
 HOME=/
-
+#
 # minute hour day-of-month month day-of-week user command
 EOF
 
         # Run all jobs once at startup
 
-	if [ "$PLC_BOOT_ENABLED" = "1" ] ; then
-	    echo "*/5 * * * * root gen-slices-xml-05.py" >>/etc/cron.d/plc.cron
-	    gen-slices-xml-05.py
-	    check
+#	if [ "$PLC_BOOT_ENABLED" = "1" ] ; then
+#	    echo "*/5 * * * * root gen-slices-xml-05.py" >>/etc/cron.d/plc.cron
+#	    gen-slices-xml-05.py
+#	    check
 	fi
 
 	if [ "$PLC_WWW_ENABLED" = "1" ] ; then
-	    echo "*/15 * * * * root gen-static-content.py" >>/etc/cron.d/plc.cron
-	    echo "*/15 * * * * root gen-sites-xml.py" >>/etc/cron.d/plc.cron
+#	    echo "*/15 * * * * root gen-static-content.py" >>/etc/cron.d/plc.cron
+#	    echo "*/15 * * * * root gen-sites-xml.py" >>/etc/cron.d/plc.cron
 	    echo "00 * * * * wget -O - -q http://localhost/cron.php" >>/etc/cron.d/plc.cron
-	    gen-static-content.py
-	    check
-	    gen-sites-xml.py
-	    check
+#	    gen-static-content.py
+#	    check
+#	    gen-sites-xml.py
+#	    check
 	    wget -O - -q http://localhost/cron.php
 	    check
 	fi
@@ -70,6 +70,12 @@ EOF
 	    echo "5 5 * * * root vacuumdb -U postgres --all --analyze --quiet" >>/etc/cron.d/plc.cron
 	    vacuumdb -U postgres --all --analyze --quiet
 	    check
+	fi
+
+	if [ "$PLC_WWW_ENABLED" = "1" ] ; then
+	  echo "*/15 * * * * root clean-empty-dirs.py /var/tmp/bootmedium" >> /etc/cron.d/plc.cron
+	  clean-empty-dirs.py /var/tmp/bootmedium
+	  check
 	fi
 
 	plc_daemon crond

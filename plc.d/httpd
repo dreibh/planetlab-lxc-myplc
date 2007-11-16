@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: httpd,v 1.11 2007/02/06 16:24:13 mlhuang Exp $
+# $Id: httpd 350 2007-05-11 10:58:44Z thierry $
 #
 
 # Source function library and configuration
@@ -140,6 +140,10 @@ EOF
 Redirect /index.html http://$PLC_WWW_HOST:$PLC_WWW_PORT/
 EOF
 	    fi
+	    cat <<EOF
+AddType application/octet-stream .iso
+AddType application/octet-stream .usb
+EOF
 	) >>$plc_conf
 
 	# Make alpina-logs directory writable for bootmanager log upload
@@ -190,6 +194,17 @@ define('PLANETLAB_SUPPORT_EMAIL', PLC_NAME . ' Support <' . PLC_MAIL_SUPPORT_ADD
 define('PLANETLAB_SUPPORT_EMAIL_ONLY', PLC_MAIL_SUPPORT_ADDRESS);
 ?>
 EOF
+
+	## patch php.ini
+	# memory limit
+	sed -i -e 's,^memory_limit = 8M *;,memory_limit = 24M ; patch myplc -- ,' $php_ini 
+	# log_errors : is On by default
+	# error_log
+	if ! grep '^error_log *=' $php_ini > /dev/null ; then
+	  echo 'error_log = /var/log/php.log' >> $php_ini
+	  touch /var/log/php.log
+	  chmod 666 /var/log/php.log
+	fi
 
 	plc_daemon httpd
 	check

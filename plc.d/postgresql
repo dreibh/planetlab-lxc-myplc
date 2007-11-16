@@ -7,12 +7,13 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: postgresql,v 1.11 2007/02/05 19:11:06 mlhuang Exp $
+# $Id: postgresql 635 2007-07-05 11:08:14Z thierry $
 #
 
 # Source function library and configuration
 . /etc/plc.d/functions
 . /etc/planetlab/plc_config
+local_config=/etc/planetlab/configs/site.xml
 
 # Be verbose
 set -x
@@ -29,7 +30,7 @@ export PGPORT=$PLC_DB_PORT
 postgresql_start ()
 {
     # start() always returns 0
-    service postgresql start
+    (exec 3>&- 4>&- ; service postgresql start)
 
     # status() will still return 0 even while still initializing
     if status postmaster && [ -f /var/lock/subsys/postgresql ] ; then
@@ -119,7 +120,8 @@ case "$1" in
 	# Create/update the unprivileged database user and password
 	if [ -z "$PLC_DB_PASSWORD" ] ; then
 	    PLC_DB_PASSWORD=$(uuidgen)
-	    plc-config --category=plc_db --variable=password --value="$PLC_DB_PASSWORD" --save
+	    plc-config --category=plc_db --variable=password --value="$PLC_DB_PASSWORD" --save=$local_config $local_config
+	    service plc reload
 	fi
 	if ! psql -U $PLC_DB_USER -c "" template1 >/dev/null 2>&1 ; then
 	    psql -U postgres -c "CREATE USER $PLC_DB_USER PASSWORD '$PLC_DB_PASSWORD'" template1

@@ -6,7 +6,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: plc-config,v 1.1.1.1 2006/03/27 17:36:46 mlhuang Exp $
+# $Id: plc-config 1078 2007-11-15 13:38:27Z thierry $
 #
 
 import sys
@@ -54,6 +54,11 @@ Usage: %s [OPTION]... [FILES]
     sys.exit(1)
 
 
+def deprecated (message):
+    print "%s: deprecated usage"%sys.argv[0]
+    print message
+    sys.exit(1)
+
 def main():
     plc = PLCConfiguration()
     fileobjs = []
@@ -65,7 +70,7 @@ def main():
     save = False
 
     # Standard options
-    shortopts = "hs"
+    shortopts = "hs:"
     longopts = ["shell", "bash", "python",
                 "php",
                 "xml",
@@ -76,7 +81,7 @@ def main():
                 "category=", "variable=", "value=",
                 "group=", "package=", "type=",
                 "help",
-                "save"]
+                "save="]
 
     try:
         (opts, argv) = getopt.gnu_getopt(sys.argv[1:], shortopts, longopts)
@@ -96,11 +101,14 @@ def main():
         elif opt == "--variables":
             output = plc.output_variables
         elif opt == "--packages":
-            output = plc.output_packages
+#            output = plc.output_packages
+            deprecated("option --packages deprecated -- use .lst files instead")
         elif opt == "--groups":
-            output = plc.output_groups
+#            output = plc.output_groups
+            deprecated("option --groups deprecated -- use .lst files instead")
         elif opt == "--comps":
-            output = plc.output_comps
+#            output = plc.output_comps
+            deprecated("option --comps deprecated -- use .lst files instead")
         elif opt == "--category":
             category['id'] = optval
         elif opt == "--variable":
@@ -108,13 +116,18 @@ def main():
         elif opt == "--value":
             variable['value'] = optval
         elif opt == "--group":
-            group['id'] = optval
+#            group['id'] = optval
+            deprecated("option --group deprecated -- use .lst files instead")
         elif opt == "--package":
-            package['name'] = optval
+#            package['name'] = optval
+            deprecated("option --package deprecated -- use .lst files instead")
         elif opt == "--type":
             package['type'] = optval
         elif opt == '-s' or opt == "--save":
-            save = True
+            if not optval:
+                usage()
+            print 'parsed save option',optval
+            save = optval
         elif opt == '-h' or opt == "--help":
             usage()
 
@@ -147,7 +160,16 @@ def main():
 
     # --save
     if save:
-        plc.save()
+        # create directory if needed
+        # so that plc.d/{api,postgres} can create configs/site.xml 
+        dirname = os.path.dirname (save)
+        if (not os.path.exists (dirname)):
+            os.makedirs(dirname,0755)
+            if (not os.path.exists (dirname)):
+                print "Cannot create dir %s - exiting" % dirname
+                sys.exit(1)
+        
+        plc.save(save)
 
 
 if __name__ == '__main__':

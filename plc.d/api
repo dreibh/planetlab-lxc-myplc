@@ -8,12 +8,13 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: api,v 1.8 2007/01/19 20:05:05 mlhuang Exp $
+# $Id: api 635 2007-07-05 11:08:14Z thierry $
 #
 
 # Source function library and configuration
 . /etc/plc.d/functions
 . /etc/planetlab/plc_config
+local_config=/etc/planetlab/configs/site.xml
 
 # Be verbose
 set -x
@@ -31,7 +32,8 @@ case "$1" in
 	# password.
 	if [ -z "$PLC_API_MAINTENANCE_PASSWORD" ] ; then
 	    PLC_API_MAINTENANCE_PASSWORD=$(uuidgen)
-	    plc-config --category=plc_api --variable=maintenance_password --value="$PLC_API_MAINTENANCE_PASSWORD" --save
+	    plc-config --category=plc_api --variable=maintenance_password --value="$PLC_API_MAINTENANCE_PASSWORD" --save=$local_config $local_config
+	    service plc reload
 	fi
 
 	# Make sure that all PLC servers are allowed to access the API
@@ -46,7 +48,8 @@ case "$1" in
 	    done
         ) | sort -u))
 	PLC_API_MAINTENANCE_SOURCES=${PLC_API_MAINTENANCE_SOURCES[*]}
-	plc-config --category=plc_api --variable=maintenance_sources --value="$PLC_API_MAINTENANCE_SOURCES" --save
+	plc-config --category=plc_api --variable=maintenance_sources --value="$PLC_API_MAINTENANCE_SOURCES" --save=$local_config $local_config
+	service plc reload
 
 	result "$MESSAGE"
 	;;

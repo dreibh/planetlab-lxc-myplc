@@ -6,7 +6,7 @@ Default PLC configuration file
 Mark Huang <mlhuang@cs.princeton.edu>
 Copyright (C) 2006 The Trustees of Princeton University
 
-$Id: plc_config.xml,v 1.21 2007/08/24 07:19:27 mef Exp $
+$Id: default_config.xml 1078 2007-11-15 13:38:27Z thierry $
 -->
 
 <!DOCTYPE configuration PUBLIC "-//PlanetLab Central//DTD PLC configuration//EN" "plc_config.dtd">
@@ -517,6 +517,7 @@ $Id: plc_config.xml,v 1.21 2007/08/24 07:19:27 mef Exp $
   </variables>
 
   <comps>
+    <!-- xxx should be deprecated - not used anymore xxx -->
     <group>
       <id>plc</id>
       <name>PlanetLab Central</name>
@@ -610,6 +611,17 @@ $Id: plc_config.xml,v 1.21 2007/08/24 07:19:27 mef Exp $
 	<!-- Customizable Boot CD and Boot Manager packages -->
 	<packagereq type="mandatory">bootcd</packagereq>
 	<packagereq type="mandatory">bootmanager</packagereq>
+
+	<!-- PLCWWW now packaged separately from myplc -->
+	<packagereq type="mandatory">plcwww</packagereq>
+
+	<!-- apache user needs root access for building node-dependent images -->
+	<packagereq type="mandatory">sudo</packagereq>
+
+	<!-- OneLab specifics - for convenience -->
+	<packagereq type="mandatory">vim-minimal</packagereq>
+	<packagereq type="mandatory">python-imaging</packagereq>
+
       </packagelist>
     </group>
 

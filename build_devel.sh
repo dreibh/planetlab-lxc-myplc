@@ -13,11 +13,14 @@
 # devel/data/root (root's home dir)
 #
 # Mark Huang <mlhuang@cs.princeton.edu>
-# Marc E. Fiuczynski <mef@cs.princeton.edu>
-# Copyright (C) 2006-2007 The Trustees of Princeton University
+# Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: build_devel.sh,v 1.11 2007/08/31 02:33:04 mef Exp $
+# $Id: build_devel.sh 1078 2007-11-15 13:38:27Z thierry $
 #
+
+echo "$0" not supported anymore
+echo "need to figure a way to handle space in group names in .lst files"
+exit 1
 
 . build.functions
 
@@ -38,7 +41,8 @@ pl_fixdirs devel/root "${datadirs[@]}"
 
 echo "* myplc-devel: Installing base filesystem"
 mkdir -p devel/root
-make_chroot devel/root plc_devel_config.xml
+# xxx need be pldistro & fcdistro dependant
+make_chroot_from_lst devel/root planetlab-devel.lst
 
 # Install configuration file
 echo "* myplc-devel: Installing configuration file"
@@ -65,9 +69,11 @@ echo "* myplc-devel: Adding build user"
 uid=${SUDO_UID:-2000}
 gid=${SUDO_GID:-2000}
 if ! grep -q "Automated Build" devel/root/etc/passwd ; then
-    chroot devel/root sh -c "groupadd -o -g $gid build; \
-useradd -o -c 'Automated Build' -u $uid -g $gid -n -d /data/build -M -s /bin/bash build; \
-exit 0"
+    chroot devel/root <<EOF
+groupadd -o -g $gid build
+useradd -o -c 'Automated Build' -u $uid -g $gid -n -d /data/build -M -s /bin/bash build
+exit 0
+EOF
 fi
 
 # Copy build scripts to build home directory

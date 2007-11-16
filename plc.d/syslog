@@ -10,7 +10,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: syslog,v 1.2 2006/04/25 21:18:19 mlhuang Exp $
+# $Id: syslog 129 2007-03-20 12:04:03Z thierry $
 #
 
 # Source function library and configuration

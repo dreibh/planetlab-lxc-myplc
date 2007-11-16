@@ -4,13 +4,19 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: Makefile,v 1.5 2006/07/18 22:41:44 mlhuang Exp $
+# $Id: Makefile 704 2007-07-20 14:15:43Z thierry $
 #
 
 vpath GenDoc.xsl ../../plc_www/doc
 vpath %_config.xml ..
 
-all: myplc.pdf myplc.php
+# dont redo php by default, this requires plc_www (see above) 
+# that we build separately (has no doc/ subdir anyway)
+# note that the build host (myplc-devel) needs ghostscript
+# that we added only on 20 july 2007
+all: myplc.pdf myplc.html
+
+static: pyplc.php
 
 .PHONY: all
 

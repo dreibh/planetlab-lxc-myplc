@@ -1,16 +1,27 @@
-Vendor: PlanetLab
-Packager: PlanetLab Central <support@planet-lab.org>
-Distribution: PlanetLab 4.0
-URL: http://cvs.planet-lab.org/cvs/myplc
+#
+# $Id: myplc.spec 1087 2007-11-15 14:25:23Z thierry $
+#
+%define url $URL: svn+ssh://thierry@svn.planet-lab.org/svn/PLCAPI/trunk/PLCAPI.spec $
+
+%define name myplc
+%define version 4.0
+%define subversion 15
+
+%define release %{subversion}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
 Summary: PlanetLab Central (PLC) Portable Installation
-Name: myplc
-Version: 0.5
-Release: 5%{?pldistro:.%{pldistro}}%{?date:.%{date}}
+Name: %{name}
+Version: %{version}
+Release: %{release}
 License: PlanetLab
 Group: Applications/Systems
 Source0: %{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
+
+Vendor: PlanetLab
+Packager: PlanetLab Central <support@planet-lab.org>
+Distribution: PlanetLab 4.0
+URL: %(echo %{url} | cut -d ' ' -f 2)
 
 %define debug_package %{nil}
 
@@ -18,17 +29,17 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 MyPLC is a complete PlanetLab Central (PLC) portable installation
 contained within a chroot jail. The default installation consists of a
 web server, an XML-RPC API server, a boot server, and a database
-server: the core components of PLC. The installation may be customized
-through a graphical interface. All PLC services are started up and
+server: the core components of PLC. All PLC services are started up and
 shut down through a single System V init script installed in the host
-system.
+system. The related Web Interface is now separately packaged
+in the PLCWWW component. 
 
 %prep
 %setup -q
 
 %build
 pushd MyPLC
-./build.sh
+./build.sh %{pldistro}
 popd
 
 %install
@@ -73,7 +84,7 @@ fi
 
 %pre
 if [ -x %{_sysconfdir}/init.d/plc ] ; then
-    %{_sysconfdir}/init.d/plc stop
+    %{_sysconfdir}/init.d/plc safestop
 fi
 
 # Old versions of myplc used to ship with a bootstrapped database and
@@ -129,7 +140,7 @@ fi
 %preun
 # 0 = erase, 1 = upgrade
 if [ $1 -eq 0 ] ; then
-    %{_sysconfdir}/init.d/plc stop
+    %{_sysconfdir}/init.d/plc safestop
     if [ -x /sbin/chkconfig ] ; then
         /sbin/chkconfig plc off
 	/sbin/chkconfig --del plc

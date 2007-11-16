@@ -5,7 +5,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: functions,v 1.7 2007/01/19 17:12:45 mlhuang Exp $
+# $Id: functions 545 2007-06-18 10:56:31Z thierry $
 #
 
 export PATH=/sbin:/bin:/usr/bin:/usr/sbin
@@ -56,7 +56,16 @@ plc_daemon ()
     [ -n "${pid:-}" -a -z "${force:-}" ] && return
 
     # And start it up.
-    (exec -a plc_${base} $*)
+    # Thierry -- June 18 2007
+    # when invoking, e.g. service plc start httpd from an ssh connection
+    # ssh stupidly hangs when everything is done
+    # it turns out the forked ssh daemon exhibits the following stack at that point
+    # (gdb) where
+    # #0  0x001d6402 in __kernel_vsyscall ()
+    # #1  0x003c2e7d in ___newselect_nocancel () from /lib/libc.so.6
+    # #2  0x004387b4 in main () from /usr/sbin/sshd
+    # So I figured the various file descriptors used were not properly closed
+    (exec 3>&- 4>&- ; exec -a plc_${base} $*)
     ret=$?
 
     if [ -f /var/run/${base}.pid ] ; then

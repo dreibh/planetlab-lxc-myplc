@@ -6,7 +6,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: build.functions,v 1.10.2.1 2007/08/30 16:39:07 mef Exp $
+# $Id: build.functions 1086 2007-11-15 14:17:45Z thierry $
 #
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
@@ -48,37 +48,117 @@ set -x
 
 # Make a basic chroot at the specified location given the specified
 # configuration.
-make_chroot() {
+make_chroot_from_lst() {
     root=$1
-    config=$2
+    lst=$2
 
-    # Get group list
-    groups=
-    while read group ; do
-	groups="$groups -g \"$group\""
-    done < <(./plc-config --groups $config)
-
-    # Get package list
-    packages=
-    while read package ; do
-	packages="$packages -p \"$package\""
-    done < <(./plc-config --packages $config)
+    packages=$(pl_getPackagesOptions $lst)
+    groups=$(pl_getGroupsOptions $lst) 
 
     pl_setup_chroot $root $packages $groups
 }
 
 # Move specified directories out of the chroot and into a "data"
 # directory that will be bind mounted on /data inside the chroot.
-move_datadirs() {
-    root=$1
-    data=$2
-    shift 2
-    pl_move_dirs $root $data /data "$@"
-}
+#move_datadirs() {
+#    root=$1
+#    data=$2
+#    shift 2
+#    pl_move_dirs $root $data /data "$@"
+#}
 
 # Make loopback filesystem from specified location
-make_image() {
-    root=$1
-    image=$2
-    pl_make_image $root $image 100000000
+#make_image() {
+#    root=$1
+#    image=$2
+#    pl_make_image $root $image 100000000
+#}
+
+function yum_conf_to_build_host () {
+   BUILD_HOST=$(hostname)
+   cat <<EOF
+[main]
+cachedir=/var/cache/yum
+debuglevel=2
+logfile=/var/log/yum.log
+pkgpolicy=newest
+distroverpkg=redhat-release
+tolerant=1
+exactarch=1
+retries=10
+obsoletes=1
+gpgcheck=0
+# Prevent yum-2.4 from loading additional repository definitions
+# (e.g., from /etc/yum.repos.d/)
+reposdir=/dev/null
+
+[base]
+name=Fedora Core 4 - i386 - base
+baseurl=http://${BUILD_HOST}/fedora/linux/core/${PLC_DEVEL_FEDORA_RELEASE}/${PLC_DEVEL_FEDORA_ARCH}/os/
+
+
+[updates]
+name=Fedora Core 4 - i386 - updates
+baseurl=http://${BUILD_HOST}/fedora/linux/core/updates/${PLC_DEVEL_FEDORA_RELEASE}/${PLC_DEVEL_FEDORA_ARCH}/
+
+$(if [ "${PLC_DEVEL_FEDORA_RELEASE}" -le 6 ] ; then cat << EXTRAS
+[extras]
+name=Fedora Core 4 - i386 - extras
+baseurl=http://${BUILD_HOST}/fedora/linux/extras/${PLC_DEVEL_FEDORA_RELEASE}/${PLC_DEVEL_FEDORA_ARCH}/
+EXTRAS
+fi)
+EOF
+
 }
+
+function sudoers_bootcustom_apache () {
+    cat <<EOF
+User_Alias WWW = %apache,%root
+Cmnd_Alias BOOTCUSTOM = /usr/share/bootcd/bootcustom.sh
+WWW          ALL = NOPASSWD: BOOTCUSTOM 
+EOF
+}
+
+# quick and dirty - might break anytime if docbook html output changes
+function docbook_html_to_drupal () {
+    title=$1; shift
+    html=$1; shift
+    php=$1; shift
+
+    mkdir -p $(dirname $php)
+    if [ ! -f $html ] ; then
+	cat << __header_no_doc__ > $php
+<?php
+require_once 'plc_drupal.php';
+drupal_set_title("$title - unavailable");
+?>
+<p class='plc-warning'> Build-time error - could not locate documentation $html</p>
+__header_no_doc__
+    else
+	# insert header, makes sure we have a trailing eol
+	(cat << __header_doc__ ; cat $html ) > $php
+<?php
+require_once 'plc_drupal.php';
+drupal_set_title("$title");
+?>
+__header_doc__
+	# ignore ed return status
+	set +e
+	# cuts off around the <body> </body>
+	# preserves the 4 first lines that we just added as a header
+	ed -s $php << __ed_script__
+/BODY/
+/>/
+s,><,<,
+5,-d
+$
+?/BODY?
+s,><.*,>,
++
+;d
+w
+q
+__ed_script__
+	set -e
+    fi
+}   

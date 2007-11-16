@@ -3,7 +3,7 @@
 # Builds MyPLC, either inside the MyPLC development environment in
 # devel/root (if PLC_DEVEL_BOOTSTRAP is true), or in the current host
 # environment (may be itself a MyPLC development environment or a
-# Fedora environment with the appropriate development packages
+# Fedora Core 4 environment with the appropriate development packages
 # installed).
 #
 # root.img (loopback image)
@@ -13,13 +13,16 @@
 # data/root (root's homedir)
 #
 # Mark Huang <mlhuang@cs.princeton.edu>
-# Marc E. Fiuczynski <mef@cs.princeton.edu>
-# Copyright (C) 2006-2007 The Trustees of Princeton University
+# Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: build.sh,v 1.41.2.1 2007/08/30 16:39:08 mef Exp $
+# $Id: build.sh 1095 2007-11-16 09:52:30Z thierry $
 #
 
 . build.functions
+
+# pldistro expected as $1 - defaults to planetlab
+pldistro=planetlab
+[ -n "$@" ] && pldistro=$1
 
 # These directories are allowed to grow to unspecified size, so they
 # are stored as symlinks to the /data partition. mkfedora and yum
@@ -46,7 +49,9 @@ pl_fixdirs root "${datadirs[@]}"
 
 echo "* myplc: Installing base filesystem"
 mkdir -p root data
-make_chroot root plc_config.xml
+
+lst=${pldistro}-${pl_DISTRO_NAME}-plc.lst
+make_chroot_from_lst root $lst
 
 # Install configuration scripts
 echo "* myplc: Installing configuration scripts"
@@ -56,6 +61,10 @@ install -D -m 755 plc-config root/usr/bin/plc-config
 install -D -m 755 plc-config-tty root/usr/bin/plc-config-tty
 install -D -m 755 db-config root/usr/bin/db-config
 install -D -m 755 dns-config root/usr/bin/dns-config
+install -D -m 755 plc-map.py root/usr/bin/plc-map.py
+install -D -m 755 clean-empty-dirs.py root/usr/bin/clean-empty-dirs.py
+install -D -m 755 mtail.py root/usr/bin/mtail.py
+install -D -m 755 check-ssl-peering.py root/usr/bin/check-ssl-peering.py
 
 # Install initscripts
 echo "* myplc: Installing initscripts"
@@ -72,17 +81,71 @@ chroot root sh -c 'chkconfig --add plc; chkconfig plc on'
     #$srcdir/plc/scripts/gen-static-content.py \
     #root/usr/bin/
 
-# Install web pages
-echo "* myplc: Installing web pages"
-mkdir -p root/var/www/html
-rsync -a $srcdir/WWW/ root/var/www/html/
+### Thierry Parmentelat - april 16 2007
+### from now on we package plcwww separately in the plcwww rpm
+#### Install web pages
+###echo "* myplc: Installing web pages"
+###mkdir -p root/var/www/html
+###rsync -a $srcdir/new_plc_www/ root/var/www/html/
 
-# Install Drupal rewrite rules
-install -D -m 644 $srcdir/WWW/drupal.conf root/etc/httpd/conf.d/drupal.conf
+#### Install Drupal rewrite rules
+###install -D -m 644 $srcdir/new_plc_www/drupal.conf root/etc/httpd/conf.d/drupal.conf
+
+### Thierry Parmentelat - april 16 2007
+# fetch the release stamp from the build if any
+# I could not come up with any more sensitive scheme 
+if [ -f ../../../SOURCES/myplc-release ] ; then
+  cp ../../../SOURCES/myplc-release myplc-release
+else
+  echo "No build information found in ../.." > myplc-release
+fi
+# install it in /etc/myplc-release 
+install -m 444 myplc-release root/etc/myplc-release
+
+### Thierry Parmentelat - april 16 2007
+# fix the yum.conf as produced by mkfedora
+# so we can use the build's fc4 mirror for various installs/upgrades
+# within the chroot jail
+# yum_conf_to_build_host is defined in build.functions
+yum_conf_to_build_host > root/etc/yum.conf
+
+### Thierry Parmentelat - may 16 2007
+# the node-dependent image generation script requires root privilege
+# to perform various mount operations
+sudoers_bootcustom_apache > root/etc/sudoers
+chown root:root root/etc/sudoers
+chmod 400 root/etc/sudoers
+
+### Thierry Parmentelat - july 20 2007
+# we now build the myplc doc
+# beware that making the pdf file somehow overwrites the html
+make -C doc myplc.pdf 
+rm -f doc/myplc.html
+make -C doc myplc.html 
+
+# install at the same place as plcapi - better ideas ?
+for doc in myplc.html myplc.pdf ; do
+    install -m 644 doc/$doc root/usr/share/plc_api/doc/$doc
+done
+
+# we now build the plcapi doc
+# this generates a drupal php file from a docbook-generated html
+# quick & dirty
+docbook_html_to_drupal "OneLab PLCAPI Documentation" \
+    root/usr/share/plc_api/doc/PLCAPI.html \
+    root/var/www/html/planetlab/doc/plcapi.php
+# pdf just get copied
+install -m 644 root/usr/share/plc_api/doc/PLCAPI.pdf root/var/www/html/planetlab/doc/plcapi.pdf
+
+docbook_html_to_drupal "Myplc User Guide" \
+    root/usr/share/plc_api/doc/myplc.html \
+    root/var/www/html/planetlab/doc/myplc.php
+# pdf just get copied
+install -m 644 root/usr/share/plc_api/doc/myplc.pdf root/var/www/html/planetlab/doc/myplc.pdf
 
 # Install configuration file
 echo "* myplc: Installing configuration file"
-install -D -m 444 $config data/etc/planetlab/default_config.xml
+install -D -m 444 default_config.xml data/etc/planetlab/default_config.xml
 install -D -m 444 plc_config.dtd data/etc/planetlab/plc_config.dtd
 
 # handle root's homedir and tweak root prompt
@@ -107,7 +170,7 @@ rm -f data/var/www/html/boot/bootmanager.sh
 # Initialize node RPMs directory. The PlanetLab-Bootstrap.tar.bz2
 # tarball already contains all of the node RPMs pre-installed. Only
 # updates or optional packages should be placed in this directory.
-install -D -m 644 $pl_YUMGROUPSXML \
+install -D -m 644 $pl_DISTRO_YUMGROUPS \
     data/var/www/html/install-rpms/planetlab/yumgroups.xml
 
 # Make image out of directory

@@ -6,7 +6,7 @@ Default PLC build environment configuration file
 Mark Huang <mlhuang@cs.princeton.edu>
 Copyright (C) 2006 The Trustees of Princeton University
 
-$Id: plc_devel_config.xml,v 1.10 2007/08/24 07:19:27 mef Exp $
+$Id: plc_devel_config.xml 1078 2007-11-15 13:38:27Z thierry $
 -->
 
 <!DOCTYPE configuration PUBLIC "-//PlanetLab Central//DTD PLC configuration//EN" "plc_config.dtd">
@@ -59,6 +59,7 @@ $Id: plc_devel_config.xml,v 1.10 2007/08/24 07:19:27 mef Exp $
   </variables>
 
   <comps>
+    <!-- xxx should be deprecated - not used anymore xxx -->
     <group>
       <id>development-libs</id>
       <name>Development Libraries</name>
@@ -103,9 +104,6 @@ $Id: plc_devel_config.xml,v 1.10 2007/08/24 07:19:27 mef Exp $
       <description>Additional tools required to build PlanetLab
       software.</description>
       <packagelist>
-	<!-- Basics -->
-	<packagereq type="mandatory">findutils</packagereq>
-
 	<!-- kernel-vserver is intended for the vserver-reference, but
 	     serves the same useful purpose for MyPLC, namely, to
 	     Provide: kernel without actually installing anything. -->
@@ -127,17 +125,9 @@ $Id: plc_devel_config.xml,v 1.10 2007/08/24 07:19:27 mef Exp $
 	<packagereq type="mandatory">tetex-latex</packagereq>
 	<packagereq type="mandatory">gcc-c++</packagereq>
 
-	<!-- vsys -->
-	<packagereq type="mandatory">ocaml</packagereq>
-	<packagereq type="mandatory">ocaml-ocamldoc</packagereq>
-	<packagereq type="mandatory">inotify-tools-devel</packagereq>
-
 	<!-- ulogd -->
 	<packagereq type="mandatory">libpcap</packagereq>
 	<packagereq type="mandatory">libpcap-devel</packagereq>
-	<packagereq type="mandatory">mysql</packagereq>
-	<packagereq type="mandatory">mysql-devel</packagereq>
-	<packagereq type="mandatory">mysql-server</packagereq>
 
 	<!-- iptables -->
 	<packagereq type="mandatory">linuxdoc-tools</packagereq>
@@ -161,14 +151,14 @@ $Id: plc_devel_config.xml,v 1.10 2007/08/24 07:19:27 mef Exp $
 
 	<!-- myplc -->
 	<packagereq type="mandatory">rsync</packagereq>
+	<packagereq type="mandatory">ghostscript</packagereq>
 
-	<!-- PLCAPI -->
+	<!-- new_plc_api -->
 	<packagereq type="mandatory">docbook-utils-pdf</packagereq>
 	<packagereq type="mandatory">postgresql-devel</packagereq>
 	<packagereq type="mandatory">php-devel</packagereq>
 	<packagereq type="mandatory">SOAPpy</packagereq>
 	<packagereq type="mandatory">PyXML</packagereq>
-	<packagereq type="mandatory">expat-devel</packagereq>
       </packagelist>
     </group>
 

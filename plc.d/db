@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: db,v 1.7 2007/01/31 19:53:20 mlhuang Exp $
+# $Id: db 316 2007-04-24 17:25:09Z thierry $
 #
 
 # Source function library and configuration
@@ -36,22 +36,33 @@ function migrate_db()
 	extension=${script##*.}
 	if [ $index -gt $subversion ] ; then
 	    if [ "$extension" = "sql" ] ; then
+	        dialog " - $script (dbdumped)"
+	        dump_planetlab_db "before-$script"
 		psql -U $PLC_DB_USER -f $file $PLC_DB_NAME
 	    elif [ -x $file ] ; then
+	        dialog " - $script (dbdumped)"
+	        dump_planetlab_db "before-$script"
 		$file
+	    else
+	        dialog "\nWarning: migration $file not executable"
 	    fi
 	    check
 	fi
     done
 }
 
-# Dumps the database
-function dump_db()
+# Dumps the database - optional argument to specify filename suffix
+function dump_planetlab_db()
 {
-    dump=/var/lib/pgsql/backups/$(date +"$PLC_DB_NAME.%Y-%m-%d-%H-%M.sql")
+    if [ -n "$1" ] ; then suffix="-$1" ; else suffix="" ; fi
+    dump=/var/lib/pgsql/backups/$(date +"$PLC_DB_NAME.%Y-%m-%d-%H-%M-%S${suffix}.sql")
     pg_dump -U $PLC_DB_USER $PLC_DB_NAME > $dump
     check
-    dump=/var/lib/pgsql/backups/$(date +"drupal.%Y-%m-%d-%H-%M.sql")
+}
+
+function dump_drupal_db()
+{
+    dump=/var/lib/pgsql/backups/$(date +"drupal.%Y-%m-%d-%H-%M-%S.sql")
     pg_dump -U $PLC_DB_USER drupal > $dump
     check
 }
@@ -107,7 +118,8 @@ EOF
       	MESSAGE=$"Dumping the databases in /var/lib/pgsql/backups"
 	dialog "$MESSAGE"
 
-	dump_db
+	dump_planetlab_db
+	dump_drupal_db
 	result "$MESSAGE"
 	;;
 

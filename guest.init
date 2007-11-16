@@ -6,7 +6,7 @@
 #
 # description:	Manages all PLC services on this machine
 #
-# $Id: guest.init,v 1.20 2006/08/08 23:19:52 mlhuang Exp $
+# $Id: guest.init 635 2007-07-05 11:08:14Z thierry $
 #
 
 # Source function library and configuration
@@ -20,11 +20,27 @@ verbose=0
 # being run. The idea is that when the configuration changes, "service
 # plc restart" is called, all dependencies are fixed up, and
 # everything just works.
+
+### NOTE.
+# we want the resulting myplc to be able to easily skip
+# some steps. e.g. the packages step takes ages if you install
+# all rpms under the repository.
+# We skip steps whose name contains a dot (.) or a tilde (~)
+# this way the operations would just rename a step name e.g.
+# cd /etc/plc.d
+# mv packages packages.hide
+#
+# The drawback is, this stuff does not survive an rpm update
+# but that's maybe a good thing, that all is done at first start
+###
+
 steps=($(
 for step in /etc/plc.d/* ; do
-    if [ -f $step -a -x $step ] ; then
+    stepname=$(basename $step)
+    plainstepname=$(echo $stepname | sed -e 's,\.,,' -e 's,~,,')
+    if [ -f $step -a -x $step -a "$stepname" = "$plainstepname" ] ; then
 	priority=$(sed -ne 's/# priority: \(.*\)/\1/p' $step)
-	echo $priority $(basename $step)
+	echo $priority $stepname
     fi
 done | sort -n | cut -d' ' -f2
 ))
@@ -37,10 +53,10 @@ reload ()
 
     # Regenerate the main configuration file from default values
     # overlaid with site-specific and current values.
+    # Thierry -- 2007-07-05 : values in plc_config.xml are *not* taken into account here
     files=(
 	/etc/planetlab/default_config.xml 
-	/etc/planetlab/configs/*.xml
-	/etc/planetlab/plc_config.xml
+	/etc/planetlab/configs/site.xml
     )
     for file in "${files[@]}" ; do
 	if [ -n "$force" -o $file -nt /etc/planetlab/plc_config.xml ] ; then
@@ -48,7 +64,7 @@ reload ()
 	    plc-config --xml "${files[@]}" >$tmp
 	    if [ $? -eq 0 ] ; then
 		mv $tmp /etc/planetlab/plc_config.xml
-		chmod 644 /etc/planetlab/plc_config.xml
+		chmod 444 /etc/planetlab/plc_config.xml
 	    else
 		echo "PLC: Warning: Invalid configuration file(s) detected"
 		rm -f $tmp

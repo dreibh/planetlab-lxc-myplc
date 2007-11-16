@@ -6,7 +6,7 @@
 #
 # description:	Manages all PLC services on this machine
 #
-# $Id: host.init,v 1.8 2006/07/06 17:43:52 mlhuang Exp $
+# $Id: host.init 1078 2007-11-15 13:38:27Z thierry $
 #
 
 PATH=/sbin:/bin:/usr/bin:/usr/sbin
@@ -128,6 +128,58 @@ mountstatus_plc ()
     done
 }
 
+# safestop : tries to stop normally; if that fails, kills processes that are still using /plc 
+# needs the lsof rpm in the root context (should be a dependency of the myplc spec)
+function check_command ()
+{
+    command=$1; shift
+    found=$(type -p $command)
+    if [ -z "$found" ] ; then
+        echo "$COMMAND : requires command $command, was not found - exiting"
+	exit 1
+    fi
+}
+
+
+### when process stil use /plc/root, we cannot umount it
+function kill_all ()
+{
+    [ -n "$DEBUG" ] && set -x
+    check_command lsof
+    
+    echo -n "Killing processes using $PLC_ROOT and $PLC_DATA: "
+    # initialize process list
+    former_process_list="unlikely"
+      
+    # we ignore unknown uids for now, since we run in the chroot jail anyway
+    # not too sure about that though, 
+    while true; do
+        # get the list of processes - collapse and remove empty lines
+	process_list=$(lsof -t +D $PLC_ROOT +D $PLC_DATA)
+	if [ -z "$process_list" ] ; then
+	    # we are done, let's bail out
+	    success "$PLC_ROOT clear" ; echo ; return
+	fi
+	if [ "$process_list" = "$former_process_list" ] ; then
+	    # we are stuck, no progress since last time : exit on error
+	    failure "$PLC_ROOT locked" ; echo ; return
+	fi
+	# record for next loop
+	former_process_list="$process_list"
+	# kill them
+	kill $process_list
+	sleep 2
+	# check there are dead
+	for pid in $process_list ; do
+	    ps -o pid $pid &> /dev/null 
+	    if [ "$?" = 0 ] ; then
+	        [ -n "$DEBUG" ] && echo "$pid survived kill - forcing kill -9"
+		kill -9 $pid
+	    fi
+	done
+    done
+}
+
 # Get command
 shift $(($OPTIND - 1))
 command=$1
@@ -142,6 +194,7 @@ case "$command" in
 
     restart)
 	stop $*
+	ERRORS=0
 	start $*
 	;;
 
@@ -150,11 +203,28 @@ case "$command" in
 	;;	
 
     mount|umount|mountstatus)
-        ${command}_plc $*
+        ${command}_plc
+	;;
+
+   kill)
+        kill_all
+        ;;
+
+   safestop)
+        stop
+	### Checking : we might need to run kill
+	mounted=$(mountstatus_plc)
+	if [ -n "$mounted" ] ; then
+	    echo "Umount failed : killing remaining processes and trying again"
+	    ERRORS=0
+	    kill_all
+	    ERRORS=0
+	    stop
+	fi
 	;;
   
     *)
-	echo "Usage: $0 {start|stop|restart|reload|mount|umount|mountstatus}"
+	echo "Usage: $0 {start|stop|restart|reload|mount|umount|mountstatus|kill|safestop}"
 	RETVAL=1
 	;;
 esac
