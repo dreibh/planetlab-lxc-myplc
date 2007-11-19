@@ -21,6 +21,7 @@ package:php-gd
 package:expect
 # sendmail
 package:sendmail sendmail-cf
+package:dnsmasq
 # apache
 package:httpd mod_python mod_ssl
 package:openssl
@@ -36,6 +37,5 @@ package:bootcd bootmanager
 package:PLCAPI PLCWWW
 # convenience
 package:vim-minimal python-imaging
-package:dnsmasq
-package:openssh
+package:openssh openssh-clients
 package:less
