@@ -94,17 +94,17 @@ reposdir=/dev/null
 
 [base]
 name=Fedora Core 4 - i386 - base
-baseurl=http://${BUILD_HOST}/fedora/linux/core/${PLC_DEVEL_FEDORA_RELEASE}/${PLC_DEVEL_FEDORA_ARCH}/os/
+baseurl=http://${BUILD_HOST}/fedora/linux/core/${pl_DISTRO_RELEASE}/${pl_DISTRO_ARCH}/os/
 
 
 [updates]
 name=Fedora Core 4 - i386 - updates
-baseurl=http://${BUILD_HOST}/fedora/linux/core/updates/${PLC_DEVEL_FEDORA_RELEASE}/${PLC_DEVEL_FEDORA_ARCH}/
+baseurl=http://${BUILD_HOST}/fedora/linux/core/updates/${pl_DISTRO_RELEASE}/${pl_DISTRO_ARCH}/
 
-$(if [ "${PLC_DEVEL_FEDORA_RELEASE}" -le 6 ] ; then cat << EXTRAS
+$(if [ "${pl_DISTRO_RELEASE}" -le 6 ] ; then cat << EXTRAS
 [extras]
 name=Fedora Core 4 - i386 - extras
-baseurl=http://${BUILD_HOST}/fedora/linux/extras/${PLC_DEVEL_FEDORA_RELEASE}/${PLC_DEVEL_FEDORA_ARCH}/
+baseurl=http://${BUILD_HOST}/fedora/linux/extras/${pl_DISTRO_RELEASE}/${pl_DISTRO_ARCH}/
 EXTRAS
 fi)
 EOF
