@@ -9,7 +9,7 @@ package:sudo
 package:openssl
 package:xmlsec1
 package:kernel-vserver
-package:plcwww
+package:PLCWWW
 package:gd
 package:expect
 package:php-pgsql
