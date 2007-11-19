@@ -1,49 +1,41 @@
 # first draft, extracted from plc_config.xml with --packages
 # the groups list was 'PlanetLab Central' but turned out to be an unknown group
-package:bzip2
-package:sendmail-cf
-package:tar
-package:less
-package:perl-GD
-package:sudo
-package:openssl
-package:xmlsec1
 package:kernel-vserver
-package:PLCWWW
-package:gd
-package:expect
-package:php-pgsql
-package:curl
-package:rpm
-package:httpd
-package:rsync
-package:mod_python
-package:mod_ssl
-package:bootmanager
-package:python-devel
-package:SOAPpy
-package:vixie-cron
-package:yum
-package:php-gd
-package:PLCAPI
-package:vim-minimal
-package:PyXML
-package:sendmail
-package:python
-package:createrepo
-package:postgresql-python
-package:cpio
-package:postgresql-server
-package:wget
-package:php
-package:xmlsec1-openssl
-package:postgresql
-package:openssh
-package:cvs
 package:dev
-package:python-imaging
-package:bootcd
-package:dnsmasq
+#
+package:bzip2
+package:cpio
+package:tar
+package:rsync
 package:diffutils
 package:gzip
 package:findutils
+package:sudo
+package:rpm
+package:yum createrepo
+package:curl wget
+package:vixie-cron
+package:perl-GD
+package:gd
+package:php-gd
+package:expect
+# sendmail
+package:sendmail sendmail-cf
+# apache
+package:httpd mod_python mod_ssl
+package:openssl
+package:xmlsec1 xmlsec1-openssl
+# python
+package:python python-devel SOAPpy PyXML pycurl
+# postgresql
+package:postgresql postgresql-server postgresql-python
+# php
+package:php php-pgsql
+# planetlab stuff
+package:bootcd bootmanager 
+package:PLCAPI PLCWWW
+# convenience
+package:vim-minimal python-imaging
+package:dnsmasq
+package:openssh
+package:less
