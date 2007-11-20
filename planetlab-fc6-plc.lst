@@ -1,8 +1,11 @@
 # first draft, extracted from plc_config.xml with --packages
-# the groups list was 'PlanetLab Central' but turned out to be an unknown group
+####
+# kernel-vserver is intended for the vserver-reference, but
+# serves the same useful purpose for MyPLC, namely, to
+# Provide: kernel without actually installing anything. 
 package:kernel-vserver
 package:dev
-#
+# utilities
 package:bzip2
 package:cpio
 package:tar
@@ -10,32 +13,40 @@ package:rsync
 package:diffutils
 package:gzip
 package:findutils
-package:sudo
+package:less
+package:curl wget
+package:vim-minimal 
+# for mkpasswd
+package:expect
+# package management
 package:rpm
 package:yum createrepo
-package:curl wget
+# cron jobs
 package:vixie-cron
-package:perl-GD
-package:gd
-package:php-gd
-package:expect
 # sendmail
 package:sendmail sendmail-cf
+# dns server
 package:dnsmasq
-# apache
-package:httpd mod_python mod_ssl
-package:openssl
-package:xmlsec1 xmlsec1-openssl
 # python
 package:python python-devel SOAPpy PyXML pycurl
 # postgresql
 package:postgresql postgresql-server postgresql-python
+# apache
+package:httpd mod_python mod_ssl
+# ssl 
+package:openssl xmlsec1 xmlsec1-openssl
 # php
 package:php php-pgsql
+# apache user needs root access for building node-dependent images
+package:sudo
+# for ssh-keygen
+package:openssh 
+# ssh - easily reach nodes from the chroot/vserver context
+package:openssh-clients
+# for ImageCreate
+package:gd php-gd perl-GD
+# plc-map.py uses this
+package:python-imaging
 # planetlab stuff
 package:bootcd bootmanager 
 package:PLCAPI PLCWWW
-# convenience
-package:vim-minimal python-imaging
-package:openssh openssh-clients
-package:less
