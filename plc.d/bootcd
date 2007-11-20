@@ -29,7 +29,7 @@ case "$1" in
 
 	# Customize the Boot CD
 	pushd /var/www/html/download
-	/usr/share/bootcd/build.sh
+	/usr/share/bootcd/build.sh ${PLC_BUILD_ALL_BOOTCDS:+-a}
 	check
 	popd
 
