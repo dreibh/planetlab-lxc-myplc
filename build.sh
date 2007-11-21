@@ -50,8 +50,8 @@ pl_fixdirs root "${datadirs[@]}"
 echo "* myplc: Installing base filesystem"
 mkdir -p root data
 
-lst=${pldistro}-${pl_DISTRO_NAME}-plc.lst
-make_chroot_from_lst root $lst
+lst=${pldistro}-plc.lst
+make_chroot_from_lst root $pldistro ${pl_DISTRO_NAME} $lst
 
 # Install configuration scripts
 echo "* myplc: Installing configuration scripts"
