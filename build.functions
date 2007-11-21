@@ -52,7 +52,7 @@ make_chroot_from_lst() {
     root=$1; shift
     fcdistro=$1; shift
 
-    packages=$(pl_getPackagesOptions2 $fcdistro $lst"$@")
+    packages=$(pl_getPackagesOptions2 $fcdistro "$@")
     groups=$(pl_getGroupsOptions2 $fcdistro "$@") 
 
     pl_setup_chroot $root $packages $groups
