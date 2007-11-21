@@ -51,7 +51,7 @@ echo "* myplc: Installing base filesystem"
 mkdir -p root data
 
 lst=${pldistro}-plc.lst
-make_chroot_from_lst root $pldistro ${pl_DISTRO_NAME} $lst
+make_chroot_from_lst root ${pl_DISTRO_NAME} $lst
 
 # Install configuration scripts
 echo "* myplc: Installing configuration scripts"

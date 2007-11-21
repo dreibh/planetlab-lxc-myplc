@@ -49,12 +49,11 @@ set -x
 # Make a basic chroot at the specified location given the specified
 # configuration.
 make_chroot_from_lst() {
-    root=$1
+    root=$1; shift
     fcdistro=1; shift
-    lst=$2
 
-    packages=$(pl_getPackagesOptions2 $fcdistro $lst)
-    groups=$(pl_getGroupsOptions2 $fcdistro $lst) 
+    packages=$(pl_getPackagesOptions2 $fcdistro $lst"$@")
+    groups=$(pl_getGroupsOptions2 $fcdistro "$@") 
 
     pl_setup_chroot $root $packages $groups
 }
