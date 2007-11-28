@@ -2,7 +2,7 @@
 # $Id$
 #
 
-BINARIES = plc-config plc-config-tty db-config dns-config refresh-peer.py plc-map.py clean-empty-dirs.py mtail.py
+BINARIES = plc-config plc-config-tty db-config dns-config refresh-peer.py plc-map.py clean-empty-dirs.py mtail.py renew_reminder.py
 INIT_SCRIPTS = api bootcd bootmanager crond db dns functions gpg httpd mail network packages postgresql ssh ssl syslog
 
 INITS=$(addprefix plc.d/,$(INIT_SCRIPTS))
