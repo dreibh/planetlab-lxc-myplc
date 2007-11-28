@@ -285,13 +285,14 @@ $Id$
         </variable>
 
         <variable id="ipod_subnet" type="ip">
-          <name>IP SUBNET for all API Servers</name>
+          <name>IP Subnet</name>
           <value>127.0.0.1</value>
-          <description>The IP Subnet for all API servers. Used by IPoD.</description>
+          <description>The IP Subnet for all API servers. 
+	  Used to identify IPoD packet senders.</description>
         </variable>
 
         <variable id="ipod_mask" type="ip">
-          <name>IP Address</name>
+          <name>IP Mask</name>
           <value>255.255.255.255</value>
           <description>The IP Mask that should be applied to incoming 
 	  packets to match the IP Subnet for IPoD packets.</description>
