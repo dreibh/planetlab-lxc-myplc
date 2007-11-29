@@ -3,7 +3,6 @@
 Subscribes new nodes to princeton_sirius slice.
 
 $Id : XXXXXX $
-
 '''
 import sys
 from sets import Set
