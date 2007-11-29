@@ -54,4 +54,3 @@ package:python-imaging
 # planetlab stuff
 package:bootcd bootmanager bootstrapfs
 package:PLCAPI PLCWWW
-package:syslinux
