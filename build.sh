@@ -72,32 +72,12 @@ find plc.d | cpio -p -d -u root/etc/
 install -D -m 755 guest.init root/etc/init.d/plc
 chroot root sh -c 'chkconfig --add plc; chkconfig plc on'
 
-# Install web scripts
-#echo "* myplc: Installing web scripts"
-#mkdir -p root/usr/bin
-#install -m 755 \
-    #$srcdir/plc/scripts/gen-sites-xml.py \
-    #$srcdir/plc/scripts/gen-slices-xml-05.py \
-    #$srcdir/plc/scripts/gen-static-content.py \
-    #root/usr/bin/
-
-### Thierry Parmentelat - april 16 2007
-### from now on we package plcwww separately in the plcwww rpm
-#### Install web pages
-###echo "* myplc: Installing web pages"
-###mkdir -p root/var/www/html
-###rsync -a $srcdir/new_plc_www/ root/var/www/html/
-
-#### Install Drupal rewrite rules
-###install -D -m 644 $srcdir/new_plc_www/drupal.conf root/etc/httpd/conf.d/drupal.conf
-
-### Thierry Parmentelat - april 16 2007
 # fetch the release stamp from the build if any
 # I could not come up with any more sensitive scheme 
 if [ -f ../../../myplc-release ] ; then
   cp ../../../myplc-release myplc-release
 else
-  echo "No build information found in ../.." > myplc-release
+  echo "No build release information found" > myplc-release
 fi
 # install it in /etc/myplc-release 
 install -m 444 myplc-release root/etc/myplc-release
