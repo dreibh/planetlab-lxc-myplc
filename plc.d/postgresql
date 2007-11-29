@@ -46,6 +46,12 @@ postgresql_start ()
     return 1
 }
 
+postgresql_init ()
+{
+    service postgresql initdb &> /dev/null || :
+    postgresql_start
+}
+
 case "$1" in
     start)
 	if [ "$PLC_DB_ENABLED" != "1" ] ; then
@@ -69,7 +75,7 @@ case "$1" in
 	# PostgreSQL must be started at least once to bootstrap
 	# /var/lib/pgsql/data
 	if [ ! -f $postgresql_conf ] ; then
-	    postgresql_start
+	    postgresql_init
 	    check
 	    service postgresql stop
 	    check
