@@ -2,7 +2,7 @@
 '''
 Subscribes new nodes to princeton_sirius slice.
 
-$Id : XXXXXX $
+$Id$
 '''
 import sys
 from sets import Set
