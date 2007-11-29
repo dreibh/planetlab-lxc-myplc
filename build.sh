@@ -94,8 +94,8 @@ chroot root sh -c 'chkconfig --add plc; chkconfig plc on'
 ### Thierry Parmentelat - april 16 2007
 # fetch the release stamp from the build if any
 # I could not come up with any more sensitive scheme 
-if [ -f ../../../SOURCES/myplc-release ] ; then
-  cp ../../../SOURCES/myplc-release myplc-release
+if [ -f ../../../myplc-release ] ; then
+  cp ../../../myplc-release myplc-release
 else
   echo "No build information found in ../.." > myplc-release
 fi
