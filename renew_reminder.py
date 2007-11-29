@@ -5,7 +5,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2005 The Trustees of Princeton University
 #
-# $Id: renew_reminder.pl,v 1.1 2005/06/28 16:49:12 mlhuang Exp $
+# $Id$
 #
 
 import sys
