@@ -437,6 +437,7 @@ def main():
          'always_update': False},
 
         # Ping of death configuration
+        # the 'restart' postcommand doesn't work, b/c the pod script doesn't support it.
         {'enabled': True,
          'source': 'PlanetLabConf/ipod.conf.php',
          'dest': '/etc/ipod.conf',
@@ -444,7 +445,7 @@ def main():
          'file_owner': 'root',
          'file_group': 'root',
          'preinstall_cmd': '',
-         'postinstall_cmd': '',
+         'postinstall_cmd': '/etc/init.d/pod start',
          'error_cmd': '',
          'ignore_cmd_errors': False,
          'always_update': False},
