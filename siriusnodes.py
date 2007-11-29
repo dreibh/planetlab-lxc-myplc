@@ -35,6 +35,7 @@ def main(argv = None):
 
 	for node in nodestoadd: newnodes.append(node)
 
+	print "Adding %s nodes to Sirius slice." % newnodes.__len__()
 	# Add to Sirius slice
 	if debug:
 		print newnodes
