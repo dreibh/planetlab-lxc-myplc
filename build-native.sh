@@ -26,17 +26,13 @@ install -D -m 755 plc-config ${tmpdir}/usr/bin/plc-config
 install -D -m 755 plc-config-tty ${tmpdir}/usr/bin/plc-config-tty
 install -D -m 755 db-config ${tmpdir}/usr/bin/db-config
 install -D -m 755 dns-config ${tmpdir}/usr/bin/dns-config
-install -D -m 755 plc-map.py root/usr/bin/plc-map.py
-install -D -m 755 clean-empty-dirs.py root/usr/bin/clean-empty-dirs.py
-install -D -m 755 mtail.py root/usr/bin/mtail.py
-install -D -m 755 check-ssl-peering.py root/usr/bin/check-ssl-peering.py
+install -D -m 755 plc-map.py ${tmpdir}/usr/bin/plc-map.py
+install -D -m 755 clean-empty-dirs.py ${tmpdir}/usr/bin/clean-empty-dirs.py
+install -D -m 755 mtail.py ${tmpdir}/usr/bin/mtail.py
+install -D -m 755 check-ssl-peering.py ${tmpdir}/usr/bin/check-ssl-peering.py
 
-echo "* myplc-native: skipping build/install of plc_config.py"
-# XXX needs to be done by %pre script in .spec file
-# install -D -m 755 plc_config.py /tmp/plc_config.py
-# sh -c 'cd ${tmpdir}; python plc_config.py build; python plc_config.py install'
-# XXX needs to be done by %pre script in .spec file
-# sh -c 'chkconfig --add plc; chkconfig plc on'
+echo "* myplc-native: installing plc_config.py in /usr/share/myplc"
+install -D -m 755 plc_config.py ${tmpdir}/usr/share/myplc/plc_config.py
 
 # Install initscripts
 echo "* myplc-native: Installing initscripts"

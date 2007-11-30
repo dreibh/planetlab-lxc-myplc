@@ -78,6 +78,7 @@ popd
 
 %install
 
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -132,6 +133,10 @@ if [ -x /sbin/chkconfig ] ; then
     /sbin/chkconfig --add plc
     /sbin/chkconfig plc on
 fi
+pushd /usr/share/myplc &> /dev/null
+python plc_config.py build
+python plc_config.py install
+popd &> /dev/null
 
 %triggerpostun -- %{name}
 # 0 = erase, 1 = upgrade
@@ -161,19 +166,19 @@ fi
 %defattr(-,root,root,-)
 # Host startup script and configuration file
 /etc/init.d/plc
+/etc/plc.d
+/etc/planetlab
+/var/www/html/install-rpms/planetlab
 /usr/bin/plc-config
 /usr/bin/plc-config-tty
 /usr/bin/db-config
 /usr/bin/dns-config
-#/usr/bin/gen-sites-xml.py*
-#/usr/bin/gen-slices-xml-05.py*
-#/usr/bin/gen-static-content.py*
-/etc/plc.d
-/etc/planetlab
-/var/www/html/install-rpms/planetlab
+/usr/bin/plc-map.py*
+/usr/bin/clean-empty-dirs.py*
+/usr/bin/mtail.py*
+/usr/bin/check-ssl-peering.py*
+/usr/share/myplc/plc_config.py*
 
 %changelog
 * Fri Aug 31 2007 Marc E. Fiuczynski <mef@CS.Princeton.EDU>
 - initial build.
-
-
