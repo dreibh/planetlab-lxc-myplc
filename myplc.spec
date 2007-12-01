@@ -22,6 +22,7 @@ Vendor: PlanetLab
 Packager: PlanetLab Central <support@planet-lab.org>
 Distribution: PlanetLab 4.0
 URL: %(echo %{url} | cut -d ' ' -f 2)
+Requires: tar
 
 %define debug_package %{nil}
 
