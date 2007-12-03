@@ -46,7 +46,7 @@ case "$1" in
 	    # Create a stamp once the package gets signed
 	    mkdir $repository/signed-stamps
 
-	    for package in $repository/*.rpm ; do
+	    for package in $repository/*/*.rpm ; do
 	        stamp=$repository/signed-stamps/$(basename $package).signed
 		# If package is newer than signature stamp
 		if [ $package -nt $stamp ] ; then
