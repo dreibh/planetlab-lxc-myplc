@@ -42,20 +42,8 @@ EOF
 
         # Run all jobs once at startup
 
-#	if [ "$PLC_BOOT_ENABLED" = "1" ] ; then
-#	    echo "*/5 * * * * root gen-slices-xml-05.py" >>/etc/cron.d/plc.cron
-#	    gen-slices-xml-05.py
-#	    check
-	fi
-
 	if [ "$PLC_WWW_ENABLED" = "1" ] ; then
-#	    echo "*/15 * * * * root gen-static-content.py" >>/etc/cron.d/plc.cron
-#	    echo "*/15 * * * * root gen-sites-xml.py" >>/etc/cron.d/plc.cron
 	    echo "00 * * * * wget -O - -q http://localhost/cron.php" >>/etc/cron.d/plc.cron
-#	    gen-static-content.py
-#	    check
-#	    gen-sites-xml.py
-#	    check
 	    wget -O - -q http://localhost/cron.php
 	    check
 	fi
