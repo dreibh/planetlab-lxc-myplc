@@ -51,7 +51,7 @@ echo "* myplc: Installing base filesystem"
 mkdir -p root data
 
 pkgsfile=$(pl_locateDistroFile ../build/ ${pldistro} myplc.pkgs)
-pl_setup_chroot root -f $pkgsfile
+pl_root_setup_chroot root -f $pkgsfile
 
 # Install configuration scripts
 echo "* myplc: Installing configuration scripts"
