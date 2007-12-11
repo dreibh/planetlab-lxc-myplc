@@ -8,7 +8,7 @@
 # Copyright (C) 2006 The Trustees of Princeton University
 #
 # $Id: db-config 7454 2007-12-11 18:55:00Z faiyaza $
-# $HEADURL$
+# $HeadURL$
 
 from plc_config import PLCConfiguration
 import sys
