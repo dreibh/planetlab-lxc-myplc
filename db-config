@@ -142,18 +142,6 @@ def main():
          'error_cmd': '',
          'ignore_cmd_errors': False,
          'always_update': False},
-        {'enabled': True,
-         'source': 'PlanetLabConf/keys.php?role=admin',
-         'dest': '/home/pl_admin/.ssh/authorized_keys',
-         'file_permissions': '644',
-         'file_owner': 'pl_admin',
-         'file_group': 'pl_admin',
-         'preinstall_cmd': 'grep -q pl_admin /etc/passwd',
-         'postinstall_cmd': '/bin/chmod 700 /home/pl_admin/.ssh',
-         'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False},
-
         # Log rotation configuration
         {'enabled': True,
          'source': 'PlanetLabConf/logrotate.conf',
