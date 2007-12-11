@@ -8,7 +8,7 @@
 # Copyright (C) 2006 The Trustees of Princeton University
 #
 # $Id$
-#
+# $HEADURL$
 
 from plc_config import PLCConfiguration
 import sys
