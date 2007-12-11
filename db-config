@@ -251,53 +251,6 @@ def main():
          'always_update': False},
 
         # XXX Required for old Node Manager
-        # Node Manager configuration
-        {'enabled': True,
-         'source': 'PlanetLabConf/pl_nm.conf',
-         'dest': '/etc/planetlab/pl_nm.conf',
-         'file_permissions': '644',
-         'file_owner': 'root',
-         'file_group': 'root',
-         'preinstall_cmd': '',
-         'postinstall_cmd': '/etc/init.d/pl_nm restart',
-         'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False},
-        {'enabled': True,
-         'source': 'PlanetLabConf/RootResources/plc_slice_pool.php',
-         'dest': '/home/pl_nm/RootResources/plc_slice_pool',
-         'file_permissions': '644',
-         'file_owner': 'pl_nm',
-         'file_group': 'pl_nm',
-         'preinstall_cmd': '',
-         'postinstall_cmd': '',
-         'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False},
-        {'enabled': True,
-         'source': 'PlanetLabConf/RootResources/pl_conf.py',
-         'dest': '/home/pl_nm/RootResources/pl_conf',
-         'file_permissions': '644',
-         'file_owner': 'pl_nm',
-         'file_group': 'pl_nm',
-         'preinstall_cmd': '',
-         'postinstall_cmd': '/etc/init.d/pl_nm restart',
-         'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False},
-        {'enabled': True,
-         'source': 'PlanetLabConf/RootResources/pl_netflow.py',
-         'dest': '/home/pl_nm/RootResources/pl_netflow',
-         'file_permissions': '644',
-         'file_owner': 'pl_nm',
-         'file_group': 'pl_nm',
-         'preinstall_cmd': '',
-         'postinstall_cmd': '',
-         'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False},
-
-        # XXX Required for old Node Manager
         # Proper configuration
         {'enabled': True,
          'source': 'PlanetLabConf/propd.conf',
@@ -320,7 +273,7 @@ def main():
          'file_owner': 'root',
          'file_group': 'root',
          'preinstall_cmd': '',
-         'postinstall_cmd': '/etc/init.d/pl_nm restart',
+         'postinstall_cmd': '',
          'error_cmd': '',
          'ignore_cmd_errors': True,
          'always_update': False},
@@ -808,9 +761,9 @@ Or,
     https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/nodes/?id=%(node_id)d
 
     Under 'Download', follow the 'Download plnode.txt file for %(hostname)s'
-	option, and save the downloaded file as plnode.txt on either a floppy 
-	disk or a USB flash drive.  Be sure the 'Boot State' is set to 'Boot', 
-	and, then reboot the node.
+    option, and save the downloaded file as plnode.txt on either a floppy 
+    disk or a USB flash drive.  Be sure the 'Boot State' is set to 'Boot', 
+    and, then reboot the node.
 
 If you have already performed this step and are still receiving this
 message, please reply so that we can help investigate the problem.
@@ -897,9 +850,9 @@ message, please reply so that we may investigate the problem.
         ]
 
     for template in message_templates:
-	messages = GetMessages([template['message_id']])
-	if not messages:
-            AddMessage(template)	
+        messages = GetMessages([template['message_id']])
+        if not messages:
+            AddMessage(template)
 
 if __name__ == '__main__':
     main()
