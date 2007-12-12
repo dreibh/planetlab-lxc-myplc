@@ -48,7 +48,10 @@ set -x
 
 function yum_conf_to_build_host () {
    BUILD_HOST=$(hostname)
-   cat <<EOF
+
+   case "$pl_DISTRO" in
+       Fedora)
+	   cat <<EOF
 [main]
 cachedir=/var/cache/yum
 debuglevel=2
@@ -65,22 +68,27 @@ gpgcheck=0
 reposdir=/dev/null
 
 [base]
-name=Fedora Core 4 - i386 - base
+name=${pl_DISTRO_NAME} - base
 baseurl=http://${BUILD_HOST}/fedora/linux/core/${pl_DISTRO_RELEASE}/${pl_DISTRO_ARCH}/os/
 
 
 [updates]
-name=Fedora Core 4 - i386 - updates
+name=${pl_DISTRO_NAME} - updates
 baseurl=http://${BUILD_HOST}/fedora/linux/core/updates/${pl_DISTRO_RELEASE}/${pl_DISTRO_ARCH}/
 
 $(if [ "${pl_DISTRO_RELEASE}" -le 6 ] ; then cat << EXTRAS
 [extras]
-name=Fedora Core 4 - i386 - extras
+name=${pl_DISTRO_NAME} - extras
 baseurl=http://${BUILD_HOST}/fedora/linux/extras/${pl_DISTRO_RELEASE}/${pl_DISTRO_ARCH}/
 EXTRAS
 fi)
 EOF
-
+    ;;
+       *)
+	   echo "$0: no support for this distribution $pl_DISTRO"
+	   exit 1
+	   ;;
+   esac
 }
 
 function sudoers_bootcustom_apache () {
