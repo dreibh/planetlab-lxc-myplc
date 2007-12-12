@@ -94,6 +94,7 @@ usage()
     echo "	stop		Stop all PLC subsystems"
     echo "	reload		Regenerate configuration files"
     echo "	restart		Restart all PLC subsystems"
+    echo "	steps		Displays ordered list of subsystems"
     echo
     echo "Steps:"
     for step in "${steps[@]}" ; do
@@ -185,6 +186,10 @@ case "$command" in
 
     reload)
 	reload force
+	;;
+
+    steps)
+	echo "${steps[@]}" >&4
 	;;
 
     *)
