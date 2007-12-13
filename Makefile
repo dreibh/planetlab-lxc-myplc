@@ -26,7 +26,7 @@ else
 	+$(RSYNC) guest.init $(PLCSSH):/plc/root/etc/init.d/plc
 	+$(RSYNC) $(BINARIES) $(PLCSSH):/plc/root/usr/bin
 	+$(RSYNC) $(INITS) $(PLCSSH):/plc/root/etc/plc.d
-	+$(RSYNC) plc_config.py $(PLCSSH):/plc/root/usr/lib/python2.4/site-packages/plc_config.py
+	+$(RSYNC) plc_config.py $(PLCSSH):/plc/root/usr/lib/python2.5/site-packages/plc_config.py
 	+$(RSYNC) default_config.xml $(PLCSSH):/plc/data/etc/planetlab/default_config.xml
 	@echo XXXXXXXX You might consider running the following command
 	@echo ssh $(PLCSSH) chroot /plc/root service plc start 
