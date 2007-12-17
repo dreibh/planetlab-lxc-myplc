@@ -24,6 +24,7 @@ Requires: expect
 Requires: php-pgsql
 Requires: curl
 Requires: python-pycurl
+Requires: python-psycopg2
 Requires: httpd
 Requires: rsync
 Requires: mod_python
