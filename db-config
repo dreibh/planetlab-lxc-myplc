@@ -497,18 +497,6 @@ def main():
         # Proper operations
         {'name': "proper_op",
          'description': "Proper operation (e.g. bind_socket)",
-         'min_role_id': 10},
-
-        # XXX Required for old Node Manager
-        # Special attributes applicable to Slice Creation Service (pl_conf) slice
-        {'name': "plc_slice_type",
-         'description': "Type of slice rspec to be created",
-         'min_role_id': 20},
-        {'name': "plc_agent_version",
-         'description': "Version of PLC agent (slice creation service) software to be deployed",
-         'min_role_id': 10},
-        {'name': "plc_ticket_pubkey",
-         'description': "Public key used to verify PLC-signed tickets",
          'min_role_id': 10}
         ]
 
@@ -524,29 +512,6 @@ def main():
             UpdateSliceAttributeType(default_attribute_type['name'], default_attribute_type)
 
     # Create/update system slices
-    legacy_slices = [
-        # XXX Required for old Node Manager
-        {'name': "pl_conf",
-         'description': "PlanetLab Slice Creation Service (SCS)",
-         'url': url,
-         'instantiation': "plc-instantiated",
-         # Renew forever
-         'expires': sys.maxint,
-         'attributes': [('plc_slice_type', "VServerSlice"),
-                        ('plc_agent_version', "1.0"),
-                        ('plc_ticket_pubkey', "")]},
-
-        # XXX Required for old Node Manager
-        {'name': "pl_conf_vserverslice",
-         'description': "Default attributes for vserver slices",
-         'url': url,
-         'instantiation': "plc-instantiated",
-         # Renew forever
-         'expires': sys.maxint,
-         'attributes': [('cpu_share', "32"),
-                        ('plc_slice_type', "VServerSlice"),
-                        ('disk_max', "5000000")]},
-        ]
     default_slices = [
          # PlanetFlow
         {'name': plc['slice_prefix'] + "_netflow",
@@ -561,19 +526,6 @@ def main():
                         ('proper_op', "create_socket"),
                         ('proper_op', "bind_socket")]},
         ]
-         
-    ### xxx - to review once new node manager rolls out
-    # if PLC_SLICE_PREFIX is left to default - this is meant for the public PL only
-    if plc['slice_prefix'] == 'pl':
-        # create both legacy slices together with netflow through default_slices
-        default_slices += legacy_slices
-    else:
-        # we use another slice prefix : disable legacy slices if already created
-        for legacy_slice in legacy_slices:
-            try:
-                DeleteSlice(legacy_slice['name'])
-            except:
-                pass
     
     for default_slice in default_slices:
         slices = GetSlices([default_slice['name']])
