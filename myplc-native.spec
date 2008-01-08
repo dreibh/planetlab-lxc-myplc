@@ -1,16 +1,27 @@
-Vendor: PlanetLab
-Packager: PlanetLab Central <support@planet-lab.org>
-Distribution: PlanetLab 4.0
-URL: http://cvs.planet-lab.org/cvs/myplc
+#
+# $Id$
+#
+%define url $URL$
+
+%define name myplc-native
+%define version 4.0
+%define taglevel 4
+
+%define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
 Summary: PlanetLab Central (PLC) Portable Installation
-Name: myplc-native
-Version: 0.5
-Release: 4%{?pldistro:.%{pldistro}}%{?date:.%{date}}
+Name: %{name}
+Version: %{version}
+Release: %{release}
 License: PlanetLab
 Group: Applications/Systems
 Source0: %{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
+
+Vendor: PlanetLab
+Packager: PlanetLab Central <support@planet-lab.org>
+Distribution: PlanetLab %{plrelease}
+URL: %(echo %{url} | cut -d ' ' -f 2)
 
 Requires: bzip2
 Requires: sendmail-cf

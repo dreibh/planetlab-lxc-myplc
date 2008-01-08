@@ -5,9 +5,9 @@
 
 %define name myplc
 %define version 4.0
-%define subversion 15
+%define taglevel 15
 
-%define release %{subversion}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
+%define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
 Summary: PlanetLab Central (PLC) Portable Installation
 Name: %{name}
@@ -20,8 +20,9 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 Vendor: PlanetLab
 Packager: PlanetLab Central <support@planet-lab.org>
-Distribution: PlanetLab 4.0
+Distribution: PlanetLab %{plrelease}
 URL: %(echo %{url} | cut -d ' ' -f 2)
+
 Requires: tar
 
 %define debug_package %{nil}
