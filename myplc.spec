@@ -4,8 +4,8 @@
 %define url $URL$
 
 %define name myplc
-%define version 4.0
-%define taglevel 15
+%define version 4.2
+%define taglevel 0
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -167,6 +167,9 @@ fi
 %config(noreplace) /plc/data/*
 
 %changelog
+* Wed Jan 09 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-4.0-15 myplc-4.2-0
+moving to 4.2 - no change
+
 * Fri Jan 19 2007 Mark Huang <mlhuang@CS.Princeton.EDU> - 0.5-3
 - Split off myplc-devel into separate spec file, so that it can be
   built standalone.
