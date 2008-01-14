@@ -545,7 +545,7 @@ def main():
          'name' : "backdoor",
          'description': "For testing new settings",
          'min_role_id' : 10},
-
+        ] + [
         { "category" : "WiFi",
           "name" : x,
           "description" : "802.11 %s -- see %s"%(y,z),
