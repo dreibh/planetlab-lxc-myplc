@@ -511,6 +511,20 @@ def main():
         else:
             UpdateSliceAttributeType(default_attribute_type['name'], default_attribute_type)
 
+    # Default Initscripts
+    default_initscripts = [
+        # Sirius 
+        {'enabled': True, 
+         'name': plc['slice_prefix'] + "_sirius", 
+         'script': '#!/usr/bin/python\n\n"""The Sirius Calendar Service.\n\nThis Python program runs on each node.  It periodically downloads the schedule file and uses NodeManager\'s XML-RPC interface to adjust the priority increase.\n\nAuthor: David Eisenstat (deisenst@cs.princeton.edu)\n\nOriginal Sirius implementation by David Lowenthal.\n"""\n\nimport fcntl\nimport os\nimport random\nimport signal\nimport socket\nimport sys\nimport threading\nimport time\nimport traceback\nimport urllib\nfrom xmlrpclib import ServerProxy\n\n\n# 0 means normal operation\n# 1 means turn on the short time scales and read the schedule from a file\n# 2 means additionally don\'t contact NodeManager\n\nDEBUGLEVEL = 0\n\n########################################\n\nif DEBUGLEVEL < 2:\n    LOGFILE = \'/var/log/sirius\'\nelse:\n    LOGFILE = \'log.txt\'\n\nloglock = threading.Lock()\n\n\ndef log(msg):\n    """Append <msg> and a timestamp to <LOGFILE>."""\n    try:\n        if not msg.endswith(\'\\n\'):\n            msg += \'\\n\'\n        loglock.acquire()\n        try:\n            logfile = open(LOGFILE, \'a\')\n            t = time.time()\n            print >>logfile, t\n            print >>logfile, time.asctime(time.gmtime(t))\n            print >>logfile, msg\n        finally:\n            loglock.release()\n    except:\n        if DEBUGLEVEL > 0:\n            traceback.print_exc()\n\n\ndef logexception():\n    """Log an exception."""\n    log(traceback.format_exc())\n\n########################################\n\nif DEBUGLEVEL > 0:\n    # smaller time units so we can test faster\n    ONEMINUTE = 1\n    ONEHOUR = 10 * ONEMINUTE\nelse:\n    ONEMINUTE = 60\n    ONEHOUR = 60 * ONEMINUTE\n\n\nclass Periodic:\n    """Periodically make a function call."""\n\n    def __init__(self, target, interval, mindelta, maxdelta):\n        self._target = target\n        self._interval = interval\n        self._deltarange = mindelta, maxdelta+1\n        thr = threading.Thread(target=self.run, args=[target])\n        thr.setDaemon(True)\n        thr.start()\n\n    def run(self, target):\n        nextintervalstart = int(time.time() / self._interval) * self._interval\n        while True:\n            try:\n                self._target()\n            except:\n                logexception()\n            nextintervalstart += self._interval\n            nextfiring = nextintervalstart + random.randrange(*self._deltarange)\n            while True:\n                t = time.time()\n                if t < nextfiring:\n                    try:\n                        time.sleep(nextfiring - t)\n                    except:\n                        logexception()\n                else:\n                    break\n\n########################################\n\nSLOTDURATION = ONEHOUR\n\nSCHEDULEURL = \'' + site['url'] + '/planetlab/sirius/schedule.txt\'\n\nschedulelock = threading.Lock()\n\nschedule = {}\n\n\ndef currentslot():\n    return int(time.time() / SLOTDURATION) * SLOTDURATION\n\n\ndef updateschedule():\n    """Make one attempt at downloading and updating the schedule."""\n    log(\'Contacting PLC...\')\n    newschedule = {}\n    # Format is:\n    # timestamp\n    # slicename - starttime - -\n    # ...\n    if DEBUGLEVEL > 0:\n        f = open(\'/tmp/schedule.txt\')\n    else:\n        f = urllib.urlopen(SCHEDULEURL)\n    for line in f:\n        fields = line.split()\n        if len(fields) >= 3:\n            newschedule[fields[2]] = fields[0]\n    log(\'Current schedule is %s\' % newschedule)\n\n    schedulelock.acquire()\n    try:\n        schedule.clear()\n        schedule.update(newschedule)\n    finally:\n        schedulelock.release()\n    log(\'Updated schedule successfully\')\n\n########################################\n\nnodemanager = ServerProxy(\'http://127.0.0.1:812/\')\n\nrecipientcond = threading.Condition()\n\nrecipient = \'\'\nversionnumber = 0\n\ndef updateloans():\n    log(\'Contacting NodeManager...\')\n    schedulelock.acquire()\n    try:\n        newrecipient = schedule.get(str(currentslot()), \'\')\n    finally:\n        schedulelock.release()\n    if newrecipient:\n        loans = [(newrecipient, \'cpu_min\', 250), (newrecipient, \'net_min_rate\', 2000)]\n    else:\n        loans = []\n    log(\'Current loans are %s\' % loans)\n\n    if DEBUGLEVEL < 2:\n        nodemanager.SetLoans(\'princeton_sirius\', loans)\n    log(\'Updated loans successfully\')\n\n    recipientcond.acquire()\n    try:\n        global recipient, versionnumber\n        if recipient != newrecipient:\n            recipient = newrecipient\n            versionnumber += 1\n            recipientcond.notifyAll()\n    finally:\n        recipientcond.release()\n\n########################################\n\nbackoff = 1\n\ndef success():\n    global backoff\n    backoff = 1\n\ndef failure():\n    global backoff\n    try:\n        time.sleep(backoff)\n    except:\n        logexception()\n    backoff = min(backoff*2, 5*ONEMINUTE)\n\n\ndef handleclient(clientsock, clientaddress):\n    try:\n        log(\'Connection from %s:%d\' % clientaddress)\n        clientsock.shutdown(socket.SHUT_RD)\n        recipientcond.acquire()\n        while True:\n            recip, vn = recipient, versionnumber\n            recipientcond.release()\n            clientsock.send(recip + \'\\n\')\n\n            recipientcond.acquire()\n            while versionnumber == vn:\n                recipientcond.wait()\n    except:\n        logexception()\n\n\ndef server():\n    while True:\n        try:\n            sock = socket.socket()\n            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)\n            sock.bind((\'\', 8124))\n            sock.listen(5)\n            success()\n            break\n        except:\n            logexception()\n            failure()\n    log(\'Bound server socket\')\n\n    while True:\n        try:\n            client = sock.accept()\n            threading.Thread(target=handleclient, args=client).start()\n            success()\n        except:\n            logexception()\n            failure()\n\n########################################\n\nif DEBUGLEVEL < 2:\n    PIDFILE = \'/tmp/sirius.pid\'\nelse:\n    PIDFILE = \'sirius.pid\'\n\ntry:\n    if os.fork():\n        sys.exit(0)\n    f = open(PIDFILE, \'w\')\n    fcntl.flock(f.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)\nexcept:\n    logexception()\n    sys.exit(1)\n\nPeriodic(updateschedule, SLOTDURATION, -5*ONEMINUTE, -1*ONEMINUTE)\nPeriodic(updateloans, 5*ONEMINUTE, 0, 0)\nserver()\n'}]
+    
+    # Get list of existing initscripts
+    oldinitscripts = GetInitScripts()
+    oldinitscripts = [script['name'] for script in oldinitscripts]
+
+    for initscript in default_initscripts:
+        if initscript not in oldinitscripts:  AddInitScript(initscript)
+
     # Setup default slice attribute types
     default_setting_types = [
 
@@ -532,7 +546,6 @@ def main():
          'description': "For testing new settings",
          'min_role_id' : 10},
 
-        ] + [
         { "category" : "WiFi",
           "name" : x,
           "description" : "802.11 %s -- see %s"%(y,z),
@@ -581,6 +594,17 @@ def main():
                         ('proper_op', "open file=/etc/passwd, flags=r"),
                         ('proper_op', "create_socket"),
                         ('proper_op', "bind_socket")]},
+          # Sirius
+        {'name': plc['slice_prefix'] + "_sirius",
+         'description': 'The Sirius Calendar Service.\n\nSirius provides system-wide reservations of 25% CPU and 2Mb/s outgoing\nbandwidth.  Sign up for hour-long slots using the Web GUI at the\nPlanetLab website.\n\nThis slice should not generate traffic external to PlanetLab.\n',
+         'url': url,
+         'instantiation': "plc-instantiated",
+         # Renew forever
+         'expires': sys.maxint,
+         'attributes': [('system', "1"),
+                        ('net_min_rate', "2000"),
+                        ('cpu_min', "250"),
+                        ('initscript', plc['slice_prefix'] + "_sirius")]}
         ]
     
     for default_slice in default_slices:
