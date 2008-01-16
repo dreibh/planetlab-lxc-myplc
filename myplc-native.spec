@@ -4,8 +4,8 @@
 %define url $URL$
 
 %define name myplc-native
-%define version 4.0
-%define taglevel 4
+%define version 4.2
+%define taglevel 1
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
