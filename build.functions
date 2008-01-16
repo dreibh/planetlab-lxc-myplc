@@ -119,14 +119,6 @@ EOF
    esac
 }
 
-function sudoers_bootcustom_apache () {
-    cat <<EOF
-User_Alias WWW = %apache,%root
-Cmnd_Alias BOOTCUSTOM = /usr/share/bootcd/bootcustom.sh
-WWW          ALL = NOPASSWD: BOOTCUSTOM 
-EOF
-}
-
 # quick and dirty - might break anytime if docbook html output changes
 function docbook_html_to_drupal () {
     title=$1; shift

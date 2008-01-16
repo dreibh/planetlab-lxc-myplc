@@ -89,13 +89,6 @@ install -m 444 myplc-release root/etc/myplc-release
 # yum_conf_to_build_host is defined in build.functions
 yum_conf_to_build_host > root/etc/yum.conf
 
-### Thierry Parmentelat - may 16 2007
-# the node-dependent image generation script requires root privilege
-# to perform various mount operations
-sudoers_bootcustom_apache > root/etc/sudoers
-chown root:root root/etc/sudoers
-chmod 400 root/etc/sudoers
-
 ### Thierry Parmentelat - july 20 2007
 # we now build the myplc doc
 # beware that making the pdf file somehow overwrites the html
