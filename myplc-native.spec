@@ -46,8 +46,6 @@ Requires: SOAPpy
 Requires: vixie-cron
 Requires: yum
 Requires: php-gd
-Requires: PLCWWW
-Requires: PLCAPI
 Requires: PyXML
 Requires: sendmail
 Requires: python >= 2.4
@@ -67,6 +65,10 @@ Requires: dnsmasq
 Requires: diffutils
 Requires: gzip
 Requires: findutils
+# planetlab stuff
+Requires: PLCWWW
+Requires: PLCAPI
+Requires: bootstrapfs
 
 %define debug_package %{nil}
 
