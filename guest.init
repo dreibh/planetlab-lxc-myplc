@@ -188,6 +188,30 @@ case "$command" in
 	reload force
 	;;
 
+    checkpoint)
+	cpfile=$1
+	[ -z "$cpfile" ] && cpfile=/var/tmp/plc_checkpoint.$(date +"%Y-%m-%d-%H-%M-%S")
+	cpdir=$(mktemp -d tmp.XXXXXX)
+	cd $cpdir
+	mkdir -p ./etc/planetlab/
+	rsync -av /etc/planetlab ./etc/planetlab/
+	/etc/plc.d/db checkpoint ./etc/planetlab/plc_db.checkpoint ./etc/planetlab/plc_drupal.checkpoint
+	tar cjf $cpfile etc
+	cd -
+	rm -rf $cpdir
+	;;
+
+    restore)
+	cpfile=$1
+	cpdir=$(mktemp -d tmp.XXXXXX)
+	cd $cpdir
+	tar xjf $cpfile
+	rsync -av ./etc/planetlab/ /etc/planetlab
+	/etc/plc.d/db restore ./etc/planetlab/plc_db.checkpoint ./etc/planetlab/plc_drupal.checkpoint
+	cd -
+	rm -rf $cpdir
+	;;
+
     steps)
 	echo "${steps[@]}" >&4
 	;;

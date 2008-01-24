@@ -51,19 +51,55 @@ function migrate_db()
     done
 }
 
+function checkpoint_planetlab_db()
+{
+    dumpfile=$1
+    pg_dump -U $PLC_DB_USER $PLC_DB_NAME > $dumpfile
+    check
+}
+
+function restore_planetlab_db()
+{
+    dumpfile=$1
+    if [ -n "$dumpfile" ] ; then 
+	[ -f "$dumpfile" ] && psql -a -U $PLC_DB_USER $PLC_DB_NAME < $dumpfile
+	check
+    else
+	# XXX set error
+    fi
+}
+
+# use a single date of this script invocation for the dump_*_db functions.
+DATE=$(date +"%Y-%m-%d-%H-%M-%S")
+
 # Dumps the database - optional argument to specify filename suffix
 function dump_planetlab_db()
 {
     if [ -n "$1" ] ; then suffix="-$1" ; else suffix="" ; fi
-    dump=/var/lib/pgsql/backups/$(date +"$PLC_DB_NAME.%Y-%m-%d-%H-%M-%S${suffix}.sql")
-    pg_dump -U $PLC_DB_USER $PLC_DB_NAME > $dump
+    dumpfile=/var/lib/pgsql/backups/$(date +"${PLC_DB_NAME}.${DATE}${suffix}.sql")
+    checkpoint_planetlab_db $dumpfile
+}
+
+function restore_drupal_db()
+{
+    dumpfile=$1
+    if [ -n "$dumpfile" ] ; then 
+	[ -f "$dumpfile" ] && psql -a -U $PLC_DB_USER drupal < $1
+	check
+    fi
+}
+
+function checkpoint_drupal_db()
+{
+    dumpfile=$1
+    pg_dump -U $PLC_DB_USER drupal > $dumpfile
     check
 }
 
 function dump_drupal_db()
 {
-    dump=/var/lib/pgsql/backups/$(date +"drupal.%Y-%m-%d-%H-%M-%S.sql")
-    pg_dump -U $PLC_DB_USER drupal > $dump
+    dumpfile=/var/lib/pgsql/backups/$(date +"drupal.${DATE}.sql")
+    checkpoint_drupal_db $dumpfile
     check
 }
 
@@ -121,6 +157,18 @@ EOF
 	dump_planetlab_db
 	dump_drupal_db
 	result "$MESSAGE"
+	;;
+
+    checkpoint)
+	MESSAGE=$"Checkpointing the databases"
+	checkpoint_planetlab_db $2
+	checkpoint_drupal_db $3
+	;;
+
+    restore)
+	MESSAGE=$"Restoring the databases from checkpoint files"
+	restore_planetlab_db $2
+	restore_drupal_db $3
 	;;
 
     clean-dump)
