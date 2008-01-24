@@ -104,7 +104,7 @@ done
 # we now build the plcapi doc
 # this generates a drupal php file from a docbook-generated html
 # quick & dirty
-docbook_html_to_drupal "OneLab PLCAPI Documentation" \
+docbook_html_to_drupal "${pldistro} PLCAPI Documentation" \
     root/usr/share/plc_api/doc/PLCAPI.html \
     root/var/www/html/planetlab/doc/plcapi.php
 # pdf just get copied
