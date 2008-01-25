@@ -94,6 +94,8 @@ usage()
     echo "	stop		Stop all PLC subsystems"
     echo "	reload		Regenerate configuration files"
     echo "	restart		Restart all PLC subsystems"
+    echo "	checkpoint filename : Checkpoint the current state of MyPLC to filename"
+    echo "	restart filename : Restpore MyPLC state from filename"
     echo "	steps		Displays ordered list of subsystems"
     echo
     echo "Steps:"
@@ -211,7 +213,7 @@ case "$command" in
 	tar xjf $cpfile
 	/etc/plc.d/db restore ./etc/planetlab/plc_db.checkpoint ./etc/planetlab/plc_drupal.checkpoint
 	rm -f ./etc/planetlab/plc_db.checkpoint ./etc/planetlab/plc_drupal.checkpoint
-	rsync -av ./etc/planetlab/ /etc/planetlab
+	rsync -av ./etc/planetlab/ /etc/planetlab/
 	cd -
 	rm -rf $cpdir
 	;;
