@@ -64,8 +64,6 @@ function restore_planetlab_db()
     if [ -n "$dumpfile" ] ; then 
 	[ -f "$dumpfile" ] && psql -a -U $PLC_DB_USER $PLC_DB_NAME < $dumpfile
 	check
-    else
-	# XXX set error
     fi
 }
 
