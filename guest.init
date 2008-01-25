@@ -199,7 +199,7 @@ case "$command" in
 	cpdir=$(mktemp -d tmp.XXXXXX)
 	cd $cpdir
 	mkdir -p ./etc/planetlab/
-	rsync -av /etc/planetlab ./etc/planetlab/
+	rsync -av /etc/planetlab/ ./etc/planetlab/
 	/etc/plc.d/db checkpoint ./etc/planetlab/plc_db.checkpoint ./etc/planetlab/plc_drupal.checkpoint
 	tar cjf $cpfile etc
 	cd -
