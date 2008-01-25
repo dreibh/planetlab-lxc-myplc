@@ -190,7 +190,10 @@ case "$command" in
 
     checkpoint)
 	cpfile=$1
-	[ -z "$cpfile" ] && cpfile=/var/tmp/plc_checkpoint.$(date +"%Y-%m-%d-%H-%M-%S")
+	if [ -z "$cpfile" ] ; then
+	    echo "PLC: checkpoint requires a filename as an argument"
+	    exit 1
+	fi 
 	cpdir=$(mktemp -d tmp.XXXXXX)
 	cd $cpdir
 	mkdir -p ./etc/planetlab/
@@ -206,8 +209,9 @@ case "$command" in
 	cpdir=$(mktemp -d tmp.XXXXXX)
 	cd $cpdir
 	tar xjf $cpfile
-	rsync -av ./etc/planetlab/ /etc/planetlab
 	/etc/plc.d/db restore ./etc/planetlab/plc_db.checkpoint ./etc/planetlab/plc_drupal.checkpoint
+	rm -f ./etc/planetlab/plc_db.checkpoint ./etc/planetlab/plc_drupal.checkpoint
+	rsync -av ./etc/planetlab/ /etc/planetlab
 	cd -
 	rm -rf $cpdir
 	;;
