@@ -523,7 +523,7 @@ def main():
     oldinitscripts = [script['name'] for script in oldinitscripts]
 
     for initscript in default_initscripts:
-        if initscript not in oldinitscripts:  AddInitScript(initscript)
+        if initscript['name'] not in oldinitscripts:  AddInitScript(initscript)
 
     # Setup default slice attribute types
     default_setting_types = [
