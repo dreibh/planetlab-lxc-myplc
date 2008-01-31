@@ -95,7 +95,7 @@ usage()
     echo "	reload		Regenerate configuration files"
     echo "	restart		Restart all PLC subsystems"
     echo "	checkpoint filename : Checkpoint the current state of MyPLC to filename"
-    echo "	restart filename : Restpore MyPLC state from filename"
+    echo "	restart filename : Restore MyPLC state from filename"
     echo "	steps		Displays ordered list of subsystems"
     echo
     echo "Steps:"
