@@ -5,7 +5,7 @@
 
 %define name myplc
 %define version 4.2
-%define taglevel 1
+%define taglevel 2
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -167,6 +167,11 @@ fi
 %config(noreplace) /plc/data/*
 
 %changelog
+* Thu Jan 31 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-4.2-1 myplc-4.2-2
+- knows how to checkpoint and restore
+- packages step more robust, in particular with empty node repository
+- miscell tweaks for native packaging
+
 * Wed Jan 09 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-4.0-15 myplc-4.2-0
 moving to 4.2 - no change
 
