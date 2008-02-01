@@ -77,6 +77,7 @@ def main():
     
     # Write /etc/plc_hosts
     plc_hosts = open("/etc/plc_hosts", "w")
+    plc_hosts.write("# DO NOT EDIT; File is writen and removed by automatic scripts\n")
     for ip, hostnames in hosts.iteritems():
         plc_hosts.write(ip + "\t" + " ".join(hostnames) + "\n")
     plc_hosts.close()
@@ -92,6 +93,7 @@ def main():
 domain-needed
 bogus-priv
 addn-hosts=/etc/plc_hosts
+resolv-file=/etc/plc_resolv.conf
 """.lstrip())
 
     # Reload dnsmasq
