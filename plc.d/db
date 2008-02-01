@@ -108,10 +108,7 @@ function clean_dumps()
     check
 }
 
-if [ "$PLC_DB_ENABLED" != "1" ] ; then
-    exit 0
-fi
-
+[ $PLC_DB_ENABLED -ne 1 ] && exit 0
 case "$1" in
     start)
 	MESSAGE=$"Bootstrapping the database"
@@ -177,8 +174,13 @@ EOF
 	result "$MESSAGE"
 	;;
 
+    stop)
+	MESSAGE=$"Ignoring request to stop myplc databases"
+	result "$MESSAGE"
+	;;
+
     *)
-        echo "Usage: $0 [start|migrate|dump|clean-dump]"
+        echo "Usage: $0 [start|migrate|dump|checkpoint|restore|clean-dump|stop]"
 	exit 1
 	;;
 esac
