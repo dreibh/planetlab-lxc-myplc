@@ -222,6 +222,11 @@ case "$command" in
 	echo "${steps[@]}" >&4
 	;;
 
+    # for backwards compatibility
+    mount|umount|mountstatus)
+	echo "${command} not used within native myplc environment"
+	;;
+
     *)
 	usage >&3
 	;;
