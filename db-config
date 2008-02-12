@@ -587,8 +587,8 @@ def main():
          'description': "PlanetFlow Traffic Auditing Service",
          'url': url,
          'instantiation': "plc-instantiated",
-         # Renew forever
-         'expires': sys.maxint,
+         # Renew forever (minus one day, work around date conversion weirdness)
+         'expires': sys.maxint - (60 * 60 * 24),
          'attributes': [('system', "1"),
                         ('vref', "planetflow"),
                         ('proper_op', "open file=/etc/passwd, flags=r"),
@@ -599,8 +599,8 @@ def main():
          'description': 'The Sirius Calendar Service.\n\nSirius provides system-wide reservations of 25% CPU and 2Mb/s outgoing\nbandwidth.  Sign up for hour-long slots using the Web GUI at the\nPlanetLab website.\n\nThis slice should not generate traffic external to PlanetLab.\n',
          'url': url,
          'instantiation': "plc-instantiated",
-         # Renew forever
-         'expires': sys.maxint,
+         # Renew forever (minus one day, work around date conversion weirdness)
+         'expires': sys.maxint - (60 * 60 * 24),
          'attributes': [('system', "1"),
                         ('net_min_rate', "2000"),
                         ('cpu_pct', "25"),
