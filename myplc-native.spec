@@ -3,9 +3,9 @@
 #
 %define url $URL$
 
-%define name myplc-native
+%define name myplc
 %define version 4.2
-%define taglevel 1
+%define taglevel 3
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -194,5 +194,11 @@ fi
 /usr/share/myplc/plc_config.py*
 
 %changelog
+* Thu Feb 14 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-4.2-2 myplc-4.2-3
+- refresh-peer.py removed (duplicate with PLCAPI)
+- plc.d/ scripts cleaned up
+- sirius initscript updated
+- slice auto renewal fixed
+
 * Fri Aug 31 2007 Marc E. Fiuczynski <mef@CS.Princeton.EDU>
 - initial build.

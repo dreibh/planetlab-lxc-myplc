@@ -5,7 +5,7 @@
 
 %define name myplc
 %define version 4.2
-%define taglevel 2
+%define taglevel 3
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -167,6 +167,12 @@ fi
 %config(noreplace) /plc/data/*
 
 %changelog
+* Thu Feb 14 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-4.2-2 myplc-4.2-3
+- refresh-peer.py removed (duplicate with PLCAPI)
+- plc.d/ scripts cleaned up
+- sirius initscript updated
+- slice auto renewal fixed
+
 * Thu Jan 31 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-4.2-1 myplc-4.2-2
 - knows how to checkpoint and restore
 - packages step more robust, in particular with empty node repository
