@@ -3,7 +3,7 @@
 #
 %define url $URL$
 
-%define name myplc
+%define name myplc-devel
 %define version 4.2
 %define taglevel 3
 
@@ -191,7 +191,7 @@ fi
 /usr/bin/clean-empty-dirs.py*
 /usr/bin/mtail.py*
 /usr/bin/check-ssl-peering.py*
-/usr/share/myplc/plc_config.py*
+/usr/share/myplc
 
 %changelog
 * Thu Feb 14 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-4.2-2 myplc-4.2-3
