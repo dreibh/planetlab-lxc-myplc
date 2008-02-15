@@ -3,7 +3,7 @@
 #
 %define url $URL$
 
-%define name myplc-devel
+%define name myplc-native
 %define version 4.2
 %define taglevel 3
 
