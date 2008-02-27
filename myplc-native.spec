@@ -67,6 +67,7 @@ Requires: gzip
 Requires: findutils
 # planetlab stuff
 Requires: PLCWWW
+Requires: nodeconfig
 Requires: PLCAPI
 Requires: bootstrapfs
 
