@@ -77,7 +77,9 @@ chroot root sh -c 'chkconfig --add plc; chkconfig plc on'
 if [ -f ../../../myplc-release ] ; then
   cp ../../../myplc-release myplc-release
 else
-  echo "No build release information found" > myplc-release
+  echo "Cannot find release information." > myplc-release
+  date >> myplc-release
+  echo "HeadURL" >> myplc-release
 fi
 # install it in /etc/myplc-release 
 install -m 444 myplc-release root/etc/myplc-release
