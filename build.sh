@@ -65,7 +65,8 @@ install -D -m 755 plc-map.py root/usr/bin/plc-map.py
 install -D -m 755 clean-empty-dirs.py root/usr/bin/clean-empty-dirs.py
 install -D -m 755 mtail.py root/usr/bin/mtail.py
 install -D -m 755 check-ssl-peering.py root/usr/bin/check-ssl-peering.py
-install -D -m 755 support-scripts/* root/etc/support-scripts
+mkdir root/etc/support-scripts
+cp support-scripts/* root/etc/support-scripts 
 
 # Install initscripts
 echo "* myplc: Installing initscripts"
