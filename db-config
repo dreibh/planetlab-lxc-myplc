@@ -499,6 +499,11 @@ def main():
          'description': "Proper operation (e.g. bind_socket)",
          'min_role_id': 10},
 
+        # VServer capabilities 
+        {'name': "capabilities",
+         'description': "VServer bcapabilities (separate by commas)",
+         'min_role_id': 10},
+
 		# Vsys
         {'name': "vsys",
          'description': "Bind vsys script fd's to a slice's vsys directory.",
