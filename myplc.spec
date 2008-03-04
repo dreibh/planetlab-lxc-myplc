@@ -25,6 +25,8 @@ URL: %(echo %{url} | cut -d ' ' -f 2)
 
 Requires: tar
 
+Provides: myplc
+
 %define debug_package %{nil}
 
 %description

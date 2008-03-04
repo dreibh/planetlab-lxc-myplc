@@ -71,6 +71,8 @@ Requires: nodeconfig
 Requires: PLCAPI
 Requires: bootstrapfs
 
+Provides: myplc
+
 %define debug_package %{nil}
 
 %description
