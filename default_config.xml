@@ -178,6 +178,16 @@ $Id$
 	  occurs during node installation or boot.</description>
 	</variable>
 
+	<variable id="mom_list_address" type="email">
+	  <name>Mom List Address</name>
+	  <value>root+mom@localhost.localdomain</value>
+	  <description>This address is used by operations staff
+	  to monitor Mom (formerly pl_mom) messages indicating
+	  excessive BW or memory usage by a slice.  Mom messages sent
+	  to slices will be cc'ed to this list so as not to clog
+	  the Support Address list.</description>
+	</variable>
+
 	<variable id="slice_address" type="email">
 	  <name>Slice Address</name>
 	  <value>root+SLICE@localhost.localdomain</value>
