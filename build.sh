@@ -69,8 +69,8 @@ install -D -m 755 check-ssl-peering.py root/usr/bin/check-ssl-peering.py
 mkdir root/etc/support-scripts
 cp support-scripts/* root/etc/support-scripts 
 # copy initscripts to etc/plc_sliceinitscripts
-mkdir etc/plc_sliceinitscripts
-cp plc_sliceinitscripts/* etc/plc_sliceinitscripts
+mkdir root/etc/plc_sliceinitscripts
+cp plc_sliceinitscripts/* root/etc/plc_sliceinitscripts
 
 # Install initscripts
 echo "* myplc: Installing initscripts"
