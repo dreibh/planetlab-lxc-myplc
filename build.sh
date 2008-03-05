@@ -65,8 +65,12 @@ install -D -m 755 plc-map.py root/usr/bin/plc-map.py
 install -D -m 755 clean-empty-dirs.py root/usr/bin/clean-empty-dirs.py
 install -D -m 755 mtail.py root/usr/bin/mtail.py
 install -D -m 755 check-ssl-peering.py root/usr/bin/check-ssl-peering.py
+# Extra scripts (mostly for mail and dns) not installed by myplc by default.  Used in production
 mkdir root/etc/support-scripts
 cp support-scripts/* root/etc/support-scripts 
+# copy initscripts to etc/plc_sliceinitscripts
+mkdir etc/plc_sliceinitscripts
+cp plc_sliceinitscripts/* etc/plc_sliceinitscripts
 
 # Install initscripts
 echo "* myplc: Installing initscripts"
