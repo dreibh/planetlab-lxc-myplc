@@ -33,10 +33,10 @@ install -D -m 755 clean-empty-dirs.py ${tmpdir}/usr/bin/clean-empty-dirs.py
 install -D -m 755 mtail.py ${tmpdir}/usr/bin/mtail.py
 install -D -m 755 check-ssl-peering.py ${tmpdir}/usr/bin/check-ssl-peering.py
 # Extra scripts (mostly for mail and dns) not installed by myplc by default.  Used in production
-mkdir ${tmpdir}/etc/support-scripts
+mkdir -p ${tmpdir}/etc/support-scripts
 cp support-scripts/* ${tmpdir}/etc/support-scripts
 # copy initscripts to etc/plc_sliceinitscripts
-mkdir ${tmpdir}/etc/plc_sliceinitscripts
+mkdir -p ${tmpdir}/etc/plc_sliceinitscripts
 cp plc_sliceinitscripts/* ${tmpdir}/etc/plc_sliceinitscripts
 
 # Install initscripts
