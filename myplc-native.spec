@@ -185,9 +185,9 @@ fi
 /etc/init.d/plc
 /etc/plc.d
 /etc/planetlab
-/etc/plc_sliceinitscripts/sirius.py
-/etc/support-scripts/gen_aliases.py
-/etc/support-scripts/renew_reminder.py
+/etc/plc_sliceinitscripts/sirius
+/etc/support-scripts/gen_aliases.py*
+/etc/support-scripts/renew_reminder.py*
 /var/www/html/install-rpms/planetlab
 /usr/bin/plc-config
 /usr/bin/plc-config-tty
