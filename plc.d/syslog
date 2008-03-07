@@ -20,12 +20,19 @@
 # Be verbose
 set -x
 
+# fedora 8 comes with a new name for the binary
+if type rsyslogd &> /dev/null ; then
+    syslogname=rsyslogd
+else
+    syslogname=syslogd
+fi
+
 case "$1" in
     start)
 	MESSAGE=$"Starting system logger"
 	dialog "$MESSAGE"
 
-	plc_daemon syslogd -m 0
+	plc_daemon $syslogname -m 0
 	check
 
 	result "$MESSAGE"
@@ -35,7 +42,7 @@ case "$1" in
 	MESSAGE=$"Shutting down system logger"
 	dialog "$MESSAGE"
 
-	killproc plc_syslogd
+	killproc plc_$syslogname
 	check
 
 	result "$MESSAGE"
