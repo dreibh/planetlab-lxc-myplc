@@ -17,6 +17,7 @@ License: PlanetLab
 Group: Applications/Systems
 Source0: %{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
+BuildArch: noarch
 
 Vendor: PlanetLab
 Packager: PlanetLab Central <support@planet-lab.org>
