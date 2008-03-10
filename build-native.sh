@@ -55,8 +55,8 @@ install -D -m 444 plc_config.dtd ${tmpdir}/etc/planetlab/plc_config.dtd
 # updates or optional packages should be placed in this directory.
 nodefamily=${pldistro}-${pl_DISTRO_ARCH}
 install -D -m 644 $pl_DISTRO_YUMGROUPS \
-    data/var/www/html/install-rpms/$nodefamily/yumgroups.xml
+    ${tmpdir}/var/www/html/install-rpms/$nodefamily/yumgroups.xml
 # temporary - so that node update still work until yum.conf.php gets fixed
-( cd data/var/www/html/install-rpms ; ln -s $nodefamily planetlab)
+( cd ${tmpdir}/var/www/html/install-rpms ; ln -s $nodefamily planetlab)
 
 exit 0
