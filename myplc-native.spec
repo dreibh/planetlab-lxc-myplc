@@ -69,7 +69,7 @@ Requires: findutils
 Requires: PLCWWW
 Requires: nodeconfig
 Requires: PLCAPI
-Requires: bootstrapfs
+Requires: bootstrapfs-%{pldistro}-%{_arch}
 
 Provides: myplc
 
@@ -90,7 +90,7 @@ system.
 %build
 pushd MyPLC
 rm -rf $RPM_BUILD_ROOT
-./build-native.sh $RPM_BUILD_ROOT
+./build-native.sh %{pldistro} $RPM_BUILD_ROOT
 popd
 
 %install
@@ -188,6 +188,7 @@ fi
 /etc/plc_sliceinitscripts/sirius
 /etc/support-scripts/gen_aliases.py*
 /etc/support-scripts/renew_reminder.py*
+/var/www/html/install-rpms/%{pldistro}-%{_arch}
 /var/www/html/install-rpms/planetlab
 /usr/bin/plc-config
 /usr/bin/plc-config-tty

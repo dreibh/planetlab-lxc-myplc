@@ -18,8 +18,8 @@
 
 # Install configuration scripts
 echo "* myplc-native: Installing configuration scripts"
-tmpdir=$1
-mkdir -p ${tmpdir}
+pldistro=$1; shift
+tmpdir=$1 ; shift
 rm -rf ${tmpdir}
 mkdir -p ${tmpdir}
 echo "* myplc-native: installing plc_config.py in /usr/share/myplc"
@@ -53,7 +53,10 @@ install -D -m 444 plc_config.dtd ${tmpdir}/etc/planetlab/plc_config.dtd
 # Initialize node RPMs directory. The PlanetLab-Bootstrap.tar.bz2
 # tarball already contains all of the node RPMs pre-installed. Only
 # updates or optional packages should be placed in this directory.
+nodefamily=${pldistro}-${pl_DISTRO_ARCH}
 install -D -m 644 $pl_DISTRO_YUMGROUPS \
-    ${tmpdir}/var/www/html/install-rpms/planetlab/yumgroups.xml
+    data/var/www/html/install-rpms/$nodefamily/yumgroups.xml
+# temporary - so that node update still work until yum.conf.php gets fixed
+( cd data/var/www/html/install-rpms ; ln -s $nodefamily planetlab)
 
 exit 0

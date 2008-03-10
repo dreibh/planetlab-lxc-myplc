@@ -1,10 +1,11 @@
 #!/bin/bash
 #
-# Builds MyPLC, either inside the MyPLC development environment in
-# devel/root (if PLC_DEVEL_BOOTSTRAP is true), or in the current host
-# environment (may be itself a MyPLC development environment or a
-# Fedora Core 4 environment with the appropriate development packages
-# installed).
+# Builds MyPLC in the current host environment
+# This is for the so-called chroot installation mode, meaning that
+# the resulting rpm will install a full chroot image in /plc/root
+# that can be run through chroot /plc/root
+# This chroot mode is to be opposed to the native mode (see build-native.sh)
+# that can be used in the host's root context or within a vserver
 #
 # root.img (loopback image)
 # root/ (mount point)
@@ -21,8 +22,7 @@
 . build.functions
 
 # pldistro expected as $1 - defaults to planetlab
-pldistro=planetlab
-[ -n "$@" ] && pldistro=$1
+pldistro=$1 ; shift
 
 # These directories are allowed to grow to unspecified size, so they
 # are stored as symlinks to the /data partition. mkfedora and yum
@@ -50,8 +50,10 @@ pl_fixdirs root "${datadirs[@]}"
 echo "* myplc: Installing base filesystem"
 mkdir -p root data
 
+pl_root_makedevs root
 pkgsfile=$(pl_locateDistroFile ../build/ ${pldistro} myplc.pkgs)
-pl_root_setup_chroot root -f $pkgsfile
+pl_root_mkfedora root $pldistro $pkgsfile
+pl_root_tune_image root
 
 # Install configuration scripts
 echo "* myplc: Installing configuration scripts"
@@ -151,8 +153,11 @@ rm -f data/var/www/html/boot/bootmanager.sh
 # Initialize node RPMs directory. The PlanetLab-Bootstrap.tar.bz2
 # tarball already contains all of the node RPMs pre-installed. Only
 # updates or optional packages should be placed in this directory.
+nodefamily=${pldistro}-${pl_DISTRO_ARCH}
 install -D -m 644 $pl_DISTRO_YUMGROUPS \
-    data/var/www/html/install-rpms/planetlab/yumgroups.xml
+    data/var/www/html/install-rpms/$nodefamily/yumgroups.xml
+# temporary - so that node update still work until yum.conf.php gets fixed
+( cd data/var/www/html/install-rpms ; ln -s $nodefamily planetlab)
 
 # Make image out of directory
 echo "* myplc: Building loopback image"
