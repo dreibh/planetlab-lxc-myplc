@@ -63,40 +63,44 @@ class KmlMap:
             return
 
         site_id=site['site_id']
-        site_name=site['name']
+        name=site['name']
         nb_nodes=len(site['node_ids'])
         nb_slices=len(site['slice_ids'])
         latitude=site['latitude']
         longitude=site['longitude']
         baseurl='https://%s:443'%api.config.PLC_WWW_HOST
-        # name
-        name = '<h3> <a href="%(baseurl)s/db/sites/index.php?id=%(site_id)d"> %(site_name)s </a></h3>'%locals()
+        
+        # open description
         description='<ul>'
-        # URL
+        # Name and URL
+        description += '<li>'
+        description += '<a href="%(baseurl)s/db/sites/index.php?id=%(site_id)d"> Site page </a>'%locals()
         if site['url']:
             site_url=site['url']
-            description += '<li>URL:<a href="%(site_url)s"> %(site_url)s </a></li>'%locals()
+            description += ' -- <a href="%(site_url)s"> %(site_url)s </a>'%locals()
+        description += '</li>'
         # NODES
         if nb_nodes:
             description += '<li>'
-            description += '<a href="%(baseurl)s/db/nodes/index.php?site_id=%(site_id)d">%(nb_nodes)d nodes</a>'%locals()
+            description += '<a href="%(baseurl)s/db/nodes/index.php?site_id=%(site_id)d">%(nb_nodes)d node(s)</a>'%locals()
             description += '<a href="%(baseurl)s/db/nodes/comon.php?site_id=%(site_id)d"> (in Comon)</a>'%locals()
             description += '</li>'
         else:
             description += '<li>No node</li>'
         #SLICES
         if nb_slices:
-            description += '<li><a href="%(baseurl)s/db/slices/index.php?site_id=%(site_id)d">%(nb_slices)d slices</a></li>'%locals()
+            description += '<li><a href="%(baseurl)s/db/slices/index.php?site_id=%(site_id)d">%(nb_slices)d slice(s)</a></li>'%locals()
         else:
             description += '<li>No slice</li>'
-
+        # close description
         description +='</ul>'
 
-
-#        iconfile="google-local.png"
-#        if site['peer_id']:
+        # STYLE
+#        if not site['peer_id']:
+#            iconfile="google-local.png"
+#        else:
 #            iconfile="google-foreign.png"
-#        iconurl="http://%(base)s/misc/%(iconfile)s"%locals()
+#        iconurl="http://%(baseurl)s/misc/%(iconfile)s"%locals()
 #        xyspec=""
 
         if not site['peer_id']:
