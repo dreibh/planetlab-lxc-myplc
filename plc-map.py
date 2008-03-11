@@ -1,5 +1,13 @@
 #!/usr/bin/env plcsh
  
+# this is a very rustic script for generating png maps from a model
+# the model is expected in /var/www/html/sites/map.png
+# and the output is located in the same dir as livemap.png
+#
+# this has many drawbacks, as it needs a cylindric projection map
+# (there's almost no such map out there) and manual calibration
+# you want to use the kml-based googlemap applet instead
+
 import Image, ImageDraw
 
 ####### first - rustic - linear positioning on a map
@@ -62,64 +70,8 @@ def make_image():
         
     image.save (live)
 
-########## second - way simpler - export sites as a list to javascript for rendering with googlemap
-js_prelude="""
-function Site (lat,lon,site_id,name,peer_id,peername,nb_nodes) {
-  this.lat=lat;
-  this.lon=lon;
-  this.site_id=site_id;
-  this.name=name;
-  this.peer_id=peer_id;
-  this.peername=peername;
-  this.nb_nodes=nb_nodes;
-}
-"""
-
-def locate_peer (peers,peer_id):
-    for peer in peers:
-        if peer['peer_id']==peer_id:
-            return peer
-    return {'peername':'Cannot locate peer'}
-
-def js_site (site,peers):
-    # some sites come with lat or lon being None
-    lat = site['latitude']
-    if not lat:
-        lat=0
-    lon = site['longitude']
-    if not lon:
-        lon=0
-    # build javascript text
-    jstext="new Site("
-    jstext += str(lat) + "," + str(lon) + ","
-    jstext += str(site['site_id']) + ","
-    # needs html encoding for wierd chars
-    jstext += '"' + site['name'].encode("utf-8") + '"' + ','
-    if not site['peer_id']:
-        jstext += '0,""' +','
-    else:
-        peer=locate_peer(peers,site['peer_id'])
-        jstext += str(site['peer_id']) + ',"' + peer['peername'].encode("utf-8") + '"' + ','
-    jstext += str(len(site['node_ids']))
-    jstext += ')\n'
-    return jstext
-
-def make_javascript():
-    outputname="/var/www/html/sites/plc-sites.js"
-    f=open(outputname,"w")
-    f.write(js_prelude)
-    columns=['latitude','longitude','site_id','name','peer_id','node_ids']
-    f.write("allSites=new Array(\n")
-    # writes foreign sites first
-    foreign_sites=GetSites({'~peer_id':None},columns)
-    peers=GetPeers({})
-    local_sites=GetSites({'peer_id':None},columns)
-    f.write(",".join([js_site(site,peers) for site in foreign_sites+local_sites]))
-    f.write(");")
-
 def main ():
     make_image ()
-    make_javascript ()
 
 if __name__ == '__main__':
     main ()
