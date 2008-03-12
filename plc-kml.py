@@ -7,12 +7,15 @@
 
 import sys
 
-default_output="/var/www/html/sites/sites.kml"
+default_output       = "/var/www/html/sites/sites.kml"
+default_local_icon   = "sites/google-local.png"
+default_foreign_icon = "sites/google-foreign.png"
 
 class KmlMap:
 
-    def __init__ (self,outputname):
+    def __init__ (self,outputname,options):
         self.outputname=outputname
+        self.options=options
 
     def open (self):
         self.output = open(self.outputname,"w")
@@ -21,6 +24,9 @@ class KmlMap:
         if self.output:
             self.output.close()
         self.output = None
+
+    def write(self,string):
+        self.output.write(string.encode("UTF-8"))
 
     def refresh (self):
         self.open()
@@ -31,9 +37,6 @@ class KmlMap:
             self.write_site(site,peers)
         self.write_footer()
         self.close()
-
-    def write(self,string):
-        self.output.write(string.encode("UTF-8"))
 
     def write_header (self):
         self.write("""<?xml version="1.0" encoding="UTF-8"?>
@@ -68,13 +71,15 @@ class KmlMap:
         nb_slices=len(site['slice_ids'])
         latitude=site['latitude']
         longitude=site['longitude']
-        baseurl='https://%s:443'%api.config.PLC_WWW_HOST
-        
+        apiurl='https://%s:443'%api.config.PLC_WWW_HOST
+        baseurl='http://%s'%api.config.PLC_WWW_HOST
+        peer_id=site['peer_id']
+
         # open description
         description='<ul>'
         # Name and URL
         description += '<li>'
-        description += '<a href="%(baseurl)s/db/sites/index.php?id=%(site_id)d"> Site page </a>'%locals()
+        description += '<a href="%(apiurl)s/db/sites/index.php?id=%(site_id)d"> Site page </a>'%locals()
         if site['url']:
             site_url=site['url']
             description += ' -- <a href="%(site_url)s"> %(site_url)s </a>'%locals()
@@ -82,36 +87,44 @@ class KmlMap:
         # NODES
         if nb_nodes:
             description += '<li>'
-            description += '<a href="%(baseurl)s/db/nodes/index.php?site_id=%(site_id)d">%(nb_nodes)d node(s)</a>'%locals()
-            description += '<a href="%(baseurl)s/db/nodes/comon.php?site_id=%(site_id)d"> (in Comon)</a>'%locals()
+            description += '<a href="%(apiurl)s/db/nodes/index.php?site_id=%(site_id)d">%(nb_nodes)d node(s)</a>'%locals()
+            description += '<a href="%(apiurl)s/db/nodes/comon.php?site_id=%(site_id)d"> (in Comon)</a>'%locals()
             description += '</li>'
         else:
             description += '<li>No node</li>'
         #SLICES
         if nb_slices:
-            description += '<li><a href="%(baseurl)s/db/slices/index.php?site_id=%(site_id)d">%(nb_slices)d slice(s)</a></li>'%locals()
+            description += '<li><a href="%(apiurl)s/db/slices/index.php?site_id=%(site_id)d">%(nb_slices)d slice(s)</a></li>'%locals()
         else:
             description += '<li>No slice</li>'
+        # PEER
+        if peer_id:
+            peername = self.peer_name(site,peers)
+            description += '<li>'
+            description += '<a href="%(apiurl)s/db/peers/index.php?id=%(peer_id)d">At peer %(peername)s</a>'%locals()
+            description += '</li>'
         # close description
         description +='</ul>'
 
         # STYLE
-#        if not site['peer_id']:
-#            iconfile="google-local.png"
-#        else:
-#            iconfile="google-foreign.png"
-#        iconurl="http://%(baseurl)s/misc/%(iconfile)s"%locals()
-#        xyspec=""
-
-        if not site['peer_id']:
-            # local sites
-            iconurl="root://icons/palette-3.png"
-            xyspec="<x>0</x><y>0</y><w>32</w><h>32</h>"
+        if self.options.use_google_icons:
+            if not peer_id:
+                # local sites
+                iconfile="palette-4.png"
+                xyspec="<x>128</x><y>0</y><w>32</w><h>32</h>"
+            else:
+                # remote
+                iconfile="palette-3.png"
+                xyspec="<x>160</x><y>0</y><w>32</w><h>32</h>"
+            iconurl="root://icons/%(iconfile)s"%locals()
         else:
-            # remote
-            iconurl="root://icons/palette-3.png"
-            xyspec="<x>32</x><y>0</y><w>32</w><h>32</h>"
-            
+            if not peer_id:
+                iconfile=self.options.local_icon
+            else:
+                iconfile=self.options.foreign_icon
+            iconurl="%(baseurl)s/%(iconfile)s"%locals()
+            xyspec=""
+
         iconspec="<href>%(iconurl)s</href>%(xyspec)s"%locals()
 
         template="""<Placemark>
@@ -123,19 +136,29 @@ class KmlMap:
 """
         self.write(template%locals())
 
-        
-#        print 'name',name
-#        print 'description',description
-#        print template
-#        print template%locals()
+def main () :
+    from optparse import OptionParser
+    usage = "Usage %prog [plcsh-options] [ -- options ]"
+    parser = OptionParser (usage=usage)
 
-if __name__ == "__main__":
-    if len(sys.argv) == 1:
-        out=default_output
-    elif len(sys.argv) == 2:
-        out=sys.argv[1]
-    else:
-        print "Usage: %s [output]"%sys.argv[0]
-        print "default output is %s"%default_output
+    parser.add_option("-o","--output",action="store",dest="output",
+                      default=default_output,
+                      help="output file - default is %s"%default_output)
+    parser.add_option("-c","--custom",action="store_false",dest="use_google_icons",
+                      default=True,
+                      help="use locally customized icons rather than the google-provided defaults")
+    parser.add_option("-l","--local",action="store",dest="local_icon",
+                      default=default_local_icon,
+                      help="set icon url to use for local sites marker -- default is %s"%default_local_icon)
+    parser.add_option("-f","--foreign",action="store",dest="foreign_icon",
+                      default=default_foreign_icon,
+                      help="set icon url to use for foreign sites marker -- default is %s"%default_foreign_icon)
+    (options, args) = parser.parse_args()
+    if len(args) != 0:
+        parser.print_help()
         sys.exit(1)
-    KmlMap(out).refresh()
+    KmlMap(options.output,options).refresh()
+
+####################
+if __name__ == "__main__":
+    main()
