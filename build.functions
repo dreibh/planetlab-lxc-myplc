@@ -50,43 +50,11 @@ set -x
 # however this should be in line with the layouts obtained 
 # when running build/vbuild-fedora-mirror.sh
 
-function yum_conf_fedora_core () {
-    BUILD_HOST=$1; shift
-    cat <<EOF
-[base]
-name=${pl_DISTRO_NAME} - base
-baseurl=http://${BUILD_HOST}/fedora/linux/core/${pl_DISTRO_RELEASE}/${pl_DISTRO_ARCH}/os/
-
-
-[updates]
-name=${pl_DISTRO_NAME} - updates
-baseurl=http://${BUILD_HOST}/fedora/linux/core/updates/${pl_DISTRO_RELEASE}/${pl_DISTRO_ARCH}/
-
-
-[extras]
-name=${pl_DISTRO_NAME} - extras
-baseurl=http://${BUILD_HOST}/fedora/linux/extras/${pl_DISTRO_RELEASE}/${pl_DISTRO_ARCH}/
-EXTRAS
-EOF
-}
-
-function yum_conf_fedora () {
-    BUILD_HOST=$1; shift
-    cat <<EOF
-[base]
-name=${pl_DISTRO_NAME} - base
-baseurl=http://${BUILD_HOST}/fedora/linux/releases/${pl_DISTRO_RELEASE}/Everything/${pl_DISTRO_ARCH}/os/
-
-[updates]
-name=${pl_DISTRO_NAME} - base
-baseurl=http://${BUILD_HOST}/fedora/linux/updates/${pl_DISTRO_RELEASE}/${pl_DISTRO_ARCH}/
-EOF
-}
-
 function yum_conf_to_build_host () {
-   BUILD_HOST=$(hostname)
+    build_dir=$1; shift
+    BUILD_HOST=$(hostname)
 
-	   cat <<EOF
+    cat <<EOF
 [main]
 cachedir=/var/cache/yum
 debuglevel=2
@@ -104,19 +72,12 @@ reposdir=/dev/null
 
 EOF
 
-   case "$pl_DISTRO" in
-       Fedora)
-	   if [ "${pl_DISTRO_RELEASE}" -le 6 ] ; then 
-	       yum_conf_fedora_core $BUILD_HOST
-	   else
-	       yum_conf_fedora $BUILD_HOST
-	   fi
-    ;;
-       *)
-	   echo "$0: no support for tuning yum.conf on this distribution $pl_DISTRO"
-	   exit 1
-	   ;;
-   esac
+    template=$build_dir/mirroring/${pl_DISTRO_NAME}/yum.repos.d/building.repo.in
+    if [ ! -f $template ] ; then
+	echo "# MyPLC/$0: cannot find template $template"
+    else
+	sed -e s,@MIRRORURL@,http://${BUILD_HOST}/mirror/, $template
+    fi
 }
 
 # quick and dirty - might break anytime if docbook html output changes

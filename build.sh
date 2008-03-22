@@ -97,7 +97,7 @@ install -m 444 myplc-release root/etc/myplc-release
 # so we can use the build's fc4 mirror for various installs/upgrades
 # within the chroot jail
 # yum_conf_to_build_host is defined in build.functions
-yum_conf_to_build_host > root/etc/yum.conf
+yum_conf_to_build_host ../build > root/etc/yum.conf
 
 ### Thierry Parmentelat - july 20 2007
 # we now build the myplc doc
