@@ -507,8 +507,13 @@ def main():
 		# Vsys
         {'name': "vsys",
          'description': "Bind vsys script fd's to a slice's vsys directory.",
+         'min_role_id': 10},
+
+        # CoDemux
+        {'name': "codemux",
+         'description': "Demux HTTP between slices using localhost ports. Value in the form 'host, localhost port'."
          'min_role_id': 10}
- 
+
         ]
 
     # Get list of existing attribute types
