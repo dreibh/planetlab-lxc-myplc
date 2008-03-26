@@ -5,7 +5,7 @@
 
 %define name myplc-native
 %define version 4.2
-%define taglevel 3
+%define taglevel 4
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -202,6 +202,18 @@ fi
 /usr/share/myplc
 
 %changelog
+* Wed Mar 26 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.2-3 MyPLC-4.2-4
+- renew_reminder script moved to support-scripts/
+- gen-aliases script added in support-scripts/
+- sirius initscript moved to plc_sliceinitscripts (formerly inlined in db-config)
+- plc-map script : no javascript for googlemap anymore, see new plc-kml script instead
+- nodefamily-aware (creates legacy symlink /var/www/html/install-rpms/planetlab)
+- new native slice attributes 'capabilities', 'vsys' and 'codemux'
+- new setting 'Mom list address' for sending emails to a separate destination
+- starts rsyslogd/syslogd as appropriate
+- expects nodeconfig package (former PlanetLabConf/ dir from PLCWWW)
+- convenience generation of yum.conf in resulting image based on build/mirroring
+
 * Thu Feb 14 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-4.2-2 myplc-4.2-3
 - refresh-peer.py removed (duplicate with PLCAPI)
 - plc.d/ scripts cleaned up
