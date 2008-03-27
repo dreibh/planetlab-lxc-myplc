@@ -538,6 +538,21 @@ $Id$
 	</variable>
       </variablelist>
     </category>
+
+
+    <category id="plc_planetflow">
+      <name>PlanetFlow Service Configuration</name>
+      <description>Planetflow service definitions used in the netflow slice. </description>
+
+      <variablelist>
+        <variable id="hostname">
+	        <name>Hostname</name>
+	        <value>localhost.localdomain</value>
+	        <description>The fully qualified hostname of the boot
+	        server.</description>
+        </variable>
+      </variablelist>
+    </category>
   </variables>
 
   <comps>
