@@ -77,6 +77,9 @@ reload ()
     if [ -n "$force" -o /etc/planetlab/plc_config.xml -nt /etc/planetlab/plc_config ] ; then
 	plc-config --shell >/etc/planetlab/plc_config
     fi
+    if [ -n "$force" -o /etc/planetlab/plc_config.xml -nt /etc/planetlab/plc_config.py ] ; then
+	plc-config --python >/etc/planetlab/plc_config.py
+    fi
     if [ -n "$force" -o /etc/planetlab/plc_config.xml -nt /etc/planetlab/php/plc_config.php ] ; then
 	mkdir -p /etc/planetlab/php
 	plc-config --php >/etc/planetlab/php/plc_config.php
