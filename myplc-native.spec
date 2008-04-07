@@ -5,7 +5,7 @@
 
 %define name myplc-native
 %define version 4.2
-%define taglevel 4
+%define taglevel 5
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -202,6 +202,9 @@ fi
 /usr/share/myplc
 
 %changelog
+* Mon Apr 07 2008 Stephen Soltesz <soltesz@cs.princeton.edu> - MyPLC-4.2-4 MyPLC-4.2-5
+- 
+
 * Wed Mar 26 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.2-3 MyPLC-4.2-4
 - renew_reminder script moved to support-scripts/
 - gen-aliases script added in support-scripts/
