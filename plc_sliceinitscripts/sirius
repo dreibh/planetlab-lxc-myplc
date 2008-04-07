@@ -166,7 +166,7 @@ def updateloans():
     log('Current loans are %s' % loans)
 
     if DEBUGLEVEL < 2:
-        nodemanager.SetLoans('princeton_sirius', loans)
+        nodemanager.SetLoans('XXXPREFIXXXX_sirius', loans)
     log('Updated loans successfully')
 
     recipientcond.acquire()

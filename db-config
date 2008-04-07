@@ -537,7 +537,7 @@ def main():
             file = open(root + "/" + f, "ro")
             default_initscripts.append({"name": plc['slice_prefix'] + "_" + f,
                                         "enabled": True,
-                                        "script": file.read().replace("XXXSITEXXX", url)})
+                                        "script": file.read().replace("XXXSITEXXX", url).replace("XXXPREFIXXXX", plc['slice_prefix'])})
             file.close()
 
     # Get list of existing initscripts
