@@ -393,7 +393,7 @@ def main():
 
         # sudo configuration
         {'enabled': True,
-         'source': 'PlanetLabConf/sudoers',
+         'source': 'PlanetLabConf/sudoers.php',
          'dest': '/etc/sudoers',
          'file_permissions': '440',
          'file_owner': 'root',
