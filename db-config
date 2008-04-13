@@ -554,13 +554,9 @@ def main():
          'name' : "ifname",
          'description': "Set interface name, instead of eth0 or the like",
          'min_role_id' : 40},
-        {'category' : "general",
-         'name' : "driver",
-         'description': "Use this to specify an alternate driver",
-         'min_role_id' : 40 },
-        {'category' : "general",
+        {'category' : "Multihome",
          'name' : "alias",
-         'description': "Allows to reuse an interface as eth0:alias",
+         'description': "Specifies that the network is used for multihoming",
          'min_role_id' : 40},
 
         {'category' : "hidden",
@@ -610,7 +606,7 @@ def main():
          'url': url,
          'instantiation': "plc-instantiated",
          # Renew forever (minus one day, work around date conversion weirdness)
-         'expires': sys.maxint - (60 * 60 * 24),
+         'expires': 0x7fffffff - (60 * 60 * 24),
          'attributes': [('system', "1"),
                         ('vref', "planetflow"),
                         ('proper_op', "open file=/etc/passwd, flags=r"),
@@ -622,7 +618,7 @@ def main():
          'url': url,
          'instantiation': "plc-instantiated",
          # Renew forever (minus one day, work around date conversion weirdness)
-         'expires': sys.maxint - (60 * 60 * 24),
+         'expires': 0x7fffffff - (60 * 60 * 24),
          'attributes': [('system', "1"),
                         ('net_min_rate', "2000"),
                         ('cpu_pct', "25"),
