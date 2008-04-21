@@ -44,6 +44,17 @@ echo "* myplc-native: Installing initscripts"
 find plc.d | cpio -p -d -u ${tmpdir}/etc/
 install -D -m 755 guest.init ${tmpdir}/etc/init.d/plc
 
+# fetch the release stamp from the build if any
+# I could not come up with any more sensitive scheme 
+if [ -f ../../../myplc-release ] ; then
+  cp ../../../myplc-release myplc-release
+else
+  echo "Cannot find release information." > myplc-release
+  date >> myplc-release
+  echo "$HeadURL$" >> myplc-release
+fi
+# install it in /etc/myplc-release 
+install -m 444 myplc-release ${tmpdir}/etc/myplc-release
 
 # Install configuration file
 echo "* myplc: Installing configuration file"

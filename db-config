@@ -7,7 +7,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: db-config 7454 2007-12-11 18:55:00Z faiyaza $
+# $Id$
 # $HeadURL$
 
 from plc_config import PLCConfiguration

@@ -5,7 +5,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2005 The Trustees of Princeton University
 #
-# $Id: renew_reminder.py 7225 2007-11-29 18:21:31Z faiyaza $
+# $Id$
 #
 
 import sys

@@ -183,6 +183,7 @@ fi
 %files
 %defattr(-,root,root,-)
 # Host startup script and configuration file
+/etc/myplc-release
 /etc/init.d/plc
 /etc/plc.d
 /etc/planetlab

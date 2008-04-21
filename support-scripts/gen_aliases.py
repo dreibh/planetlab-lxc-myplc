@@ -25,7 +25,7 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2005 The Trustees of Princeton University
 #
-# $Id: gen_aliases.py 7614 2008-01-03 16:39:57Z faiyaza $
+# $Id$
 #
 
 import os, sys
