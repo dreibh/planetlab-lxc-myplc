@@ -106,7 +106,9 @@ class Periodic:
 
 SLOTDURATION = ONEHOUR
 
-SCHEDULEURL = 'XXXSITEXXX/planetlab/sirius/schedule.txt'
+# instances of @SITE@ and @PREFIX@ below are replaced 
+# as appropriate by db-config
+SCHEDULEURL = '@SITE@/planetlab/sirius/schedule.txt'
 
 schedulelock = threading.Lock()
 
@@ -166,7 +168,7 @@ def updateloans():
     log('Current loans are %s' % loans)
 
     if DEBUGLEVEL < 2:
-        nodemanager.SetLoans('XXXPREFIXXXX_sirius', loans)
+        nodemanager.SetLoans('@PREFIX@_sirius', loans)
     log('Updated loans successfully')
 
     recipientcond.acquire()
