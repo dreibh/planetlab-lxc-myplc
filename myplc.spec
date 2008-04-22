@@ -5,7 +5,7 @@
 
 %define name myplc
 %define version 4.2
-%define taglevel 5
+%define taglevel 6
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -169,6 +169,14 @@ fi
 %config(noreplace) /plc/data/*
 
 %changelog
+* Tue Apr 22 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.2-6
+- packaging of mplc-release in myplc-native
+- sudoers.php is new to PlanetLabConf (needs nodeconfig-4.2-4)
+- resolv file in /etc/resolv.conf, not plc_resolv.conf
+- improved sirius script
+- remove the 'driver' node-network-setting that was unused, and new 'Multihome' category
+- expires more properly set 
+
 * Mon Apr 07 2008 Stephen Soltesz <soltesz@cs.princeton.edu> - MyPLC-4.2-4 MyPLC-4.2-5
 - 
 
