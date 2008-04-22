@@ -27,11 +27,40 @@ case "$1" in
 	MESSAGE=$"Rebuilding Boot CD"
 	dialog "$MESSAGE"
 
-	# Customize the Boot CD
-	pushd /var/www/html/download
-	/usr/share/bootcd/build.sh ${PLC_BUILD_ALL_BOOTCDS:+-a}
-	check
-	popd
+	########## legacy myplcs - temporary code
+	[ -f /etc/planetlab/nodefamily ] || { mkdir -p /etc/planetlab ; echo "planetlab-i386" > /etc/planetlab/nodefamily ; }
+	########## end
+
+	# get the default nodefamily
+	def_nodefamily=$(cat /etc/planetlab/nodefamily)
+
+	########## legacy myplcs - temporary code
+	[ -d /usr/share/bootcd ] && mv /usr/share/bootcd /usr/share/bootcd-${def_nodefamily}
+	[ -d /var/www/html/download ] && mv /var/www/html/download /var/www/html/download-${def_nodefamily}
+	########## end
+
+	
+	# Customize the Boot CD : run build.sh on all available bootcd's
+	shopt -s nullglob
+	for bootcd in /usr/share/bootcd-* ; do
+	    name=$(basename $bootcd)
+	    nodefamily=$(echo $name | sed -e s,bootcd-,,)
+	    download=/var/www/html/download-${nodefamily}
+	    [ -d ${download} ] || mkdir -p ${download}
+
+	    pushd ${download}
+	    ${bootcd}/build.sh ${PLC_BUILD_ALL_BOOTCDS:+-a}
+	    check
+	    popd
+	
+	    # the default: create symlinks to the actual locations
+	    if [ "${nodefamily}" == "${def_nodefamily}" ] ; then
+		rm -rf /var/www/html/download
+		ln -s /var/www/html/download-${nodefamily} /var/www/html/download
+		rm -rf /usr/share/bootcd
+		ln -s /usr/share/bootcd-${nodefamily} /usr/share/bootcd
+	    fi
+	done
 
 	result "$MESSAGE"
 	;;
