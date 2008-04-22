@@ -61,7 +61,7 @@ Requires: postgresql
 Requires: openssh
 Requires: cvs
 Requires: dev
-Requires: bootcd
+Requires: bootcd-%{pldistro}-%{_arch}
 Requires: dnsmasq
 Requires: diffutils
 Requires: gzip
