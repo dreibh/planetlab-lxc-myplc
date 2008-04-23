@@ -5,7 +5,7 @@
 
 %define name myplc
 %define version 4.2
-%define taglevel 6
+%define taglevel 7
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -169,6 +169,9 @@ fi
 %config(noreplace) /plc/data/*
 
 %changelog
+* Wed Apr 23 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.2-7
+- changes needed for bootcd 4.2 : new, possible multiple, installation locations, and new rpm name
+
 * Tue Apr 22 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.2-6
 - packaging of mplc-release in myplc-native
 - sudoers.php is new to PlanetLabConf (needs nodeconfig-4.2-4)
