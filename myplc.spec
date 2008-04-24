@@ -5,7 +5,7 @@
 
 %define name myplc
 %define version 4.2
-%define taglevel 7
+%define taglevel 8
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -169,6 +169,10 @@ fi
 %config(noreplace) /plc/data/*
 
 %changelog
+* Thu Apr 24 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.2-8
+- plc.d/bootcd step altered for handling legacy bootcd smooth migration
+- to new bootcd packaging
+
 * Wed Apr 23 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.2-7
 - changes needed for bootcd 4.2 : new, possible multiple, installation locations, and new rpm name
 
