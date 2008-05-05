@@ -611,7 +611,8 @@ def main():
                         ('vref', "planetflow"),
                         ('proper_op', "open file=/etc/passwd, flags=r"),
                         ('proper_op', "create_socket"),
-                        ('proper_op', "bind_socket")]},
+                        ('proper_op', "bind_socket"),
+						('vsys'     , "pfmount")]},
           # Sirius
         {'name': plc['slice_prefix'] + "_sirius",
          'description': 'The Sirius Calendar Service.\n\nSirius provides system-wide reservations of 25% CPU and 2Mb/s outgoing\nbandwidth.  Sign up for hour-long slots using the Web GUI at the\nPlanetLab website.\n\nThis slice should not generate traffic external to PlanetLab.\n',
