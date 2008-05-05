@@ -5,7 +5,7 @@
 
 %define name myplc
 %define version 4.2
-%define taglevel 8
+%define taglevel 9
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -169,6 +169,11 @@ fi
 %config(noreplace) /plc/data/*
 
 %changelog
+* Mon May 05 2008 Stephen Soltesz <soltesz@cs.princeton.edu> - MyPLC-4.2-9
+- 
+- added vsys 'pfmount' script to the default netflow slice attributes.
+- 
+
 * Thu Apr 24 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.2-8
 - plc.d/bootcd step altered for handling legacy bootcd smooth migration
 - to new bootcd packaging
