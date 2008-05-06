@@ -77,12 +77,12 @@ make -C doc myplc.html
 
 # install doc
 for doc in myplc.html myplc.pdf ; do
-    install -D -m 644 doc/$doc ${tmpdir}/var/www/html/planetlab/doc/$doc
+    install -D -m 644 doc/$doc ${tmpdir}/usr/share/myplc/doc/$doc
 done
 
 # create drupal pages
 # at this stage we dont have access to the PLCAPI html
 # so, let's just package build.common and do the job in the post-install script
-install -m 644 ./docbook2drupal.sh ${tmpdir}/usr/share/myplc/docbook2drupal.sh
+install -m 755 ./docbook2drupal.sh ${tmpdir}/usr/share/myplc/docbook2drupal.sh
 
 exit 0
