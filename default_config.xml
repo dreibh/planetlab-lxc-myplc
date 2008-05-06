@@ -226,9 +226,9 @@ $Id$
 
         <variable id="ip" type="ip">
           <name>IP Address</name>
-          <value>127.0.0.1</value>
+          <value/>
           <description>The IP address of the database server, if not
-          resolvable by the configured DNS servers.</description>
+          resolvable.</description>
         </variable>
 
 	<variable id="port" type="int">
@@ -289,9 +289,9 @@ $Id$
 
         <variable id="ip" type="ip">
           <name>IP Address</name>
-          <value>127.0.0.1</value>
+          <value/>
           <description>The IP address of the API server, if not
-          resolvable by the configured DNS servers.</description>
+          resolvable.</description>
         </variable>
 
         <variable id="ipod_subnet" type="ip">
@@ -408,9 +408,9 @@ $Id$
 
         <variable id="ip" type="ip">
           <name>IP Address</name>
-          <value>127.0.0.1</value>
+          <value/>
           <description>The IP address of the web server, if not
-          resolvable by the configured DNS servers.</description>
+          resolvable.</description>
         </variable>
 
 	<variable id="port" type="int">
@@ -486,9 +486,9 @@ $Id$
 
         <variable id="ip" type="ip">
           <name>IP Address</name>
-          <value>127.0.0.1</value>
+          <value/>
           <description>The IP address of the boot server, if not
-          resolvable by the configured DNS servers.</description>
+          resolvable.</description>
         </variable>
 
 	<variable id="port" type="int">

@@ -78,7 +78,7 @@ plc_daemon ()
 # Print IP address of hostname if resolvable
 gethostbyname ()
 {
-    perl -MSocket -e '($a,$b,$c,$d,@addrs) = gethostbyname($ARGV[0]); print inet_ntoa($addrs[0]) . "\n";' $1 2>/dev/null
+    python -c 'import socket; import sys; print socket.gethostbyname(sys.argv[1])' $1 2>/dev/null
 }
 
 # Forcefully make a symlink

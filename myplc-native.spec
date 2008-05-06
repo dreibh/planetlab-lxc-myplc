@@ -154,6 +154,23 @@ fi
 pushd /usr/share/myplc &> /dev/null
 python plc_config.py build
 python plc_config.py install
+# build drupal docs - this is crappy but at least we keep PLCAPI out
+# also, we copy everythong in the same place
+mkdir -p /var/www/html/planetlab/doc
+if [ -f /usr/share/plc_api/doc/PLCAPI.html ] ; then
+    cp /usr/share/plc_api/doc/PLCAPI.{html,pdf} /var/www/html/planetlab/doc
+    ./docbook2drupal.sh "PLCAPI Documentation" \
+	/var/www/html/planetlab/doc/PLCAPI.html \
+	/var/www/html/planetlab/doc/plcapi.php
+fi || :
+# same for the PLCAPI doc
+if [ -f /usr/share/myplc/doc/myplc.html ] ; then
+    cp /usr/share/myplc/doc/myplc.{html,pdf} /var/www/html/planetlab/doc
+    ./docbook2drupal.sh "Myplc User Guide" \
+	/var/www/html/planetlab/doc/myplc.html \
+	/var/www/html/planetlab/doc/myplc.php
+fi || :
+
 popd &> /dev/null
 
 %triggerpostun -- %{name}
@@ -190,8 +207,6 @@ fi
 /etc/plc_sliceinitscripts/sirius
 /etc/support-scripts/gen_aliases.py*
 /etc/support-scripts/renew_reminder.py*
-/var/www/html/install-rpms/%{pldistro}-%{_arch}
-/var/www/html/install-rpms/planetlab
 /usr/bin/plc-config
 /usr/bin/plc-config-tty
 /usr/bin/db-config
@@ -201,6 +216,9 @@ fi
 /usr/bin/mtail.py*
 /usr/bin/check-ssl-peering.py*
 /usr/share/myplc
+/var/www/html/install-rpms/%{pldistro}-%{_arch}
+/var/www/html/install-rpms/planetlab
+/var/www/html/planetlab/doc/
 
 %changelog
 * Mon May 05 2008 Stephen Soltesz <soltesz@cs.princeton.edu> - MyPLC-4.2-9

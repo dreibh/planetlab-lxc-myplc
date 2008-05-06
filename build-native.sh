@@ -45,7 +45,6 @@ find plc.d | cpio -p -d -u ${tmpdir}/etc/
 install -D -m 755 guest.init ${tmpdir}/etc/init.d/plc
 
 # fetch the release stamp from the build if any
-# I could not come up with any more sensitive scheme 
 if [ -f ../../../myplc-release ] ; then
   cp ../../../myplc-release myplc-release
 else
@@ -69,5 +68,21 @@ install -D -m 644 $pl_DISTRO_YUMGROUPS \
     ${tmpdir}/var/www/html/install-rpms/$nodefamily/yumgroups.xml
 # temporary - so that node update still work until yum.conf.php gets fixed
 ( cd ${tmpdir}/var/www/html/install-rpms ; ln -s $nodefamily planetlab)
+
+# building myplc doc
+# beware that making the pdf file somehow overwrites the html
+make -C doc myplc.pdf 
+rm -f doc/myplc.html
+make -C doc myplc.html 
+
+# install doc
+for doc in myplc.html myplc.pdf ; do
+    install -D -m 644 doc/$doc ${tmpdir}/var/www/html/planetlab/doc/$doc
+done
+
+# create drupal pages
+# at this stage we dont have access to the PLCAPI html
+# so, let's just package build.common and do the job in the post-install script
+install -m 644 ./docbook2drupal.sh ${tmpdir}/usr/share/myplc/docbook2drupal.sh
 
 exit 0
