@@ -218,7 +218,6 @@ fi
 /usr/share/myplc
 /var/www/html/install-rpms/%{pldistro}-%{_arch}
 /var/www/html/install-rpms/planetlab
-/var/www/html/planetlab/doc/
 
 %changelog
 * Mon May 05 2008 Stephen Soltesz <soltesz@cs.princeton.edu> - MyPLC-4.2-9
