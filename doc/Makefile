@@ -7,23 +7,14 @@
 # $Id$
 #
 
-vpath GenDoc.xsl ../../plc_www/doc
-vpath %_config.xml ..
-
-# dont redo php by default, this requires plc_www (see above) 
-# that we build separately (has no doc/ subdir anyway)
-# note that the build host (myplc-devel) needs ghostscript
-# that we added only on 20 july 2007
 all: myplc.pdf myplc.html
-
-static: pyplc.php
 
 .PHONY: all
 
 # Dependencies
-.myplc.xml.valid: architecture.eps architecture.png plc_variables.xml plc_devel_variables.xml
+.myplc.xml.valid: architecture.eps architecture.png plc_variables.xml 
 
-%_variables.xml: variables.xsl %_config.xml
+plc_variables.xml: variables.xsl ../default_config.xml
 	xsltproc $(XSLFLAGS) --output $@ $^
 
 # Validate the XML

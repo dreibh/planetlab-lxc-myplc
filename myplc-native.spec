@@ -161,7 +161,7 @@ if [ -f /usr/share/plc_api/doc/PLCAPI.html ] ; then
     cp /usr/share/plc_api/doc/PLCAPI.{html,pdf} /var/www/html/planetlab/doc
     ./docbook2drupal.sh "PLCAPI Documentation" \
 	/var/www/html/planetlab/doc/PLCAPI.html \
-	/var/www/html/planetlab/doc/plcapi.php
+	/var/www/html/planetlab/doc/PLCAPI.php
 fi || :
 # same for the PLCAPI doc
 if [ -f /usr/share/myplc/doc/myplc.html ] ; then

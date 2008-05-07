@@ -11,40 +11,45 @@ $Id$
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version='1.0'>
 
-<xsl:output omit-xml-declaration="yes" encoding="UTF-8" indent="yes" />
+  <xsl:output omit-xml-declaration="yes" encoding="UTF-8" indent="yes" />
 
-<xsl:template match="/">
+  <xsl:template match="/">
 
-  <variablelist>
-	<xsl:for-each select="configuration/variables/category">
-	  <xsl:variable name="category_id" select="translate(@id,
-						   'abcdefghijklmnopqrstuvwxyz',
-						   'ABCDEFGHIJKLMNOPQRSTUVWXYZ')" />
+    <xsl:for-each select="configuration/variables/category">
+      <xsl:variable name="category_id" select="translate(@id,
+					       'abcdefghijklmnopqrstuvwxyz',
+					       'ABCDEFGHIJKLMNOPQRSTUVWXYZ')" />
+      <xsl:variable name="category_desc" select="description" />
+      <section>
+	<title> 
+	  Category 
+	  <filename><xsl:value-of select="$category_id" /> </filename>
+	</title>
+	<para> 
+	  <xsl:value-of select="$category_desc" /> 
+	</para>
+	<variablelist> 
 	  <xsl:for-each select="variablelist/variable">
 	    <xsl:variable name="variable_id" select="translate(@id,
 						     'abcdefghijklmnopqrstuvwxyz',
 						     'ABCDEFGHIJKLMNOPQRSTUVWXYZ')" />
 	    <varlistentry>
 	      <term>
-		<xsl:value-of select="$category_id" />_<xsl:value-of select="$variable_id" />
+		<filename>
+		  <xsl:value-of select="$category_id" />_<xsl:value-of select="$variable_id" />
+		</filename>
+		(Default:<filename><xsl:value-of select="value" /></filename>)
 	      </term>
 	      <listitem>
-		<para>
-		  Type: <xsl:value-of select="@type" />
-		</para>
-		<para>
-		  Default: <xsl:value-of select="value" />
-		</para>
 		<para>
 		  <xsl:value-of select="description" />
 		</para>
 	      </listitem>
 	    </varlistentry>
 	  </xsl:for-each>
-	</xsl:for-each>
-
-    </variablelist>
-
-</xsl:template>
+	</variablelist>
+      </section>
+    </xsl:for-each>
+  </xsl:template>
 
 </xsl:stylesheet>
