@@ -61,9 +61,9 @@ popd
 %install
 
 for ext in pdf html; do
-    install -D -m 444 MyPLC/doc/myplc.$ext $RPM_BUILD_ROOT/var/www/html/planetlab/doc/
-    install -D -m 444 PLCAPI/doc/PLCAPI.$ext $RPM_BUILD_ROOT/var/www/html/planetlab/doc/
-    install -D -m 444 NodeManager/doc/NMAPI.$ext $RPM_BUILD_ROOT/var/www/html/planetlab/doc/
+    install -D -m 444 MyPLC/doc/myplc.$ext $RPM_BUILD_ROOT/var/www/html/planetlab/doc/myplc.$ext
+    install -D -m 444 PLCAPI/doc/PLCAPI.$ext $RPM_BUILD_ROOT/var/www/html/planetlab/doc/PLCAPI.$ext
+    install -D -m 444 NodeManager/doc/NMAPI.$ext $RPM_BUILD_ROOT/var/www/html/planetlab/doc/NMAPI.$ext
 done
 
 ./MyPLC/doc/docbook2drupal.sh "MyPLC Documentation (%{pldistro})" \
