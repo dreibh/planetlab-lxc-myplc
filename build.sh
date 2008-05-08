@@ -114,13 +114,13 @@ done
 # we now build the plcapi doc
 # this generates a drupal php file from a docbook-generated html
 # quick & dirty
-./docbook2drupal.sh "${pldistro} PLCAPI Documentation" \
+./doc/docbook2drupal.sh "${pldistro} PLCAPI Documentation" \
     root/usr/share/plc_api/doc/PLCAPI.html \
     root/var/www/html/planetlab/doc/plcapi.php
 # pdf just get copied
 install -m 644 root/usr/share/plc_api/doc/PLCAPI.pdf root/var/www/html/planetlab/doc/plcapi.pdf
 
-./docbook2drupal.sh "Myplc User Guide" \
+./doc/docbook2drupal.sh "Myplc User Guide" \
     root/usr/share/plc_api/doc/myplc.html \
     root/var/www/html/planetlab/doc/myplc.php
 # pdf just get copied

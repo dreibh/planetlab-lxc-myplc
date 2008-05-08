@@ -59,8 +59,6 @@ Requires: php
 Requires: xmlsec1-openssl
 Requires: postgresql
 Requires: openssh
-Requires: cvs
-Requires: dev
 Requires: bootcd-%{pldistro}-%{_arch}
 Requires: dnsmasq
 Requires: diffutils
@@ -71,6 +69,7 @@ Requires: PLCWWW
 Requires: nodeconfig
 Requires: PLCAPI
 Requires: bootstrapfs-%{pldistro}-%{_arch}
+Requires: myplc-docs
 
 Provides: myplc
 
@@ -154,23 +153,6 @@ fi
 pushd /usr/share/myplc &> /dev/null
 python plc_config.py build
 python plc_config.py install
-# build drupal docs - this is crappy but at least we keep PLCAPI out
-# also, we copy everythong in the same place
-mkdir -p /var/www/html/planetlab/doc
-if [ -f /usr/share/plc_api/doc/PLCAPI.html ] ; then
-    cp /usr/share/plc_api/doc/PLCAPI.{html,pdf} /var/www/html/planetlab/doc
-    ./docbook2drupal.sh "PLCAPI Documentation" \
-	/var/www/html/planetlab/doc/PLCAPI.html \
-	/var/www/html/planetlab/doc/PLCAPI.php
-fi || :
-# same for the PLCAPI doc
-if [ -f /usr/share/myplc/doc/myplc.html ] ; then
-    cp /usr/share/myplc/doc/myplc.{html,pdf} /var/www/html/planetlab/doc
-    ./docbook2drupal.sh "Myplc User Guide" \
-	/var/www/html/planetlab/doc/myplc.html \
-	/var/www/html/planetlab/doc/myplc.php
-fi || :
-
 popd &> /dev/null
 
 %triggerpostun -- %{name}
@@ -217,14 +199,13 @@ fi
 /usr/bin/check-ssl-peering.py*
 /usr/share/myplc
 /var/www/html/install-rpms/%{pldistro}-%{_arch}
-/var/www/html/install-rpms/planetlab
 
 %changelog
 * Thu May 08 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.2-10
 - defaults for *_IP conf vars now void, expect more accurate /etc/hosts
 - gethostbyname uses python rather than perl (hope this shrinks deps) 
 - doc: reviewed myplc doc - deprecated everything related to myplc-devel
-- doc: packaging doc in myplc-native (myplc&PLCAPI) & rm'ed target files from svn
+- doc: packaging doc in myplc-native (myplc&PLCAPI) & removed target files from svn
 - make sync now works towards vserver-based myplc only 
 
 * Mon May 05 2008 Stephen Soltesz <soltesz@cs.princeton.edu> - MyPLC-4.2-9

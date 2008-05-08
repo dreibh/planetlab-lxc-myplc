@@ -7,9 +7,7 @@
 # $Id$
 #
 
-all: myplc.pdf myplc.html
-
-.PHONY: all
+all: myplc.html
 
 # Dependencies
 .myplc.xml.valid: architecture.eps architecture.png plc_variables.xml 
@@ -21,6 +19,10 @@ plc_variables.xml: variables.xsl ../default_config.xml
 .%.xml.valid: %.xml
 	xmllint --valid --output $@ $<
 
+# docbook2pdf craps out on figures
+%.pdf: %.ps
+	ps2pdf $< $@
+
 # Compile it into other formats
 FORMATS := dvi html man ps rtf tex texi txt
 
@@ -31,19 +33,9 @@ define docbook2
 	docbook2$(1) --nochunks $$(DOCBOOK2FLAGS) $$<
 endef
 
-# docbook2pdf craps out on figures
-%.pdf: %.ps
-	ps2pdf $< $@
-
-# PHP for the website
-%.php: GenDoc.xsl .%.xml.valid
-	xsltproc $(XSLFLAGS) --output $@ $^
-
 $(foreach format,$(FORMATS),$(eval $(call docbook2,$(format))))
 
-docclean:
-	rm -f $(patsubst %,*.%,$(FORMATS)) *.pdf *.php .*.xml.valid variables.xml 
+clean:
+	rm -f $(patsubst %,*.%,$(FORMATS)) *.pdf .*.xml.valid plc_variables.xml 
 
-clean: docclean
-
-.PHONY: docclean
+.PHONY: all docclean

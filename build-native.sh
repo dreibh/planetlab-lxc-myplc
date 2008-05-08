@@ -69,20 +69,4 @@ install -D -m 644 $pl_DISTRO_YUMGROUPS \
 # temporary - so that node update still work until yum.conf.php gets fixed
 ( cd ${tmpdir}/var/www/html/install-rpms ; ln -s $nodefamily planetlab)
 
-# building myplc doc
-# beware that making the pdf file somehow overwrites the html
-make -C doc myplc.pdf 
-rm -f doc/myplc.html
-make -C doc myplc.html 
-
-# install doc
-for doc in myplc.html myplc.pdf ; do
-    install -D -m 644 doc/$doc ${tmpdir}/usr/share/myplc/doc/$doc
-done
-
-# create drupal pages
-# at this stage we dont have access to the PLCAPI html
-# so, let's just package build.common and do the job in the post-install script
-install -m 755 ./docbook2drupal.sh ${tmpdir}/usr/share/myplc/docbook2drupal.sh
-
 exit 0
