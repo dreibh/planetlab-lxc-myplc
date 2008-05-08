@@ -99,32 +99,9 @@ install -m 444 myplc-release root/etc/myplc-release
 # yum_conf_to_build_host is defined in build.functions
 yum_conf_to_build_host ../build > root/etc/yum.conf
 
-### Thierry Parmentelat - july 20 2007
-# we now build the myplc doc
-# beware that making the pdf file somehow overwrites the html
-make -C doc myplc.pdf 
-rm -f doc/myplc.html
-make -C doc myplc.html 
-
-# install at the same place as plcapi - better ideas ?
-for doc in myplc.html myplc.pdf ; do
-    install -m 644 doc/$doc root/usr/share/plc_api/doc/$doc
-done
-
-# we now build the plcapi doc
-# this generates a drupal php file from a docbook-generated html
-# quick & dirty
-./doc/docbook2drupal.sh "${pldistro} PLCAPI Documentation" \
-    root/usr/share/plc_api/doc/PLCAPI.html \
-    root/var/www/html/planetlab/doc/plcapi.php
-# pdf just get copied
-install -m 644 root/usr/share/plc_api/doc/PLCAPI.pdf root/var/www/html/planetlab/doc/plcapi.pdf
-
-./doc/docbook2drupal.sh "Myplc User Guide" \
-    root/usr/share/plc_api/doc/myplc.html \
-    root/var/www/html/planetlab/doc/myplc.php
-# pdf just get copied
-install -m 644 root/usr/share/plc_api/doc/myplc.pdf root/var/www/html/planetlab/doc/myplc.pdf
+### Thierry Parmentelat - may 8 2008
+# no doc built in this old-fashioned packaging anymore
+# use myplc-docs instead
 
 # Install configuration file
 echo "* myplc: Installing configuration file"

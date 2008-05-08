@@ -24,6 +24,8 @@ Packager: PlanetLab Central <support@planet-lab.org>
 Distribution: PlanetLab %{plrelease}
 URL: %(echo %{url} | cut -d ' ' -f 2)
 
+BuildRequires: docbook-dtds, docbook-utils-pdf
+
 %define debug_package %{nil}
 
 %description 
