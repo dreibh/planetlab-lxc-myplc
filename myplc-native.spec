@@ -199,6 +199,7 @@ fi
 /usr/bin/check-ssl-peering.py*
 /usr/share/myplc
 /var/www/html/install-rpms/%{pldistro}-%{_arch}
+/var/www/html/install-rpms/planetlab
 
 %changelog
 * Thu May 08 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.2-10
