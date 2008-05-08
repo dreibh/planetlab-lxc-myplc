@@ -5,7 +5,7 @@
 
 %define name myplc-native
 %define version 4.2
-%define taglevel 9
+%define taglevel 10
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -220,6 +220,13 @@ fi
 /var/www/html/install-rpms/planetlab
 
 %changelog
+* Thu May 08 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.2-10
+- defaults for *_IP conf vars now void, expect more accurate /etc/hosts
+- gethostbyname uses python rather than perl (hope this shrinks deps) 
+- doc: reviewed myplc doc - deprecated everything related to myplc-devel
+- doc: packaging doc in myplc-native (myplc&PLCAPI) & rm'ed target files from svn
+- make sync now works towards vserver-based myplc only 
+
 * Mon May 05 2008 Stephen Soltesz <soltesz@cs.princeton.edu> - MyPLC-4.2-9
 - 
 - added vsys 'pfmount' script to the default netflow slice attributes.
