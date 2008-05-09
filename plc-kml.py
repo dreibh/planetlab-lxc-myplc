@@ -43,7 +43,7 @@ class KmlMap:
 <kml xmlns="http://earth.google.com/kml/2.2">
 <Document>
 <name> PlanetLab Sites </name>
-<description> This map shows all sites knows to the PlanetLab testbed. </description>
+<description> All the sites known to the PlanetLab testbed. </description>
 """)
 
     def write_footer (self):

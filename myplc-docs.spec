@@ -5,7 +5,7 @@
 
 %define name myplc-docs
 %define version 4.2
-%define taglevel 9
+%define taglevel 10
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
