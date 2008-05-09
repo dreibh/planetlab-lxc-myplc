@@ -68,6 +68,11 @@ for ext in pdf html; do
     install -D -m 444 NodeManager/doc/NMAPI.$ext $RPM_BUILD_ROOT/var/www/html/planetlab/doc/NMAPI.$ext
 done
 
+# myplc figures
+for ext in eps png; do 
+    install -m 444 MyPLC/doc/architecture.$ext $RPM_BUILD_ROOT/var/www/html/planetlab/doc/architecture.$ext
+done
+
 ./MyPLC/doc/docbook2drupal.sh "MyPLC Documentation (%{pldistro})" \
     $RPM_BUILD_ROOT/var/www/html/planetlab/doc/myplc.html \
     $RPM_BUILD_ROOT/var/www/html/planetlab/doc/myplc.php 
