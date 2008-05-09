@@ -5,7 +5,7 @@
 
 %define name myplc
 %define version 4.2
-%define taglevel 11
+%define taglevel 12
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -169,6 +169,9 @@ fi
 %config(noreplace) /plc/data/*
 
 %changelog
+* Sat May 10 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.2-12
+- figures in doc package
+
 * Fri May 09 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.2-11
 - no more doc packaged outside of myplc-docs - doc/ cleaned up 
 - chroot packaging does not have docs anymore

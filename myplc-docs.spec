@@ -5,7 +5,7 @@
 
 %define name myplc-docs
 %define version 4.2
-%define taglevel 11
+%define taglevel 12
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -91,6 +91,9 @@ rm -rf $RPM_BUILD_ROOT
 /var/www/html/planetlab/doc/
 
 %changelog
+* Sat May 10 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.2-12
+- figures in doc package
+
 * Fri May 09 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.2-11
 - no more doc packaged outside of myplc-docs - doc/ cleaned up 
 - chroot packaging does not have docs anymore
