@@ -5,7 +5,7 @@
 
 %define name myplc-docs
 %define version 4.2
-%define taglevel 10
+%define taglevel 11
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -86,3 +86,9 @@ rm -rf $RPM_BUILD_ROOT
 /var/www/html/planetlab/doc/
 
 %changelog
+* Fri May 09 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.2-11
+- no more doc packaged outside of myplc-docs - doc/ cleaned up 
+- chroot packaging does not have docs anymore
+- 'cvs' and 'dev' not required from myplc-native anymore
+- cosmetic change in kml output
+

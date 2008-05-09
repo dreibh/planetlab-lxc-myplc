@@ -5,7 +5,7 @@
 
 %define name myplc-native
 %define version 4.2
-%define taglevel 10
+%define taglevel 11
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -202,6 +202,12 @@ fi
 /var/www/html/install-rpms/planetlab
 
 %changelog
+* Fri May 09 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.2-11
+- no more doc packaged outside of myplc-docs - doc/ cleaned up 
+- chroot packaging does not have docs anymore
+- 'cvs' and 'dev' not required from myplc-native anymore
+- cosmetic change in kml output
+
 * Thu May 08 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.2-10
 - defaults for *_IP conf vars now void, expect more accurate /etc/hosts
 - gethostbyname uses python rather than perl (hope this shrinks deps) 
