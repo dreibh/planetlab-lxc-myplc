@@ -5,7 +5,7 @@
 
 %define name myplc-docs
 %define version 4.2
-%define taglevel 13
+%define taglevel 14
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -91,6 +91,10 @@ rm -rf $RPM_BUILD_ROOT
 /var/www/html/planetlab/doc/
 
 %changelog
+* Wed May 14 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.2-14
+- myplc-native requires myplc-docs
+- fixed doc build by locating locally installed DTDs at build-time
+
 * Sun May 11 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.2-13
 - turn myplc-docs off for now
 
