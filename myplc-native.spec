@@ -69,8 +69,7 @@ Requires: PLCWWW
 Requires: nodeconfig
 Requires: PLCAPI
 Requires: bootstrapfs-%{pldistro}-%{_arch}
-#tmp, while we get the doc's build fixed
-#Requires: myplc-docs
+Requires: myplc-docs
 
 Provides: myplc
 
