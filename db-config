@@ -602,21 +602,18 @@ def main():
     default_slices = [
          # PlanetFlow
         {'name': plc['slice_prefix'] + "_netflow",
-         'description': "PlanetFlow Traffic Auditing Service",
+         'description': "PlanetFlow Traffic Auditing Service.  Logs, captured in the root context using fprobe-ulogd, are stored in a directory in the root context which is bind mounted to the planetflow slice.  The Planetflow Central service then periodically rsyncs these logs from the planetflow slice for aggregation.",
          'url': url,
          'instantiation': "plc-instantiated",
          # Renew forever (minus one day, work around date conversion weirdness)
          'expires': 0x7fffffff - (60 * 60 * 24),
          'attributes': [('system', "1"),
                         ('vref', "planetflow"),
-                        ('proper_op', "open file=/etc/passwd, flags=r"),
-                        ('proper_op', "create_socket"),
-                        ('proper_op', "bind_socket"),
-						('vsys'     , "pfmount")]},
+						('vsys', "pfmount")]},
           # Sirius
         {'name': plc['slice_prefix'] + "_sirius",
          'description': 'The Sirius Calendar Service.\n\nSirius provides system-wide reservations of 25% CPU and 2Mb/s outgoing\nbandwidth.  Sign up for hour-long slots using the Web GUI at the\nPlanetLab website.\n\nThis slice should not generate traffic external to PlanetLab.\n',
-         'url': url,
+         'url': url + "db/sirius/index.php",
          'instantiation': "plc-instantiated",
          # Renew forever (minus one day, work around date conversion weirdness)
          'expires': 0x7fffffff - (60 * 60 * 24),
