@@ -5,7 +5,7 @@
 
 %define name myplc-native
 %define version 4.2
-%define taglevel 14
+%define taglevel 15
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -202,6 +202,9 @@ fi
 /var/www/html/install-rpms/planetlab
 
 %changelog
+* Tue May 20 2008 Faiyaz Ahmed <faiyaza@cs.princeton.edu> - MyPLC-4.2-15
+- Removed proper ops from planetflow slice.
+
 * Wed May 14 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.2-14
 - myplc-native requires myplc-docs
 - fixed doc build by locating locally installed DTDs at build-time
