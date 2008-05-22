@@ -240,7 +240,7 @@ $Id$
 
 	<variable id="name" type="string">
 	  <name>Database Name</name>
-	  <value>planetlab4</value>
+	  <value>planetlab5</value>
 	  <description>The name of the database to access.</description>
 	</variable>
 
