@@ -4,8 +4,8 @@
 %define url $URL$
 
 %define name myplc-native
-%define version 4.2
-%define taglevel 15
+%define version 5.0
+%define taglevel 0
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -271,3 +271,5 @@ fi
 
 * Fri Aug 31 2007 Marc E. Fiuczynski <mef@CS.Princeton.EDU>
 - initial build.
+
+%define module_current_branch 4.2

@@ -4,8 +4,8 @@
 %define url $URL: svn+ssh://thierry@svn.planet-lab.org/svn/MyPLC/trunk/myplc-native.spec $
 
 %define name myplc-docs
-%define version 4.2
-%define taglevel 15
+%define version 5.0
+%define taglevel 0
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -110,3 +110,5 @@ rm -rf $RPM_BUILD_ROOT
 - 'cvs' and 'dev' not required from myplc-native anymore
 - cosmetic change in kml output
 
+
+%define module_current_branch 4.2

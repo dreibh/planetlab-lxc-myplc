@@ -4,8 +4,8 @@
 %define url $URL$
 
 %define name myplc
-%define version 4.2
-%define taglevel 15
+%define version 5.0
+%define taglevel 0
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -299,3 +299,5 @@ moving to 4.2 - no change
 * Fri Mar 17 2006 Mark Huang <mlhuang@CS.Princeton.EDU> - 0.1-1
 - Initial build.
 
+
+%define module_current_branch 4.2
