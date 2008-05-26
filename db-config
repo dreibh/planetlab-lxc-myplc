@@ -588,15 +588,15 @@ def main():
 
 
     # Get list of existing attribute types
-    setting_types = GetNodeNetworkSettingTypes()
+    setting_types = GetInterfaceSettingTypes()
     setting_types = [setting_type['name'] for setting_type in setting_types]
 
     # Create/update default slice setting types
     for default_setting_type in default_setting_types:
         if default_setting_type['name'] not in setting_types:
-            AddNodeNetworkSettingType(default_setting_type)
+            AddInterfaceSettingType(default_setting_type)
         else:
-            UpdateNodeNetworkSettingType(default_setting_type['name'], default_setting_type)
+            UpdateInterfaceSettingType(default_setting_type['name'], default_setting_type)
 
     # Create/update system slices
     default_slices = [

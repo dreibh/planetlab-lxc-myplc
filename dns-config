@@ -56,24 +56,24 @@ def main():
     for node in GetNodes():
         nodes[node['node_id']] = node
 
-    nodenetwork_ids = set()
+    interface_ids = set()
     for node in nodes.values():
-        nodenetwork_ids.update(node['nodenetwork_ids'])
+        interface_ids.update(node['interface_ids'])
 
-    for nodenetwork in GetNodeNetworks(list(nodenetwork_ids)):
-        if not nodenetwork['ip']:
+    for interface in GetInterfaces(list(interface_ids)):
+        if not interface['ip']:
             continue
 
-        if nodenetwork['hostname']:
-            hostname = nodenetwork['hostname']
+        if interface['hostname']:
+            hostname = interface['hostname']
         else:
-            hostname = nodes[nodenetwork['node_id']]['hostname']
+            hostname = nodes[interface['node_id']]['hostname']
 
-        if hosts.has_key(nodenetwork['ip']):
-            if hostname not in hosts[nodenetwork['ip']]:
-                hosts[nodenetwork['ip']].append(hostname)
+        if hosts.has_key(interface['ip']):
+            if hostname not in hosts[interface['ip']]:
+                hosts[interface['ip']].append(hostname)
         else:
-            hosts[nodenetwork['ip']] = [hostname]
+            hosts[interface['ip']] = [hostname]
     
     # Write /etc/plc_hosts
     plc_hosts = open("/etc/plc_hosts", "w")
