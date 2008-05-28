@@ -64,6 +64,7 @@ install -D -m 755 plc-config-tty root/usr/bin/plc-config-tty
 install -D -m 755 db-config root/usr/bin/db-config
 install -D -m 755 dns-config root/usr/bin/dns-config
 install -D -m 755 plc-map.py root/usr/bin/plc-map.py
+install -D -m 755 refresh-peer.py root/usr/bin/refresh-peer.py
 install -D -m 755 clean-empty-dirs.py root/usr/bin/clean-empty-dirs.py
 install -D -m 755 mtail.py root/usr/bin/mtail.py
 install -D -m 755 check-ssl-peering.py root/usr/bin/check-ssl-peering.py
