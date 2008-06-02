@@ -81,57 +81,43 @@ def main():
     AddRoleToPerson(20, admin['person_id'])
 
     #################### node tags
-    default_tag_types = [
+    default_node_types = [
         { 'tagname' : 'arch',
           'description' : 'architecture name',
-          'category' : 'general', 
+          'category' : 'node/config', 
           'min_role_id' : 40} ,
         { 'tagname' : 'pldistro',
           'description' : 'PlanetLab distribution',
-          'category' : 'general', 
-          'min_role_id' : 10} ,
-        { 'tagname' : 'fcdistro',
-          'description' : 'Linux distribution',
-          'category' : 'general', 
+          'category' : 'node/config', 
           'min_role_id' : 10} ,
         { 'tagname' : 'deployment',
           'description' : 'typically "alpha", "beta", or "production"',
-          'category' : 'general', 
+          'category' : 'node/operation', 
           'min_role_id' : 10} ,
         ]
-
-    # Get list of existing tag types
-    known_tag_types = [tag_type['tagname'] for tag_type in GetNodeTagTypes()]
-
-    # Create/update default slice tag types
-    for default_tag_type in default_tag_types:
-        if default_tag_type['tagname'] not in known_tag_types:
-            AddNodeTagType(default_tag_type)
-        else:
-            UpdateNodeTagType(default_tag_type['tagname'], default_tag_type)
 
     #################### interface settings
 
     # Setup default slice attribute types
     default_setting_types = [
-        {'category' : "general",
-         'name' : "ifname",
+        {'category' : "interface/general",
+         'tagname' : "ifname",
          'description': "Set interface name, instead of eth0 or the like",
          'min_role_id' : 40},
-        {'category' : "Multihome",
-         'name' : "alias",
+        {'category' : "interface/multihome",
+         'tagname' : "alias",
          'description': "Specifies that the network is used for multihoming",
          'min_role_id' : 40},
 
-        {'category' : "hidden",
-         'name' : "backdoor",
+        {'category' : "interface/hidden",
+         'tagname' : "backdoor",
          'description': "For testing new settings",
          'min_role_id' : 10},
         ] + [
-        { "category" : "WiFi",
-          "name" : x,
-          "description" : "802.11 %s -- see %s"%(y,z),
-          "min_role_id" : 40 } for (x,y,z) in [
+        { 'category' : "interface/wifi",
+          'tagname' : x,
+          'description' : "802.11 %s -- see %s"%(y,z),
+          'min_role_id' : 40 } for (x,y,z) in [
             ("mode","Mode","iwconfig"),
             ("essid","ESSID","iwconfig"),
             ("nw","Network Id","iwconfig"),
@@ -150,123 +136,134 @@ def main():
             ]
         ]
 
-    # Get list of existing setting types
-    setting_types = GetInterfaceSettingTypes()
-    setting_types = [setting_type['name'] for setting_type in setting_types]
-
-    # Create/update default slice setting types
-    for default_setting_type in default_setting_types:
-        if default_setting_type['name'] not in setting_types:
-            AddInterfaceSettingType(default_setting_type)
-        else:
-            UpdateInterfaceSettingType(default_setting_type['name'], default_setting_type)
-
     #################### slice attributes
 
     # Setup default slice attribute types
     default_attribute_types = [
         # Slice type (only vserver is supported)
-        {'name': "type",
+        {'tagname': "type",
          'description': "Type of slice (e.g. vserver)",
+         'category' : 'slice/general',
          'min_role_id': 20},
 
         # System slice
-        {'name': "system",
+        {'tagname': "system",
          'description': "Is a default system slice (1) or not (0 or unset)",
+         'category' : 'slice/general',
          'min_role_id': 10},
 
         # Slice enabled (1) or suspended (0)
-        {'name': "enabled",
+        {'tagname': "enabled",
          'description': "Slice enabled (1 or unset) or suspended (0)",
+         'category' : 'slice/general',
          'min_role_id': 10},
 
         # Slice reference image
-        {'name': "vref",
+        {'tagname': "vref",
          'description': "Reference image",
+         'category' : 'slice/config',
          'min_role_id': 30},
 
         # Slice initialization script
-        {'name': "initscript",
+        {'tagname': "initscript",
          'description': "Slice initialization script",
+         'category' : 'slice/config',
          'min_role_id': 10},
 
         # CPU share
-        {'name': "cpu_pct",
+        {'tagname': "cpu_pct",
          'description': "Reserved CPU percent",
+         'category' : 'slice/rspec',
          'min_role_id': 10},
-        {'name': "cpu_share",
+        {'tagname': "cpu_share",
          'description': "Number of CPU shares",
+         'category' : 'slice/rspec',
          'min_role_id': 10},
 
         # Bandwidth limits
-        {'name': "net_min_rate",
+        {'tagname': "net_min_rate",
          'description': "Minimum bandwidth (kbps)",
+         'category' : 'slice/rspec',
          'min_role_id': 10},
-        {'name': "net_max_rate",
+        {'tagname': "net_max_rate",
          'description': "Maximum bandwidth (kbps)",
+         'category' : 'slice/rspec',
          'min_role_id': 10},
-        {'name': "net_i2_min_rate",
+        {'tagname': "net_i2_min_rate",
          'description': "Minimum bandwidth over I2 routes (kbps)",
+         'category' : 'slice/rspec',
          'min_role_id': 10},
-        {'name': "net_i2_max_rate",
+        {'tagname': "net_i2_max_rate",
          'description': "Maximum bandwidth over I2 routes (kbps)",
+         'category' : 'slice/rspec',
          'min_role_id': 10},
-        {'name': "net_max_kbyte",
+        {'tagname': "net_max_kbyte",
          'description': "Maximum daily network Tx KByte limit.",
+         'category' : 'slice/rspec',
          'min_role_id': 10},
-        {'name': "net_thresh_kbyte",
+        {'tagname': "net_thresh_kbyte",
          'description': "KByte limit before warning and throttling.",
+         'category' : 'slice/rspec',
          'min_role_id': 10},
-        {'name': "net_i2_max_kbyte",
+        {'tagname': "net_i2_max_kbyte",
          'description': "Maximum daily network Tx KByte limit to I2 hosts.",
+         'category' : 'slice/rspec',
          'min_role_id': 10},
-        {'name': "net_i2_thresh_kbyte",
+        {'tagname': "net_i2_thresh_kbyte",
          'description': "KByte limit to I2 hosts before warning and throttling.",
+         'category' : 'slice/rspec',
          'min_role_id': 10},
-        {'name': "net_share",
+        {'tagname': "net_share",
          'description': "Number of bandwidth shares",
+         'category' : 'slice/rspec',
          'min_role_id': 10},
-        {'name': "net_i2_share",
+        {'tagname': "net_i2_share",
          'description': "Number of bandwidth shares over I2 routes",
+         'category' : 'slice/rspec',
          'min_role_id': 10},
  
         # Disk quota
-        {'name': "disk_max",
+        {'tagname': "disk_max",
          'description': "Disk quota (1k disk blocks)",
+         'category' : 'slice/rspec',
          'min_role_id': 10},
 
         # Proper operations
-        {'name': "proper_op",
+        {'tagname': "proper_op",
          'description': "Proper operation (e.g. bind_socket)",
+         'category' : 'slice/rspec',
          'min_role_id': 10},
 
         # VServer capabilities 
-        {'name': "capabilities",
+        {'tagname': "capabilities",
          'description': "VServer bcapabilities (separate by commas)",
+         'category' : 'slice/rspec',
          'min_role_id': 10},
 
 		# Vsys
-        {'name': "vsys",
+        {'tagname': "vsys",
          'description': "Bind vsys script fd's to a slice's vsys directory.",
+         'category' : 'slice/rspec',
          'min_role_id': 10},
 
         # CoDemux
-        {'name': "codemux",
+        {'tagname': "codemux",
          'description': "Demux HTTP between slices using localhost ports. Value in the form 'host, localhost port'.",
+         'category' : 'slice/rspec',
          'min_role_id': 10},
 
         ]
 
-    # Get list of existing attribute types
-    attribute_types = GetSliceAttributeTypes()
-    attribute_types = [attribute_type['name'] for attribute_type in attribute_types]
+    # Get list of existing tag types
+    known_tag_types = [tag_type['tagname'] for tag_type in GetTagTypes()]
 
-    # Create/update default slice attribute types
-    for default_attribute_type in default_attribute_types:
-        if default_attribute_type['name'] not in attribute_types:
-            AddSliceAttributeType(default_attribute_type)
+    all_default_types = default_node_types + default_setting_types + default_attribute_types
+    # Create/update default slice tag types
+    for default_tag_type in all_default_types:
+        if default_tag_type['tagname'] not in known_tag_types:
+            AddTagType(default_tag_type)
         else:
-            UpdateSliceAttributeType(default_attribute_type['name'], default_attribute_type)
+            UpdateTagType(default_tag_type['tagname'], default_tag_type)
 
     #################### conf files
 
