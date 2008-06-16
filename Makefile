@@ -2,7 +2,7 @@
 # $Id$
 #
 
-BINARIES = plc-config plc-config-tty db-config dns-config plc-map.py clean-empty-dirs.py mtail.py \
+BINARIES = plc-config plc-config-tty db-config dns-config plc-map.py plc-kml.py clean-empty-dirs.py mtail.py \
 	support-scripts/renew_reminder.py support-scripts/gen_aliases.py
 INIT_SCRIPTS = api bootcd bootmanager crond db dns functions gpg httpd mail network packages postgresql ssh ssl syslog
 
@@ -37,3 +37,5 @@ endif
 
 tags:
 	find . -type f | egrep -v '.svn/|~$$' | xargs etags
+
+.PHONY: tags

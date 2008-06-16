@@ -194,6 +194,7 @@ fi
 /usr/bin/db-config
 /usr/bin/dns-config
 /usr/bin/plc-map.py*
+/usr/bin/plc-kml.py*
 /usr/bin/refresh-peer.py*
 /usr/bin/clean-empty-dirs.py*
 /usr/bin/mtail.py*
