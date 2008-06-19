@@ -24,7 +24,8 @@ def Run (peername):
 
 def RunInLog (peername):
     monthstring=time.strftime("%Y-%m")
-    logname="/var/log/refresh-peer-%s-%s.log"%(peername,monthstring)
+    os.mkdir("/var/log/peers")
+    logname="/var/log/peers/refresh-peer-%s-%s.log"%(peername,monthstring)
     sys.stdout=open(logname,'a')
     sys.stderr=sys.stdout
     Run(peername)
