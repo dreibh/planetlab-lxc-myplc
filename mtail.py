@@ -136,7 +136,11 @@ example:
 	    print sys.argv[0],": WARNING : no file in scope"
 	    self.format="%s"
 	else:
-	    self.margin=max(*[len(f) for f in filenames])
+	    if len(filenames)==1:
+                self.margin=len(filenames[0])
+            else:
+                # this stupidly fails when there's only 1 file
+                self.margin=max(*[len(f) for f in filenames])
 	    self.format="%%%ds"%self.margin
 	    if self.options.verbose:
 		print 'Current set of files:',filenames
