@@ -1,7 +1,9 @@
 #!/usr/bin/env plcsh
 # $Id$
 
-import sys,os,time
+import sys,time,os,os.path
+
+logdir="/var/log/peers"
 
 def Run (peername):
     timestring=time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -24,8 +26,9 @@ def Run (peername):
 
 def RunInLog (peername):
     monthstring=time.strftime("%Y-%m")
-    os.mkdir("/var/log/peers")
-    logname="/var/log/peers/refresh-peer-%s-%s.log"%(peername,monthstring)
+    if not os.path.isdir(logdir):
+        os.mkdir(logdir)
+    logname="%s/refresh-peer-%s-%s.log"%(logdir,peername,monthstring)
     sys.stdout=open(logname,'a')
     sys.stderr=sys.stdout
     Run(peername)
