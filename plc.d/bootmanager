@@ -31,6 +31,18 @@ case "$1" in
 	pushd /var/www/html/boot
 	/usr/share/bootmanager/build.sh
 	check
+
+	dirlist="" 
+	for i in `ls`; do 
+		if [ -d $i ]; then 
+			dirlist="$dirlist $i" 
+		fi
+	done
+	for dir in $dirlist ; do 
+		echo -n " $dir"
+		/usr/share/bootmanager/build.sh $dir
+		check
+	done
 	popd
 
 	result "$MESSAGE"
