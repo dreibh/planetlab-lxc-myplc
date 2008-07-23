@@ -20,6 +20,8 @@ import os
 import types
 
 
+class ConfigurationException(Exception): pass
+
 class PLCConfiguration:
     """
     Configuration file store. Optionally instantiate with a file path
@@ -234,6 +236,42 @@ class PLCConfiguration:
         fileobj.truncate()
 
         fileobj.close()
+
+    def verify(self, default, read):
+        """ Confirm that the existing configuration is consistent according to
+        the checks below.
+
+            It looks for filled-in values in the order of, local object (self),
+            followed by cread (read values), and finally default values.
+
+        Arguments: 
+
+            None
+
+        Returns:
+
+            None.  If an exception is found, ConfigurationException is raised.
+
+        """
+
+        maint_user = self.get('plc_api', 'maintenance_user')
+        if maint_user == (None, None):
+            maint_user = read.get('plc_api', 'maintenance_user')
+            if maint_user == (None, None):
+                maint_user = default.get('plc_api', 'maintenance_user')
+
+        root_user = self.get('plc', 'root_user')
+        if root_user == (None, None):
+            root_user = read.get('plc', 'root_user')
+            if root_user == (None, None):
+                root_user = default.get('plc', 'root_user')
+
+        muser= maint_user[1]['value']
+        ruser= root_user[1]['value']
+
+        if muser == ruser:
+            raise ConfigurationException("The Maintenance Account email address cannot be the same as the Root User email address")
+        return
 
 
     def get(self, category_id, variable_id):

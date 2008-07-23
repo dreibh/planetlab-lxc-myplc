@@ -18,6 +18,7 @@ import readline
 import getopt
 
 from plc_config import PLCConfiguration
+from plc_config import ConfigurationException
 
 ####################
 release_id = "$Id$"
@@ -360,8 +361,14 @@ def mainloop (cdef, cread, cwrite, default_config, site_config, consolidated_con
             return
         elif (command in "wW"):
             try:
+                # Confirm that various constraints are met before saving file.
+                cwrite.verify(cdef, cread)
                 cwrite.save(site_config)
+            except ConfigurationException, e:
+                print "Save failed due to a configuration exception: %s" % e
+                break;
             except:
+                import traceback; print traceback.print_exc()
                 print ("Could not save -- fix write access on %s" % site_config)
                 break
             print ("Wrote %s" % site_config)
