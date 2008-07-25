@@ -468,17 +468,6 @@ def main():
 
         # Firewall configuration
         {'enabled': True,
-         'source': 'PlanetLabConf/iptables',
-         'dest': '/etc/sysconfig/iptables',
-         'file_permissions': '600',
-         'file_owner': 'root',
-         'file_group': 'root',
-         'preinstall_cmd': '',
-         'postinstall_cmd': '',
-         'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False},
-        {'enabled': True,
          'source': 'PlanetLabConf/blacklist.php',
          'dest': '/etc/planetlab/blacklist',
          'file_permissions': '600',
