@@ -1044,6 +1044,26 @@ message, please reply so that we may investigate the problem.
             for ptype in protocol_types:
                 AddPCUProtocolType(id, ptype)
 
+	default_boot_states = [
+		'boot',
+		'failboot',
+		'safeboot',
+		'install',
+		'reinstall',
+		'disabled',
+	]
+
+	current_boot_states = GetBootStates()
+	for state in default_boot_states:
+		if state not in current_boot_states:
+			AddBootState(state)
+
+	# TODO: Delete old boot states. 
+	# NOTE: Only do this if all federating peers have the new default boot states above.
+	#for state in current_boot_states:
+	#	if state not in default_boot_states:
+	#		DeleteBootState(state)
+
 
 if __name__ == '__main__':
     main()
