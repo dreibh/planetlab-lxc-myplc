@@ -63,6 +63,7 @@ Requires: bootcd-%{pldistro}-%{_arch}
 Requires: dnsmasq
 Requires: diffutils
 Requires: gzip
+Requires: vim-minimal
 Requires: findutils
 # planetlab stuff
 Requires: PLCWWW
