@@ -34,6 +34,7 @@ datadirs=(
 /var/www/html/alpina-logs
 /var/www/html/boot
 /var/www/html/download
+/var/www/html/download-planetlab-i386
 /var/www/html/files
 /var/www/html/sites
 /var/www/html/generated
