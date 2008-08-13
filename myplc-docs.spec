@@ -28,9 +28,10 @@ BuildRequires: docbook-dtds, docbook-utils-pdf
 
 %define debug_package %{nil}
 
-%description This package contains the online documentation for MyPLC,
-in the form of the reference manuals for the two APIs provided: PLCAPI
-and NMAPI. A general introduction to the MyPLC system can be found at
+%description
+This package contains the online documentation for MyPLC, i.e. the
+reference manuals for the two APIs provided: PLCAPI and NMAPI. A
+more general introduction to the MyPLC system can be found at
 http://svn.planet-lab.org/wiki/MyPLCUserGuide
 
 %prep
