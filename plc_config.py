@@ -254,20 +254,24 @@ class PLCConfiguration:
 
         """
 
-        maint_user = self.get('plc_api', 'maintenance_user')
-        if maint_user == (None, None):
-            maint_user = read.get('plc_api', 'maintenance_user')
-            if maint_user == (None, None):
-                maint_user = default.get('plc_api', 'maintenance_user')
+        (category,maint_user) = self.get('plc_api', 'maintenance_user')
+        if maint_user == None:
+            (category, maint_user) = read.get('plc_api', 'maintenance_user')
+        if maint_user == None:
+            (category,maint_user) = default.get('plc_api', 'maintenance_user')
+        if maint_user == None:
+            raise ConfigurationException("Cannot find PLC_API_MAINTENANCE_USER")
 
-        root_user = self.get('plc', 'root_user')
-        if root_user == (None, None):
-            root_user = read.get('plc', 'root_user')
-            if root_user == (None, None):
-                root_user = default.get('plc', 'root_user')
+        (category,root_user) = self.get('plc', 'root_user')
+        if root_user == None:
+            (category,root_user) = read.get('plc', 'root_user')
+        if root_user == None:
+            root_user = default.get('plc', 'root_user')
+        if root_user == None:
+            raise ConfigurationException("Cannot find PLC_ROOT_USER")
 
-        muser= maint_user[1]['value']
-        ruser= root_user[1]['value']
+        muser= maint_user['value']
+        ruser= root_user['value']
 
         if muser == ruser:
             raise ConfigurationException("The Maintenance Account email address cannot be the same as the Root User email address")
