@@ -22,6 +22,15 @@ case "$1" in
 	# Make temporary GPG home directory
 	homedir=$(mktemp -d /tmp/gpg.XXXXXX)
 
+	# in case a previous gpg invocation failed in some weird way
+	# and left behind a zero length gpg key (pub or priv).
+	if [ -f $PLC_ROOT_GPG_KEY_PUB -a ! -s $PLC_ROOT_GPG_KEY_PUB ] ; then
+	    rm -f $PLC_ROOT_GPG_KEY_PUB 
+	fi
+	if [ -f $PLC_ROOT_GPG_KEY -a ! -s $PLC_ROOT_GPG_KEY ] ; then
+	    rm -f $PLC_ROOT_GPG_KEY
+	fi
+
 	if [ ! -f $PLC_ROOT_GPG_KEY_PUB -o ! -f $PLC_ROOT_GPG_KEY ] ; then
 	    # Generate new GPG keyring
 	    MESSAGE=$"Generating GPG keys"
@@ -33,7 +42,10 @@ case "$1" in
 	    # Temporarily replace /dev/random with /dev/urandom to
 	    # avoid running out of entropy.
 	    rm -f /dev/random
+	    # 1 9 is /dev/urandom
 	    mknod /dev/random c 1 9
+	    # sometimes mknod fails within an improperly setup vserver
+	    check
 	    gpg --homedir=$homedir --no-permission-warning --batch --no-tty --yes \
 		--gen-key <<EOF
 Key-Type: DSA
