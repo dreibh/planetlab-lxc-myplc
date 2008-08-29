@@ -101,6 +101,27 @@ case "$1" in
 	PLC_API_IP=$(gethostbyname $PLC_API_HOST)
 	PLC_BOOT_IP=$(gethostbyname $PLC_BOOT_HOST)
 	PLC_WWW_IP=$(gethostbyname $PLC_WWW_HOST)
+	ip_failure=0
+	if [ -z "$PLC_API_IP" ] ; then
+	    MESSAGE=$"PLC_API_IP is not set"
+	    dialog "$MESSAGE"
+	    ip_failure=1
+	fi
+	if [ -z "$PLC_BOOT_IP" ] ; then
+	    MESSAGE=$"PLC_BOOT_IP is not set"
+	    dialog "$MESSAGE"
+	    ip_failure=1
+	fi
+	if [ -z "$PLC_WWW_IP" ] ; then
+	    MESSAGE=$"PLC_WWW_IP is not set"
+	    dialog "$MESSAGE"
+	    ip_failure=1
+	fi
+	if [ $ip_failure -eq 1 ] ; then
+	    /bin/false
+	    check
+	fi
+
 	(
 	    echo "host $PLC_DB_NAME $PLC_DB_USER 127.0.0.1/32 password"
 	    echo "host $PLC_DB_NAME $PLC_DB_USER $PLC_API_IP/32 password"
