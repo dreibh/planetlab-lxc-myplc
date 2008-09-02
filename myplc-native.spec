@@ -72,6 +72,11 @@ Requires: PLCAPI
 Requires: bootstrapfs-%{pldistro}-%{_arch}
 Requires: myplc-docs
 
+# argh - ugly - we might wish to use something from build/config.%{pldistro} instead
+%if "%{pldistro}" == "onelab"
+Requires: dummynet_image
+%endif
+
 Provides: myplc
 
 %define debug_package %{nil}
@@ -108,7 +113,7 @@ if [ -n "$SUDO_USER" ] ; then
     # /usr/bin/sudo get created with non-readable permissions.
     find . -not -perm +0600 -exec chmod u+rw {} \;
     # Allow user to delete the built RPM(s)
-    chown -h -R $SUDO_USER %{_rpmdir}/%{_arch}
+    [ -d %{_rpmdir}/noarch ] && chown -h -R $SUDO_USER %{_rpmdir}/noarch
 fi
 
 %pre
