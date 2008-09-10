@@ -5,7 +5,7 @@
 
 %define name myplc-native
 %define version 5.0
-%define taglevel 0
+%define taglevel 1
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -210,6 +210,10 @@ fi
 /var/www/html/install-rpms/planetlab
 
 %changelog
+* Wed Sep 10 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-5.0-1
+- First iteration of new data model
+- Bunch of various fixes
+
 * Tue May 20 2008 Faiyaz Ahmed <faiyaza@cs.princeton.edu> - MyPLC-4.2-15
 - Removed proper ops from planetflow slice.
 
