@@ -1,4 +1,6 @@
 #!/usr/bin/env plcsh
+#
+# $Id$
 
 # this script generates a kml file, located under the default location below
 # you should crontab this job from your myplc image
