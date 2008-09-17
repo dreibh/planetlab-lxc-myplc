@@ -134,6 +134,10 @@ class KmlMap:
         # close description
         description +='</ul>'
 
+        if not self.options.labels:
+            name=""
+            description=""
+
         # STYLE
         if self.options.use_google_icons:
             if not peer_id:
@@ -180,6 +184,9 @@ def main () :
     parser.add_option("-o","--output",action="store",dest="output",
                       default=default_output,
                       help="output file - default is %s"%default_output)
+    parser.add_option("-n","--no-label",action="store_false",dest="labels",
+                      default=True,
+                      help="outputs only geographic positions, no labels")
     parser.add_option("-c","--custom",action="store_false",dest="use_google_icons",
                       default=True,
                       help="use locally customized icons rather than the google-provided defaults")
@@ -189,6 +196,7 @@ def main () :
     parser.add_option("-f","--foreign",action="store",dest="foreign_icon",
                       default=default_foreign_icon,
                       help="set icon url to use for foreign sites marker -- default is %s"%default_foreign_icon)
+
     (options, args) = parser.parse_args()
     if len(args) != 0:
         parser.print_help()
