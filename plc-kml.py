@@ -4,6 +4,10 @@
 # you should crontab this job from your myplc image
 # you can then use the googlemap.js javascript for creating your applet
 # more on this at http://svn.planet-lab.org/wiki/GooglemapSetup
+# 
+# kml reference can be found at
+# http://code.google.com/apis/kml/documentation/kmlreference.html
+#
 
 import sys
 
@@ -28,21 +32,43 @@ class KmlMap:
     def write(self,string):
         self.output.write(string.encode("UTF-8"))
 
+    @staticmethod
+    def site_compare (s1,s2):
+        n1=s1['name']
+        n2=s2['name']
+        if n1<n2:
+            return -1
+        elif n1>n2:
+            return 1
+        else:
+            return 0
+
     def refresh (self):
         self.open()
         self.write_header()
         # cache peers 
         peers = GetPeers({},['peer_id','peername'])
-        for site in GetSites({'enabled':True,'is_public':True}):
+        all_sites = GetSites({'enabled':True,'is_public':True})
+        all_sites.sort(KmlMap.site_compare)
+        for site in all_sites:
             self.write_site(site,peers)
         self.write_footer()
         self.close()
 
+# initial placement is for europe - dunno how to tune that yet
     def write_header (self):
         self.write("""<?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://earth.google.com/kml/2.2">
 <Document>
 <name> PlanetLab Sites </name>
+<LookAt>
+<longitude>9.180821112577378</longitude>
+<latitude>44.43275321178062</latitude>
+<altitude>0</altitude>
+<range>5782133.196489797</range>
+<tilt>0</tilt>
+<heading>-7.767386340832667</heading>
+</LookAt>
 <description> All the sites known to the PlanetLab testbed. </description>
 """)
 
@@ -127,9 +153,17 @@ class KmlMap:
 
         iconspec="<href>%(iconurl)s</href>%(xyspec)s"%locals()
 
+        # set the camera 50km high
         template="""<Placemark>
 <Style><IconStyle><Icon>%(iconspec)s</Icon></IconStyle></Style>
 <name><![CDATA[%(name)s]]></name>
+<LookAt>
+  <latitude>%(latitude)f</latitude>
+  <longitude>%(longitude)f</longitude>
+  <altitude>0</altitude>
+  <altitudeMode>relativeToGround</altitudeMode>              
+  <range>50000.</range> 
+</LookAt>
 <description><![CDATA[%(description)s]]></description>
 <Point> <coordinates>%(longitude)f,%(latitude)f,0</coordinates> </Point>
 </Placemark>
