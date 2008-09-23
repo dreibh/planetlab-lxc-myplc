@@ -109,7 +109,10 @@ example:
 		    self.files[filename]['size']=size
 		elif size < offset:
 		    self.show_file_when_size_decreased(filename,offset,size)
-		del self.files[filename]['old-file']
+                try:
+                    del self.files[filename]['old-file']
+                except:
+                    pass
 	    else:
 		# enter file with current size
 		# if we didn't set format yet, it's because we are initializing
