@@ -62,13 +62,6 @@ echo "* myplc: Installing configuration file"
 install -D -m 444 default_config.xml ${tmpdir}/etc/planetlab/default_config.xml
 install -D -m 444 plc_config.dtd ${tmpdir}/etc/planetlab/plc_config.dtd
 
-# Initialize node RPMs directory. The PlanetLab-Bootstrap.tar.bz2
-# tarball already contains all of the node RPMs pre-installed. Only
-# updates or optional packages should be placed in this directory.
-nodefamily=${pldistro}-${pl_DISTRO_ARCH}
-install -D -m 644 $pl_DISTRO_YUMGROUPS \
-    ${tmpdir}/var/www/html/install-rpms/$nodefamily/yumgroups.xml
-# temporary - so that node update still work until yum.conf.php gets fixed
-( cd ${tmpdir}/var/www/html/install-rpms ; ln -s $nodefamily planetlab)
+# yumgroups.xml and yum repo : let noderepo handle that
 
 exit 0

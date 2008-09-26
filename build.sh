@@ -130,14 +130,7 @@ pl_fixtmp_permissions data
 # Remove generated bootmanager script
 rm -f data/var/www/html/boot/bootmanager.sh
 
-# Initialize node RPMs directory. The PlanetLab-Bootstrap.tar.bz2
-# tarball already contains all of the node RPMs pre-installed. Only
-# updates or optional packages should be placed in this directory.
-nodefamily=${pldistro}-${pl_DISTRO_ARCH}
-install -D -m 644 $pl_DISTRO_YUMGROUPS \
-    data/var/www/html/install-rpms/$nodefamily/yumgroups.xml
-# temporary - so that node update still work until yum.conf.php gets fixed
-( cd data/var/www/html/install-rpms ; ln -s $nodefamily planetlab)
+# yumgroups.xml and yum repo : let noderepo handle that
 
 # Make image out of directory
 echo "* myplc: Building loopback image"
