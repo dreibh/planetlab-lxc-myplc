@@ -206,8 +206,6 @@ fi
 /usr/bin/mtail.py*
 /usr/bin/check-ssl-peering.py*
 /usr/share/myplc
-/var/www/html/install-rpms/%{pldistro}-%{_arch}
-/var/www/html/install-rpms/planetlab
 
 %changelog
 * Wed Sep 10 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-5.0-1
