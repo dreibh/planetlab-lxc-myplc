@@ -706,6 +706,8 @@ username %(email)s by visiting:
 
 https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/persons/register.php?id=%(person_id)d&key=%(verification_key)s
 
+You must wait for this account to be approved before you can begin using it, please be patient.
+
 If you did not register for a %(PLC_NAME)s account, please ignore this
 message, or contact %(PLC_NAME)s Support <%(PLC_MAIL_SUPPORT_ADDRESS)s>.
 """
