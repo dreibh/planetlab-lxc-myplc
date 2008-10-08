@@ -8,6 +8,7 @@
 # $Id$
 #
 
+import os
 import sys
 import time
 from optparse import OptionParser
@@ -19,6 +20,21 @@ plc = Shell(globals())
 
 PLC_WWW_HOST = plc.config.PLC_WWW_HOST
 PLC_NAME = plc.config.PLC_NAME
+
+LOGFILE = '/var/log/renew_reminder'
+class Logfile:
+    def __init__(self, filename):
+	self.filename = filename
+    def write(self, data):
+	try:
+	    fd = os.open(self.filename, os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0644)
+	    os.write(fd, '%s' % data)
+	    os.close(fd)
+	except OSError:
+	    sys.stderr.write(data)
+	    sys.stderr.flush()
+
+log = Logfile(LOGFILE)
 
 # Debug
 verbose = False;
@@ -88,13 +104,22 @@ To update, renew, or delete this slice, visit the URL:
 	%(slice_url)s%(slice_id)d
 """
 
+    emails = [person['email'] for person in GetPersons(slice['person_ids'], ['email'])]
+    if not emails: emails = ['no contacts']	
+    log_details = [time.ctime(now), slice['name'], time.ctime(slice['expires'])]
+    log_data = "%s\t%s" % ("\t".join(log_details), ",".join(emails))
+
     # Send it
     if slice['person_ids']:
         if options.dryrun:
             print message % locals()
+	    print "log >> %s" % log_data
         else:
             NotifyPersons(slice['person_ids'],
                           "%(PLC_NAME)s slice %(name)s expires in %(days)s" % locals(),
                           message % locals())
+	    print >> log, log_data
+	    
     elif options.verbose:
         print slice['name'], "has no users, skipping"
+	print >> log, log_data
