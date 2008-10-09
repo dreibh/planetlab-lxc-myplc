@@ -34,20 +34,20 @@ contents of that release. This is used by the GetPlcRelease API call.
 %setup -q
 
 %build
-rm -rf $RPM_BUILD_ROOT
 
 # fetch the release stamp from the build if any
-if [ -f ../../../myplc-release ] ; then
-  cp ../../../myplc-release myplc-release
+if [ -f ../../myplc-release ] ; then
+  cp ../../myplc-release myplc-release
 else
   echo "Cannot find release information." > myplc-release
   date >> myplc-release
   echo "$HeadURL$" >> myplc-release
 fi
-# install it in /etc/myplc-release 
-install -m 444 myplc-release ${RPM_BUILD_ROOT}/etc/myplc-release
 
 %install
+rm -rf $RPM_BUILD_ROOT
+# install it in /etc/myplc-release 
+install -D -m 444 myplc-release ${RPM_BUILD_ROOT}/etc/myplc-release
 
 %clean
 rm -rf $RPM_BUILD_ROOT

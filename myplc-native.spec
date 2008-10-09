@@ -95,12 +95,12 @@ system.
 %setup -q
 
 %build
+
+%install
 pushd MyPLC
 rm -rf $RPM_BUILD_ROOT
 ./build-native.sh %{pldistro} $RPM_BUILD_ROOT
 popd
-
-%install
 
 %clean
 rm -rf $RPM_BUILD_ROOT
