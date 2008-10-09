@@ -71,6 +71,7 @@ Requires: nodeconfig
 Requires: PLCAPI
 Requires: bootstrapfs-%{pldistro}-%{_arch}
 Requires: myplc-docs
+Requires: myplc-release
 
 # argh - ugly - we might wish to use something from build/config.%{pldistro} instead
 %if "%{pldistro}" == "onelab"
@@ -100,7 +101,6 @@ rm -rf $RPM_BUILD_ROOT
 popd
 
 %install
-
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -188,7 +188,6 @@ fi
 %files
 %defattr(-,root,root,-)
 # Host startup script and configuration file
-/etc/myplc-release
 /etc/init.d/plc
 /etc/plc.d
 /etc/planetlab
