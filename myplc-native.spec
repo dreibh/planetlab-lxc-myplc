@@ -195,6 +195,7 @@ fi
 /etc/plc_sliceinitscripts/sirius
 /etc/support-scripts/gen_aliases.py*
 /etc/support-scripts/renew_reminder.py*
+/etc/support-scripts/renew_reminder_logrotate
 /usr/bin/plc-config
 /usr/bin/plc-config-tty
 /usr/bin/db-config
