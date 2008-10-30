@@ -12,6 +12,7 @@
 
 from plc_config import PLCConfiguration
 import sys
+import resource
 
 def main():
     cfg = PLCConfiguration()
@@ -240,7 +241,7 @@ def main():
          'category' : 'slice/rspec',
          'min_role_id': 10},
 
-		# Vsys
+        # Vsys
         {'tagname': "vsys",
          'description': "Bind vsys script fd's to a slice's vsys directory.",
          'category' : 'slice/rspec',
@@ -253,6 +254,20 @@ def main():
          'min_role_id': 10},
 
         ]
+
+    # add in the platform supported rlimits to the default_attribute_types
+    for entry in resource.__dict__.keys():
+        if entry.find("RLIMIT_")==0:
+            rlim = entry[len("RLIMIT_"):]
+            rlim = rlim.lower()
+            for ty in ("min","soft","hard"):
+                attribute = {
+                    'tagname': "%s_%s'%(rlim,ty)",
+                    'description': "Per sliver RLIMIT %s_%s."%(rlim,ty),
+                    'category': 'slice/limit',
+                    'min_role_id': 40 #admin
+                    }
+                default_attribute_types.append(attribute)
 
     # Get list of existing tag types
     known_tag_types = [tag_type['tagname'] for tag_type in GetTagTypes()]
