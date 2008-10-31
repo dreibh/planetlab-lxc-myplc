@@ -262,7 +262,7 @@ def main():
             rlim = rlim.lower()
             for ty in ("min","soft","hard"):
                 attribute = {
-                    'tagname': "%s_%s'%(rlim,ty)",
+                    'tagname': "%s_%s"%(rlim,ty),
                     'description': "Per sliver RLIMIT %s_%s."%(rlim,ty),
                     'category': 'slice/limit',
                     'min_role_id': 40 #admin
