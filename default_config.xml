@@ -548,8 +548,7 @@ $Id$
         <variable id="host" type="hostname">
 	        <name>Hostname</name>
 	        <value>localhost.localdomain</value>
-	        <description>The fully qualified hostname of the boot
-	        server.</description>
+	        <description>The fully qualified hostname.</description>
         </variable>
       </variablelist>
     </category>
@@ -561,7 +560,7 @@ $Id$
         <variable id="host" type="hostname">
 	        <name>Hostname</name>
 	        <value>localhost.localdomain</value>
-	        <description>The fully qualified hostname of the boot server.</description>
+	        <description>The fully qualified hostname.</description>
         </variable>
       </variablelist>
     </category>
