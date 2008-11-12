@@ -1097,6 +1097,19 @@ message, please reply so that we may investigate the problem.
     #    if state not in default_boot_states:
     #        DeleteBootState(state)
 
+    # Run local db-config snippets
+    try:
+        dir = "/etc/planetlab/db-config.d"
+        files = os.listdir(dir)
+        for file in files:
+            if (file.endswith(".bak") or file.endswith("~") or
+                file.endswith(".rpmsave") or file.endswith(".rpmnew") or
+                file.endswith(".orig")):
+                continue
+            execfile(os.path.join(dir, file))
+    except:
+        pass
+
 
 if __name__ == '__main__':
     main()
