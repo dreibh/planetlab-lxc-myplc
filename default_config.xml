@@ -553,6 +553,18 @@ $Id$
         </variable>
       </variablelist>
     </category>
+    <category id="plc_monitor">
+      <name>Monitoring Service</name>
+      <description>The Monitor service that tracks node availablity and repair.</description>
+
+      <variablelist>
+        <variable id="host" type="hostname">
+	        <name>Hostname</name>
+	        <value>localhost.localdomain</value>
+	        <description>The fully qualified hostname of the boot server.</description>
+        </variable>
+      </variablelist>
+    </category>
   </variables>
 
   <comps>
