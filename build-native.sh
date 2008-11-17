@@ -24,6 +24,8 @@ rm -rf ${RPM_BUILD_ROOT}
 mkdir -p ${RPM_BUILD_ROOT}
 echo "* myplc-native: installing plc_config.py in /usr/share/myplc"
 install -D -m 755 plc_config.py ${RPM_BUILD_ROOT}/usr/share/myplc/plc_config.py
+install -D -m 644 bashrc ${RPM_BUILD_ROOT}/usr/share/myplc/bashrc
+echo "* myplc-native: installing scripts in /usr/bin"
 install -D -m 755 plc-config ${RPM_BUILD_ROOT}/usr/bin/plc-config
 install -D -m 755 plc-config-tty ${RPM_BUILD_ROOT}/usr/bin/plc-config-tty
 install -D -m 755 db-config ${RPM_BUILD_ROOT}/usr/bin/db-config
@@ -35,6 +37,7 @@ install -D -m 755 clean-empty-dirs.py ${RPM_BUILD_ROOT}/usr/bin/clean-empty-dirs
 install -D -m 755 mtail.py ${RPM_BUILD_ROOT}/usr/bin/mtail.py
 install -D -m 755 check-ssl-peering.py ${RPM_BUILD_ROOT}/usr/bin/check-ssl-peering.py
 # Extra scripts (mostly for mail and dns) not installed by myplc by default.  Used in production
+echo "* myplc-native: installing scripts in /etc/support-scripts"
 mkdir -p ${RPM_BUILD_ROOT}/etc/support-scripts
 cp support-scripts/* ${RPM_BUILD_ROOT}/etc/support-scripts
 # copy initscripts to etc/plc_sliceinitscripts
