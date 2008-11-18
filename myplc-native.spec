@@ -78,7 +78,7 @@ Requires: myplc-release
 Requires: dummynet_image
 %endif
 
-Provides: myplc
+Provides: myplc = %version-%release
 
 %define debug_package %{nil}
 
