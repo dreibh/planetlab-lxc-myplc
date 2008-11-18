@@ -262,8 +262,8 @@ def main():
         ]
 
     # add in the platform supported rlimits to the default_attribute_types
-    for entry in resource.__dict__.keys():
-        if entry.find("RLIMIT_")==0:
+    for entry in resource.__dict__.keys() + ["VLIMIT_OPENFD"]:
+        if entry.find("LIMIT_")==1:
             rlim = entry[len("RLIMIT_"):]
             rlim = rlim.lower()
             for ty in ("min","soft","hard"):
@@ -271,7 +271,7 @@ def main():
                     'tagname': "%s_%s"%(rlim,ty),
                     'description': "Per sliver RLIMIT %s_%s."%(rlim,ty),
                     'category': 'slice/limit',
-                    'min_role_id': 40 #admin
+                    'min_role_id': 10 #admin
                     }
                 default_attribute_types.append(attribute)
 
