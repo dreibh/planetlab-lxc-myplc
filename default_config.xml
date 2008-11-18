@@ -555,12 +555,32 @@ $Id$
     <category id="plc_monitor">
       <name>Monitoring Service</name>
       <description>The Monitor service that tracks node availablity and repair.</description>
-
       <variablelist>
+        <variable id="enabled" type="boolean">
+          <name>Enabled</name>
+          <value>false</value>
+          <description>Enable on this machine.</description>
+        </variable>
         <variable id="host" type="hostname">
-	        <name>Hostname</name>
-	        <value>localhost.localdomain</value>
-	        <description>The fully qualified hostname.</description>
+          <name>Hostname</name>
+          <value>localhost.localdomain</value>
+          <description>The fully qualified hostname.</description>
+        </variable>
+        <variable id="ip" type="ip">
+          <name>IP Address</name>
+          <value></value>
+          <description>The IP address of the monitor server.</description>
+        </variable>
+        <variable id="email" type="email">
+          <name>Monitor Email Address</name>
+          <value>root+monitor@localhost.localdomain</value>
+          <description>The source address for all out-going messages from Monitor.</description>
+        </variable>
+        <variable id="dbpassword" type="password">
+          <name>Database Password</name>
+          <value></value>
+          <description>The password to use when accessing the
+          database, Monitor user account in the local PLC.</description>
         </variable>
       </variablelist>
     </category>
