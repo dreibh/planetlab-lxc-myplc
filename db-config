@@ -1098,17 +1098,19 @@ message, please reply so that we may investigate the problem.
     #        DeleteBootState(state)
 
     # Run local db-config snippets
+    files = []
+    dir = "/etc/planetlab/db-config.d"
     try:
-        dir = "/etc/planetlab/db-config.d"
         files = os.listdir(dir)
-        for file in files:
-            if (file.endswith(".bak") or file.endswith("~") or
-                file.endswith(".rpmsave") or file.endswith(".rpmnew") or
-                file.endswith(".orig")):
-                continue
-            execfile(os.path.join(dir, file))
     except:
         pass
+
+    for file in files:
+        if (file.endswith(".bak") or file.endswith("~") or
+            file.endswith(".rpmsave") or file.endswith(".rpmnew") or
+            file.endswith(".orig")):
+            continue
+        execfile(os.path.join(dir, file))
 
 
 if __name__ == '__main__':
