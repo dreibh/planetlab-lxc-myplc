@@ -688,19 +688,19 @@ def main():
             slice = GetSlices([default_slice['name']])[0]
 
         # Create/update all attributes
-        slice_attributes = []
-        if slice['slice_attribute_ids']:
+        slice_tags = []
+        if slice['slice_tag_ids']:
             # Delete unknown attributes
-            for slice_attribute in GetSliceAttributes(slice['slice_attribute_ids']):
-                if (slice_attribute['tagname'], slice_attribute['value']) \
+            for slice_tag in GetSliceTags(slice['slice_tag_ids']):
+                if (slice_tag['tagname'], slice_tag['value']) \
                    not in default_slice['attributes']:
-                    DeleteSliceAttribute(slice_attribute['slice_attribute_id'])
+                    DeleteSliceTag(slice_tag['slice_tag_id'])
                 else:
-                    slice_attributes.append((slice_attribute['tagname'], slice_attribute['value']))
+                    slice_tags.append((slice_tag['tagname'], slice_tag['value']))
 
         for (name, value) in default_slice['attributes']:
-            if (name, value) not in slice_attributes:
-                AddSliceAttribute(slice['name'], name, value)
+            if (name, value) not in slice_tags:
+                AddSliceTag(slice['name'], name, value)
 
     
     #################### body for messages
