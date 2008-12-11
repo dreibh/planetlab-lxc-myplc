@@ -98,6 +98,7 @@ def main():
         ]
 
     #################### interface settings
+    # xxx this should move to PLC/Accessors
 
     # Setup default slice attribute types
     default_setting_types = [
@@ -138,6 +139,7 @@ def main():
         ]
 
     #################### slice attributes
+    # xxx this should move to PLC/Accessors
 
     # Setup default slice attribute types
     default_attribute_types = [
@@ -679,6 +681,7 @@ def main():
         ]
     
     for default_slice in default_slices:
+        attributes=default_slice.pop('attributes')
         slices = GetSlices([default_slice['name']])
         if slices:
             slice = slices[0]
@@ -693,12 +696,12 @@ def main():
             # Delete unknown attributes
             for slice_tag in GetSliceTags(slice['slice_tag_ids']):
                 if (slice_tag['tagname'], slice_tag['value']) \
-                   not in default_slice['attributes']:
+                   not in attributes:
                     DeleteSliceTag(slice_tag['slice_tag_id'])
                 else:
                     slice_tags.append((slice_tag['tagname'], slice_tag['value']))
 
-        for (name, value) in default_slice['attributes']:
+        for (name, value) in attributes:
             if (name, value) not in slice_tags:
                 AddSliceTag(slice['name'], name, value)
 

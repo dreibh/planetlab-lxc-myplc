@@ -10,8 +10,8 @@ INITS=$(addprefix plc.d/,$(INIT_SCRIPTS))
 
 ########## make sync PLCHOST=hostname
 ifdef PLCHOST
-ifdef VSERVER
-PLCSSH:=root@$(PLCHOST):/vservers/$(VSERVER)
+ifdef GUEST
+PLCSSH:=root@$(PLCHOST):/vservers/$(GUEST)
 endif
 endif
 
@@ -22,13 +22,13 @@ RSYNC			:= rsync -a -v $(RSYNC_COND_DRY_RUN) $(RSYNC_EXCLUDES)
 
 sync:
 ifeq (,$(PLCSSH))
-	echo "sync: You must define PLCHOST and VSERVER on the command line"
-	echo " e.g. make sync PLCHOST=private.one-lab.org VSERVER=myplc01" ; exit 1
+	echo "sync: You must define PLCHOST and GUEST on the command line"
+	echo " e.g. make sync PLCHOST=private.one-lab.org GUEST=myplc01" ; exit 1
 else
 	+$(RSYNC) guest.init $(PLCSSH)/etc/init.d/plc
 	+$(RSYNC) $(BINARIES) $(PLCSSH)/usr/bin
 	+$(RSYNC) $(INITS) $(PLCSSH)/etc/plc.d
-	+$(RSYNC) plc_config.py $(PLCSSH)/usr/lib/python2.5/site-packages/plc_config.py
+	+$(RSYNC) plc_config.py $(PLCSSH)/usr/lib/python2.4/site-packages/plc_config.py
 	+$(RSYNC) default_config.xml $(PLCSSH)/etc/planetlab/default_config.xml
 	@echo XXXXXXXX You might consider running the following command
 	@echo ssh $(PLCHOST) service plc start 
