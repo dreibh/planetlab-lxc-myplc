@@ -174,7 +174,7 @@ case "$1" in
 
     stop)
 	MESSAGE=$"Stopping PostgreSQL server"
-	dialog "$MESSAGE"<
+	dialog "$MESSAGE"
 
 	# Drop the current user in case the username changes
 	psql -U postgres -c "DROP USER $PLC_DB_USER" template1
