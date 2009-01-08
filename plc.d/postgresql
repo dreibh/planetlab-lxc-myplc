@@ -165,9 +165,7 @@ case "$1" in
 	check
 	if ! psql -U $PLC_DB_USER -c "" drupal >/dev/null 2>&1 ; then
 	    createdb -U postgres --encoding=UNICODE --owner=$PLC_DB_USER drupal
-	    # when using drupal 6.x, we must not do this
-	    drupal_schema=/var/www/html/database/database.pgsql
-	    [ -f $drupal_schema ] && psql -U $PLC_DB_USER -f $drupal_schema drupal
+            psql -U $PLC_DB_USER -f /var/www/html/database/database.pgsql drupal 
 	fi
 	check
 
