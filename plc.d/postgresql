@@ -58,7 +58,7 @@ case "$1" in
 	    exit 0
 	fi
 
-	MESSAGE=$"Starting database server"
+	MESSAGE=$"Starting PostgreSQL server"
 	dialog "$MESSAGE"
 
 	# Set data directory and redirect startup output to /var/log/pgsql
@@ -173,8 +173,8 @@ case "$1" in
 	;;
 
     stop)
-	MESSAGE=$"Stopping database server"
-	dialog "$MESSAGE"
+	MESSAGE=$"Stopping  PostgreSQL server"
+	dialog "$MESSAGE"<
 
 	# Drop the current user in case the username changes
 	psql -U postgres -c "DROP USER $PLC_DB_USER" template1
