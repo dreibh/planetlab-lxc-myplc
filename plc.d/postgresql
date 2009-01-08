@@ -173,7 +173,7 @@ case "$1" in
 	;;
 
     stop)
-	MESSAGE=$"Stopping  PostgreSQL server"
+	MESSAGE=$"Stopping PostgreSQL server"
 	dialog "$MESSAGE"<
 
 	# Drop the current user in case the username changes
