@@ -59,10 +59,13 @@ example:
 
 	### plc shortcuts
 	if self.options.plc_mode:
+            # monitor all files in /var/log with some exceptions
 	    self.options.excludes.append('*access_log')
 	    self.options.excludes.append('*request_log')
 	    self.options.excludes.append('*.swp')
 	    self.args.append('/var/log')
+            # watch the postgresql logs as well
+            self.args.append('/var/lib/pgsql/data/pg_log')
 
 	if self.options.verbose:
 	    print 'Version:',self.subversion_id
