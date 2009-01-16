@@ -29,6 +29,14 @@ $Id$
 	  PlanetLab Support).</description>
 	</variable>
 
+	<variable id="shortname" type="string">
+	  <name>Shortame</name>
+	  <value>Tlab</value>
+	  <description>The short name of this PLC installation. It is
+	  mostly used in the web interface when displaying local
+	  objects.</description>
+	</variable>
+
 	<variable id="slice_prefix" type="string">
 	  <name>Slice Prefix</name>
 	  <value>pl</value>
