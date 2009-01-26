@@ -37,6 +37,12 @@ $Id$
 	  objects.</description>
 	</variable>
 
+	<variable id="hrn_root" type="string">
+	  <name>Root in Hierarchical Naming Space </name>
+	  <value>planetlab.test</value>
+	  <description> The root of this peer in the hierarchical federation naming space.</description>
+	</variable>
+
 	<variable id="slice_prefix" type="string">
 	  <name>Slice Prefix</name>
 	  <value>pl</value>
