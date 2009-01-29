@@ -5,7 +5,7 @@
 
 %define name myplc-chroot
 %define version 5.0
-%define taglevel 1
+%define taglevel 2
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -169,6 +169,10 @@ fi
 %config(noreplace) /plc/data/*
 
 %changelog
+* Thu Jan 29 2009 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-5.0-2
+- rename myplc into myplc-chroot and myplc-native into myplc
+- new settings (shortname & hrn_root) for local peer
+
 * Wed Sep 10 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-5.0-1
 - First iteration of new data model
 - Bunch of various fixes
