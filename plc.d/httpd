@@ -47,7 +47,7 @@ case "$1" in
 	fi
 
 	# Set the default include path
-	include_path=".:$DocumentRoot/planetlab/includes:$DocumentRoot/generated:/etc/planetlab/php:/usr/share/plc_api/php"
+	include_path=".:$DocumentRoot/planetlab/includes:$DocumentRoot/plkit/php:/etc/planetlab/php:/usr/share/plc_api/php"
 	sed -i -e "s@[;]*include_path = \"\.:.*\"@include_path = \"$include_path\"@" $php_ini
 
 	# Disable default Listen directive
