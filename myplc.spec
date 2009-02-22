@@ -24,48 +24,36 @@ Packager: PlanetLab Central <support@planet-lab.org>
 Distribution: PlanetLab %{plrelease}
 URL: %(echo %{url} | cut -d ' ' -f 2)
 
+# as much as possible, requires should go in the subpackages specfile
 Requires: bzip2
-Requires: sendmail-cf
 Requires: tar 
 Requires: less
-Requires: perl-GD
+Requires: sendmail
+Requires: sendmail-cf
 Requires: openssl
-Requires: xmlsec1
-Requires: gd
 Requires: expect
-Requires: php-pgsql
+# Requires: php-pgsql
 Requires: curl
-Requires: python-pycurl
-Requires: python-psycopg2
-Requires: httpd
 Requires: rsync
-Requires: mod_python
-Requires: mod_ssl
-Requires: bootmanager
 Requires: python-devel
-Requires: SOAPpy
 Requires: vixie-cron
 Requires: yum
-Requires: php-gd
 Requires: PyXML
-Requires: sendmail
-Requires: python >= 2.4
 Requires: createrepo
-Requires: postgresql-python
 Requires: cpio
-Requires: postgresql-server
 Requires: wget
 Requires: php
-Requires: xmlsec1-openssl
-Requires: postgresql
 Requires: openssh
-Requires: bootcd-%{pldistro}-%{_arch}
 Requires: dnsmasq
 Requires: diffutils
 Requires: gzip
 Requires: vim-minimal
 Requires: findutils
+Requires: xmlsec1
+Requires: xmlsec1-openssl
 # planetlab stuff
+Requires: bootmanager
+Requires: bootcd-%{pldistro}-%{_arch}
 Requires: PLCWWW
 Requires: nodeconfig
 Requires: PLCAPI
