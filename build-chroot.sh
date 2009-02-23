@@ -52,7 +52,7 @@ echo "* myplc: Installing base filesystem"
 mkdir -p root data
 
 pl_root_makedevs root
-pkgsfile=$(pl_locateDistroFile ../build/ ${pldistro} myplc.pkgs)
+pkgsfile=$(pl_locateDistroFile ../build/ ${pldistro} myplc-chroot.pkgs)
 pl_root_mkfedora root $pldistro $pkgsfile
 pl_root_tune_image root
 
