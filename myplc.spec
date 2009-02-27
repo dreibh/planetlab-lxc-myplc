@@ -55,6 +55,7 @@ Requires: xmlsec1-openssl
 Requires: bootmanager
 Requires: bootcd-%{pldistro}-%{_arch}
 Requires: PLCWWW
+Requires: www-register-wizard
 Requires: nodeconfig
 Requires: PLCAPI
 Requires: bootstrapfs-%{pldistro}-%{_arch}
