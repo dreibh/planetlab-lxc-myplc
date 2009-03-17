@@ -32,7 +32,7 @@ Requires: sendmail
 Requires: sendmail-cf
 Requires: openssl
 Requires: expect
-# Requires: php-pgsql
+Requires: php-pgsql
 Requires: curl
 Requires: rsync
 Requires: python-devel
