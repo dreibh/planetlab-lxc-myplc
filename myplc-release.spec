@@ -4,7 +4,7 @@
 %define url $URL$
 
 %define name myplc-release
-%define version 5.0
+%define version 4.3
 %define taglevel 2
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
@@ -57,7 +57,7 @@ rm -rf $RPM_BUILD_ROOT
 /etc/myplc-release
 
 %changelog
-* Thu Jan 29 2009 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-5.0-2
+* Thu Jan 29 2009 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.3-2
 - rename myplc into myplc-chroot and myplc-native into myplc
 - new settings (shortname & hrn_root) for local peer
 
