@@ -5,7 +5,7 @@
 
 %define name myplc-chroot
 %define version 4.3
-%define taglevel 2
+%define taglevel 3
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -169,6 +169,11 @@ fi
 %config(noreplace) /plc/data/*
 
 %changelog
+* Tue Mar 24 2009 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.3-3
+- php include path tweaked for plekit includes
+- reviewed myplc (fka native) packaging dependencies
+- renumbered 4.3
+
 * Thu Jan 29 2009 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.3-2
 - rename myplc into myplc-chroot and myplc-native into myplc
 - new settings (shortname & hrn_root) for local peer
