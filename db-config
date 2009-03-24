@@ -459,34 +459,6 @@ def main():
          'ignore_cmd_errors': False,
          'always_update': False},
 
-        # XXX Required for old Node Manager
-        # Proper configuration
-        {'enabled': True,
-         'source': 'PlanetLabConf/propd.conf',
-         'dest': '/etc/proper/propd.conf',
-         'file_permissions': '644',
-         'file_owner': 'root',
-         'file_group': 'root',
-         'preinstall_cmd': '',
-         'postinstall_cmd': '/etc/init.d/proper restart',
-         'error_cmd': '',
-         'ignore_cmd_errors': True,
-         'always_update': False},
-
-        # XXX Required for old Node Manager
-        # Bandwidth cap
-        {'enabled': True,
-         'source': 'PlanetLabConf/bwlimit.php',
-         'dest': '/etc/planetlab/bwcap',
-         'file_permissions': '644',
-         'file_owner': 'root',
-         'file_group': 'root',
-         'preinstall_cmd': '',
-         'postinstall_cmd': '',
-         'error_cmd': '',
-         'ignore_cmd_errors': True,
-         'always_update': False},
-
         # Proxy ARP setup
         {'enabled': True,
          'source': 'PlanetLabConf/proxies.php',
