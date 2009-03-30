@@ -34,7 +34,7 @@ example:
 	parser.add_option("-p","--period", type="int", dest="tail_period", default=1,
 			  help="Files check period in seconds")
 	# rescan_period
-	parser.add_option("-d","--dir-period", type="int", dest="rescan_period", default=20,
+	parser.add_option("-d","--dir-period", type="int", dest="rescan_period", default=5,
 			  help="Directories rescan period in seconds")
 	# time format
 	parser.add_option("-f","--format", dest="time_format", default=mtail.default_time_format,
@@ -55,7 +55,7 @@ example:
 			  help="Run in verbose mode")
 
 	(self.options, self.args) = parser.parse_args(args)
-	self.optparse = parser
+	self.option_parser = parser
 
 	### plc shortcuts
 	if self.options.plc_mode:
@@ -73,7 +73,11 @@ example:
 	    print 'Arguments:',self.args
 
     def file_size (self,filename):
-	return os.stat(filename)[6]
+        try:
+            return os.stat(filename)[6]
+        except:
+            print "WARNING: file %s has vanished"%filename
+            return 0
 		
     def number_files (self):
 	return len(self.files)
@@ -168,7 +172,11 @@ example:
 	    print label,
 
     def show_file_end (self, filename, offset, size):
-	file = open(filename,"r")
+        try:
+            file = open(filename,"r")
+        # file has vanished
+        except:
+            return
 	file.seek(offset)
 	line=file.read(size-offset)
 	self.show_now()
@@ -217,8 +225,8 @@ example:
 
     def run (self):
 
-	if self.number_files() == 0:
-	    self.optparse.print_help()
+	if len(self.args) == 0:
+	    self.option_parser.print_help()
 	    sys.exit(1)
 	counter = 0
     
