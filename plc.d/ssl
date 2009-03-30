@@ -73,15 +73,23 @@ verify_or_generate_certificate() {
 
 case "$1" in
     start)
-	MESSAGE=$"Generating SSL certificates"
-	dialog "$MESSAGE"
 
 	# Generate HTTPS certificates if necessary. We generate a
 	# certificate for each enabled server with a different
 	# hostname. These self-signed certificates may be overridden
 	# later.
+        MESSAGE=$"Generating SSL certificates for"
+        dialog "$MESSAGE"
+
 	for server in WWW API BOOT ; do
-	    ssl_key=PLC_${server}_SSL_KEY
+	    eval "a=\$PLC_${server}_ENABLED"
+            echo $a
+            if [ "$a" -ne 1 ] ; then
+		echo "Skipping"
+                continue
+            fi
+	    dialog "$server"
+        ssl_key=PLC_${server}_SSL_KEY
 	    ssl_crt=PLC_${server}_SSL_CRT
 	    ca_ssl_crt=PLC_${server}_CA_SSL_CRT
 	    hostname=PLC_${server}_HOST
