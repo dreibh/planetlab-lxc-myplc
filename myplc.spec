@@ -5,7 +5,7 @@
 
 %define name myplc
 %define version 4.3
-%define taglevel 3
+%define taglevel 4
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -195,6 +195,10 @@ fi
 /usr/share/myplc
 
 %changelog
+* Mon Mar 30 2009 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.3-4
+- cleaned up old entries in db-config
+- mtail more robust
+
 * Tue Mar 24 2009 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.3-3
 - php include path tweaked for plekit includes
 - reviewed myplc (fka native) packaging dependencies
