@@ -5,7 +5,7 @@
 
 %define name myplc
 %define version 4.3
-%define taglevel 4
+%define taglevel 5
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -195,6 +195,9 @@ fi
 /usr/share/myplc
 
 %changelog
+* Tue Apr 07 2009 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.3-5
+- avoid generating ssl certificates for disabled services among www api boot
+
 * Mon Mar 30 2009 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.3-4
 - cleaned up old entries in db-config
 - mtail more robust
