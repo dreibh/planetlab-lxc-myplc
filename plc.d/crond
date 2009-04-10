@@ -55,7 +55,7 @@ EOF
 	fi
 
 	if [ "$PLC_DB_ENABLED" = "1" ] ; then
-	    echo "5 5 * * * root vacuumdb -U postgres --all --analyze --quiet" >>/etc/cron.d/plc.cron
+	    echo "5 5 * * * root vacuumdb -U postgres --all --analyze --quiet --full" >>/etc/cron.d/plc.cron
 	    vacuumdb -U postgres --all --analyze --quiet
 	    check
 	fi
