@@ -39,8 +39,13 @@ case "$1" in
 	# and PlanetLabConf only, no Drupal or admin pages) if the web
 	# server should not run on this machine.
 	if [ "$PLC_WWW_ENABLED" != "1" ] ; then
-	    sed -i -e "s@^DocumentRoot.*@DocumentRoot \"/data$DocumentRoot\"@" $httpd_conf
-	    ln -nsf $DocumentRoot/PlanetLabConf /data$DocumentRoot/PlanetLabConf
+	    if [ -d "/data" ] ; then 
+	    	sed -i -e "s@^DocumentRoot.*@DocumentRoot \"/data$DocumentRoot\"@" $httpd_conf
+	    	ln -nsf $DocumentRoot/PlanetLabConf /data$DocumentRoot/PlanetLabConf
+		else
+			# NOTE: otherwise, the paths are correct by default.
+			/bin/true
+		fi
 	else
 	    sed -i -e "s@^DocumentRoot.*@DocumentRoot \"$DocumentRoot\"@" $httpd_conf
 	    rm -f /data$DocumentRoot/PlanetLabConf
