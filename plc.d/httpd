@@ -202,7 +202,7 @@ EOF
 
 	## patch php.ini
 	# memory limit
-	sed -i -e 's,^memory_limit = 8M *;,memory_limit = 24M ; patch myplc -- ,' $php_ini 
+	sed -i -e 's,^memory_limit = 32M *;,memory_limit = 80M ; patch myplc -- ,' $php_ini 
 	# log_errors : is On by default
 	# error_log
 	if ! grep '^error_log *=' $php_ini > /dev/null ; then
