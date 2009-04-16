@@ -11,6 +11,7 @@
 #
 
 import xml.dom.minidom
+from xml.parsers.expat import ExpatError
 from StringIO import StringIO
 import time
 import re
@@ -189,7 +190,11 @@ class PLCConfiguration:
         Merge file into configuration store.
         """
 
-        dom = xml.dom.minidom.parse(file)
+        try:
+            dom = xml.dom.minidom.parse(file)
+        except ExpatError, e:
+            raise ConfigurationException, e
+
         if type(file) in types.StringTypes:
             self._files.append(os.path.abspath(file))
 
@@ -237,46 +242,44 @@ class PLCConfiguration:
 
         fileobj.close()
 
-    def verify(self, default, read):
-        """ Confirm that the existing configuration is consistent according to
-        the checks below.
+    def verify(self, default, read, verify_variables={}):
+        """ Confirm that the existing configuration is consistent
+            according to the checks below.
 
             It looks for filled-in values in the order of, local object (self),
             followed by cread (read values), and finally default values.
 
         Arguments: 
 
-            None
+            default configuration
+            site configuration
+            list of category/variable tuples to validate in these configurations
 
         Returns:
 
-            None.  If an exception is found, ConfigurationException is raised.
+            dict of values for the category/variables passed in
+            If an exception is found, ConfigurationException is raised.
 
         """
 
-        (category,maint_user) = self.get('plc_api', 'maintenance_user')
-        if maint_user == None:
-            (category, maint_user) = read.get('plc_api', 'maintenance_user')
-        if maint_user == None:
-            (category,maint_user) = default.get('plc_api', 'maintenance_user')
-        if maint_user == None:
-            raise ConfigurationException("Cannot find PLC_API_MAINTENANCE_USER")
-
-        (category,root_user) = self.get('plc', 'root_user')
-        if root_user == None:
-            (category,root_user) = read.get('plc', 'root_user')
-        if root_user == None:
-            root_user = default.get('plc', 'root_user')
-        if root_user == None:
-            raise ConfigurationException("Cannot find PLC_ROOT_USER")
-
-        muser= maint_user['value']
-        ruser= root_user['value']
-
-        if muser == ruser:
-            raise ConfigurationException("The Maintenance Account email address cannot be the same as the Root User email address")
-        return
-
+        validated_variables = {}
+        for category_id, variable_id in verify_variables.iteritems():
+            category_id = category_id.lower()
+            variable_id = variable_id.lower()
+            variable_value = None
+            sources = (self, read, default)
+            for source in sources:
+                (category_value, variable_value) = source.get(category_id,variable_id)
+                if variable_value <> None:
+                    entry = validated_variables.get(category_id,[])
+                    entry.append(variable_value['value'])
+                    validated_variables["%s_%s"%(category_id.upper(),variable_id.upper())]=entry
+                    break
+            if variable_value == None:
+                raise ConfigurationException("Cannot find %s_%s)" % \
+                                             (category_id.upper(),
+                                              variable_id.upper()))
+        return validated_variables
 
     def get(self, category_id, variable_id):
         """
