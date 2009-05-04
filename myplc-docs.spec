@@ -54,11 +54,19 @@ rm -f doc/NMAPI.html
 make -C doc NMAPI.html 
 popd
 
+pushd Monitor
+# beware that making the pdf file somehow overwrites the html
+make -C docs Monitor.pdf 
+rm -f docs/Monitor.html
+make -C docs Monitor.html 
+popd
+
 %install
 
 for ext in pdf html; do
     install -D -m 444 PLCAPI/doc/PLCAPI.$ext $RPM_BUILD_ROOT/var/www/html/planetlab/doc/PLCAPI.$ext
     install -D -m 444 NodeManager/doc/NMAPI.$ext $RPM_BUILD_ROOT/var/www/html/planetlab/doc/NMAPI.$ext
+    install -D -m 444 Monitor/docs/Monitor.$ext $RPM_BUILD_ROOT/var/www/html/planetlab/doc/Monitor.$ext
 done
 
 ./MyPLC/docbook2drupal.sh "PLC API Documentation (%{pldistro})" \
@@ -67,6 +75,9 @@ done
 ./MyPLC/docbook2drupal.sh "Node Manager API Documentation (%{pldistro})" \
     $RPM_BUILD_ROOT/var/www/html/planetlab/doc/NMAPI.html \
     $RPM_BUILD_ROOT/var/www/html/planetlab/doc/NMAPI.php 
+./MyPLC/docbook2drupal.sh "Monitor API Documentation (%{pldistro})" \
+    $RPM_BUILD_ROOT/var/www/html/planetlab/doc/Monitor.html \
+    $RPM_BUILD_ROOT/var/www/html/planetlab/doc/Monitor.php 
 
 %clean
 rm -rf $RPM_BUILD_ROOT
