@@ -5,7 +5,7 @@
 
 %define name myplc-docs
 %define version 4.3
-%define taglevel 6
+%define taglevel 7
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -87,6 +87,9 @@ rm -rf $RPM_BUILD_ROOT
 /var/www/html/planetlab/doc/
 
 %changelog
+* Mon May 04 2009 Stephen Soltesz <soltesz@cs.princeton.edu> - MyPLC-4.3-7
+- add Monitor to docs build
+
 * Wed Apr 29 2009 Marc Fiuczynski <mef@cs.princeton.edu> - MyPLC-4.3-6
 - plc_config.py and plc-config-tty: generalized to work for more diverse
 - MyPLC configurations.
