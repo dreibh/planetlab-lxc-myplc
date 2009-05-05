@@ -46,8 +46,8 @@ cp plc_sliceinitscripts/* ${RPM_BUILD_ROOT}/etc/plc_sliceinitscripts
 
 # Install initscripts
 echo "* myplc-native: Installing initscripts"
-find plc.d | cpio -p -d -u ${RPM_BUILD_ROOT}/etc/
-install -D -m 755 guest.init ${RPM_BUILD_ROOT}/etc/init.d/plc
+find plc.d | grep -v crond | cpio -p -d -u ${RPM_BUILD_ROOT}/etc/
+install -D -m 755 plc.init ${RPM_BUILD_ROOT}/etc/init.d/plc
 
 # Install configuration file
 echo "* myplc: Installing configuration file"

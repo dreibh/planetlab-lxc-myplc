@@ -25,7 +25,7 @@ ifeq (,$(PLCSSH))
 	echo "sync: You must define PLCHOST and GUEST on the command line"
 	echo " e.g. make sync PLCHOST=private.one-lab.org GUEST=myplc01" ; exit 1
 else
-	+$(RSYNC) guest.init $(PLCSSH)/etc/init.d/plc
+	+$(RSYNC) plc.init $(PLCSSH)/etc/init.d/plc
 	+$(RSYNC) $(BINARIES) $(PLCSSH)/usr/bin
 	+$(RSYNC) $(INITS) $(PLCSSH)/etc/plc.d
 	+$(RSYNC) plc_config.py $(PLCSSH)/usr/lib/python2.4/site-packages/plc_config.py
