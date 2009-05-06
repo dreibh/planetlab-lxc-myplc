@@ -985,12 +985,12 @@ message, please reply so that we may investigate the problem.
     # Get all model names
     pcu_models = [type['model'] for type in GetPCUTypes()]
     for type in pcu_types:
-		if 'pcu_protocol_types' in type:
-        	protocol_types = type['pcu_protocol_types']
-        	# Take this value out of the struct.
-        	del type['pcu_protocol_types']
-		else:
-			protocol_types = []
+        if 'pcu_protocol_types' in type:
+            protocol_types = type['pcu_protocol_types']
+            # Take this value out of the struct.
+            del type['pcu_protocol_types']
+        else:
+            protocol_types = []
         if type['model'] not in pcu_models:
             # Add the name/model info into DB
             id = AddPCUType(type)
