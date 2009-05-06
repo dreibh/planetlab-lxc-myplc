@@ -5,7 +5,7 @@
 
 %define name myplc-release
 %define version 4.3
-%define taglevel 7
+%define taglevel 8
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -57,6 +57,10 @@ rm -rf $RPM_BUILD_ROOT
 /etc/myplc-release
 
 %changelog
+* Wed May 06 2009 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.3-8
+- remove support for chroot-based packaging - no crond nor syslog step anymore
+- plc init script now named plc.init instead of former guest.init
+
 * Mon May 04 2009 Stephen Soltesz <soltesz@cs.princeton.edu> - MyPLC-4.3-7
 - add Monitor to docs build
 
