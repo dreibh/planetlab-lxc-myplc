@@ -49,13 +49,15 @@ def main_duplicates():
     header ('Listing all duplicate accounts')
     locals = GetPersons({'peer_id':None,'-SORT':'email'})
     locals.sort(sort_email)
+    index=1
     for local in locals:
         remotes=GetPersons({'email':local['email'],'~peer_id':None})
         if remotes:
-            list_person('---',local)
+            list_person('%3d'%index,local)
             for remote in remotes:
                 list_person('dup',remote)
-
+        
+            index+=1
 def main():
     main_orphans()
     main_duplicates()
