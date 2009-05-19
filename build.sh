@@ -35,7 +35,8 @@ install -D -m 755 plc-kml.py ${RPM_BUILD_ROOT}/usr/bin/plc-kml.py
 install -D -m 755 refresh-peer.py ${RPM_BUILD_ROOT}/usr/bin/refresh-peer.py
 install -D -m 755 clean-empty-dirs.py ${RPM_BUILD_ROOT}/usr/bin/clean-empty-dirs.py
 install -D -m 755 mtail.py ${RPM_BUILD_ROOT}/usr/bin/mtail.py
-install -D -m 755 check-ssl-peering.py ${RPM_BUILD_ROOT}/usr/bin/check-ssl-peering.py
+install -D -m 755 plc-check-ssl-peering.py ${RPM_BUILD_ROOT}/usr/bin/plc-check-ssl-peering.py
+install -D -m 755 plc-orphan-accounts.py ${RPM_BUILD_ROOT}/usr/bin/plc-orphan-accounts.py
 # Extra scripts (mostly for mail and dns) not installed by myplc by default.  Used in production
 echo "* myplc-native: installing scripts in /etc/support-scripts"
 mkdir -p ${RPM_BUILD_ROOT}/etc/support-scripts

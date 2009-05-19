@@ -191,7 +191,8 @@ fi
 /usr/bin/refresh-peer.py*
 /usr/bin/clean-empty-dirs.py*
 /usr/bin/mtail.py*
-/usr/bin/check-ssl-peering.py*
+/usr/bin/plc-check-ssl-peering.py*
+/usr/bin/plc-orphan-accounts.py.py*
 /usr/share/myplc
 
 %changelog
