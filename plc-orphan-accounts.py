@@ -5,8 +5,16 @@
 
 import time
 
+# sort filters look broken
+def sort_email (p1,p2):
+    if p1['email'] == p2['email']: return 0
+    if p1['email'] < p2['email'] : return -1
+    return 1
+
 def get_orphans ():
-    return [p for p in GetPersons({'peer_id':None,'-SORT':'email'}) if not p['site_ids'] ]
+    orphans = [p for p in GetPersons({'peer_id':None,'-SORT':'email'}) if not p['site_ids'] ]
+    orphans.sort(sort_email)
+    return orphans
 
 def list_person (margin,p):
     print margin,'%6d'%p['person_id'], time.asctime(time.gmtime(p['date_created'])),
@@ -39,7 +47,9 @@ def main_orphans ():
 def main_duplicates():
 
     header ('Listing all duplicate accounts')
-    for local in GetPersons({'peer_id':None,'-SORT':'email'}):
+    locals = GetPersons({'peer_id':None,'-SORT':'email'})
+    locals.sort(sort_email)
+    for local in locals:
         remotes=GetPersons({'email':local['email'],'~peer_id':None})
         if remotes:
             list_person('---',local)
