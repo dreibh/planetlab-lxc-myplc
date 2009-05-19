@@ -21,6 +21,7 @@ def main ():
     
     orphans = get_orphans()
     print GetPeerName(),' ---  %d  --- '%len(orphans),'orphan accounts'
+    print time.asctime(time.gmtime())
     print '---'
     index=1
     for p in orphans:
