@@ -26,7 +26,7 @@ def main ():
         list_person ("%3d"%index,p)
         for related in get_related(p['email']):
             list_person("---",related)
-        index++
+        index+=1
     
 if __name__ == '__main__':
     main()
