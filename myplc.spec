@@ -5,7 +5,7 @@
 
 %define name myplc
 %define version 4.3
-%define taglevel 10
+%define taglevel 9
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -192,13 +192,10 @@ fi
 /usr/bin/clean-empty-dirs.py*
 /usr/bin/mtail.py*
 /usr/bin/plc-check-ssl-peering.py*
-/usr/bin/plc-orphan-accounts.py.py*
+/usr/bin/plc-orphan-accounts.py*
 /usr/share/myplc
 
 %changelog
-* Fri May 15 2009 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.3-10
-- tighter right permissions on site_admin's authorized keys for more robustness
-
 * Wed May 06 2009 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.3-9
 - fix issue in db-config that prevented correct operation
 
