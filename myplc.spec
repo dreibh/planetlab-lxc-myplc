@@ -5,7 +5,7 @@
 
 %define name myplc
 %define version 4.3
-%define taglevel 9
+%define taglevel 11
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -196,6 +196,9 @@ fi
 /usr/share/myplc
 
 %changelog
+* Tue May 19 2009 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.3-11
+- first draft of plc-orpha-accounts.py, and rename check-ssl-peering into plc-<>
+
 * Wed May 06 2009 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.3-9
 - fix issue in db-config that prevented correct operation
 
