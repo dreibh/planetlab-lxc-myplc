@@ -3,8 +3,6 @@
 # Interactively prompts for variable values
 # expected arguments are
 # command -d [default-xml [custom-xml [ consolidated-xml ]]]
-#
-# -d is for the myplc-devel package
 
 # we use 3 instances of PLCConfiguration throughout:
 # cdef : models the defaults, from plc_default.xml
@@ -27,9 +25,6 @@ release_rev = "$Revision$"
 
 
 flavours={}
-flavours["plc-devel"]={'service':"plc-devel",
-                       'usual_variables':["PLC_DEVEL_FEDORA_URL","PLC_DEVEL_CVSROOT"],
-                       'config_dir':"/plc/devel/data/etc/planetlab"}
 
 def noop_validator(v):
     pass
@@ -62,7 +57,7 @@ flavours["plc"]={'service':"plc",
 
 defined_flavour = "plc"
 
-
+# historically we could also configure the devel pkg....
 def init_flavour (flavour):
     global service, usual_variables
     
@@ -108,10 +103,6 @@ def usage ():
 \t default-xml defaults to %s
 \t site-xml defaults to %s
 \t consolidated-xml defaults to %s""" % (def_default_config,def_site_config, def_consolidated_config)
-    command_usage += """
-  Unless you specify the -d option, meaning you want to configure
-  myplc-devel instead of regular myplc, in which case""" 
-    init_flavour ("plc-devel")
     command_usage +="""
 \t default-xml defaults to %s
 \t site-xml defaults to %s
@@ -482,12 +473,10 @@ def main ():
     save = True
     parser = OptionParser(usage=usage(), version="%prog 1.0")
     parser.set_defaults(flavour="plc",
-                        devel=False,
                         config="flavour.config",
                         config_dir=None,
                         service=None,
                         usual_variables=[])
-    parser.add_option("-d","",dest="devel",action="store_true",help="Sets the configuration flavour")
     parser.add_option("","--configdir",dest="config_dir",help="specify configuration directory")
     parser.add_option("","--service",dest="service",help="specify /etc/init.d style service name")
     parser.add_option("","--usual_variable",dest="usual_variables",action="append", help="add a usual variable")
@@ -497,10 +486,6 @@ def main ():
     if len(args)>3:
         parser.error("too many arguments")
 
-    # if -d then set flavour to "plc-devel"
-    if config.devel:
-        config.flavour="plc-devel"
-        
     if config.flavour not in flavours:
         if config.service==None:
             parser.error("unknown flavour '%s'" % config.flavour)
