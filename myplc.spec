@@ -58,6 +58,7 @@ Requires: PLCWWW
 Requires: www-register-wizard
 Requires: nodeconfig
 Requires: PLCAPI
+Requires: monitor-pcucontrol
 Requires: bootstrapfs-%{pldistro}-%{_arch}
 Requires: myplc-docs
 Requires: myplc-release
