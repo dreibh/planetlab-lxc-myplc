@@ -929,6 +929,18 @@ message, please reply so that we may investigate the problem.
     
     ### Setup Initial PCU information
 	pcu_types = [
+			 {'model': 'HPiLO',
+			  'name': 'HP iLO v1 or v2 (Integrated Lights-Out)', },
+
+			 {'model': 'IntelAMT',
+			  'name': 'Intel AMT v2.5 or v3.0 (Active Management Technology)', },
+
+			 {'model': 'DRAC',
+			  'name': 'DRAC - Dell RAC Version 3 or 4', },
+
+			 {'model': 'IPMI',
+			  'name': 'OpenIPMI - Intelligent Platform Management Interface', },
+
 			 {'model': 'APCControl12p3',
 		  	  'name': 'APC AP79xx or Masterswitch (sequence 1-2-port-3)', },
 			 {'model': 'APCControl1p4',
@@ -956,21 +968,10 @@ message, please reply so that we may investigate the problem.
 
 			 {'model': 'IPAL', 
 			  'name': 'IPAL - Dataprobe IP-41x & IP-81x', },
-			 {'model': 'DRAC',
-			  'name': 'DRAC - Dell RAC Version 3 or 4', },
 			 {'model': 'ePowerSwitchNew',
 			  'name': 'ePowerSwitch Newer Models 1/4/8x', },
 			 {'model': 'ePowerSwitchOld',
 			  'name': 'ePowerSwitch Older Models 1/4/8x', },
-
-			 {'model': 'HPiLO',
-			  'name': 'HP iLO v1 or v2 (Integrated Lights-Out)', },
-
-			 {'model': 'IntelAMT',
-			  'name': 'Intel AMT v2.5 or v3.0 (Active Management Technology)', },
-
-			 {'model': 'IPMI',
-			  'name': 'OpenIPMI - Intelligent Platform Management Interface', },
 
 			 {'model': 'PM211MIP',
 			  'name': 'Infratec PM221-MIP', },
