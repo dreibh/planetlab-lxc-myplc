@@ -5,7 +5,7 @@
 
 %define name myplc
 %define version 4.3
-%define taglevel 13
+%define taglevel 14
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -197,6 +197,10 @@ fi
 /usr/share/myplc
 
 %changelog
+* Mon Jun 15 2009 Stephen Soltesz <soltesz@cs.princeton.edu> - MyPLC-4.3-14
+- update PCU Type descriptions.
+- updates to init scripts
+
 * Wed Jun 03 2009 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.3-13
 - requires monitor-pcucontrol so register-wizard can work
 
