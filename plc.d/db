@@ -175,8 +175,9 @@ EOF
 	;;
 
     stop)
-	MESSAGE=$"Ignoring request to stop myplc databases"
-	result "$MESSAGE"
+	MESSAGE="Ignoring request to stop myplc databases"
+	dialog "$MESSAGE"
+	result ""
 	;;
 
     *)

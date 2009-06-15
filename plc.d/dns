@@ -23,7 +23,7 @@ set -x
 case "$1" in
     start)
 	if [ $PLC_DNS_ENABLED -eq 1 ] ; then
-	    MESSAGE=$"Starting DNS server"
+	    MESSAGE="Starting DNS server"
 	    dialog "$MESSAGE"
 
 	    dns-config
@@ -32,7 +32,7 @@ case "$1" in
 
 	# Set up nameservers
 	if [ -n "$PLC_NET_DNS1" -o -n "$PLC_NET_DNS2" ] ; then
-	    MESSAGE=$"Configuring resolv.conf"
+	    MESSAGE="Configuring resolv.conf"
 	    dialog "$MESSAGE"
 
 	    rfile=$(mktemp)
@@ -63,9 +63,9 @@ case "$1" in
 	;;
 
     stop)
-	MESSAGE=$"Reverting /etc/resolv.conf and /etc/hosts"
-	dialog "$MESSAGE"
 	if [ $PLC_DNS_ENABLED -eq 1 ] ; then
+	    MESSAGE=$"Reverting /etc/resolv.conf"
+	    dialog "$MESSAGE"
 	    if [ -f "/etc/plc_resolv.conf" ] ; then
 		ourfile=$(grep "$SIGNATURE" /etc/plc_resolv.conf| wc -l)
 		if [ $ourfile -ne 0 ] ; then 
@@ -73,21 +73,30 @@ case "$1" in
 		fi
 		mv -f /etc/plc_resolv.conf /etc/resolv.conf
 	    fi
+	    check
+	    result ""
+	    MESSAGE=$"Removing /etc/plc_hosts"
+	    dialog "$MESSAGE"
 	    [ -f "/etc/plc_hosts" ] && rm -f /etc/plc_hosts
+	    check
+	    result ""
 	fi
 	if [ $PLC_DNS_ENABLED -eq 0 -a -f "/etc/resolv_plc.backup" ] ; then
+	    MESSAGE="Restoring /etc/resolv.conf"
 	    mv -f /etc/resolv_plc.backup /etc/resolv.conf
+	    check
+	    dialog "$MESSAGE"
+	    result ""
 	fi
 
 	if [ $PLC_DNS_ENABLED -eq 1 ] ; then
-	    MESSAGE=$"Stopping DNS server"
+	    MESSAGE="Stopping DNS server"
 	    dialog "$MESSAGE"
-
 	    killproc plc_dnsmasq
 	    check
+	    result ""
 	fi
 
-	result "$MESSAGE"
 	;;
 esac
 

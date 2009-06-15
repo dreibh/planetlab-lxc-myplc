@@ -51,6 +51,7 @@ case "$1" in
 	if [ -f /etc/hosts_plc.backup ] ; then
 	    mv -f /etc/hosts_plc.backup /etc/hosts
 	fi
+	dialog "$MESSAGE"
 	result "$MESSAGE"
 	;;
 esac
