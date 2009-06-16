@@ -24,43 +24,96 @@ release_id = "$Id$"
 release_rev = "$Revision$"
 release_url = "$URL$"
 
-def validator (validated_variables):
+flavours={}
+
+def noop_validator(v):
+    pass
+
+def plc_validator(validated_variables):
     maint_user = validated_variables["PLC_API_MAINTENANCE_USER"]
     root_user = validated_variables["PLC_ROOT_USER"]
     if maint_user == root_user:
         raise ConfigurationException("PLC_API_MAINTENANCE_USER=%s cannot be the same as PLC_ROOT_USER=%s"%(maint_user,root_user))
 
+flavours["plc"]={'service':"plc",
+                 'usual_variables':["PLC_NAME",
+                                    "PLC_SHORTNAME",
+                                    "PLC_SLICE_PREFIX",
+                                    "PLC_ROOT_USER",
+                                    "PLC_ROOT_PASSWORD",
+                                    "PLC_MAIL_ENABLED",
+                                    "PLC_MAIL_SUPPORT_ADDRESS",
+                                    "PLC_DB_HOST",
+                                    "PLC_API_HOST",
+                                    "PLC_WWW_HOST",
+                                    "PLC_BOOT_HOST",
+                                    "PLC_NET_DNS1",
+                                    "PLC_NET_DNS2",
+                                    ],
+                 'config_dir':"/etc/planetlab",
+                 'validate_variables':{"PLC_API":"MAINTENANCE_USER","PLC":"ROOT_USER"},
+                 'validator':plc_validator,
+                 }
+
+defined_flavour = "plc"
+
 # historically we could also configure the devel pkg....
-globals = {
-    'def_default_config' : "/etc/planetlab/default_config.xml",
-    'def_site_config' : "/etc/planetlab/configs/site.xml",
-    'def_consolidated_config' : "/etc/planetlab/plc_config.xml",
-    'usual_variables': ["PLC_NAME",
-                        "PLC_SHORTNAME",
-                        "PLC_SLICE_PREFIX",
-                        "PLC_ROOT_USER",
-                        "PLC_ROOT_PASSWORD",
-                        "PLC_MAIL_ENABLED",
-                        "PLC_MAIL_SUPPORT_ADDRESS",
-                        "PLC_DB_HOST",
-                        "PLC_API_HOST",
-                        "PLC_WWW_HOST",
-                        "PLC_BOOT_HOST",
-                        "PLC_NET_DNS1",
-                        "PLC_NET_DNS2",
-                        ],
-    }
+def init_flavour (flavour):
+    global service, usual_variables
+    
+    global defined_flavour
+    if flavours.has_key(flavour):
+        defined_flavour = flavour
+    else:
+        defined_flavour = "plc"
+
+    flav=flavours.get(flavour,flavours["plc"])
+    service=flav["service"]
+    usual_variables=flav["usual_variables"]
+    config_dir=flav["config_dir"]
+
+    global def_default_config, def_site_config, def_consolidated_config
+    def_default_config= "%s/default_config.xml" % config_dir
+    def_site_config = "%s/configs/site.xml" % config_dir
+    def_consolidated_config = "%s/%s_config.xml" % (config_dir, service)
+
+    global mainloop_usage
+    mainloop_usage= """Available commands:
+ Uppercase versions give variables comments, when available
+ u/U\t\t\tEdit usual variables
+ w/W\t\t\tWrite / Write & reload
+ r\t\t\tRestart %s service
+ q\t\t\tQuit (without saving)
+ h/?\t\t\tThis help
+---
+ l/L [<cat>|<var>]\tShow Locally modified variables/values
+ s/S [<cat>|<var>]\tShow variables/values (all, in category, single)
+ e/E [<cat>|<var>]\tEdit variables (all, in category, single)
+---
+ c\t\t\tList categories
+ v/V [<cat>|<var>]List Variables (all, in category, single)
+---
+Typical usage involves: u, [l,] w, r, q
+""" % service
 
 def usage ():
     command_usage="%prog [options] [default-xml [site-xml [consolidated-xml]]]"
-    global globals
+    init_flavour ("plc")
     command_usage +="""
 \t default-xml defaults to %s
 \t site-xml defaults to %s
-\t consolidated-xml defaults to %s""" % (globals['def_default_config'],
-                                         globals['def_site_config'], 
-                                         globals['def_consolidated_config'])
+\t consolidated-xml defaults to %s""" % (def_default_config,def_site_config, def_consolidated_config)
     return command_usage
+
+####################
+variable_usage= """Edit Commands :
+#\tShow variable comments
+.\tStops prompting, return to mainloop
+/\tCleans any site-defined value, reverts to default
+=\tShows default value
+>\tSkips to next category
+?\tThis help
+"""
 
 ####################
 def get_value (config,  category_id, variable_id):
@@ -133,6 +186,7 @@ def print_category (config, cid, show_comments=True):
 
 ####################
 def consolidate (default_config, site_config, consolidated_config):
+    global service
     try:
         conso = PLCConfiguration (default_config)
         conso.load (site_config)
@@ -144,14 +198,16 @@ def consolidate (default_config, site_config, consolidated_config):
                                               consolidated_config))
 
 def reload_service ():
-    os.system("set -x ; service plc reload")
+    global service
+    os.system("set -x ; service %s reload" % service)
         
 ####################
 def restart_service ():
-    print ("==================== Stopping plc" )
-    os.system("service plc stop" )
-    print ("==================== Starting plc" )
-    os.system("service plc start")
+    global service
+    print ("==================== Stopping %s" % service)
+    os.system("service %s stop" % service)
+    print ("==================== Starting %s" % service)
+    os.system("service %s start" % service)
 
 ####################
 def prompt_variable (cdef, cread, cwrite, category, variable,
@@ -187,14 +243,6 @@ def prompt_variable (cdef, cread, cwrite, category, variable,
         elif (answer == "#"):
             print_name_comments(cread,category_id,variable_id)
         elif (answer == "?"):
-            variable_usage = """Edit Commands :
-#\tShow variable comments
-.\tStops prompting, return to mainloop
-/\tCleans any site-defined value, reverts to default
-=\tShows default value
->\tSkips to next category
-?\tThis help
-"""
             print variable_usage.strip()
         elif (answer == "="):
             print ("%s defaults to %s" %(varname,default_value))
@@ -284,6 +332,7 @@ matcher_mainloop_0arg=re.compile(re_mainloop_0arg)
 matcher_mainloop_1arg=re.compile(re_mainloop_1arg)
 
 def mainloop (cdef, cread, cwrite, default_config, site_config, consolidated_config):
+    global service
     while True:
         try:
             answer = raw_input("Enter command (u for usual changes, w to save, ? for help) ").strip()
@@ -294,23 +343,6 @@ def mainloop (cdef, cread, cwrite, default_config, site_config, consolidated_con
             sys.exit()
 
         if (answer == "") or (answer in "?hH"):
-            mainloop_usage = """Available commands:
- Uppercase versions give variables comments, when available
- u/U\t\t\tEdit usual variables
- w/W\t\t\tWrite / Write & reload
- r\t\t\tRestart plc service
- q\t\t\tQuit (without saving)
- h/?\t\t\tThis help
----
- l/L [<cat>|<var>]\tShow Locally modified variables/values
- s/S [<cat>|<var>]\tShow variables/values (all, in category, single)
- e/E [<cat>|<var>]\tEdit variables (all, in category, single)
----
- c\t\t\tList categories
- v/V [<cat>|<var>]List Variables (all, in category, single)
----
-Typical usage involves: u, [l,] w, r, q
-"""
             print mainloop_usage
             continue
         groups_parse = matcher_mainloop_0arg.match(answer)
@@ -356,8 +388,9 @@ Typical usage involves: u, [l,] w, r, q
             global defined_flavour
             try:
                 # Confirm that various constraints are met before saving file.
-                validate_variables = {"PLC_API":"MAINTENANCE_USER","PLC":"ROOT_USER"}
+                validate_variables = flavours[defined_flavour].get('validate_variables',{})
                 validated_variables = cwrite.verify(cdef, cread, validate_variables)
+                validator = flavours[defined_flavour].get('validator',noop_validator)
                 validator(validated_variables)
                 cwrite.save(site_config)
             except ConfigurationException, e:
@@ -367,13 +400,13 @@ Typical usage involves: u, [l,] w, r, q
                 print traceback.print_exc()
                 print ("Could not save -- fix write access on %s" % site_config)
                 break
-            print "Wrote",site_config
+            print ("Wrote %s" % site_config)
             consolidate(default_config, site_config, consolidated_config)
-            print "You might want to type 'r' (restart plc), 'R' (reload plc) or 'q' (quit)"
+            print ("You might want to type 'r' (restart %s), 'R' (reload %s) or 'q' (quit)" % \
+                   (service,service))
         elif (command == "u"):
             try:
-                global globals
-                for varname in globals['usual_variables']:
+                for varname in usual_variables:
                     (category,variable) = cdef.locate_varname(varname)
                     prompt_variable(cdef, cread, cwrite, category, variable, False)
             except Exception, inst:
@@ -419,11 +452,11 @@ def check_dir (config_file):
         try:
             os.makedirs(dirname,0755)
         except OSError, e:
-            print "Cannot create dir %s for file %s - error=[%s] - exiting" % (dirname,config_file,e)
+            print "Cannot create dir %s due to %s - exiting" % (dirname,e)
             sys.exit(1)
             
         if (not os.path.exists (dirname)):
-            print "Cannot create dir %s for file %s - exiting" % (dirname,config_file)
+            print "Cannot create dir %s - exiting" % dirname
             sys.exit(1)
         else:
             print "Created directory %s" % dirname
@@ -431,16 +464,52 @@ def check_dir (config_file):
 ####################
 def main ():
 
-    parser = OptionParser(usage=usage(), version="%prog " + release_rev + release_url)
+    command=sys.argv[0]
+    argv = sys.argv[1:]
+    save = True
+    parser = OptionParser(usage=usage(), version="%prog 1.0" + release_rev + release_url )
+    parser.set_defaults(flavour="plc",
+                        config="flavour.config",
+                        config_dir=None,
+                        service=None,
+                        usual_variables=[])
+    parser.add_option("","--configdir",dest="config_dir",help="specify configuration directory")
+    parser.add_option("","--service",dest="service",help="specify /etc/init.d style service name")
+    parser.add_option("","--usual_variable",dest="usual_variables",action="append", help="add a usual variable")
+    parser.add_option("","--flavour",dest="flavour", help="Sets the configuration flavour")
+
     (config,args) = parser.parse_args()
     if len(args)>3:
         parser.error("too many arguments")
 
-    # use any provided arg as advertised
-    global globals
-    (default_config,site_config,consolidated_config) = (globals['def_default_config'],
-                                                        globals['def_site_config'],
-                                                        globals['def_consolidated_config'])
+    if config.flavour not in flavours:
+        if config.service==None:
+            parser.error("unknown flavour '%s'" % config.flavour)
+        else:
+            flavours[config.flavour]={}
+            flavour=flavours[config.flavour]
+            flavour['service']=config.service
+            flavour['usual_variables']=config.usual_variables
+            if config.config_dir==None:
+                flavour['config_dir']="/etc/%s"%config.service
+            else:
+                flavour['config_dir']=config.config_dir
+    else:
+        flavour=flavours[config.flavour]
+
+        # in case the config dir should be something other than /etc/planetlab
+        if config.config_dir <> None:
+            flavour['config_dir']=config.config_dir
+
+        # add in new usual_variables defined on the command line
+        for usual_variable in config.usual_variables:
+            if usual_variable not in flavour['usual_variables']:
+                flavour['usual_variables'].append(usual_variable)
+
+    # intialize flavour
+    init_flavour(config.flavour)
+
+    (default_config,site_config,consolidated_config) = (def_default_config, def_site_config, def_consolidated_config)
     if len(args) >= 1:
         default_config=args[0]
     if len(args) >= 2:
