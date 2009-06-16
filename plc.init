@@ -133,7 +133,7 @@ fi
 # Get command
 shift $(($OPTIND - 1))
 if [ -z "$1" ] ; then
-    usage
+    usage >&3
 fi
 command=$1
 
