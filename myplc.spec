@@ -5,7 +5,7 @@
 
 %define name myplc
 %define version 4.3
-%define taglevel 14
+%define taglevel 15
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -197,6 +197,20 @@ fi
 /usr/share/myplc
 
 %changelog
+* Tue Jun 23 2009 Marc Fiuczynski <mef@cs.princeton.edu> - MyPLC-4.3-15
+- - Fix /etc/init.d/plc to have command usage show up on the tty rather
+- than the log file
+- - Fix db-config to be a bit more cautious when
+- /etc/planetlab/db-config.d doesn't exist
+- - Clean up db-config approach to ignore .bak, *~, .rpm{save,new}, and
+- .orig files.
+- - Refactor generic plc-config-tty code into plc_config.py.
+- plc-config-tty now contains MyPLC specific paths, "usual" variables,
+- and the list of validated variables and the corresponding
+- validator() function. This refactoring lets one reuse plc_config.py
+- as a generic cmdline configuration tool for highly customer MyPLC
+- like software.
+
 * Mon Jun 15 2009 Stephen Soltesz <soltesz@cs.princeton.edu> - MyPLC-4.3-14
 - update PCU Type descriptions.
 - updates to init scripts
