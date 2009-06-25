@@ -1019,19 +1019,20 @@ message, please reply so that we may investigate the problem.
     #        DeleteBootState(state)
 
     # Run local db-config snippets
-    files = []
     dir = "/etc/planetlab/db-config.d"
-    try:
-        if os.path.exits(dir):
+    if os.path.exists(dir):
+        try:
+            files = []
             files = os.listdir(dir)
-    except:
-        pass
-
-    ignored = (".bak","~",".rpmsave",".rpmnew",".orig")
-    for file in files:
-        for ignore in ignored:
-            if file.endswith(ignore): continue
-        execfile(os.path.join(dir, file))
+        except OSError, e:
+            raise Exception, "Error when opening %s (%s)" % \
+                  (os.path.join(dir, file), e)
+            
+        ignored = (".bak","~",".rpmsave",".rpmnew",".orig")
+        for file in files:
+            for ignore in ignored:
+                if file.endswith(ignore): continue
+            execfile(os.path.join(dir, file))
 
 if __name__ == '__main__':
     main()
