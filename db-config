@@ -1030,9 +1030,13 @@ message, please reply so that we may investigate the problem.
             
         ignored = (".bak","~",".rpmsave",".rpmnew",".orig")
         for file in files:
+            shouldIgnore = False
             for ignore in ignored:
-                if file.endswith(ignore): continue
-            execfile(os.path.join(dir, file))
+                if file.endswith(ignore):
+                    shouldIgnore = True
+                    break
+            if not shouldIgnore:
+                execfile(os.path.join(dir, file))
 
 if __name__ == '__main__':
     main()
