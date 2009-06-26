@@ -5,7 +5,7 @@
 
 %define name myplc
 %define version 4.3
-%define taglevel 15
+%define taglevel 16
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -197,6 +197,9 @@ fi
 /usr/share/myplc
 
 %changelog
+* Fri Jun 26 2009 Marc Fiuczynski <mef@cs.princeton.edu> - MyPLC-4.3-16
+- Handle db-config.d files properly.
+
 * Tue Jun 23 2009 Marc Fiuczynski <mef@cs.princeton.edu> - MyPLC-4.3-15
 - - Fix /etc/init.d/plc to have command usage show up on the tty rather
 - than the log file
