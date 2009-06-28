@@ -938,7 +938,7 @@ message, please reply so that we may investigate the problem.
 			 {'model': 'DRAC',
 			  'name': 'DRAC - Dell Remote Access Control (all versions)', },
 
-			 {'model': 'IPMI',
+			 {'model': 'OpenIPMI',
 			  'name': 'OpenIPMI - Intelligent Platform Management Interface', },
 
 			 {'model': 'APCControl12p3',
