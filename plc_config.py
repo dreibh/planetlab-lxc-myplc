@@ -13,7 +13,6 @@
 import codecs
 import os
 import re
-import readline
 import sys
 import textwrap
 import time
@@ -847,7 +846,7 @@ class TrimTextElement(xml.dom.minidom.Element):
 ####################
 # GLOBAL VARIABLES
 #
-release_id = "$Id:$"
+release_id = "$Id$"
 release_rev = "$Revision:$"
 release_url = "$URL:$"
 
