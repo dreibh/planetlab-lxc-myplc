@@ -1,4 +1,4 @@
->#!/usr/bin/python
+#!/usr/bin/python
 #
 # Merge PlanetLab Central (PLC) configuration files into a variety of
 # output formats. These files represent the global configuration for a
@@ -847,8 +847,8 @@ class TrimTextElement(xml.dom.minidom.Element):
 # GLOBAL VARIABLES
 #
 release_id = "$Id$"
-release_rev = "$Revision:$"
-release_url = "$URL:$"
+release_rev = "$Revision$"
+release_url = "$URL$"
 
 g_configuration=None
 usual_variables=None
