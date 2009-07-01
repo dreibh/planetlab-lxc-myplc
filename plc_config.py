@@ -1,4 +1,4 @@
-#!/usr/bin/python
+>#!/usr/bin/python
 #
 # Merge PlanetLab Central (PLC) configuration files into a variety of
 # output formats. These files represent the global configuration for a
@@ -1260,7 +1260,7 @@ def check_dir (config_file):
                 
 ####################
 def optParserSetup(configuration):
-    parser = OptionParser(usage=usage(), version="%prog 1.0" + release_rev + release_url )
+    parser = OptionParser(usage=usage(), version="%prog " + release_rev + release_url )
     parser.set_defaults(config_dir=configuration['config_dir'],
                         service=configuration['service'],
                         usual_variables=configuration['usual_variables'])
