@@ -173,6 +173,12 @@ def main():
          'category' : 'slice/config',
          'min_role_id': 10},
 
+        # IP Addresses for a Slice
+        {'tagname': "ip_addresses",
+         'description': "Add an ip address to a slice/sliver.",
+         'category' : 'slice/rspec',
+         'min_role_id': 10},
+
         # CPU share
         {'tagname': "cpu_pct",
          'description': "Reserved CPU percent",
