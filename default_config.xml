@@ -585,16 +585,58 @@ $Id$
           <value></value>
           <description>The IP address of the monitor server.</description>
         </variable>
-        <variable id="email" type="email">
+        <variable id="from_email" type="email">
           <name>Monitor Email Address</name>
           <value>root+monitor@localhost.localdomain</value>
-          <description>The source address for all out-going messages from Monitor.</description>
+          <description>All messages from Monitor will appear to come from this address.</description>
+        </variable>
+        <variable id="cc_email" type="email">
+          <name>CC Email Address</name>
+          <value>root+monitor@localhost.localdomain</value>
+          <description>All messages from Monitor will be copied to this address.</description>
+        </variable>
+        <variable id="rt_queue" type="email">
+          <name>Queue Name in RT for new messages</name>
+          <value>support</value>
+          <description>All messages from Monitor will be copied to this address.</description>
         </variable>
         <variable id="dbpassword" type="password">
           <name>Database Password</name>
           <value></value>
           <description>The password to use when accessing the
           database, Monitor user account in the local PLC.</description>
+        </variable>
+      </variablelist>
+    </category>
+    <category id="plc_rt">
+      <name>RT Configuration</name>
+      <description>RT</description>
+      <variablelist>
+        <variable id="enabled" type="boolean">
+          <name>Enabled</name>
+          <value>false</value>
+          <description>Enable on this machine.</description>
+        </variable>
+        <variable id="host" type="hostname">
+          <name>Hostname</name>
+          <value>localhost.localdomain</value>
+          <description>The fully qualified hostname.</description>
+        </variable>
+        <variable id="ip" type="ip">
+          <name>IP Address</name>
+          <value/>
+          <description>The IP address of the RT server.</description>
+        </variable>
+        <variable id="web_user" type="string">
+          <name>root</name>
+          <value>localhost.localdomain</value>
+          <description>Username of a privileged user in RT who can create
+		  tickets in the queue named PLC_MONITOR_RT_QUEUE.</description>
+        </variable>
+        <variable id="web_password" type="password">
+          <name>password</name>
+          <value>password</value>
+          <description>Password for RT web user.</description>
         </variable>
       </variablelist>
     </category>
