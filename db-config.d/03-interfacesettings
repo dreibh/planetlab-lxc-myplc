@@ -1,0 +1,62 @@
+#################### interface settings
+# xxx this should move to PLC/Accessors
+
+# Setup default slice attribute types
+setting_types = \
+[
+    {'category' : "interface/general",
+     'tagname' : "ifname",
+     'description': "Set interface name, instead of eth0 or the like",
+     'min_role_id' : 40},
+
+    {'category' : "interface/multihome",
+     'tagname' : "alias",
+     'description': "Specifies that the network is used for multihoming",
+     'min_role_id' : 40},
+    
+    {'category' : "interface/hidden",
+     'tagname' : "backdoor",
+     'description': "For testing new settings",
+     'min_role_id' : 10},
+    ] + [
+
+    { 'category' : "interface/wifi",
+      'tagname' : x,
+      'description' : "802.11 %s -- see %s"%(y,z),
+      'min_role_id' : 40 } for (x,y,z) in [
+
+    ("mode","Mode","iwconfig"),
+
+    ("essid","ESSID","iwconfig"),
+
+    ("nw","Network Id","iwconfig"),
+
+    ("freq","Frequency","iwconfig"),
+
+    ("channel","Channel","iwconfig"),
+
+    ("sens","sensitivity threshold","iwconfig"),
+
+    ("rate","Rate","iwconfig"),
+
+    ("key","key","iwconfig key"),
+
+    ("key1","key1","iwconfig key [1]"),
+
+    ("key2","key2","iwconfig key [2]"),
+
+    ("key3","key3","iwconfig key [3]"),
+
+    ("key4","key4","iwconfig key [4]"),
+
+    ("securitymode","Security mode","iwconfig enc"),
+
+    ("iwconfig","Additional parameters to iwconfig","ifup-wireless"),
+
+    ("iwpriv","Additional parameters to iwpriv","ifup-wireless"),
+
+    ]
+    ]
+
+for setting_type in setting_types:
+    SetTagType(setting_type)

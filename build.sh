@@ -37,23 +37,34 @@ install -D -m 755 clean-empty-dirs.py ${RPM_BUILD_ROOT}/usr/bin/clean-empty-dirs
 install -D -m 755 mtail.py ${RPM_BUILD_ROOT}/usr/bin/mtail.py
 install -D -m 755 plc-check-ssl-peering.py ${RPM_BUILD_ROOT}/usr/bin/plc-check-ssl-peering.py
 install -D -m 755 plc-orphan-accounts.py ${RPM_BUILD_ROOT}/usr/bin/plc-orphan-accounts.py
+
 # Extra scripts (mostly for mail and dns) not installed by myplc by default.  Used in production
 echo "* myplc-native: installing scripts in /etc/support-scripts"
 mkdir -p ${RPM_BUILD_ROOT}/etc/support-scripts
 cp support-scripts/* ${RPM_BUILD_ROOT}/etc/support-scripts
+chmod 444 ${RPM_BUILD_ROOT}/etc/support-scripts/*
+
 # copy initscripts to etc/plc_sliceinitscripts
 mkdir -p ${RPM_BUILD_ROOT}/etc/plc_sliceinitscripts
 cp plc_sliceinitscripts/* ${RPM_BUILD_ROOT}/etc/plc_sliceinitscripts
+chmod 444 ${RPM_BUILD_ROOT}/etc/plc_sliceinitscripts/*
 
 # Install initscripts
 echo "* myplc-native: Installing initscripts"
-find plc.d | cpio -p -d -u ${RPM_BUILD_ROOT}/etc/
 install -D -m 755 plc.init ${RPM_BUILD_ROOT}/etc/init.d/plc
+find plc.d | cpio -p -d -u ${RPM_BUILD_ROOT}/etc/
+chmod 755 ${RPM_BUILD_ROOT}/etc/plc.d/*
 
 # Install configuration file
 echo "* myplc: Installing configuration file"
 install -D -m 444 default_config.xml ${RPM_BUILD_ROOT}/etc/planetlab/default_config.xml
 install -D -m 444 plc_config.dtd ${RPM_BUILD_ROOT}/etc/planetlab/plc_config.dtd
+
+# Install db-config.d files
+echo "* myplc: Installing db-config.d files"
+mkdir -p ${RPM_BUILD_ROOT}/etc/planetlab/db-config.d
+cp db-config.d/* ${RPM_BUILD_ROOT}/etc/planetlab/db-config.d
+chmod 444 ${RPM_BUILD_ROOT}/etc/planetlab/db-config.d/*
 
 # yumgroups.xml and yum repo : let noderepo handle that
 

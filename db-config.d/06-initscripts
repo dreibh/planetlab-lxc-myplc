@@ -1,0 +1,27 @@
+#################### initscripts
+# Default Initscripts
+default_initscripts = []
+
+# get the MyPLC url
+url = GetMyPLCURL()
+
+# Find initscripts and add them to the db
+for (root, dirs, files) in os.walk("/etc/plc_sliceinitscripts"):
+    for f in files:
+        # Read the file
+        file = open(root + "/" + f, "ro")
+        script = file.read()
+        script = script.replace("@SITE@", url)
+        script = script.replace("@PREFIX@", plc['slice_prefix'])
+        name = plc['slice_prefix'] + "_" + f
+        default_initscripts.append({"name":name,"enabled":True,"script":script})
+        file.close()
+
+# Get list of existing initscripts
+oldinitscripts = GetInitScripts()
+oldinitscripts = [script['name'] for script in oldinitscripts]
+
+for initscript in default_initscripts:
+    if initscript['name'] not in oldinitscripts:
+        AddInitScript(initscript)
+

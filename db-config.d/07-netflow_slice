@@ -1,0 +1,29 @@
+# Create/update system slices
+
+# get the MyPLC url
+url = GetMyPLCURL()
+
+description = """PlanetFlow Traffic Auditing Service.
+Logs, captured in the root context using fprobe-ulogd, are stored in a
+directory in the root context which is bind mounted to the planetflow
+slice.  The Planetflow Central service then periodically rsyncs these
+logs from the planetflow slice for aggregation."""
+
+slice = \
+{
+    'name': plc['slice_prefix'] + "_netflow",
+    'description': description,
+    'url': url,
+    'instantiation': "plc-instantiated",
+    # Renew forever (minus one day, work around date conversion weirdness)
+    'expires': 0x7fffffff - (60 * 60 * 24)
+}
+    
+tags = \
+[
+    ('system', "1"),
+    ('vref', "planetflow"),
+    ('vsys', "pfmount")
+]
+
+SetSlice(slice,tags)

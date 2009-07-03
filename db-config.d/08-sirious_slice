@@ -1,0 +1,32 @@
+# Create/update system slices
+
+# get the MyPLC url
+url = GetMyPLCURL()
+
+descript = """The Sirius Calendar Service.
+
+Sirius provides system-wide reservations of CPU and outgoing
+bandwidth.  Sign up for hour-long slots using the Web GUI at the
+PlanetLab website.
+
+This slice should not generate traffic external to PlanetLab."""
+
+slice = \
+{
+    'name': plc['slice_prefix'] + "_sirius",
+    'description': description,
+    'url': url + "db/sirius/index.php",
+    'instantiation': "plc-instantiated",
+    # Renew forever (minus one day, work around date conversion weirdness)
+    'expires': 0x7fffffff - (60 * 60 * 24)
+}
+
+tags = \
+[
+    ('system', "1"),
+    ('net_min_rate', "2000"),
+    ('cpu_pct', "25"),
+    ('initscript', plc['slice_prefix'] + "_sirius")
+]
+
+SetSlice(slice,tags)

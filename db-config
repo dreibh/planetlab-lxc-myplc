@@ -14,6 +14,141 @@ from plc_config import PLCConfiguration
 import sys
 import resource
 
+g_url = ""
+def GetMyPLCURL(): return g_url
+def SetMyPLCURL(url):
+    global g_url
+    g_url = url
+
+# Get list of existing tag types
+g_known_tag_types = [tag_type['tagname'] for tag_type in GetTagTypes()]
+g_known_tag_types.sort()
+
+def SetTagType(tag_type):
+    global g_known_tag_types
+    # Create/update default slice tag types
+    if tag_type['tagname'] not in g_known_tag_types:
+        AddTagType(tag_type)
+        g_known_tag_types.append(tag_type['tagname'])
+        g_known_tag_types.sort()
+    else:
+        UpdateTagType(tag_type['tagname'], tag_type)
+
+# Get list of existing (enabled, global) files
+g_conf_files = GetConfFiles()
+g_conf_files = filter(lambda conf_file: conf_file['enabled'] and \
+                    not conf_file['node_ids'] and \
+                    not conf_file['nodegroup_ids'],
+                    g_conf_files)
+g_dests = [conf_file['dest'] for conf_file in g_conf_files]
+g_conf_files = dict(zip(g_dests, g_conf_files))
+
+def SetConfFile(conf_file):
+    global g_conf_files, g_dests
+    if conf_file['dest'] not in g_dests:
+        AddConfFile(conf_file)
+    else:
+        orig_conf_file = g_conf_files[conf_file['dest']]
+        UpdateConfFile(orig_conf_file['conf_file_id'], conf_file)
+
+def SetSlice(slice, tags):
+    # Create or Update slice
+    slices = GetSlices([slice['name']])
+    if len(slices)==1:
+        slice_id = slices[0]['slice_id']
+        UpdateSlice(slice_id, slice)
+    else:
+        AddSlice(slice)
+
+    # Get slice structure with all fields
+    slice = GetSlices([slice['name']])[0]
+
+    # Create/update all tags
+    slice_tags = {}
+    if slice['slice_tag_ids']:
+        # Delete unknown attributes
+        for slice_tag in GetSliceTags(slice['slice_tag_ids']):
+            if (slice_tag['tagname'], slice_tag['value']) not in tags:
+                DeleteSliceTag(slice_tag['slice_tag_id'])
+            else:
+                slice_tags[slice_tag['tagname']]=slice_tag['value']
+
+    # only update slice tags that have changed
+    for (name, value) in tags:
+        if name not in slice_tags:
+            AddSliceTag(slice['name'], name, value)            
+        elif value <> slice_tags[name]:
+            UpdateSliceTag(slice['name'],value)
+
+def SetMessage(message):
+    messages = GetMessages([message['message_id']])
+    if len(messages)==0:
+        AddMessage(template)
+    else:
+        UpdateMessage(message['message_id'],message)
+
+# Get all model names
+g_pcu_models = [type['model'] for type in GetPCUTypes()]
+
+def SetPCUType(pcu_type):
+    global g_pcu_models
+    if 'pcu_protocol_types' in pcu_type:
+        protocol_types = pcu_type['pcu_protocol_types']
+        # Take this value out of the struct.
+        del pcu_type['pcu_protocol_types']
+    else:
+        protocol_types = []
+
+    if pcu_type['model'] not in g_pcu_models:
+        # Add the name/model info into DB
+        id = AddPCUType(pcu_type)
+        # for each protocol, also add this.
+        for ptype in protocol_types:
+            AddPCUProtocolType(id, ptype)
+
+def GetSnippets(directory):
+    filenames = []
+    if os.path.exists(directory):
+        try:
+            filenames = os.listdir(directory)
+        except OSError, e:
+            raise Exception, "Error when opening %s (%s)" % \
+                  (os.path.join(dir, file), e)
+            
+    ignored = (".bak","~",".rpmsave",".rpmnew",".orig")
+    numberedfiles = {}
+    for filename in filenames:
+        shouldIgnore = False
+        for ignore in ignored:
+            if filename.endswith(ignore):
+                shouldIgnore = True
+                break
+
+        if not shouldIgnore:
+            parts = filename.split('-')
+            if len(parts)>=2:
+                name = '-'.join(parts)
+                try:
+                    number = int(parts[0])
+                    entry = numberedfiles.get(number,[])
+                    entry.append(name)
+                    numberedfiles[number]=entry
+                except ValueError:
+                    shouldIgnore = True
+            else:
+                shouldIgnore = True
+
+        if shouldIgnore:
+            print "db-config: ignoring %s snippet" % filename
+
+    filenames = []
+    keys = numberedfiles.keys()
+    keys.sort()
+    for k in keys:
+        for filename in numberedfiles[k]:
+            filenames.append(filename)
+    return filenames
+
 def main():
     cfg = PLCConfiguration()
     cfg.load()
@@ -22,1027 +157,13 @@ def main():
     # Load variables into dictionaries
     for category_id, (category, variablelist) in variables.iteritems():
         globals()[category_id] = dict(zip(variablelist.keys(),
-                                       [variable['value'] for variable in variablelist.values()]))
-
-    # Create/update the default administrator account (should be
-    # person_id 2).
-    admin = { 'person_id': 2,
-              'first_name': "Default",
-              'last_name': "Administrator",
-              'email': plc['root_user'],
-              'password': plc['root_password'] }
-    persons = GetPersons([admin['person_id']])
-    if not persons:
-        person_id = AddPerson(admin)
-        if person_id != admin['person_id']:
-            # Huh? Someone deleted the account manually from the database.
-            DeletePerson(person_id)
-            raise Exception, "Someone deleted the \"%s %s\" account from the database!" % \
-                  (admin['first_name'], admin['last_name'])
-        UpdatePerson(person_id, { 'enabled': True })
-    else:
-        person_id = persons[0]['person_id']
-        UpdatePerson(person_id, admin)
-
-    # Create/update the default site (should be site_id 1)
-    if plc_www['port'] == '80':
-        url = "http://" + plc_www['host'] + "/"
-    elif plc_www['port'] == '443':
-        url = "https://" + plc_www['host'] + "/"
-    else:
-        url = "http://" + plc_www['host'] + ":" + plc_www['port'] + "/"
-    site = { 'site_id': 1,
-             'name': plc['name'] + " Central",
-             'abbreviated_name': plc['name'],
-             'login_base': plc['slice_prefix'],
-             'is_public': False,
-             'url': url,
-             'max_slices': 100 }
-
-    sites = GetSites([site['site_id']])
-    if not sites:
-        site_id = AddSite(site['name'], site['abbreviated_name'], site['login_base'], site)
-        if site_id != site['site_id']:
-            DeleteSite(site_id)
-            raise Exception, "Someone deleted the \"%s\" site from the database!" % \
-                  site['name']
-        sites = [site]
-
-    # Must call UpdateSite() even after AddSite() to update max_slices
-    site_id = sites[0]['site_id']
-    UpdateSite(site_id, site)
-
-    # The default administrator account must be associated with a site
-    # in order to login.
-    AddPersonToSite(admin['person_id'], site['site_id'])
-    SetPersonPrimarySite(admin['person_id'], site['site_id'])
-
-    # Grant admin and PI roles to the default administrator account
-    AddRoleToPerson(10, admin['person_id'])
-    AddRoleToPerson(20, admin['person_id'])
-
-    #################### node tags
-    default_node_types = [
-        { 'tagname' : 'arch',
-          'description' : 'architecture name',
-          'category' : 'node/config', 
-          'min_role_id' : 40} ,
-        { 'tagname' : 'pldistro',
-          'description' : 'PlanetLab distribution',
-          'category' : 'node/config', 
-          'min_role_id' : 10} ,
-        { 'tagname' : 'deployment',
-          'description' : 'typically "alpha", "beta", or "production"',
-          'category' : 'node/operation', 
-          'min_role_id' : 10} ,
-        ]
-
-    #################### interface settings
-    # xxx this should move to PLC/Accessors
-
-    # Setup default slice attribute types
-    default_setting_types = [
-        {'category' : "interface/general",
-         'tagname' : "ifname",
-         'description': "Set interface name, instead of eth0 or the like",
-         'min_role_id' : 40},
-        {'category' : "interface/multihome",
-         'tagname' : "alias",
-         'description': "Specifies that the network is used for multihoming",
-         'min_role_id' : 40},
-
-        {'category' : "interface/hidden",
-         'tagname' : "backdoor",
-         'description': "For testing new settings",
-         'min_role_id' : 10},
-        ] + [
-        { 'category' : "interface/wifi",
-          'tagname' : x,
-          'description' : "802.11 %s -- see %s"%(y,z),
-          'min_role_id' : 40 } for (x,y,z) in [
-            ("mode","Mode","iwconfig"),
-            ("essid","ESSID","iwconfig"),
-            ("nw","Network Id","iwconfig"),
-            ("freq","Frequency","iwconfig"),
-            ("channel","Channel","iwconfig"),
-            ("sens","sensitivity threshold","iwconfig"),
-            ("rate","Rate","iwconfig"),
-            ("key","key","iwconfig key"),
-            ("key1","key1","iwconfig key [1]"),
-            ("key2","key2","iwconfig key [2]"),
-            ("key3","key3","iwconfig key [3]"),
-            ("key4","key4","iwconfig key [4]"),
-            ("securitymode","Security mode","iwconfig enc"),
-            ("iwconfig","Additional parameters to iwconfig","ifup-wireless"),
-            ("iwpriv","Additional parameters to iwpriv","ifup-wireless"),
-            ]
-        ]
-
-    #################### slice attributes
-    # xxx this should move to PLC/Accessors
-
-    # Setup default slice attribute types
-    default_attribute_types = [
-        # Slice type (only vserver is supported)
-        {'tagname': "type",
-         'description': "Type of slice (e.g. vserver)",
-         'category' : 'slice/general',
-         'min_role_id': 20},
-
-        # System slice
-        {'tagname': "system",
-         'description': "Is a default system slice (1) or not (0 or unset)",
-         'category' : 'slice/general',
-         'min_role_id': 10},
-
-        # Slice enabled (1) or suspended (0)
-        {'tagname': "enabled",
-         'description': "Slice enabled (1 or unset) or suspended (0)",
-         'category' : 'slice/general',
-         'min_role_id': 10},
-
-        # Slice reference image
-        {'tagname': "vref",
-         'description': "Reference image",
-         'category' : 'slice/config',
-         'min_role_id': 30},
-
-        # Slice initialization script
-        {'tagname': "initscript",
-         'description': "Slice initialization script",
-         'category' : 'slice/config',
-         'min_role_id': 10},
-
-        # IP Addresses for a Slice
-        {'tagname': "ip_addresses",
-         'description': "Add an ip address to a slice/sliver.",
-         'category' : 'slice/rspec',
-         'min_role_id': 10},
-
-        # CPU share
-        {'tagname': "cpu_pct",
-         'description': "Reserved CPU percent",
-         'category' : 'slice/rspec',
-         'min_role_id': 10},
-        {'tagname': "cpu_share",
-         'description': "Number of CPU shares",
-         'category' : 'slice/rspec',
-         'min_role_id': 10},
-
-        # Bandwidth limits
-        {'tagname': "net_min_rate",
-         'description': "Minimum bandwidth (kbps)",
-         'category' : 'slice/rspec',
-         'min_role_id': 10},
-        {'tagname': "net_max_rate",
-         'description': "Maximum bandwidth (kbps)",
-         'category' : 'slice/rspec',
-         'min_role_id': 10},
-        {'tagname': "net_i2_min_rate",
-         'description': "Minimum bandwidth over I2 routes (kbps)",
-         'category' : 'slice/rspec',
-         'min_role_id': 10},
-        {'tagname': "net_i2_max_rate",
-         'description': "Maximum bandwidth over I2 routes (kbps)",
-         'category' : 'slice/rspec',
-         'min_role_id': 10},
-        {'tagname': "net_max_kbyte",
-         'description': "Maximum daily network Tx KByte limit.",
-         'category' : 'slice/rspec',
-         'min_role_id': 10},
-        {'tagname': "net_thresh_kbyte",
-         'description': "KByte limit before warning and throttling.",
-         'category' : 'slice/rspec',
-         'min_role_id': 10},
-        {'tagname': "net_i2_max_kbyte",
-         'description': "Maximum daily network Tx KByte limit to I2 hosts.",
-         'category' : 'slice/rspec',
-         'min_role_id': 10},
-        {'tagname': "net_i2_thresh_kbyte",
-         'description': "KByte limit to I2 hosts before warning and throttling.",
-         'category' : 'slice/rspec',
-         'min_role_id': 10},
-        {'tagname': "net_share",
-         'description': "Number of bandwidth shares",
-         'category' : 'slice/rspec',
-         'min_role_id': 10},
-        {'tagname': "net_i2_share",
-         'description': "Number of bandwidth shares over I2 routes",
-         'category' : 'slice/rspec',
-         'min_role_id': 10},
- 
-        # Disk quota
-        {'tagname': "disk_max",
-         'description': "Disk quota (1k disk blocks)",
-         'category' : 'slice/rspec',
-         'min_role_id': 10},
-
-        # Proper operations
-        {'tagname': "proper_op",
-         'description': "Proper operation (e.g. bind_socket)",
-         'category' : 'slice/rspec',
-         'min_role_id': 10},
-
-        # VServer capabilities 
-        {'tagname': "capabilities",
-         'description': "VServer bcapabilities (separate by commas)",
-         'category' : 'slice/rspec',
-         'min_role_id': 10},
-
-        # Vsys
-        {'tagname': "vsys",
-         'description': "Bind vsys script fd's to a slice's vsys directory.",
-         'category' : 'slice/rspec',
-         'min_role_id': 10},
-
-        # CoDemux
-        {'tagname': "codemux",
-         'description': "Demux HTTP between slices using localhost ports. Value in the form 'host, localhost port'.",
-         'category' : 'slice/rspec',
-         'min_role_id': 10},
-
-        # Delegation
-        {'tagname': "delegations",
-         'description': "Coma seperated list of slices to give delegation authority to.",
-         'category' : 'slice/rspec',
-         'min_role_id': 10}
-
-        ]
-
-    # add in the platform supported rlimits to the default_attribute_types
-    for entry in resource.__dict__.keys() + ["VLIMIT_OPENFD"]:
-        if entry.find("LIMIT_")==1:
-            rlim = entry[len("RLIMIT_"):]
-            rlim = rlim.lower()
-            for ty in ("min","soft","hard"):
-                attribute = {
-                    'tagname': "%s_%s"%(rlim,ty),
-                    'description': "Per sliver RLIMIT %s_%s."%(rlim,ty),
-                    'category': 'slice/limit',
-                    'min_role_id': 10 #admin
-                    }
-                default_attribute_types.append(attribute)
-
-    # Get list of existing tag types
-    known_tag_types = [tag_type['tagname'] for tag_type in GetTagTypes()]
-
-    all_default_types = default_node_types + default_setting_types + default_attribute_types
-    # Create/update default slice tag types
-    for default_tag_type in all_default_types:
-        if default_tag_type['tagname'] not in known_tag_types:
-            AddTagType(default_tag_type)
-        else:
-            UpdateTagType(default_tag_type['tagname'], default_tag_type)
-
-    #################### conf files
-
-    # Setup default PlanetLabConf entries
-    default_conf_files = [
-        # NTP configuration
-        {'enabled': True,
-         'source': 'PlanetLabConf/ntp.conf.php',
-         'dest': '/etc/ntp.conf',
-         'file_permissions': '644',
-         'file_owner': 'root',
-         'file_group': 'root',
-         'preinstall_cmd': '',
-         'postinstall_cmd': '/etc/rc.d/init.d/ntpd restart',
-         'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False},
-        {'enabled': True,
-         'source': 'PlanetLabConf/ntp/step-tickers.php',
-         'dest': '/etc/ntp/step-tickers',
-         'file_permissions': '644',
-         'file_owner': 'root',
-         'file_group': 'root',
-         'preinstall_cmd': '',
-         'postinstall_cmd': '/etc/rc.d/init.d/ntpd restart',
-         'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False},
-
-        # SSH server configuration
-        {'enabled': True,
-         'source': 'PlanetLabConf/sshd_config',
-         'dest': '/etc/ssh/sshd_config',
-         'file_permissions': '600',
-         'file_owner': 'root',
-         'file_group': 'root',
-         'preinstall_cmd': '',
-         'postinstall_cmd': '/etc/init.d/sshd restart',
-         'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False},
-
-        # Administrative SSH keys
-        {'enabled': True,
-         'source': 'PlanetLabConf/keys.php?root',
-         'dest': '/root/.ssh/authorized_keys',
-         'file_permissions': '644',
-         'file_owner': 'root',
-         'file_group': 'root',
-         'preinstall_cmd': '',
-         'postinstall_cmd': '/bin/chmod 700 /root/.ssh',
-         'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False},
-        {'enabled': True,
-         'source': 'PlanetLabConf/keys.php?site_admin',
-         'dest': '/home/site_admin/.ssh/authorized_keys',
-         'file_permissions': '400',
-         'file_owner': 'site_admin',
-         'file_group': 'site_admin',
-         'preinstall_cmd': 'grep -q site_admin /etc/passwd',
-         'postinstall_cmd': '/bin/chmod 700 /home/site_admin/.ssh;/bin/chown site_admin:site_admin /home/site_admin/.ssh',
-         'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False},
-        # Log rotation configuration
-        {'enabled': True,
-         'source': 'PlanetLabConf/logrotate.conf',
-         'dest': '/etc/logrotate.conf',
-         'file_permissions': '644',
-         'file_owner': 'root',
-         'file_group': 'root',
-         'preinstall_cmd': '',
-         'postinstall_cmd': '',
-         'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False},
-
-        # updatedb/locate nightly cron job
-        {'enabled': True,
-         'source': 'PlanetLabConf/slocate.cron',
-         'dest': '/etc/cron.daily/slocate.cron',
-         'file_permissions': '755',
-         'file_owner': 'root',
-         'file_group': 'root',
-         'preinstall_cmd': '',
-         'postinstall_cmd': '',
-         'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False},
-
-        # YUM configuration
-        {'enabled': True,
-         'source': 'yum/myplc.repo.php?gpgcheck=1',
-         'dest': '/etc/yum.myplc.d/myplc.repo',
-         'file_permissions': '644', 'file_owner': 'root', 'file_group': 'root',
-         'preinstall_cmd': '', 'postinstall_cmd': '', 'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False},
-        {'enabled': True,
-         'source': 'yum/yum.conf',
-         'dest': '/etc/yum.conf',
-         'file_permissions': '644', 'file_owner': 'root', 'file_group': 'root',
-         'preinstall_cmd': '', 'postinstall_cmd': '', 'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False},
-        {'enabled': True,
-         'source': 'yum/stock.repo',
-         'dest': '/etc/yum.myplc.d/stock.repo',
-         'file_permissions': '644', 'file_owner': 'root', 'file_group': 'root',
-         'preinstall_cmd': '', 'postinstall_cmd': '', 'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False},
-
-        {'enabled': True,
-         'source': 'PlanetLabConf/delete-rpm-list-production',
-         'dest': '/etc/planetlab/delete-rpm-list',
-         'file_permissions': '644',
-         'file_owner': 'root',
-         'file_group': 'root',
-         'preinstall_cmd': '',
-         'postinstall_cmd': '',
-         'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False},
-
-        # PLC configuration
-        {'enabled': True,
-         'source': 'PlanetLabConf/get_plc_config.php',
-         'dest': '/etc/planetlab/plc_config',
-         'file_permissions': '644',
-         'file_owner': 'root',
-         'file_group': 'root',
-         'preinstall_cmd': '',
-         'postinstall_cmd': '',
-         'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False},
-        {'enabled': True,
-         'source': 'PlanetLabConf/get_plc_config.php?python',
-         'dest': '/etc/planetlab/plc_config.py',
-         'file_permissions': '644',
-         'file_owner': 'root',
-         'file_group': 'root',
-         'preinstall_cmd': '',
-         'postinstall_cmd': '',
-         'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False},
-        {'enabled': True,
-         'source': 'PlanetLabConf/get_plc_config.php?perl',
-         'dest': '/etc/planetlab/plc_config.pl',
-         'file_permissions': '644',
-         'file_owner': 'root',
-         'file_group': 'root',
-         'preinstall_cmd': '',
-         'postinstall_cmd': '',
-         'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False},
-        {'enabled': True,
-         'source': 'PlanetLabConf/get_plc_config.php?php',
-         'dest': '/etc/planetlab/php/plc_config.php',
-         'file_permissions': '644',
-         'file_owner': 'root',
-         'file_group': 'root',
-         'preinstall_cmd': '',
-         'postinstall_cmd': '',
-         'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False},
-
-        # Proxy ARP setup
-        {'enabled': True,
-         'source': 'PlanetLabConf/proxies.php',
-         'dest': '/etc/planetlab/proxies',
-         'file_permissions': '644',
-         'file_owner': 'root',
-         'file_group': 'root',
-         'preinstall_cmd': '',
-         'postinstall_cmd': '',
-         'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False},
-
-        # Firewall configuration
-        {'enabled': True,
-         'source': 'PlanetLabConf/blacklist.php',
-         'dest': '/etc/planetlab/blacklist',
-         'file_permissions': '600',
-         'file_owner': 'root',
-         'file_group': 'root',
-         'preinstall_cmd': '',
-         'postinstall_cmd': '/sbin/iptables-restore --noflush < /etc/planetlab/blacklist',
-         'error_cmd': '',
-         'ignore_cmd_errors': True,
-         'always_update': False},
-
-        # /etc/issue
-        {'enabled': True,
-         'source': 'PlanetLabConf/issue.php',
-         'dest': '/etc/issue',
-         'file_permissions': '644',
-         'file_owner': 'root',
-         'file_group': 'root',
-         'preinstall_cmd': '',
-         'postinstall_cmd': '',
-         'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False},
-
-        # Kernel parameters
-        {'enabled': True,
-         'source': 'PlanetLabConf/sysctl.php',
-         'dest': '/etc/sysctl.conf',
-         'file_permissions': '644',
-         'file_owner': 'root',
-         'file_group': 'root',
-         'preinstall_cmd': '',
-         'postinstall_cmd': '/sbin/sysctl -e -p /etc/sysctl.conf',
-         'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False},
-
-        # Sendmail configuration
-        {'enabled': True,
-         'source': 'PlanetLabConf/sendmail.mc',
-         'dest': '/etc/mail/sendmail.mc',
-         'file_permissions': '644',
-         'file_owner': 'root',
-         'file_group': 'root',
-         'preinstall_cmd': '',
-         'postinstall_cmd': '',
-         'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False},
-        {'enabled': True,
-         'source': 'PlanetLabConf/sendmail.cf',
-         'dest': '/etc/mail/sendmail.cf',
-         'file_permissions': '644',
-         'file_owner': 'root',
-         'file_group': 'root',
-         'preinstall_cmd': '',
-         'postinstall_cmd': 'service sendmail restart',
-         'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False},
-
-        # GPG signing keys
-        {'enabled': True,
-         'source': 'PlanetLabConf/RPM-GPG-KEY-fedora',
-         'dest': '/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora',
-         'file_permissions': '644',
-         'file_owner': 'root',
-         'file_group': 'root',
-         'preinstall_cmd': '',
-         'postinstall_cmd': 'rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-fedora',
-         'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False},
-        {'enabled': True,
-         'source': 'PlanetLabConf/get_gpg_key.php',
-         'dest': '/etc/pki/rpm-gpg/RPM-GPG-KEY-planetlab',
-         'file_permissions': '644',
-         'file_owner': 'root',
-         'file_group': 'root',
-         'preinstall_cmd': '',
-         'postinstall_cmd': 'rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-planetlab',
-         'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False},
-
-        # Ping of death configuration
-        # the 'restart' postcommand doesn't work, b/c the pod script doesn't support it.
-        {'enabled': True,
-         'source': 'PlanetLabConf/ipod.conf.php',
-         'dest': '/etc/ipod.conf',
-         'file_permissions': '644',
-         'file_owner': 'root',
-         'file_group': 'root',
-         'preinstall_cmd': '',
-         'postinstall_cmd': '/etc/init.d/pod start',
-         'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False},
-
-        # sudo configuration
-        {'enabled': True,
-         'source': 'PlanetLabConf/sudoers.php',
-         'dest': '/etc/sudoers',
-         'file_permissions': '440',
-         'file_owner': 'root',
-         'file_group': 'root',
-         'preinstall_cmd': '',
-         'postinstall_cmd': '/usr/sbin/visudo -c',
-         'error_cmd': '',
-         'ignore_cmd_errors': False,
-         'always_update': False}
-        ]
-
-    # Get list of existing (enabled, global) files
-    conf_files = GetConfFiles()
-    conf_files = filter(lambda conf_file: conf_file['enabled'] and \
-                                          not conf_file['node_ids'] and \
-                                          not conf_file['nodegroup_ids'],
-                        conf_files)
-    dests = [conf_file['dest'] for conf_file in conf_files]
-    conf_files = dict(zip(dests, conf_files))
-
-    # Create/update default PlanetLabConf entries
-    for default_conf_file in default_conf_files:
-        if default_conf_file['dest'] not in dests:
-            AddConfFile(default_conf_file)
-        else:
-            conf_file = conf_files[default_conf_file['dest']]
-            UpdateConfFile(conf_file['conf_file_id'], default_conf_file)
-
-
-    #################### initscripts
-
-    # Default Initscripts
-    default_initscripts = []
-
-    # Find initscripts and add them to the db
-    for (root, dirs, files) in os.walk("/etc/plc_sliceinitscripts"):
-        for f in files:
-            # Read the file
-            file = open(root + "/" + f, "ro")
-            default_initscripts.append({"name": plc['slice_prefix'] + "_" + f,
-                                        "enabled": True,
-                                        "script": file.read().replace("@SITE@", url).replace("@PREFIX@", plc['slice_prefix'])})
-            file.close()
-
-    # Get list of existing initscripts
-    oldinitscripts = GetInitScripts()
-    oldinitscripts = [script['name'] for script in oldinitscripts]
-
-    for initscript in default_initscripts:
-        if initscript['name'] not in oldinitscripts:  AddInitScript(initscript)
-
-    # Create/update system slices
-    default_slices = [
-         # PlanetFlow
-        {'name': plc['slice_prefix'] + "_netflow",
-         'description': "PlanetFlow Traffic Auditing Service.  Logs, captured in the root context using fprobe-ulogd, are stored in a directory in the root context which is bind mounted to the planetflow slice.  The Planetflow Central service then periodically rsyncs these logs from the planetflow slice for aggregation.",
-         'url': url,
-         'instantiation': "plc-instantiated",
-         # Renew forever (minus one day, work around date conversion weirdness)
-         'expires': 0x7fffffff - (60 * 60 * 24),
-         'attributes': [('system', "1"),
-                        ('vref', "planetflow"),
-                        ('vsys', "pfmount")]},
-          # Sirius
-        {'name': plc['slice_prefix'] + "_sirius",
-         'description': 'The Sirius Calendar Service.\n\nSirius provides system-wide reservations of 25% CPU and 2Mb/s outgoing\nbandwidth.  Sign up for hour-long slots using the Web GUI at the\nPlanetLab website.\n\nThis slice should not generate traffic external to PlanetLab.\n',
-         'url': url + "db/sirius/index.php",
-         'instantiation': "plc-instantiated",
-         # Renew forever (minus one day, work around date conversion weirdness)
-         'expires': 0x7fffffff - (60 * 60 * 24),
-         'attributes': [('system', "1"),
-                        ('net_min_rate', "2000"),
-                        ('cpu_pct', "25"),
-                        ('initscript', plc['slice_prefix'] + "_sirius")]}
-        ]
-    
-    for default_slice in default_slices:
-        attributes=default_slice.pop('attributes')
-        slices = GetSlices([default_slice['name']])
-        if slices:
-            slice = slices[0]
-            UpdateSlice(slice['slice_id'], default_slice)
-        else:
-            AddSlice(default_slice)
-            slice = GetSlices([default_slice['name']])[0]
-
-        # Create/update all attributes
-        slice_tags = []
-        if slice['slice_tag_ids']:
-            # Delete unknown attributes
-            for slice_tag in GetSliceTags(slice['slice_tag_ids']):
-                if (slice_tag['tagname'], slice_tag['value']) \
-                   not in attributes:
-                    DeleteSliceTag(slice_tag['slice_tag_id'])
-                else:
-                    slice_tags.append((slice_tag['tagname'], slice_tag['value']))
-
-        for (name, value) in attributes:
-            if (name, value) not in slice_tags:
-                AddSliceTag(slice['name'], name, value)
-
-    
-    #################### body for messages
-
-    installfailed = """
-Once the node meets these requirements, please reinitiate the install
-by visiting:
-
-https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/nodes/?id=%(node_id)d
-
-Update the BootState to 'Reinstall', then reboot the node.
-
-If you have already performed this step and are still receiving this
-message, please reply so that we may investigate the problem.
-"""
-
-    # Load default message templates
-    message_templates = [
-        {'message_id': 'Verify account',
-         'subject': "Verify account registration",
-         'template': """
-Please verify that you registered for a %(PLC_NAME)s account with the
-username %(email)s by visiting:
-
-https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/persons/register.php?id=%(person_id)d&key=%(verification_key)s
-
-You must wait for this account to be approved before you can begin using it, please be patient.
-
-If you did not register for a %(PLC_NAME)s account, please ignore this
-message, or contact %(PLC_NAME)s Support <%(PLC_MAIL_SUPPORT_ADDRESS)s>.
-"""
-         },
-
-        {'message_id': 'New PI account',
-         'subject': "New PI account registration from %(first_name)s %(last_name)s <%(email)s> at %(site_name)s",
-         'template': """
-%(first_name)s %(last_name)s <%(email)s> has signed up for a new
-%(PLC_NAME)s account at %(site_name)s and has requested a PI role. PIs
-are responsible for enabling user accounts, creating slices, and
-ensuring that all users abide by the %(PLC_NAME)s Acceptable Use
-Policy.
-
-Only %(PLC_NAME)s administrators may enable new PI accounts. If you
-are a PI at %(site_name)s, please respond and indicate whether this
-registration is acceptable.
-
-To view the request, visit:
-
-https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/persons/index.php?id=%(person_id)d
-"""
-         },
-
-        {'message_id': 'New account',
-         'subject': "New account registration from %(first_name)s %(last_name)s <%(email)s> at %(site_name)s",
-         'template': """
-%(first_name)s %(last_name)s <%(email)s> has signed up for a new
-%(PLC_NAME)s account at %(site_name)s and has requested the following
-roles: %(roles)s.
-
-To deny the request or enable the account, visit:
-
-https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/persons/index.php?id=%(person_id)d
-"""
-         },
-
-        {'message_id': 'Password reset requested',
-         'subject': "Password reset requested",
-         'template': """
-Someone has requested that the password of your %(PLC_NAME)s account
-%(email)s be reset. If this person was you, you may continue with the
-reset by visiting:
-
-https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/persons/reset_password.php?id=%(person_id)d&key=%(verification_key)s
-
-If you did not request that your password be reset, please contact
-%(PLC_NAME)s Support <%(PLC_MAIL_SUPPORT_ADDRESS)s>. Do not quote or
-otherwise include any of this text in any correspondence.
-"""
-         },
-
-        {'message_id': 'Password reset',
-         'subject': "Password reset",
-         'template': """
-The password of your %(PLC_NAME)s account %(email)s has been
-temporarily reset to:
-
-%(password)s
-
-Please change it at as soon as possible by visiting:
-
-https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/persons/index.php?id=%(person_id)d
-
-If you did not request that your password be reset, please contact
-%(PLC_NAME)s Support <%(PLC_MAIL_SUPPORT_ADDRESS)s>. Do not quote or
-otherwise include any of this text in any correspondence.
-"""
-         },
-
-        # Boot Manager messages
-        {'message_id': "installfinished",
-         'subject': "%(hostname)s completed installation",
-         'template': """
-%(hostname)s just completed installation.
-
-The node should be usable in a couple of minutes if installation was
-successful.
-"""
-         },
-
-        {'message_id': "insufficientdisk",
-         'subject': "%(hostname)s does not have sufficient disk space",
-         'template': """
-%(hostname)s failed to boot because it does not have sufficent disk
-space, or because its disk controller was not recognized.
-
-Please replace the current disk or disk controller or install
-additional disks to meet the current hardware requirements.
-""" + installfailed
-         },
-
-        {'message_id': "insufficientmemory",
-         'subject': "%(hostname)s does not have sufficient memory",
-         'template': """
-%(hostname)s failed to boot because it does not have sufficent
-memory.
-
-Please install additional memory to meet the current hardware
-requirements.
-""" + installfailed
-         },
-
-        {'message_id': "authfail",
-         'subject': "%(hostname)s failed to authenticate",
-         'template':
-"""
-%(hostname)s failed to authenticate for the following reason:
-
-%(fault)s
-
-The most common reason for authentication failure is that the
-authentication key stored in the node configuration file, does not
-match the key on record. 
-
-There are two possible steps to resolve the problem.
-
-1. If you have used an All-in-one BootCD that includes the plnode.txt file,
-    then please check your machine for any old boot media, either in the
-    floppy drive, or on a USB stick.  It is likely that an old configuration
-    is being used instead of the new configuration stored on the BootCD.
-Or, 
-2. If you are using Generic BootCD image, then regenerate the node 
-    configuration file by visiting:
-
-    https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/nodes/?id=%(node_id)d
-
-    Under 'Download', follow the 'Download plnode.txt file for %(hostname)s'
-    option, and save the downloaded file as plnode.txt on either a floppy 
-    disk or a USB flash drive.  Be sure the 'Boot State' is set to 'Boot', 
-    and, then reboot the node.
-
-If you have already performed this step and are still receiving this
-message, please reply so that we can help investigate the problem.
-"""
-         },
-
-        {'message_id': "notinstalled",
-         'subject': "%(hostname)s is not installed",
-         'template':
-"""
-%(hostname)s failed to boot because it has either never been
-installed, or the installation is corrupt.
-
-Please check if the hard drive has failed, and replace it if so. After
-doing so, visit:
-
-https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/nodes/?id=%(node_id)d
-
-Change the 'Boot State' to 'Reinstall', and then reboot the node.
-
-If you have already performed this step and are still receiving this
-message, please reply so that we may investigate the problem.
-"""
-         },
-
-        {'message_id': "hostnamenotresolve",
-         'subject': "%(hostname)s does not resolve",
-         'template':
-"""
-%(hostname)s failed to boot because its hostname does not resolve, or
-does resolve but does not match its configured IP address.
-
-Please check the network settings for the node, especially its
-hostname, IP address, and DNS servers, by visiting:
-
-https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/nodes/?id=%(node_id)d
-
-Correct any errors, and change the 'Boot State' to 'Reinstall', and then
-reboot the node.
-
-If you have already performed this step and are still receiving this
-message, please reply so that we may investigate the problem.
-"""
-         },
-
-        # XXX N.B. I don't think these are necessary, since there's no
-        # way that the Boot Manager would even be able to contact the
-        # API to send these messages.
-
-        {'message_id': "noconfig",
-         'subject': "%(hostname)s does not have a configuration file",
-         'template': """
-%(hostname)s failed to boot because it could not find a PlanetLab
-configuration file. To create this file, visit:
-
-https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/nodes/?id=%(node_id)d
-
-Click the Configuration File link, and save the downloaded file as
-plnode.txt on either a floppy disk or a USB flash drive.  Change the 
-'Boot State' to 'Reinstall', and then reboot the node.
-
-If you have already performed this step and are still receiving this
-message, please reply so that we may investigate the problem.
-"""
-         },
-
-        {'message_id': "nodetectednetwork",
-         'subject': "%(hostname)s has unsupported network hardware",
-         'template':
-"""
-
-%(hostname)s failed to boot because it has network hardware that is
-unsupported by the current production kernel. If it has booted
-successfully in the past, please try re-installing it by visiting:
-
-https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/nodes/?id=%(node_id)d
-
-Change the 'Boot State' to 'Reinstall', and then reboot the node.
-
-If you have already performed this step and are still receiving this
-message, please reply so that we may investigate the problem.
-"""
-         },
-        ]
-
-    for template in message_templates:
-        messages = GetMessages([template['message_id']])
-        if not messages:
-            AddMessage(template)
-
-    #################### PCUs
-    
-    ### Setup Initial PCU information
-	pcu_types = [
-			 {'model': 'HPiLO',
-			  'name': 'HP iLO v1 or v2 (Integrated Lights-Out)', },
-
-			 {'model': 'IntelAMT',
-			  'name': 'Intel AMT v2.5 or v3.0 (Active Management Technology)', },
-
-			 {'model': 'DRAC',
-			  'name': 'DRAC - Dell Remote Access Control (all versions)', },
-
-			 {'model': 'OpenIPMI',
-			  'name': 'OpenIPMI - Intelligent Platform Management Interface', },
-
-			 {'model': 'APCControl12p3',
-		  	  'name': 'APC AP79xx or Masterswitch (sequence 1-2-port-3)', },
-			 {'model': 'APCControl1p4',
-		  	  'name': 'APC AP79xx or Masterswitch (sequence 1-port-4)', },
-			 {'model': 'APCControl121p3',
-		  	  'name': 'APC AP79xx or Masterswitch (sequence 1-2-1-port-3)', },
-			 {'model': 'APCControl121p1',
-		  	  'name': 'APC AP79xx or Masterswitch (sequence 1-2-1-port-1)', },
-			 {'model': 'APCControl13p13',
-		  	  'name': 'APC AP79xx or Masterswitch (sequence 1-3-port-1-3)', },
-
-			 {'model': 'BayTechRPC3NC', 
-			  'name': 'BayTech with prompt RPC3-NC>', },
-			 {'model': 'BayTechRPC16', 
-			  'name': 'BayTech with prompt RPC-16>', },
-			 {'model': 'BayTech',
-			  'name': 'BayTech with prompt DS-RPC>', },
-			 {'model': 'BayTechCtrlC', 
-			  'name': 'BayTech Ctrl-C, 5, then with prompt DS-RPC>', },
-			 {'model': 'BayTechCtrlCUnibe', 
-			  'name': 'BayTech Ctrl-C, 3, then with prompt DS-RPC>', },
-
-			 {'model': 'BlackBoxPSMaverick',
-			  'name': 'BlackBoxPSMaverick Web based controller'},
-
-			 {'model': 'IPAL', 
-			  'name': 'IPAL - Dataprobe IP-41x & IP-81x', },
-			 {'model': 'ePowerSwitchNew',
-			  'name': 'ePowerSwitch Newer Models 1/4/8x', },
-			 {'model': 'ePowerSwitchOld',
-			  'name': 'ePowerSwitch Older Models 1/4/8x', },
-
-			 {'model': 'PM211MIP',
-			  'name': 'Infratec PM221-MIP', },
-
-			 {'model': 'WTIIPS4',
-			  'name': 'Western Telematic (WTI IPS-4)', },
-
-			 {'model': 'ManualPCU',
-			  'name': 'Manual Administrator Operation (choose if model unknown)', },
-			  ]
-
-    # Get all model names
-    pcu_models = [type['model'] for type in GetPCUTypes()]
-    for type in pcu_types:
-        if 'pcu_protocol_types' in type:
-            protocol_types = type['pcu_protocol_types']
-            # Take this value out of the struct.
-            del type['pcu_protocol_types']
-        else:
-            protocol_types = []
-        if type['model'] not in pcu_models:
-            # Add the name/model info into DB
-            id = AddPCUType(type)
-            # for each protocol, also add this.
-            for ptype in protocol_types:
-                AddPCUProtocolType(id, ptype)
-
-    default_boot_states = [
-        'boot',
-        'failboot',
-        'safeboot',
-        'install',
-        'reinstall',
-        'disabled',
-    ]
-    current_boot_states = GetBootStates()
-    for state in default_boot_states:
-        if state not in current_boot_states:
-            AddBootState(state)
-
-    # TODO: Delete old boot states. 
-    # NOTE: Only do this if all federating peers have the new default boot states above.
-    #for state in current_boot_states:
-    #    if state not in default_boot_states:
-    #        DeleteBootState(state)
-
-    # Run local db-config snippets
-    dir = "/etc/planetlab/db-config.d"
-    if os.path.exists(dir):
-        try:
-            files = []
-            files = os.listdir(dir)
-        except OSError, e:
-            raise Exception, "Error when opening %s (%s)" % \
-                  (os.path.join(dir, file), e)
-            
-        ignored = (".bak","~",".rpmsave",".rpmnew",".orig")
-        for file in files:
-            shouldIgnore = False
-            for ignore in ignored:
-                if file.endswith(ignore):
-                    shouldIgnore = True
-                    break
-            if not shouldIgnore:
-                execfile(os.path.join(dir, file))
+                                          [variable['value'] for variable in variablelist.values()]))
+
+    directory="/etc/planetlab/db-config.d"
+    snippets = GetSnippets(directory)
+    for snippet in snippets:
+        fullpath = os.path.join(directory, snippet)
+        execfile(fullpath)
 
 if __name__ == '__main__':
     main()

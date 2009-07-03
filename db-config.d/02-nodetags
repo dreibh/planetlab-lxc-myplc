@@ -1,0 +1,16 @@
+#################### node tags
+default_node_types = [
+    { 'tagname' : 'arch',
+      'description' : 'architecture name',
+      'category' : 'node/config', 
+      'min_role_id' : 40} ,
+    { 'tagname' : 'pldistro',
+      'description' : 'PlanetLab distribution',
+      'category' : 'node/config', 
+      'min_role_id' : 10} ,
+    { 'tagname' : 'deployment',
+      'description' : 'typically "alpha", "beta", or "production"',
+      'category' : 'node/operation', 
+      'min_role_id' : 10} ,
+    ]
+
