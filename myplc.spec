@@ -5,7 +5,7 @@
 
 %define name myplc
 %define version 4.3
-%define taglevel 18
+%define taglevel 19
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -197,6 +197,9 @@ fi
 /usr/share/myplc
 
 %changelog
+* Mon Jul 06 2009 Marc Fiuczynski <mef@cs.princeton.edu> - MyPLC-4.3-19
+- Refactored db-config into snippets in db-config.d/.
+
 * Thu Jul 02 2009 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.3-18
 - oops, tag 4.3-17 was broken and would not work
 
