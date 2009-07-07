@@ -5,7 +5,7 @@
 
 %define name myplc-docs
 %define version 4.3
-%define taglevel 19
+%define taglevel 20
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -87,6 +87,9 @@ rm -rf $RPM_BUILD_ROOT
 /var/www/html/planetlab/doc/
 
 %changelog
+* Tue Jul 07 2009 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.3-20
+- bugfix in db-config, tag 4.3-19 would not fly
+
 * Mon Jul 06 2009 Marc Fiuczynski <mef@cs.princeton.edu> - MyPLC-4.3-19
 - Refactored db-config into snippets in db-config.d/.
 
