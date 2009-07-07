@@ -638,6 +638,11 @@ $Id$
           <value>password</value>
           <description>Password for RT web user.</description>
         </variable>
+        <variable id="dbpassword" type="password">
+          <name>Database Password</name>
+          <value></value>
+          <description>Password to use when accessing the RT database.</description>
+        </variable>
       </variablelist>
     </category>
   </variables>
