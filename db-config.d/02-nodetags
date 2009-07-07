@@ -1,5 +1,5 @@
 #################### node tags
-default_node_types = [
+default_node_tags = [
     { 'tagname' : 'arch',
       'description' : 'architecture name',
       'category' : 'node/config', 
@@ -14,3 +14,4 @@ default_node_types = [
       'min_role_id' : 10} ,
     ]
 
+for node_type in default_node_tags: SetTagType (node_type)
