@@ -83,7 +83,7 @@ def SetSlice(slice, tags):
 def SetMessage(message):
     messages = GetMessages([message['message_id']])
     if len(messages)==0:
-        AddMessage(template)
+        AddMessage(message)
     else:
         UpdateMessage(message['message_id'],message)
 
