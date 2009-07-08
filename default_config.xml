@@ -627,6 +627,11 @@ $Id$
           <value/>
           <description>The IP address of the RT server.</description>
         </variable>
+        <variable id="cc_address" type="email">
+          <name>CC Email Address</name>
+          <value>root+cclist@localhost.localdomain</value>
+          <description>All messages from Monitor will be copied to this address.</description>
+        </variable>
         <variable id="web_user" type="string">
           <name>root</name>
           <value>root</value>
