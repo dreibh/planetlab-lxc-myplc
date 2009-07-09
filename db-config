@@ -58,7 +58,7 @@ def SetInitScript(initscript):
     else:
         orig_initscript = g_oldinitscripts[initscript['name']]
         initscript_id = orig_initscript['initscript_id']
-        UpdateConfFile(initscript_id, initscript)
+        UpdateInitScript(initscript_id, initscript)
         
 def SetConfFile(conf_file):
     global g_conf_files, g_dests
