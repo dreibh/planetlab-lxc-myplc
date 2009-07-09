@@ -45,13 +45,14 @@ g_conf_files = dict(zip(g_dests, g_conf_files))
 
 # Get list of existing initscripts
 g_oldinitscripts = GetInitScripts()
-g_oldinitscripts = [script['name'] for script in oldinitscripts]
+g_oldinitscript_names = [script['name'] for script in g_oldinitscripts]
+g_oldinitscripts = dict(zip(g_dests, g_conf_files))
 
 def SetInitScript(initscript):
-    global g_oldinitscripts
-    if initscript['name'] not in g_oldinitscripts:
+    global g_oldinitscripts, g_oldinitscript_names
+    if initscript['name'] not in g_oldinitscript_names:
         AddInitScript(initscript)
-        g_oldinitscript.append(initscript['name'])
+        g_oldinitscript_names.append(initscript['name'])
     else:
         orig_initscript = g_oldinitscripts[initscript['name']]
         initscript_id = orig_initscript['initscript_id']
