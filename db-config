@@ -43,13 +43,28 @@ g_conf_files = filter(lambda conf_file: conf_file['enabled'] and \
 g_dests = [conf_file['dest'] for conf_file in g_conf_files]
 g_conf_files = dict(zip(g_dests, g_conf_files))
 
+# Get list of existing initscripts
+g_oldinitscripts = GetInitScripts()
+g_oldinitscripts = [script['name'] for script in oldinitscripts]
+
+def SetInitScript(initscript):
+    global g_oldinitscripts
+    if initscript['name'] not in g_oldinitscripts:
+        AddInitScript(initscript)
+        g_oldinitscript.append(initscript['name'])
+    else:
+        orig_initscript = g_oldinitscripts[initscript['name']]
+        initscript_id = orig_initscript['initscript_id']
+        UpdateConfFile(initscript_id, initscript)
+        
 def SetConfFile(conf_file):
     global g_conf_files, g_dests
     if conf_file['dest'] not in g_dests:
         AddConfFile(conf_file)
     else:
         orig_conf_file = g_conf_files[conf_file['dest']]
-        UpdateConfFile(orig_conf_file['conf_file_id'], conf_file)
+        conf_file_id = orig_conf_file['conf_file_id']
+        UpdateConfFile(conf_file_id, conf_file)
 
 def SetSlice(slice, tags):
     # Create or Update slice

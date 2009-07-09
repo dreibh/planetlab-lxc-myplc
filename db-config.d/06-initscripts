@@ -17,11 +17,5 @@ for (root, dirs, files) in os.walk("/etc/plc_sliceinitscripts"):
         default_initscripts.append({"name":name,"enabled":True,"script":script})
         file.close()
 
-# Get list of existing initscripts
-oldinitscripts = GetInitScripts()
-oldinitscripts = [script['name'] for script in oldinitscripts]
-
 for initscript in default_initscripts:
-    if initscript['name'] not in oldinitscripts:
-        AddInitScript(initscript)
-
+	SetInitScript(initscript)
