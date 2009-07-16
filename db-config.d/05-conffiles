@@ -1,3 +1,4 @@
+# -*-python-*-
 #################### conf files
 # Setup default PlanetLabConf entries
 
@@ -246,17 +247,18 @@ conf_files = [
      'always_update': False},
     
     # GPG signing keys
-    {'enabled': True,
-     'source': 'PlanetLabConf/RPM-GPG-KEY-fedora',
-     'dest': '/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora',
-     'file_permissions': '644',
-     'file_owner': 'root',
-     'file_group': 'root',
-     'preinstall_cmd': '',
-     'postinstall_cmd': 'rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-fedora',
-     'error_cmd': '',
-     'ignore_cmd_errors': False,
-     'always_update': False},
+# this one comes with rpm fedora-release-8-6.transition on fedora 8
+#    {'enabled': True,
+#     'source': 'PlanetLabConf/RPM-GPG-KEY-fedora',
+#     'dest': '/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora',
+#     'file_permissions': '644',
+#     'file_owner': 'root',
+#     'file_group': 'root',
+#     'preinstall_cmd': '',
+#     'postinstall_cmd': 'rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-fedora',
+#     'error_cmd': '',
+#     'ignore_cmd_errors': False,
+#     'always_update': False},
     {'enabled': True,
      'source': 'PlanetLabConf/get_gpg_key.php',
      'dest': '/etc/pki/rpm-gpg/RPM-GPG-KEY-planetlab',
