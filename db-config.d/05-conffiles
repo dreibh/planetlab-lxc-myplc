@@ -296,7 +296,20 @@ conf_files = [
      'postinstall_cmd': '/usr/sbin/visudo -c',
      'error_cmd': '',
      'ignore_cmd_errors': False,
-     'always_update': False}
+     'always_update': False},
+
+    # /etc/planetlab/extensions
+    {'enabled': True,
+     'source': 'PlanetLabConf/extensions.php',
+     'dest': '/etc/planetlab/extensions',
+     'file_permissions': '644',
+     'file_owner': 'root',
+     'file_group': 'root',
+     'preinstall_cmd': '',
+     'postinstall_cmd': '',
+     'error_cmd': '',
+     'ignore_cmd_errors': False,
+     'always_update': False},
     ]
 
 for conf_file in conf_files:
