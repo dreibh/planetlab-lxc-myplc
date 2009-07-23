@@ -71,15 +71,25 @@ def SetConfFile(conf_file):
 
 def SetSlice(slice, tags):
     # Create or Update slice
-    slices = GetSlices([slice['name']])
+    slice_name = slice['name']
+    slices = GetSlices([slice_name])
     if len(slices)==1:
         slice_id = slices[0]['slice_id']
+        if slice.has_key('name'):
+            del slice['name']
         UpdateSlice(slice_id, slice)
+        slice['name']=slice_name
     else:
-        AddSlice(slice)
+        expires = None
+        if slice.has_key('expires'):
+            expires = slice['expires']
+            del slice['expires']
+        slice_id = AddSlice(slice)
+        if expires <> None:
+            UpdateSlice(slice_id, {'expires':expires})
 
     # Get slice structure with all fields
-    slice = GetSlices([slice['name']])[0]
+    slice = GetSlices([slice_name])[0]
 
     # Create/update all tags
     slice_tags = {}
@@ -94,9 +104,9 @@ def SetSlice(slice, tags):
     # only update slice tags that have changed
     for (name, value) in tags:
         if name not in slice_tags:
-            AddSliceTag(slice['name'], name, value)            
+            AddSliceTag(slice_name, name, value)            
         elif value <> slice_tags[name]:
-            UpdateSliceTag(slice['name'],value)
+            UpdateSliceTag(slice_name,value)
 
 def SetMessage(message):
     messages = GetMessages([message['message_id']])
