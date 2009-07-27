@@ -179,6 +179,53 @@ message, please reply so that we may investigate the problem.
 """
      },
 
+    {'message_id': "missingkernel",
+     'subject': "%(hostname)s is missing its production kernel",
+     'template':
+"""
+%(hostname)s failed to boot because the filesystem is missing its production
+kernel.
+
+No action is needed from you at this time; this message is merely
+informational.
+
+https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/nodes/?id=%(node_id)d
+
+We will investigate the problem shortly.
+"""
+     },
+
+    {'message_id': "filesystemcorrupted",
+     'subject': "%(hostname)s may have corrupt filesystem",
+     'template':
+"""
+%(hostname)s failed to boot because the filesystem appears to be corrupted. 
+
+No action is needed from you at this time; this message is merely
+informational.
+
+https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/nodes/?id=%(node_id)d
+
+We will investigate the problem shortly.
+"""
+     },
+
+    {'message_id': "mountfailed",
+     'subject': "could not mount filesystem on %(hostname)s",
+     'template':
+"""
+%(hostname)s failed to boot because the boot scripts could not mount the 
+filesystem.
+
+This could be for a number of reasons.  No action is needed from you at this
+time; this message is merely informational.  
+
+https://%(PLC_WWW_HOST)s:%(PLC_WWW_SSL_PORT)d/db/nodes/?id=%(node_id)d
+
+We will investigate the problem shortly.
+"""
+     },
+
     {'message_id': "hostnamenotresolve",
      'subject': "%(hostname)s does not resolve",
      'template':
