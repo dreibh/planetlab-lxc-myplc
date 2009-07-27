@@ -211,7 +211,7 @@ We will investigate the problem shortly.
      },
 
     {'message_id': "mountfailed",
-     'subject': "could not mount filesystem on %(hostname)s",
+     'subject': "%(hostname)s could not mount filesystem",
      'template':
 """
 %(hostname)s failed to boot because the boot scripts could not mount the 
