@@ -126,7 +126,7 @@ slicetag_types = \
     {'tagname': "delegations",
      'description': "Coma seperated list of slices to give delegation authority to.",
      'category' : 'slice/rspec',
-     'min_role_id': 10}
+     'min_role_id': 30}
 ]
 
 # add in the platform supported rlimits to the default_attribute_types
