@@ -81,7 +81,7 @@ case "$1" in
         MESSAGE=$"Generating SSL certificates for"
         dialog "$MESSAGE"
 
-	for server in WWW API BOOT ; do
+	for server in WWW API BOOT MONITOR; do
 	    eval "a=\$PLC_${server}_ENABLED"
             echo $a
             if [ "$a" -ne 1 ] ; then
@@ -96,7 +96,7 @@ case "$1" in
 
 	    # Check if we have already generated a certificate for
 	    # the same hostname.
-	    for previous_server in WWW API BOOT ; do
+	    for previous_server in WWW API BOOT MONITOR; do
 		if [ "$server" = "$previous_server" ] ; then
 		    break
 		fi
@@ -123,7 +123,7 @@ case "$1" in
 	# 4) and /etc/httpd/conf (Fedora Core 2). If the API, boot,
 	# and web servers are all running on the same machine, the web
 	# server certificate takes precedence.
-	for server in API BOOT WWW ; do
+	for server in API BOOT WWW MONITOR; do
 	    enabled=PLC_${server}_ENABLED
 	    if [ "${!enabled}" != "1" ] ; then
 		continue

@@ -606,6 +606,32 @@ $Id$
           <description>The password to use when accessing the
           database, Monitor user account in the local PLC.</description>
         </variable>
+
+	    <variable id="ssl_key" type="file">
+		  <name>SSL Private Key</name>
+		  <value>/etc/planetlab/monitor_ssl.key</value>
+		  <description>The SSL private key to use for encrypting HTTPS
+		  traffic.</description>
+		</variable>
+
+		<variable id="ssl_crt" type="file">
+		  <name>SSL Public Certificate</name>
+		  <value>/etc/planetlab/monitor_ssl.crt</value>
+		  <description>The corresponding SSL public certificate for
+		  the HTTP server. By default, this certificate is
+		  self-signed. You may replace the certificate later with one
+		  signed by a root CA.</description>
+		</variable>
+
+		<variable id="ca_ssl_crt" type="file">
+		  <name>Root CA SSL Public Certificate</name>
+		  <value>/etc/planetlab/monitor_ca_ssl.crt</value>
+		  <description>The certificate of the root CA, if any, that
+		  signed your server certificate. If your server certificate is
+		  self-signed, then this file is the same as your server
+		  certificate.</description>
+		</variable>
+
       </variablelist>
     </category>
     <category id="plc_rt">
