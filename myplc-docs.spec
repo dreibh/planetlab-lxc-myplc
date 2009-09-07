@@ -5,7 +5,7 @@
 
 %define name myplc-docs
 %define version 4.3
-%define taglevel 21
+%define taglevel 22
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -87,6 +87,12 @@ rm -rf $RPM_BUILD_ROOT
 /var/www/html/planetlab/doc/
 
 %changelog
+* Mon Sep 07 2009 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.3-22
+- SSL setup for monitor box, and related new config variables
+- new conf_file for /etc/planetlab/extensions
+- various tweaks in db-config internals, about initscripts among others
+- also more messages defined in the db
+
 * Tue Jul 07 2009 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.3-21
 - create node tags, like e.g. 'arch', that were not handled with 4.3-20
 
