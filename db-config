@@ -91,22 +91,26 @@ def SetSlice(slice, tags):
     # Get slice structure with all fields
     slice = GetSlices([slice_name])[0]
 
-    # Create/update all tags
-    slice_tags = {}
+    # Create/delete all tags
+    # NOTE: update is not needed, since unspecified tags are deleted, 
+    #       and new tags are added
+    slice_tags = []
     if slice['slice_tag_ids']:
         # Delete unknown attributes
         for slice_tag in GetSliceTags(slice['slice_tag_ids']):
             if (slice_tag['tagname'], slice_tag['value']) not in tags:
                 DeleteSliceTag(slice_tag['slice_tag_id'])
             else:
-                slice_tags[slice_tag['tagname']]=slice_tag['value']
+                slice_tags.append((slice_tag['tagname'],slice_tag['value']))
 
-    # only update slice tags that have changed
+    # only add slice tags that are new
     for (name, value) in tags:
-        if name not in slice_tags:
+        if (name,value) not in slice_tags:
             AddSliceTag(slice_name, name, value)            
-        elif value <> slice_tags[name]:
-            UpdateSliceTag(slice_name,value)
+        else:
+            # NOTE: this confirms that the user-specified tag is 
+            #       returned by GetSliceTags
+            pass
 
 def SetMessage(message):
     messages = GetMessages([message['message_id']])
