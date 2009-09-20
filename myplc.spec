@@ -5,7 +5,7 @@
 
 %define name myplc
 %define version 4.3
-%define taglevel 22
+%define taglevel 23
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -197,6 +197,9 @@ fi
 /usr/share/myplc
 
 %changelog
+* Sat Sep 19 2009 Stephen Soltesz <soltesz@cs.princeton.edu> - MyPLC-4.3-23
+- fixed a bug setting slice multiple attributes with the same tag name
+
 * Mon Sep 07 2009 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.3-22
 - SSL setup for monitor box, and related new config variables
 - new conf_file for /etc/planetlab/extensions
