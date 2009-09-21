@@ -656,13 +656,13 @@ $Id$
         <variable id="cc_address" type="email">
           <name>CC Email Address</name>
           <value>root+cclist@localhost.localdomain</value>
-          <description>All messages from Monitor will be copied to this address.</description>
+          <description>All messages to and from PLCRT will be copied to this address.</description>
         </variable>
         <variable id="web_user" type="string">
           <name>root</name>
           <value>root</value>
           <description>Username of a privileged user in RT who can create
-		  tickets in the queue named PLC_MONITOR_RT_QUEUE.</description>
+		  tickets for any RT Queue.</description>
         </variable>
         <variable id="web_password" type="password">
           <name>password</name>
