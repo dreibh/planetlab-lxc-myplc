@@ -5,7 +5,7 @@
 
 %define name myplc-release
 %define version 4.3
-%define taglevel 23
+%define taglevel 24
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -57,6 +57,10 @@ rm -rf $RPM_BUILD_ROOT
 /etc/myplc-release
 
 %changelog
+* Sun Sep 20 2009 Stephen Soltesz <soltesz@cs.princeton.edu> - MyPLC-4.3-24
+- clarified description text to refer only to plcrt and not other optional
+- packages.
+
 * Sat Sep 19 2009 Stephen Soltesz <soltesz@cs.princeton.edu> - MyPLC-4.3-23
 - fixed a bug setting slice multiple attributes with the same tag name
 
