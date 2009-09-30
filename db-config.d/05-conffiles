@@ -1,4 +1,6 @@
 # -*-python-*-
+# $Id$
+# $URL$
 #################### conf files
 # Setup default PlanetLabConf entries
 
@@ -28,6 +30,7 @@ conf_files = [
      'always_update': False},
     
     # SSH server configuration
+    # keys for root and site_admin are now handled as part of the specialaccounts NodeManager plugin
     {'enabled': True,
      'source': 'PlanetLabConf/sshd_config',
      'dest': '/etc/ssh/sshd_config',
@@ -40,29 +43,6 @@ conf_files = [
      'ignore_cmd_errors': False,
      'always_update': False},
     
-    # Administrative SSH keys
-    {'enabled': True,
-     'source': 'PlanetLabConf/keys.php?root',
-     'dest': '/root/.ssh/authorized_keys',
-     'file_permissions': '644',
-     'file_owner': 'root',
-     'file_group': 'root',
-     'preinstall_cmd': '',
-     'postinstall_cmd': '/bin/chmod 700 /root/.ssh',
-     'error_cmd': '',
-     'ignore_cmd_errors': False,
-     'always_update': False},
-    {'enabled': True,
-     'source': 'PlanetLabConf/keys.php?site_admin',
-     'dest': '/home/site_admin/.ssh/authorized_keys',
-     'file_permissions': '400',
-     'file_owner': 'site_admin',
-     'file_group': 'site_admin',
-     'preinstall_cmd': 'grep -q site_admin /etc/passwd',
-     'postinstall_cmd': '/bin/chmod 700 /home/site_admin/.ssh;/bin/chown site_admin:site_admin /home/site_admin/.ssh',
-     'error_cmd': '',
-     'ignore_cmd_errors': False,
-     'always_update': False},
     # Log rotation configuration
     {'enabled': True,
      'source': 'PlanetLabConf/logrotate.conf',

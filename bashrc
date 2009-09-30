@@ -1,4 +1,6 @@
 # -*-sh-*-
+# $Id$
+# $URL$
 # this file defines a few convenience bash shorthands for managing myplc nodes
 # it is installed in /usr/share/myplc/aliases
 # you might wish to use it in your own bash startup files (.profile/.bashrc)
@@ -24,23 +26,12 @@ function node_dbg () {
     [[ -z "$@" ]] && { echo "Usage: $0 hostname [command]" ; return 1; }
     node_key /etc/planetlab/debug_ssh_key.rsa "$@"
 }
-function node_boot () {
-    [[ -z "$@" ]] && { echo "Usage: $0 hostname [command]" ; return 1; }
-    node_key /etc/planetlab/root_ssh_key.rsa "$@"
-}
-
 function nodes_dbg () {
     [[ -z "$@" ]] && { echo "Usage: $0 hosts_file [command]" ; return 1; }
     node_keys /etc/planetlab/debug_ssh_key.rsa "$@"
 }
-function nodes_boot () {
-    [[ -z "$@" ]] && { echo "Usage: $0 hosts_file [command]" ; return 1; }
-    nodes_key /etc/planetlab/root_ssh_key.rsa "$@"
-}
-
-function clear_keys () {
+function clear_known_hosts () {
     for hostname in "$@"; do	
         sed -i "/$hostname/d" ~/.ssh/known_hosts
     done
-}
-	
+}	
