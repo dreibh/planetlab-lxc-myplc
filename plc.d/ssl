@@ -25,6 +25,14 @@ ssl_cname ()
 	lower
 }
 
+backup_file ()
+{
+    filepath=$1
+    filename=$(basename ${filepath})
+    dir=$(dirname ${filepath})
+    mv -f ${filepath} ${dir}/${filename}-`date +%Y-%m-%d-%H-%M-%S`.bak
+}
+
 # Verify a certificate. If invalid, generate a new self-signed
 # certificate.
 verify_or_generate_certificate() {
@@ -42,10 +50,11 @@ verify_or_generate_certificate() {
     if [ -f $crt ] ; then
 	# Check if certificate is valid
 	verify=$(openssl verify -CAfile $ca $crt)
-	# Delete if invalid or if the subject has changed
+	# Backup if invalid or if the subject has changed
 	if grep -q "error" <<<$verify || \
 	    [ "$(ssl_cname $crt)" != "$cname" ] ; then
-	    rm -f $crt $ca
+            backup_file $crt
+            backup_file $ca
 	fi
     fi
 
