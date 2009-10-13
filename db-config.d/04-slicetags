@@ -126,7 +126,19 @@ slicetag_types = \
     {'tagname': "delegations",
      'description': "Coma seperated list of slices to give delegation authority to.",
      'category' : 'slice/rspec',
-     'min_role_id': 30}
+     'min_role_id': 30},
+
+    # Security capability to empower a slice to make an authenticated API call, set by silverauth NM plugin.
+    {'tagname': "hmac",
+     'description': "Sliver authorization key.",
+     'category' : 'slice/auth',
+     'min_role_id': 20},
+
+    # Capability to give a sliver access to unused raw disk
+    {'tagname': "rawdisk",
+     'description': "map unused raw disk devices into the slice",
+     'category' : 'slice/access', # we should get rid of this category thing
+     'min_role_id': 20}
 ]
 
 # add in the platform supported rlimits to the default_attribute_types
