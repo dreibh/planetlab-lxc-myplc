@@ -98,6 +98,8 @@ def SetSlice(slice, tags):
     if slice['slice_tag_ids']:
         # Delete unknown attributes
         for slice_tag in GetSliceTags(slice['slice_tag_ids']):
+            # ignore sliver tags, as those are custom/run-time values
+            if slice_tag['node_id'] <> None: continue
             if (slice_tag['tagname'], slice_tag['value']) not in tags:
                 DeleteSliceTag(slice_tag['slice_tag_id'])
             else:
