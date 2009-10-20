@@ -5,7 +5,7 @@
 
 %define name myplc-release
 %define version 4.3
-%define taglevel 27
+%define taglevel 28
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -57,6 +57,10 @@ rm -rf $RPM_BUILD_ROOT
 /etc/myplc-release
 
 %changelog
+* Tue Oct 20 2009 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.3-28
+- db-config ignores sliver tags
+- sirius's db-config script renamed (was sirious)
+
 * Tue Oct 13 2009 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.3-27
 - fix for silverauth - missing tag types now created at plc startup time
 
