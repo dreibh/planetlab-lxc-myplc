@@ -59,7 +59,7 @@ AddRoleToPerson(10, admin['person_id'])
 AddRoleToPerson(20, admin['person_id'])
 
 # Associate root ssh key with the default administrator
-keyfile="/etc/planetlab/root_ssh_key.pub"
+keyfile=plc['root_ssh_key_pub']
 person = GetPersons(admin['person_id'])[0]
 keys = GetKeys(person['key_ids'])
 if os.path.exists(keyfile):
