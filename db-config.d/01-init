@@ -58,3 +58,26 @@ SetPersonPrimarySite(admin['person_id'], site['site_id'])
 AddRoleToPerson(10, admin['person_id'])
 AddRoleToPerson(20, admin['person_id'])
 
+# Associate root ssh key with the default administrator
+keyfile="/etc/planetlab/root_ssh_key.pub"
+person = GetPersons(admin['person_id'])[0]
+keys = GetKeys(person['key_ids'])
+if os.path.exists(keyfile):
+    sshkeyfp = file(keyfile,"r")
+    sshkey = sshkeyfp.read()
+    sshkeyfp.close()
+
+    found=False
+    for key in keys:
+        if key['key_type']=='ssh':
+            if key['key'] == sshkey:
+                found=True
+            else:
+                # should we delete other keys?
+                pass
+    if not found:
+        key_id = AddPersonKey(admin['person_id'],{'key_type':'ssh','key':sshkey})
+else:
+    if len(keys)==0:
+        print "WARNING: default administrator does not have an ssh key"
+        print "and the default ssh root pub key (%s) file does not exist."

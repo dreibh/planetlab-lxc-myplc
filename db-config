@@ -11,7 +11,7 @@
 # $HeadURL$
 
 from plc_config import PLCConfiguration
-import sys
+import sys, os
 import resource
 
 g_url = ""
