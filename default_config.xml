@@ -75,6 +75,20 @@ $URL$
 	     be downloaded, or its contents replaced by a file upload,
 	     but the actual <value> shouldn't need to be changed.  -->
 
+	<variable id="root_ssh_key_pub" type="file">
+	  <name>Root SSH Public Key</name>
+	  <value>/etc/planetlab/root_ssh_key.pub</value>
+	  <description>The SSH public key used to access the root
+	  account on your nodes.</description>
+	</variable>
+
+	<variable id="root_ssh_key" type="file">
+	  <name>Root SSH Private Key</name>
+	  <value>/etc/planetlab/root_ssh_key.rsa</value>
+	  <description>The SSH private key used to access the root
+	  account on your nodes.</description>
+	</variable>
+
 	<variable id="debug_ssh_key_pub" type="file">
 	  <name>Debug SSH Public Key</name>
 	  <value>/etc/planetlab/debug_ssh_key.pub</value>

@@ -20,6 +20,8 @@
 set -x
 
 # XXX Could make these configurable
+KEY_TYPE_ROOT=rsa
+KEY_LEN_ROOT=1024
 KEY_TYPE_DEBUG=rsa
 KEY_LEN_DEBUG=2048	
 
@@ -29,6 +31,15 @@ case "$1" in
 	dialog "$MESSAGE"
 
 	tmp=$(mktemp -d /tmp/ssh.XXXXXX)
+
+	# Generate root SSH key
+	if [ ! -f $PLC_ROOT_SSH_KEY_PUB -o ! -f $PLC_ROOT_SSH_KEY ] ; then
+	    ssh-keygen -N "" -C "$PLC_NAME Central <$PLC_MAIL_SUPPORT_ADDRESS>" \
+		-b $KEY_LEN_ROOT -t $KEY_TYPE_ROOT -f $tmp/root
+	    check
+	    install -D -m 600 $tmp/root $PLC_ROOT_SSH_KEY
+	    install -D -m 644 $tmp/root.pub $PLC_ROOT_SSH_KEY_PUB
+	fi
 
 	# Generate debug SSH key
 	if [ ! -f $PLC_DEBUG_SSH_KEY_PUB -o ! -f $PLC_DEBUG_SSH_KEY ] ; then
