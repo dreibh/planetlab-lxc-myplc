@@ -80,4 +80,4 @@ if os.path.exists(keyfile):
 else:
     if len(keys)==0:
         print "WARNING: default administrator does not have an ssh key"
-        print "and the default ssh root pub key (%s) file does not exist."
+        print "and the default ssh root pub key (%s) file does not exist." % keyfile
