@@ -5,7 +5,7 @@
 
 %define name myplc
 %define version 4.3
-%define taglevel 28
+%define taglevel 29
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -197,6 +197,17 @@ fi
 /usr/share/myplc
 
 %changelog
+* Tue Nov 03 2009 Marc Fiuczynski <mef@cs.princeton.edu> - MyPLC-4.3-29
+- - Added "SetRole()" so that db-config.d/ scriplets can insert roles
+- into the DB.
+- - Added the root ssh key handling support back into plc.d/ssh and the
+- default xml file.  This should be identical to the way it was in
+- rc12.
+- - Added support in the db-config.d/01-init script to register the root
+- ssh public key with the default administrator.  In this way the root
+- ssh key will make it into the root account on the nodes by means of
+- NodeManager's specialaccounts plugin.
+
 * Tue Oct 20 2009 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.3-28
 - db-config ignores sliver tags
 - sirius's db-config script renamed (was sirious)
