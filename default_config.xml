@@ -124,12 +124,6 @@ $URL$
       <description>Network environment.</description>
 
       <variablelist>
-        <variable id="enabled" type="boolean">
-          <name>Enable network configuration</name>
-          <value>true</value>
-          <description>Let PLC manage /etc/hosts</description>
-        </variable>
-
 	<variable id="dns1" type="ip">
 	  <name>Primary DNS Server</name>
 	  <value>127.0.0.1</value>
@@ -163,6 +157,22 @@ $URL$
           quality or scalable DNS solution. Use the internal DNS
           server only for small deployments or for
           testing.</description>
+        </variable>
+      </variablelist>
+    </category>
+
+    <category id="plc_hosts">
+      <name>/etc/hosts</name>
+      <description>MyPLC can setup /etc/hosts with the hostnames and
+      IP addresses specified for *_NAME and *_IP, or look up the IP
+      addresses if they are not specified in this configuration.
+      </description>
+
+      <variablelist>
+        <variable id="enabled" type="boolean">
+          <name>Enable /etc/hosts configuration</name>
+          <value>true</value>
+          <description>Let PLC manage /etc/hosts</description>
         </variable>
       </variablelist>
     </category>
