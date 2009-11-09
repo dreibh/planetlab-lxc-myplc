@@ -17,7 +17,7 @@
 # Be verbose
 set -x
 
-[ "$PLC_NET_ENABLED" -ne 1 ] && exit 0
+[ "$PLC_HOSTS_ENABLED" -ne 1 ] && exit 0
 
 case "$1" in
     start)
