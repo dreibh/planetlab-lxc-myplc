@@ -124,6 +124,12 @@ $URL$
       <description>Network environment.</description>
 
       <variablelist>
+        <variable id="enabled" type="boolean">
+          <name>Enable network configuration</name>
+          <value>true</value>
+          <description>Let PLC manage /etc/hosts</description>
+        </variable>
+
 	<variable id="dns1" type="ip">
 	  <name>Primary DNS Server</name>
 	  <value>127.0.0.1</value>
