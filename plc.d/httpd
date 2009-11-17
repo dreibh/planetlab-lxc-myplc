@@ -24,6 +24,15 @@ httpd_conf=/etc/httpd/conf/httpd.conf
 ssl_conf=/etc/httpd/conf.d/ssl.conf
 plc_conf=/etc/httpd/conf.d/plc.conf
 
+function disable_file () {
+    file=$1; shift
+    [ -f $file ] && mv -f $file $file.disabled
+}
+function enable_file () {
+    file=$1; shift
+    [ ! -f $file ] && mv -f $file.disabled $file
+}
+
 case "$1" in
     start)
 	if [ "$PLC_API_ENABLED" != "1" -a \
@@ -35,20 +44,14 @@ case "$1" in
 	MESSAGE=$"Starting web server"
 	dialog "$MESSAGE"
 
-	# Set the document root to /data/var/www/html (static files
-	# and PlanetLabConf only, no Drupal or admin pages) if the web
-	# server should not run on this machine.
+	# set document root - not really useful on fedora but just in case
+	sed -i -e "s@^DocumentRoot.*@DocumentRoot \"$DocumentRoot\"@" $httpd_conf
+	# whether WWW is enabled or not : 
 	if [ "$PLC_WWW_ENABLED" != "1" ] ; then
-	    if [ -d "/data" ] ; then 
-	    	sed -i -e "s@^DocumentRoot.*@DocumentRoot \"/data$DocumentRoot\"@" $httpd_conf
-	    	ln -nsf $DocumentRoot/PlanetLabConf /data$DocumentRoot/PlanetLabConf
-		else
-			# NOTE: otherwise, the paths are correct by default.
-			/bin/true
-		fi
+	    # avoid hitting drupal, that would try to connect to the db and create noise
+	    disable_file $DocumentRoot/index.php
 	else
-	    sed -i -e "s@^DocumentRoot.*@DocumentRoot \"$DocumentRoot\"@" $httpd_conf
-	    rm -f /data$DocumentRoot/PlanetLabConf
+	    enable_file $DocumentRoot/index.php
 	fi
 
 	# Set the default include path
