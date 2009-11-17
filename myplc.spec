@@ -300,7 +300,7 @@ fi
 * Wed Apr 29 2009 Marc Fiuczynski <mef@cs.princeton.edu> - MyPLC-4.3-6
 - plc_config.py and plc-config-tty: generalized to work for more diverse
 - MyPLC configurations.
-- plc.d/httpd: only update httpd_conf with /data for chroot'ed MyPLC
+- plc.d/httpd: only update httpd_conf with /data for chroot-ed MyPLC
 - deployments and increase the memory limits in php.ini
 - plc.d/crond: add --full option to vacuumdb
 
