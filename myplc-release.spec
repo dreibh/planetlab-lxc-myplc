@@ -5,7 +5,7 @@
 
 %define name myplc-release
 %define version 4.3
-%define taglevel 31
+%define taglevel 32
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -57,6 +57,11 @@ rm -rf $RPM_BUILD_ROOT
 /etc/myplc-release
 
 %changelog
+* Thu Nov 26 2009 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.3-32
+- turn off drupal on a box that acts as BOOT server but not as WWW server
+- cleanup some obsolete code for old chroot-jail packaging in the process
+- new bootcd-kernel script for keeping bootcd variants up2date
+
 * Mon Nov 09 2009 Daniel Hokka Zakrisson <daniel@hozac.com> - MyPLC-4.3-31
 - Make the /etc/hosts manipulation optional.
 
