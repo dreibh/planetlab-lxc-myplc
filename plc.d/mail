@@ -28,7 +28,10 @@ case "$1" in
 
 	# Add apache to list of users that can send mail as others
 	# without a warning, so that the API can send out mail.
-	echo "apache" >/etc/mail/trusted-users
+	count=$(grep ^apache /etc/mail/trusted-users|wc -l)
+	if [ $count -eq 0 ] ; then
+	        echo "apache" >>/etc/mail/trusted-users
+	fi
 
 	(exec 3>&- 4>&- ; service sendmail start)
 	check
