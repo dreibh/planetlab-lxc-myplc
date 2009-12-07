@@ -1,0 +1,9 @@
+########
+default_person_tags = [
+    { 'tagname' : 'exempt_person_until',
+      'description' : 'Exclude this person from MyOps until given date (YYYYMMDD)',
+      'category' : 'person/myops', 
+      'min_role_id' : 10} ,
+]
+
+for person_type in default_person_tags: SetTagType (person_type)

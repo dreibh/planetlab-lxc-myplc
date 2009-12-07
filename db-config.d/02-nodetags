@@ -12,6 +12,11 @@ default_node_tags = [
       'description' : 'typically "alpha", "beta", or "production"',
       'category' : 'node/operation', 
       'min_role_id' : 10} ,
+
+    { 'tagname' : 'exempt_node_until',
+      'description' : 'Exclude this node from MyOps until given date (YYYYMMDD)',
+      'category' : 'node/myops', 
+      'min_role_id' : 10} ,
     ]
 
 for node_type in default_node_tags: SetTagType (node_type)
