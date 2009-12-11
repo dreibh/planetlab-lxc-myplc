@@ -828,6 +828,28 @@ DO NOT EDIT. This file was automatically generated at
 
         return buf.getvalue()
 
+    def validate_type(self, variable_type, value):
+
+        # ideally we should use the "validate_*" methods in PLCAPI or
+        # even declare some checks along with the default
+        # configuration (using RELAX NG?) but this shall work for now.
+        def ip_validator(val):
+            import socket
+            try:
+                socket.inet_aton(val)
+                return True
+            except: return False
+
+        validators = {
+            'email' : lambda val: re.match('[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-_]+\.[a-zA-Z]+', val),
+            'ip': ip_validator
+            }
+
+        # validate it if not a know type.
+        validator = validators.get(variable_type, lambda x: True)
+        return validator(value)
+
+
 
 # xml.dom.minidom.Text.writexml adds surrounding whitespace to textual
 # data when pretty-printing. Override this behavior.
@@ -915,6 +937,10 @@ variable_usage= """Edit Commands :
 def get_value (config,  category_id, variable_id):
     (category, variable) = config.get (category_id, variable_id)
     return variable['value']
+
+def get_type (config, category_id, variable_id):
+    (category, variable) = config.get (category_id, variable_id)
+    return variable['type']
 
 def get_current_value (cread, cwrite, category_id, variable_id):
     # the value stored in cwrite, if present, is the one we want
@@ -1017,6 +1043,7 @@ def prompt_variable (cdef, cread, cwrite, category, variable,
 
     while True:
         default_value = get_value(cdef,category_id,variable_id)
+        variable_type = get_type(cdef,category_id,variable_id)
         current_value = get_current_value(cread,cwrite,category_id, variable_id)
         varname = get_varname (cread,category_id, variable_id)
         
@@ -1053,9 +1080,12 @@ def prompt_variable (cdef, cread, cwrite, category, variable,
             else:
                 print "No support for next category"
         else:
-            variable['value'] = answer
-            cwrite.set(category,variable)
-            return
+            if cdef.validate_type(variable_type, answer):
+                variable['value'] = answer
+                cwrite.set(category,variable)
+                return
+            else:
+                print "Not a valid value"
 
 def prompt_variables_all (cdef, cread, cwrite, show_comments):
     try:
