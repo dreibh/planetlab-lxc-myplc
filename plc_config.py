@@ -841,7 +841,7 @@ DO NOT EDIT. This file was automatically generated at
             except: return False
 
         validators = {
-            'email' : lambda val: re.match('[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-_]+\.[a-zA-Z]+', val),
+            'email' : lambda val: re.match('\A[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9._\-]+\.[a-zA-Z]+\Z', val),
             'ip': ip_validator
             }
 
