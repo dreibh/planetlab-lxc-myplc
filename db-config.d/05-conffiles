@@ -278,6 +278,20 @@ conf_files = [
      'error_cmd': '',
      'ignore_cmd_errors': False,
      'always_update': False},
+    
+    # /etc/sfa/sfa_config
+    {'enabled': True,
+     'source': u'PlanetLabConf/sfa_config', 
+     'dest': u'/etc/sfa/sfa_config', 
+     'file_permissions': u'644', 
+     'file_owner': u'root', 
+     'file_group': u'root',
+     'preinstall_cmd': u'mkdir /etc/sfa', 
+     'postinstall_cmd': '', 
+     'error_cmd': '', 
+     'ignore_cmd_errors': False, 
+     'always_update': False}
+
     ]
 
 for conf_file in conf_files:
