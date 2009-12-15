@@ -281,7 +281,7 @@ conf_files = [
     
     # /etc/sfa/sfa_config
     {'enabled': True,
-     'source': u'PlanetLabConf/sfa_config', 
+     'source': u'PlanetLabConf/sfa_config.php', 
      'dest': u'/etc/sfa/sfa_config', 
      'file_permissions': u'644', 
      'file_owner': u'root', 
