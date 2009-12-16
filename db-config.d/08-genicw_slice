@@ -1,0 +1,26 @@
+# Create/update system slices
+
+# get the MyPLC url
+url = GetMyPLCURL()
+
+description = """Geni Component Manager Slice .
+This slice provides a backdoor to Node Manager and is used by the Geni/SFA
+Component Manger.
+"""
+
+slice = \
+{
+    'name': plc['slice_prefix'] + "_genicw",
+    'description': description,
+    'url': url,
+    'instantiation': "plc-instantiated",
+    # Renew forever (minus one day, work around date conversion weirdness)
+    'expires': 0x7fffffff - (60 * 60 * 24)
+}
+    
+tags = \
+[
+    ('system', "1"),
+]
+
+SetSlice(slice,tags)
