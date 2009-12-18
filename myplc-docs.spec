@@ -5,7 +5,7 @@
 
 %define name myplc-docs
 %define version 4.3
-%define taglevel 32
+%define taglevel 33
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -87,6 +87,12 @@ rm -rf $RPM_BUILD_ROOT
 /var/www/html/planetlab/doc/
 
 %changelog
+* Fri Dec 18 2009 Baris Metin <Talip-Baris.Metin@sophia.inria.fr> - MyPLC-4.3-33
+- * validate input according to type in plc_config
+- * added the _genicw system slice
+- * add tag types for sites and persons
+- * add new tags for nodes and slices for exemption from myops
+
 * Thu Nov 26 2009 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.3-32
 - turn off drupal on a box that acts as BOOT server but not as WWW server
 - cleanup some obsolete code for old chroot-jail packaging in the process
