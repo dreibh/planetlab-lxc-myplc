@@ -58,9 +58,7 @@ Requires: PLCWWW
 Requires: www-register-wizard
 Requires: nodeconfig
 Requires: PLCAPI
-# TODO: pack pcucontrol as a separate package. myplc only requires
-# pcucontrol (which is now provided by monitor-server).
-Requires: monitor-server
+Requires: pcucontrol
 Requires: bootstrapfs-%{pldistro}-%{_arch}
 Requires: myplc-docs
 Requires: myplc-release
