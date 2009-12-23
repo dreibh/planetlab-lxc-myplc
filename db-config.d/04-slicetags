@@ -138,7 +138,7 @@ slicetag_types = \
     {'tagname': "rawdisk",
      'description': "map unused raw disk devices into the slice",
      'category' : 'slice/access', # we should get rid of this category thing
-     'min_role_id': 20}
+     'min_role_id': 20},
 
     { 'tagname' : 'exempt_slice_until',
       'description' : 'Exclude this slice from MyOps until given date (YYYYMMDD)',
