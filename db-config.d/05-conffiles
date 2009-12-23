@@ -188,10 +188,10 @@ conf_files = [
      'error_cmd': '',
      'ignore_cmd_errors': False,
      'always_update': False},
-    
-    # Kernel parameters
+
+    # Kernel sysctl parameters
     {'enabled': True,
-     'source': 'PlanetLabConf/sysctl.php',
+     'source': 'PlanetLabConf/sysctl.conf',
      'dest': '/etc/sysctl.conf',
      'file_permissions': '644',
      'file_owner': 'root',
@@ -201,7 +201,7 @@ conf_files = [
      'error_cmd': '',
      'ignore_cmd_errors': False,
      'always_update': False},
-    
+
     # Sendmail configuration
     {'enabled': True,
      'source': 'PlanetLabConf/sendmail.mc',
