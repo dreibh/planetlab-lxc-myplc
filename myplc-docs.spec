@@ -5,7 +5,7 @@
 
 %define name myplc-docs
 %define version 4.3
-%define taglevel 34
+%define taglevel 35
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -87,6 +87,9 @@ rm -rf $RPM_BUILD_ROOT
 /var/www/html/planetlab/doc/
 
 %changelog
+* Wed Dec 23 2009 Marc Fiuczynski <mef@cs.princeton.edu> - MyPLC-4.3-35
+- - Change sysctl.conf source to be PlanetLabConfsysctl.con rather than the php script.
+
 * Tue Dec 22 2009 Baris Metin <Talip-Baris.Metin@sophia.inria.fr> - MyPLC-4.3-34
 - depend on pcucontrol
 
