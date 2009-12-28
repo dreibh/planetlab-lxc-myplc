@@ -139,12 +139,19 @@ case "$1" in
 	    fi
 	    ssl_key=PLC_${server}_SSL_KEY
 	    ssl_crt=PLC_${server}_SSL_CRT
+	    ssl_ca_crt=PLC_${server}_CA_SSL_CRT
 
 	    symlink ${!ssl_crt} /etc/pki/tls/certs/localhost.crt
 	    symlink ${!ssl_key} /etc/pki/tls/private/localhost.key
+	    symlink ${!ssl_ca_crt} /etc/pki/tls/certs/server-chain.crt
 	    symlink ${!ssl_crt} /etc/httpd/conf/ssl.crt/server.crt
 	    symlink ${!ssl_key} /etc/httpd/conf/ssl.key/server.key
 	done
+
+	# Ensure that the server-chain gets used, as it is off by
+	# default.
+	sed -i -e 's/^#SSLCertificateChainFile /SSLCertificateChainFile /' \
+	    /etc/httpd/conf.d/ssl.conf
 
 	result "$MESSAGE"
 	;;
