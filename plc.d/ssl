@@ -132,7 +132,7 @@ case "$1" in
 	# 4) and /etc/httpd/conf (Fedora Core 2). If the API, boot,
 	# and web servers are all running on the same machine, the web
 	# server certificate takes precedence.
-	for server in API BOOT WWW MONITOR; do
+	for server in API BOOT MONITOR WWW; do
 	    enabled=PLC_${server}_ENABLED
 	    if [ "${!enabled}" != "1" ] ; then
 		continue
