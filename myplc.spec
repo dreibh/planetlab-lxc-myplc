@@ -5,7 +5,7 @@
 
 %define name myplc
 %define version 4.3
-%define taglevel 35
+%define taglevel 36
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -197,6 +197,12 @@ fi
 /usr/share/myplc
 
 %changelog
+* Thu Dec 31 2009 Marc Fiuczynski <mef@cs.princeton.edu> - MyPLC-4.3-36
+- - fix to make sure when API, BOOT, MONITOR are on the same
+- machine as WWW that the SSL key,cert for WWW takes precedence.
+- - Do proper setup for SSL CA certficate to be used as the server
+- chain.
+
 * Wed Dec 23 2009 Marc Fiuczynski <mef@cs.princeton.edu> - MyPLC-4.3-35
 - - Change sysctl.conf source to be PlanetLabConfsysctl.con rather than the php script.
 
