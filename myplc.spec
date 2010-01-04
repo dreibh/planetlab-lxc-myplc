@@ -9,12 +9,10 @@
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
-Summary: PlanetLab Central (PLC) Portable Installation
 Name: %{name}
 Version: %{version}
 Release: %{release}
 License: PlanetLab
-Group: Applications/Systems
 Source0: %{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildArch: noarch
@@ -23,6 +21,12 @@ Vendor: PlanetLab
 Packager: PlanetLab Central <support@planet-lab.org>
 Distribution: PlanetLab %{plrelease}
 URL: %(echo %{url} | cut -d ' ' -f 2)
+
+
+
+####################### myplc
+Summary: PlanetLab Central (PLC) Portable Installation
+Group: Applications/Systems
 
 # as much as possible, requires should go in the subpackages specfile
 Requires: bzip2
@@ -62,6 +66,7 @@ Requires: pcucontrol
 Requires: bootstrapfs-%{pldistro}-%{_arch}
 Requires: myplc-docs
 Requires: myplc-release
+Requires: myplc-config
 
 # argh - ugly - we might wish to use something from build/config.%{pldistro} instead
 %if "%{pldistro}" == "onelab"
@@ -78,6 +83,18 @@ server: the core components of PLC. The installation may be customized
 through a graphical interface. All PLC services are started up and
 shut down through a single System V init script installed in the host
 system.
+
+####################### myplc-config
+
+%package config
+
+Summary: PlanetLab Central (PLC) configuration python module
+Group: Applications/Systems
+Requires: python
+
+%description config
+This package provides the Python module to configure MyPLC.
+
 
 %prep
 %setup -q
@@ -194,7 +211,12 @@ fi
 /usr/bin/mtail.py*
 /usr/bin/plc-check-ssl-peering.py*
 /usr/bin/plc-orphan-accounts.py*
-/usr/share/myplc
+/usr/share/myplc/bashrc
+
+%files config
+%defattr(-,root,root,-)
+/usr/share/myplc/plc_config.py*
+
 
 %changelog
 * Thu Dec 31 2009 Marc Fiuczynski <mef@cs.princeton.edu> - MyPLC-4.3-36
