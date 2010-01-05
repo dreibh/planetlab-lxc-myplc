@@ -13,9 +13,11 @@
 
 import sys
 
-default_output       = "/var/www/html/sites/sites.kml"
-default_local_icon   = "sites/google-local.png"
-default_foreign_icon = "sites/google-foreign.png"
+default_output           = "/var/www/html/sites/sites.kml"
+default_local_icon       = "sites/google-local.png"
+default_foreign_icon     = "sites/google-foreign.png"
+default_local_builtin    = "palette-4.png"
+default_foreign_builtin  = "palette-3.png"
 
 class KmlMap:
 
@@ -34,16 +36,16 @@ class KmlMap:
     def write(self,string):
         self.output.write(string.encode("UTF-8"))
 
+    # mention local last 
     @staticmethod
     def site_compare (s1,s2):
         n1=s1['name']
         n2=s2['name']
-        if n1<n2:
-            return -1
-        elif n1>n2:
-            return 1
-        else:
-            return 0
+        p1=0
+        if s1['peer_id']: p1=s1['peer_id']
+        p2=0
+        if s2['peer_id']: p2=s2['peer_id']
+        return p2-p1
 
     def refresh (self):
         self.open()
@@ -142,11 +144,11 @@ class KmlMap:
         if self.options.use_google_icons:
             if not peer_id:
                 # local sites
-                iconfile="palette-4.png"
+                iconfile=default_local_builtin
                 xyspec="<x>128</x><y>0</y><w>32</w><h>32</h>"
             else:
                 # remote
-                iconfile="palette-3.png"
+                iconfile=default_foreign_builtin
                 xyspec="<x>160</x><y>0</y><w>32</w><h>32</h>"
             iconurl="root://icons/%(iconfile)s"%locals()
         else:
