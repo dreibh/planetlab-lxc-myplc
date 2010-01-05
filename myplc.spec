@@ -200,7 +200,6 @@ fi
 /etc/support-scripts/gen_aliases.py*
 /etc/support-scripts/renew_reminder.py*
 /etc/support-scripts/renew_reminder_logrotate
-/usr/bin/plc-config
 /usr/bin/plc-config-tty
 /usr/bin/db-config
 /usr/bin/dns-config
@@ -215,6 +214,7 @@ fi
 
 %files config
 %defattr(-,root,root,-)
+/usr/bin/plc-config
 /usr/share/myplc/plc_config.py*
 
 
