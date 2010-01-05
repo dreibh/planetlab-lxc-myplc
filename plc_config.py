@@ -899,8 +899,9 @@ def init_configuration ():
     mainloop_usage= """Available commands:
  Uppercase versions give variables comments, when available
  u/U\t\t\tEdit usual variables
- w/W\t\t\tWrite / Write & reload
- r\t\t\tRestart %s service
+ w\t\t\tWrite
+ r\t\t\tRestart %(service)s service
+ R\t\t\tReload %(service)s service (rebuild config files for sh, python....)
  q\t\t\tQuit (without saving)
  h/?\t\t\tThis help
 ---
@@ -909,10 +910,10 @@ def init_configuration ():
  e/E [<cat>|<var>]\tEdit variables (all, in category, single)
 ---
  c\t\t\tList categories
- v/V [<cat>|<var>]List Variables (all, in category, single)
+ v/V [<cat>|<var>]\tList Variables (all, in category, single)
 ---
 Typical usage involves: u, [l,] w, r, q
-""" % service
+""" % globals()
 
 def usage ():
     command_usage="%prog [options] [default-xml [site-xml [consolidated-xml]]]"
@@ -1186,7 +1187,6 @@ def mainloop (cdef, cread, cwrite, default_config, site_config, consolidated_con
             continue
 
         show_comments=command.isupper()
-        command=command.lower()
 
         mode='ALL'
         if arg:
@@ -1207,10 +1207,10 @@ def mainloop (cdef, cread, cwrite, default_config, site_config, consolidated_con
                 print "%s: no such category or variable" % arg
                 continue
 
-        if (command in "qQ"):
+        if command in "qQ":
             # todo check confirmation
             return
-        elif (command == "w"):
+        elif command == "w":
             try:
                 # Confirm that various constraints are met before saving file.
                 validate_variables = g_configuration.get('validate_variables',{})
@@ -1229,7 +1229,7 @@ def mainloop (cdef, cread, cwrite, default_config, site_config, consolidated_con
             consolidate(default_config, site_config, consolidated_config)
             print ("You might want to type 'r' (restart %s), 'R' (reload %s) or 'q' (quit)" % \
                    (service,service))
-        elif (command == "u"):
+        elif command in "uU":
             global usual_variables
             try:
                 for varname in usual_variables:
@@ -1239,13 +1239,13 @@ def mainloop (cdef, cread, cwrite, default_config, site_config, consolidated_con
             except Exception, inst:
                 if (str(inst) != 'BailOut'):
                     raise
-        elif (command == "r"):
+        elif command == "r":
             restart_service()
-        elif (command == "R"):
+        elif command == "R":
             reload_service()
-        elif (command == "c"):
+        elif command == "c":
             print_categories(cread)
-        elif (command in "eE"):
+        elif command in "eE":
             if mode == 'ALL':
                 prompt_variables_all(cdef, cread, cwrite,show_comments)
             elif mode == 'CATEGORY':
@@ -1255,12 +1255,12 @@ def mainloop (cdef, cread, cwrite, default_config, site_config, consolidated_con
                     prompt_variable (cdef,cread,cwrite,category,variable,
                                      show_comments,False)
                 except Exception, inst:
-                    if (str(inst) != 'BailOut'):
+                    if str(inst) != 'BailOut':
                         raise
-        elif (command in "vVsSlL"):
+        elif command in "vVsSlL":
             show_value=(command in "sSlL")
             (c1,c2,c3) = (cdef, cread, cwrite)
-            if (command in "lL"):
+            if command in "lL":
                 (c1,c2,c3) = (cwrite,cwrite,cwrite)
             if mode == 'ALL':
                 show_variables_all(c1,c2,c3,show_value,show_comments)
