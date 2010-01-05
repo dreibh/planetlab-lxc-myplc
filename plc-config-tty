@@ -11,7 +11,7 @@ def validator(validated_variables):
         errStr="PLC_API_MAINTENANCE_USER=%s cannot be the same as PLC_ROOT_USER=%s"%(maint_user,root_user)
         raise plc_config.ConfigurationException(errStr)
 
-usual_variables = [ \
+usual_variables = [
     "PLC_NAME",
     "PLC_SHORTNAME",
     "PLC_SLICE_PREFIX",
