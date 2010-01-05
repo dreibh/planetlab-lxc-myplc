@@ -39,11 +39,8 @@ class KmlMap:
     # mention local last 
     @staticmethod
     def site_compare (s1,s2):
-        n1=s1['name']
-        n2=s2['name']
-        p1=0
+        p1 = p2 = 0
         if s1['peer_id']: p1=s1['peer_id']
-        p2=0
         if s2['peer_id']: p2=s2['peer_id']
         return p2-p1
 
