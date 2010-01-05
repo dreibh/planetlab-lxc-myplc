@@ -20,10 +20,11 @@
 echo "* myplc-native: Installing configuration scripts"
 pldistro=$1; shift
 RPM_BUILD_ROOT=$1 ; shift
+PYTHON_SITEARCH=`python -c 'from distutils.sysconfig import get_python_lib; print get_python_lib(1)'`
 rm -rf ${RPM_BUILD_ROOT}
 mkdir -p ${RPM_BUILD_ROOT}
-echo "* myplc-native: installing plc_config.py in /usr/share/myplc"
-install -D -m 755 plc_config.py ${RPM_BUILD_ROOT}/usr/share/myplc/plc_config.py
+echo "* myplc-native: installing plc_config.py in " ${PYTHON_SITEARCH}
+install -D -m 755 plc_config.py ${RPM_BUILD_ROOT}/${PYTHON_SITEARCH}/plc_config.py
 install -D -m 644 bashrc ${RPM_BUILD_ROOT}/usr/share/myplc/bashrc
 echo "* myplc-native: installing scripts in /usr/bin"
 install -D -m 755 plc-config ${RPM_BUILD_ROOT}/usr/bin/plc-config

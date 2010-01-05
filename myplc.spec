@@ -8,6 +8,7 @@
 %define taglevel 36
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
+%global python_sitearch	%( python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)" )
 
 Name: %{name}
 Version: %{version}
@@ -161,10 +162,6 @@ if [ -x /sbin/chkconfig ] ; then
     /sbin/chkconfig --add plc
     /sbin/chkconfig plc on
 fi
-pushd /usr/share/myplc &> /dev/null
-python plc_config.py build
-python plc_config.py install
-popd &> /dev/null
 
 %triggerpostun -- %{name}
 # 0 = erase, 1 = upgrade
@@ -215,7 +212,7 @@ fi
 %files config
 %defattr(-,root,root,-)
 /usr/bin/plc-config
-/usr/share/myplc/plc_config.py*
+%{python_sitearch}/plc_config.py*
 
 
 %changelog
