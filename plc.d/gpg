@@ -113,7 +113,12 @@ EOF
 	    rpm --allmatches -e gpg-pubkey
 	    check
 	fi
-	rpm --import /etc/pki/rpm-gpg/*
+	# starting with rpm-4.6, this fails when run a second time
+	# it would be complex to do this properly based on the filename, 
+	# as /etc/pki/rpm-gpg/ typically has many symlinks to the same file
+	# see also http://fedoranews.org/tchung/gpg/
+	# so just ignore the result
+	rpm --import /etc/pki/rpm-gpg/* || :
 	check
 
 	# Make GPG key readable by apache so that the API can sign peer requests
