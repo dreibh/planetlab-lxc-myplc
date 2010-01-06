@@ -159,12 +159,12 @@ case "$1" in
 
 	# Create the databases if necessary
 	if ! psql -U $PLC_DB_USER -c "" $PLC_DB_NAME >/dev/null 2>&1 ; then
-	    createdb -U postgres --encoding=UNICODE --owner=$PLC_DB_USER $PLC_DB_NAME
+	    createdb -U postgres --template=template0 --encoding=UNICODE --owner=$PLC_DB_USER $PLC_DB_NAME
 	    psql -U $PLC_DB_USER -f /usr/share/plc_api/$PLC_DB_NAME.sql $PLC_DB_NAME
 	fi
 	check
 	if ! psql -U $PLC_DB_USER -c "" drupal >/dev/null 2>&1 ; then
-	    createdb -U postgres --encoding=UNICODE --owner=$PLC_DB_USER drupal
+	    createdb -U postgres --template=template0 --encoding=UNICODE --owner=$PLC_DB_USER drupal
             psql -U $PLC_DB_USER -f /var/www/html/database/database.pgsql drupal 
 	fi
 	check
