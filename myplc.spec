@@ -41,7 +41,6 @@ Requires: php-pgsql
 Requires: curl
 Requires: rsync
 Requires: python-devel
-Requires: vixie-cron
 Requires: yum
 Requires: PyXML
 Requires: createrepo
@@ -56,6 +55,11 @@ Requires: vim-minimal
 Requires: findutils
 Requires: xmlsec1
 Requires: xmlsec1-openssl
+%if "%{distro}" == "Fedora" && %{distrorelease} >= 10
+Requires: cronie
+%else
+Requires: vixie-cron
+%endif
 # planetlab stuff
 Requires: bootmanager
 Requires: bootcd-%{pldistro}-%{_arch}
