@@ -125,9 +125,13 @@ case "$1" in
 	psql -U $PLC_DB_USER -c "UPDATE persons SET email='$PLC_API_MAINTENANCE_USER' WHERE person_id=1" $PLC_DB_NAME
 
 	# Update the Drupal site_name variable
+	# also turn off drupal native user registration
 	psql -U $PLC_DB_USER drupal <<EOF
 DELETE FROM variable WHERE name = 'site_name';
 INSERT INTO variable (name, value) VALUES ('site_name', 's:${#PLC_NAME}:"$PLC_NAME";');
+DELETE FROM variable WHERE name = 'user_register';
+INSERT INTO variable (name, value) VALUES ('user_register', 's:1:"0";');
+DELETE FROM cache;
 EOF
 
 	# Bootstrap the DB
