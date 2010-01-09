@@ -5,7 +5,7 @@
 
 %define name myplc
 %define version 4.3
-%define taglevel 36
+%define taglevel 37
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 %global python_sitearch	%( python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)" )
@@ -220,6 +220,11 @@ fi
 
 
 %changelog
+* Sat Jan 09 2010 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.3-37
+- support for fedora 12
+- new package myplc-config for use by sfa
+- drupal user registration turned off
+
 * Thu Dec 31 2009 Marc Fiuczynski <mef@cs.princeton.edu> - MyPLC-4.3-36
 - - fix to make sure when API, BOOT, MONITOR are on the same
 - machine as WWW that the SSL key,cert for WWW takes precedence.
