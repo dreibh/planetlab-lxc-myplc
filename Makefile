@@ -6,7 +6,7 @@ BINARIES = plc-config plc-config-tty db-config dns-config \
 	clean-empty-dirs.py mtail.py \
 	plc-check-ssl-peering.py plc-map.py plc-kml.py plc-orphan-accounts.py \
 	support-scripts/renew_reminder.py support-scripts/gen_aliases.py 
-INIT_SCRIPTS = api bootcd bootmanager db dns functions gpg httpd mail network packages postgresql ssh ssl
+INIT_SCRIPTS = api bootcd db dns functions gpg httpd mail network packages postgresql ssh ssl
 
 INITS=$(addprefix plc.d/,$(INIT_SCRIPTS))
 
