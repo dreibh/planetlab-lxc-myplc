@@ -73,11 +73,6 @@ Requires: myplc-docs
 Requires: myplc-release
 Requires: myplc-config
 
-# argh - ugly - we might wish to use something from build/config.%{pldistro} instead
-%if "%{pldistro}" == "onelab"
-Requires: dummynet_image
-%endif
-
 %define debug_package %{nil}
 
 %description
