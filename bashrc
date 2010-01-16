@@ -35,3 +35,18 @@ function clear_known_hosts () {
         sed -i "/$hostname/d" ~/.ssh/known_hosts
     done
 }	
+
+# convenience 
+alias mtail=mtail.py
+
+# navigators - alphabetical
+alias gobmsource="cd /usr/share/bootmanager"
+alias goboot="cd /var/www/html/boot"
+alias godrupal="cd /var/www/html/planetlab"
+alias gohttplog="cd /var/log/httpd"
+alias goinit="cd /etc/plc.d"
+alias golog="cd /var/log/"
+alias goplcapi="cd /usr/share/plc_api"
+alias gosqllog="cd /var/lib/pgsql/data/pg_log"
+alias goyum="cd /var/www/html/install-rpms"
+
