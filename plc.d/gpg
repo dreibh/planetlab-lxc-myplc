@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# priority: 500
+# priority: 400
 #
 # Generate GPG keys
 #

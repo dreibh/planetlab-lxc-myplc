@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# priority: 400
+# priority: 300
 #
 # Generate SSL certificates
 #

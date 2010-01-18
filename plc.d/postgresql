@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# priority: 300
+# priority: 700
 #
 # Manage the PostgreSQL database server
 #

@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# priority: 450
+# priority: 800
 #
 # Configure the API. Must be done after SSL certificates are generated
 # and before the API web server is brought up.

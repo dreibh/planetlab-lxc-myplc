@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# priority: 250
+# priority: 200
 #
 # Start local mail server.
 #

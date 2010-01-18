@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# priority: 850
+# priority: 950
 #
 # Start local DNS server to provide minimal DNS forward resolution for
 # ourselves and our nodes.

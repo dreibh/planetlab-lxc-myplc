@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# priority: 800
+# priority: 900
 #
 # Bootstrap the database
 #

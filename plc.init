@@ -35,10 +35,11 @@ verbose=0
 # but that's maybe a good thing, that all is done at first start
 ###
 
+# do not consider files that contain '.', '~' or 'functions' in the name
 steps=($(
 for step in /etc/plc.d/* ; do
     stepname=$(basename $step)
-    plainstepname=$(echo $stepname | sed -e 's,\.,,' -e 's,~,,')
+    plainstepname=$(echo $stepname | sed -e 's,\.,,' -e 's,~,,' -e 's,functions,,' )
     if [ -f $step -a -x $step -a "$stepname" = "$plainstepname" ] ; then
 	priority=$(sed -ne 's/# priority: \(.*\)/\1/p' $step)
 	echo $priority $stepname
