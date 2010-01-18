@@ -1,3 +1,7 @@
+# -*-python-*-
+# $Id$
+# $URL$
+####################
 # Create/update system slices
 
 # get the MyPLC url

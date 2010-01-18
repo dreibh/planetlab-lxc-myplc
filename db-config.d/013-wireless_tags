@@ -1,24 +1,10 @@
+# -*-python-*-
+# $Id: 012-interface_tags -1   $
+# $URL: svn+ssh://thierry@svn.planet-lab.org/svn/MyPLC/trunk/db-config.d/012-interface_tags $
 #################### interface settings
 # xxx this should move to PLC/Accessors
 
-# Setup default slice attribute types
-setting_types = \
-[
-    {'category' : "interface/general",
-     'tagname' : "ifname",
-     'description': "Set interface name, instead of eth0 or the like",
-     'min_role_id' : 40},
-
-    {'category' : "interface/multihome",
-     'tagname' : "alias",
-     'description': "Specifies that the network is used for multihoming",
-     'min_role_id' : 40},
-    
-    {'category' : "interface/hidden",
-     'tagname' : "backdoor",
-     'description': "For testing new settings",
-     'min_role_id' : 10},
-    ] + [
+wireless_interface_types = [
 
     { 'category' : "interface/wifi",
       'tagname' : x,
@@ -58,5 +44,5 @@ setting_types = \
     ]
     ]
 
-for setting_type in setting_types:
+for setting_type in wireless_interface_types:
     SetTagType(setting_type)

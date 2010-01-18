@@ -1,3 +1,7 @@
+# -*-python-*-
+# $Id$
+# $URL$
+####################
 # Create/update system slices
 
 # get the MyPLC url
@@ -10,7 +14,7 @@ Component Manger.
 
 slice = \
 {
-    'name': plc['slice_prefix'] + "_genicw",
+    'name': plc['slice_prefix'] + "_sfacm",
     'description': description,
     'url': url,
     'instantiation': "plc-instantiated",

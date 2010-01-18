@@ -1,3 +1,6 @@
+# -*-python-*-
+# $Id$
+# $URL$
 #################### node tags
 default_node_tags = [
     { 'tagname' : 'arch',
@@ -13,10 +16,6 @@ default_node_tags = [
       'category' : 'node/operation', 
       'min_role_id' : 10} ,
 
-    { 'tagname' : 'exempt_node_until',
-      'description' : 'Exclude this node from MyOps until given date (YYYYMMDD)',
-      'category' : 'node/myops', 
-      'min_role_id' : 10} ,
     ]
 
 for node_type in default_node_tags: SetTagType (node_type)

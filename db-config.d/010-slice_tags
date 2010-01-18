@@ -1,3 +1,6 @@
+# -*-python-*-
+# $Id$
+# $URL$
 #################### slice tag types
 # xxx this should move to PLC/Accessors
 

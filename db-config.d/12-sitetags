@@ -1,9 +1,0 @@
-########
-default_site_tags = [
-    { 'tagname' : 'exempt_site_until',
-      'description' : 'Exclude this site from MyOps until given date (YYYYMMDD)',
-      'category' : 'site/myops', 
-      'min_role_id' : 10} ,
-]
-
-for site_type in default_site_tags: SetTagType (site_type)

@@ -1,24 +1,10 @@
-# Create/update the default administrator account (should be person_id 2).
+# -*-python-*-
+# $Id$
+# $URL$
+#################### 
+# Create/update and populate the default site (should be site_id 1)
 
-admin = { 'person_id': 2,
-          'first_name': "Default",
-          'last_name': "Administrator",
-          'email': plc['root_user'],
-          'password': plc['root_password'] }
-persons = GetPersons([admin['person_id']])
-if not persons:
-    person_id = AddPerson(admin)
-    if person_id != admin['person_id']:
-        # Huh? Someone deleted the account manually from the database.
-        DeletePerson(person_id)
-        raise Exception, "Someone deleted the \"%s %s\" account from the database!" % \
-              (admin['first_name'], admin['last_name'])
-    UpdatePerson(person_id, { 'enabled': True })
-else:
-    person_id = persons[0]['person_id']
-    UpdatePerson(person_id, admin)
-
-# Create/update the default site (should be site_id 1)
+### plc_www holds the contents of the PLC_WWW configuration category
 if plc_www['port'] == '80':
     url = "http://" + plc_www['host'] + "/"
 elif plc_www['port'] == '443':
