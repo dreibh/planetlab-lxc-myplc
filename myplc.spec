@@ -63,6 +63,7 @@ Requires: vixie-cron
 # planetlab stuff
 Requires: bootmanager
 Requires: bootcd-%{pldistro}-%{_arch}
+Requires: bootcd-initscripts
 Requires: PLCWWW
 Requires: www-register-wizard
 Requires: nodeconfig
@@ -109,17 +110,6 @@ popd
 
 %clean
 rm -rf $RPM_BUILD_ROOT
-
-# If run under sudo
-if [ -n "$SUDO_USER" ] ; then
-    # Allow user to delete the build directory
-    chown -h -R $SUDO_USER .
-    # Some temporary cdroot files like /var/empty/sshd and
-    # /usr/bin/sudo get created with non-readable permissions.
-    find . -not -perm +0600 -exec chmod u+rw {} \;
-    # Allow user to delete the built RPM(s)
-    [ -d %{_rpmdir}/noarch ] && chown -h -R $SUDO_USER %{_rpmdir}/noarch
-fi
 
 %pre
 if [ -x %{_sysconfdir}/init.d/plc ] ; then
