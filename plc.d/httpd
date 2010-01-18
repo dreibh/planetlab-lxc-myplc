@@ -1,4 +1,6 @@
 #!/bin/bash
+# $Id$
+# $URL$
 #
 # priority: 600
 #
@@ -6,8 +8,6 @@
 #
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
-#
-# $Id$
 #
 
 # Source function library and configuration

@@ -1,11 +1,11 @@
 # -*-Shell-script-*-
+# $Id$
+# $URL$
 #
 # Common functions for PLC startup/shutdown scripts
 #
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
-#
-# $Id$
 #
 
 export PATH=/sbin:/bin:/usr/bin:/usr/sbin
