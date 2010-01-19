@@ -71,7 +71,7 @@ def main():
     parser.add_option("-v","--verbose",dest="verbose",action="store_true",default=False,
                       help="Run verbosely")
 
-    (options,args) = parser.parse_args()
+    (options,steps) = parser.parse_args()
     
     # Load variables into dictionaries
     for category_id, (category, variablelist) in variables.iteritems():
@@ -81,16 +81,26 @@ def main():
     directory="/etc/planetlab/db-config.d"
     snippets = GetSnippets(directory)
 
-    if options.list_steps:
-        for snippet in snippets:
+    for snippet in snippets:
+        
+        selected=False
+        # no steps provided on the command-line : run them all
+        if not steps:
+            selected=True
+        else:
+            for step in steps:
+                if snippet.find (step)>=0 : selected=True
+        if not selected: 
+            continue
+        
+        if options.list_steps:
             if not options.verbose: 
                 print snippet
             else: 
                 print "Found step %s/%s"%(directory,snippet)
                 os.system("rpm -qf %s/%s"%(directory,snippet))
-        sys.exit(0)
-    
-    for snippet in snippets:
+            continue
+
         fullpath = os.path.join(directory, snippet)
         if options.verbose:
             print "Running step %s"%fullpath
