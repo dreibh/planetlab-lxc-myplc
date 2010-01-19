@@ -2,14 +2,6 @@
 # $Id$
 #
 
-BINARIES = plc-config plc-config-tty db-config dns-config \
-	clean-empty-dirs.py mtail.py \
-	plc-check-ssl-peering.py plc-map.py plc-kml.py plc-orphan-accounts.py \
-	support-scripts/renew_reminder.py support-scripts/gen_aliases.py 
-INIT_SCRIPTS = api bootcd db dns functions gpg httpd mail network packages postgresql ssh ssl
-
-INITS=$(addprefix plc.d/,$(INIT_SCRIPTS))
-
 ##########
 tags:
 	find . -type f | egrep -v '.svn/|~$$' | xargs etags
@@ -47,8 +39,9 @@ ifeq (,$(SSHURL))
 	@exit 1
 else
 	+$(RSYNC) plc.init $(SSHURL)/etc/init.d/plc
-	+$(RSYNC) $(BINARIES) $(SSHURL)/usr/bin
-	+$(RSYNC) $(INITS) $(SSHURL)/etc/plc.d
+	+$(RSYNC) bin/ $(SSHURL)/usr/bin/
+	+$(RSYNC) plc.d/ $(SSHURL)/etc/plc.d/
+	+$(RSYNC) db-config.d/ $(SSHURL)/etc/planetlab/db-config.d/
 	+$(RSYNC) plc_config.py $(SSHURL)/usr/lib/python2.5/site-packages/plc_config.py
 	+$(RSYNC) default_config.xml $(SSHURL)/etc/planetlab/default_config.xml
 	@echo XXXXXXXX you might need to run ssh root@$(PLC) service plc start 
