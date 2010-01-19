@@ -102,10 +102,53 @@ This package provides the Python module to configure MyPLC.
 %build
 
 %install
-pushd MyPLC
 rm -rf $RPM_BUILD_ROOT
-./build.sh %{pldistro} $RPM_BUILD_ROOT
-popd
+
+# Install configuration scripts
+echo "* Installing plc_config.py in " ${PYTHON_SITEARCH}
+PYTHON_SITEARCH=`python -c 'from distutils.sysconfig import get_python_lib; print get_python_lib(1)'`
+install -D -m 755 plc_config.py ${RPM_BUILD_ROOT}/${PYTHON_SITEARCH}/plc_config.py
+
+echo "* Installing scripts in /usr/bin"
+mkdir -p ${RPM_BUILD_ROOT}/usr/bin
+rsync -av --exclude .svn bin/ ${RPM_BUILD_ROOT}/usr/bin/
+chmod 755 ${RPM_BUILD_ROOT}/usr/bin/*
+
+# Install initscript 
+echo "* Installing plc initscript"
+install -D -m 755 plc.init ${RPM_BUILD_ROOT}/etc/init.d/plc
+
+# Install initscripts
+echo "* Installing plc.d initscripts"
+find plc.d | cpio -p -d -u ${RPM_BUILD_ROOT}/etc/
+chmod 755 ${RPM_BUILD_ROOT}/etc/plc.d/*
+
+# Install db-config.d files
+echo "* Installing db-config.d files"
+mkdir -p ${RPM_BUILD_ROOT}/etc/planetlab/db-config.d
+cp db-config.d/* ${RPM_BUILD_ROOT}/etc/planetlab/db-config.d
+chmod 444 ${RPM_BUILD_ROOT}/etc/planetlab/db-config.d/*
+
+# Extra scripts (mostly for mail and dns) not installed by myplc by default.  Used in production
+echo "* Installing scripts in /etc/support-scripts"
+mkdir -p ${RPM_BUILD_ROOT}/etc/support-scripts
+cp support-scripts/* ${RPM_BUILD_ROOT}/etc/support-scripts
+chmod 444 ${RPM_BUILD_ROOT}/etc/support-scripts/*
+
+# copy initscripts to etc/plc_sliceinitscripts
+mkdir -p ${RPM_BUILD_ROOT}/etc/plc_sliceinitscripts
+cp plc_sliceinitscripts/* ${RPM_BUILD_ROOT}/etc/plc_sliceinitscripts
+chmod 444 ${RPM_BUILD_ROOT}/etc/plc_sliceinitscripts/*
+
+# Install configuration file
+echo "* myplc: Installing configuration file"
+install -D -m 444 default_config.xml ${RPM_BUILD_ROOT}/etc/planetlab/default_config.xml
+install -D -m 444 plc_config.dtd ${RPM_BUILD_ROOT}/etc/planetlab/plc_config.dtd
+
+echo "* Installing bashrc convenience"
+install -D -m 644 bashrc ${RPM_BUILD_ROOT}/usr/share/myplc/bashrc
+
+# yumgroups.xml and yum repo : let noderepo handle that
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -181,20 +224,9 @@ fi
 /etc/init.d/plc
 /etc/plc.d
 /etc/planetlab
-/etc/plc_sliceinitscripts/sirius
-/etc/support-scripts/gen_aliases.py*
-/etc/support-scripts/renew_reminder.py*
-/etc/support-scripts/renew_reminder_logrotate
-/usr/bin/plc-config-tty
-/usr/bin/db-config
-/usr/bin/dns-config
-/usr/bin/plc-map.py*
-/usr/bin/plc-kml.py*
-/usr/bin/refresh-peer.py*
-/usr/bin/clean-empty-dirs.py*
-/usr/bin/mtail.py*
-/usr/bin/plc-check-ssl-peering.py*
-/usr/bin/plc-orphan-accounts.py*
+/etc/plc_sliceinitscripts
+/etc/support-scripts
+/usr/bin/
 /usr/share/myplc/bashrc
 
 %files config
@@ -299,7 +331,7 @@ fi
 - - Fix /etc/init.d/plc to have command usage show up on the tty rather
 - than the log file
 - - Fix db-config to be a bit more cautious when
-- /etc/planetlab/db-config.d doesn't exist
+- /etc/planetlab/db-config.d doesn''t exist
 - - Clean up db-config approach to ignore .bak, *~, .rpm{save,new}, and
 - .orig files.
 - - Refactor generic plc-config-tty code into plc_config.py.
