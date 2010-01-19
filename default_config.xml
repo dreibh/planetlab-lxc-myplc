@@ -119,6 +119,40 @@ $URL$
       </variablelist>
     </category>
 
+    <category id="plc_flavour">
+      <name>Flavours</name>
+      <description>Defaults for nodes and slices contents.</description>
+      
+      <variablelist>
+	<variable id="slice_arch" type="string">
+	  <name>arch for slivers</name>
+	  <value>@ARCH@</value>
+	  <description>The default 'arch' to use for slivers. This is
+	  useful if you have heterogeneous nodes (i686 and x86_64),
+	  but want slivers to be homogeneous. You need to have the
+	  corresponding vserver variant rpm available for
+	  nodes.</description>
+	</variable>
+
+	<variable id="slice_fcdistro" type="string">
+	  <name>fcdistro for slivers</name>
+	  <value>@FCDISTRO@</value>
+	  <description>The default 'fcdistro' to use for creating
+	  slivers. You need to have the corresponding vserver variant
+	  rpm available for nodes.</description>
+	</variable>
+
+	<variable id="slice_pldistro" type="string">
+	  <name>pldistro for slivers</name>
+	  <value>@PLDISTRO@</value>
+	  <description>The default 'pldistro' to use for creating
+	  slivers. You need to have the corresponding vserver variant
+	  rpm available for nodes.</description>
+	</variable>
+
+      </variablelist>
+    </category>
+
     <category id="plc_net">
       <name>Network</name>
       <description>Network environment.</description>
