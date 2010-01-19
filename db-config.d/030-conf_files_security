@@ -1,0 +1,64 @@
+# -*-python-*-
+# $Id: 030-conf_files 16642 2010-01-18 17:14:40Z thierry $
+# $URL: svn+ssh://thierry@svn.planet-lab.org/svn/MyPLC/trunk/db-config.d/030-conf_files $
+#################### conf files
+
+conf_files = [
+
+    # SSH server configuration
+    # keys for root and site_admin are now handled as part of the specialaccounts NodeManager plugin
+    {'enabled': True,
+     'source': 'PlanetLabConf/sshd_config',
+     'dest': '/etc/ssh/sshd_config',
+     'file_permissions': '600',
+     'file_owner': 'root',
+     'file_group': 'root',
+     'preinstall_cmd': '',
+     'postinstall_cmd': '/etc/init.d/sshd restart',
+     'error_cmd': '',
+     'ignore_cmd_errors': False,
+     'always_update': False},
+    
+    # sudo configuration
+    {'enabled': True,
+     'source': 'PlanetLabConf/sudoers.php',
+     'dest': '/etc/sudoers',
+     'file_permissions': '440',
+     'file_owner': 'root',
+     'file_group': 'root',
+     'preinstall_cmd': '',
+     'postinstall_cmd': '/usr/sbin/visudo -c',
+     'error_cmd': '',
+     'ignore_cmd_errors': False,
+     'always_update': False},
+
+    # GPG signing keys
+    {'enabled': True,
+     'source': 'PlanetLabConf/get_gpg_key.php',
+     'dest': '/etc/pki/rpm-gpg/RPM-GPG-KEY-planetlab',
+     'file_permissions': '644',
+     'file_owner': 'root',
+     'file_group': 'root',
+     'preinstall_cmd': '',
+     'postinstall_cmd': 'rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-planetlab',
+     'error_cmd': '',
+     'ignore_cmd_errors': False,
+     'always_update': False},
+    
+    # Proxy ARP setup
+    {'enabled': True,
+     'source': 'PlanetLabConf/proxies.php',
+     'dest': '/etc/planetlab/proxies',
+     'file_permissions': '644',
+     'file_owner': 'root',
+     'file_group': 'root',
+     'preinstall_cmd': '',
+     'postinstall_cmd': '',
+     'error_cmd': '',
+     'ignore_cmd_errors': False,
+     'always_update': False},
+    
+    ]
+
+for conf_file in conf_files:
+	SetConfFile(conf_file)

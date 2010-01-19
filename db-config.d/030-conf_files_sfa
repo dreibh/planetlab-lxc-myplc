@@ -1,0 +1,25 @@
+# -*-python-*-
+# $Id: 030-conf_files 16642 2010-01-18 17:14:40Z thierry $
+# $URL: svn+ssh://thierry@svn.planet-lab.org/svn/MyPLC/trunk/db-config.d/030-conf_files $
+#################### conf files
+
+conf_files = [
+
+# sfa
+    # /etc/sfa/sfa_config
+    {'enabled': True,
+     'source': u'PlanetLabConf/sfa_config.php', 
+     'dest': u'/etc/sfa/sfa_config', 
+     'file_permissions': u'644', 
+     'file_owner': u'root', 
+     'file_group': u'root',
+     'preinstall_cmd': u'mkdir /etc/sfa', 
+     'postinstall_cmd': '', 
+     'error_cmd': '', 
+     'ignore_cmd_errors': False, 
+     'always_update': False}
+
+    ]
+
+for conf_file in conf_files:
+	SetConfFile(conf_file)

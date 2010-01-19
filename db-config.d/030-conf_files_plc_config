@@ -1,0 +1,57 @@
+# -*-python-*-
+# $Id: 030-conf_files 16642 2010-01-18 17:14:40Z thierry $
+# $URL: svn+ssh://thierry@svn.planet-lab.org/svn/MyPLC/trunk/db-config.d/030-conf_files $
+#################### conf files
+
+conf_files = [
+
+    # PLC configuration
+    {'enabled': True,
+     'source': 'PlanetLabConf/get_plc_config.php',
+     'dest': '/etc/planetlab/plc_config',
+     'file_permissions': '644',
+     'file_owner': 'root',
+     'file_group': 'root',
+     'preinstall_cmd': '',
+     'postinstall_cmd': '',
+     'error_cmd': '',
+     'ignore_cmd_errors': False,
+     'always_update': False},
+    {'enabled': True,
+     'source': 'PlanetLabConf/get_plc_config.php?python',
+     'dest': '/etc/planetlab/plc_config.py',
+     'file_permissions': '644',
+     'file_owner': 'root',
+     'file_group': 'root',
+     'preinstall_cmd': '',
+     'postinstall_cmd': '',
+     'error_cmd': '',
+     'ignore_cmd_errors': False,
+     'always_update': False},
+    {'enabled': True,
+     'source': 'PlanetLabConf/get_plc_config.php?perl',
+     'dest': '/etc/planetlab/plc_config.pl',
+     'file_permissions': '644',
+     'file_owner': 'root',
+     'file_group': 'root',
+     'preinstall_cmd': '',
+     'postinstall_cmd': '',
+     'error_cmd': '',
+     'ignore_cmd_errors': False,
+     'always_update': False},
+    {'enabled': True,
+     'source': 'PlanetLabConf/get_plc_config.php?php',
+     'dest': '/etc/planetlab/php/plc_config.php',
+     'file_permissions': '644',
+     'file_owner': 'root',
+     'file_group': 'root',
+     'preinstall_cmd': '',
+     'postinstall_cmd': '',
+     'error_cmd': '',
+     'ignore_cmd_errors': False,
+     'always_update': False},
+    
+    ]
+
+for conf_file in conf_files:
+	SetConfFile(conf_file)

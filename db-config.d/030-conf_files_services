@@ -1,0 +1,97 @@
+# -*-python-*-
+# $Id: 030-conf_files 16642 2010-01-18 17:14:40Z thierry $
+# $URL: svn+ssh://thierry@svn.planet-lab.org/svn/MyPLC/trunk/db-config.d/030-conf_files $
+#################### conf files
+
+conf_files = [
+
+    # NTP configuration
+    {'enabled': True,
+     'source': 'PlanetLabConf/ntp.conf.php',
+     'dest': '/etc/ntp.conf',
+     'file_permissions': '644',
+     'file_owner': 'root',
+     'file_group': 'root',
+     'preinstall_cmd': '',
+     'postinstall_cmd': '/etc/rc.d/init.d/ntpd restart',
+     'error_cmd': '',
+     'ignore_cmd_errors': False,
+     'always_update': False},
+    {'enabled': True,
+     'source': 'PlanetLabConf/ntp/step-tickers.php',
+     'dest': '/etc/ntp/step-tickers',
+     'file_permissions': '644',
+     'file_owner': 'root',
+     'file_group': 'root',
+     'preinstall_cmd': '',
+     'postinstall_cmd': '/etc/rc.d/init.d/ntpd restart',
+     'error_cmd': '',
+     'ignore_cmd_errors': False,
+     'always_update': False},
+    
+    # Log rotation configuration
+    {'enabled': True,
+     'source': 'PlanetLabConf/logrotate.conf',
+     'dest': '/etc/logrotate.conf',
+     'file_permissions': '644',
+     'file_owner': 'root',
+     'file_group': 'root',
+     'preinstall_cmd': '',
+     'postinstall_cmd': '',
+     'error_cmd': '',
+     'ignore_cmd_errors': False,
+     'always_update': False},
+    # updatedb/locate nightly cron job
+    {'enabled': True,
+     'source': 'PlanetLabConf/slocate.cron',
+     'dest': '/etc/cron.daily/slocate.cron',
+     'file_permissions': '755',
+     'file_owner': 'root',
+     'file_group': 'root',
+     'preinstall_cmd': '',
+     'postinstall_cmd': '',
+     'error_cmd': '',
+     'ignore_cmd_errors': False,
+     'always_update': False},
+    
+    # Sendmail configuration
+    {'enabled': True,
+     'source': 'PlanetLabConf/sendmail.mc',
+     'dest': '/etc/mail/sendmail.mc',
+     'file_permissions': '644',
+     'file_owner': 'root',
+     'file_group': 'root',
+     'preinstall_cmd': '',
+     'postinstall_cmd': '',
+     'error_cmd': '',
+     'ignore_cmd_errors': False,
+     'always_update': False},
+    {'enabled': True,
+     'source': 'PlanetLabConf/sendmail.cf',
+     'dest': '/etc/mail/sendmail.cf',
+     'file_permissions': '644',
+     'file_owner': 'root',
+     'file_group': 'root',
+     'preinstall_cmd': '',
+     'postinstall_cmd': 'service sendmail restart',
+     'error_cmd': '',
+     'ignore_cmd_errors': False,
+     'always_update': False},
+    
+    # /etc/issue
+    {'enabled': True,
+     'source': 'PlanetLabConf/issue.php',
+     'dest': '/etc/issue',
+     'file_permissions': '644',
+     'file_owner': 'root',
+     'file_group': 'root',
+     'preinstall_cmd': '',
+     'postinstall_cmd': '',
+     'error_cmd': '',
+     'ignore_cmd_errors': False,
+     'always_update': False},
+
+    ]
+
+for conf_file in conf_files:
+	SetConfFile(conf_file)

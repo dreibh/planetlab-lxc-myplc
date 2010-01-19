@@ -1,0 +1,26 @@
+# -*-python-*-
+# $Id: 030-conf_files 16642 2010-01-18 17:14:40Z thierry $
+# $URL: svn+ssh://thierry@svn.planet-lab.org/svn/MyPLC/trunk/db-config.d/030-conf_files $
+#################### conf files
+
+conf_files = [
+
+# PoD
+    # Ping of death configuration
+    # the 'restart' postcommand doesn't work, b/c the pod script doesn't support it.
+    {'enabled': True,
+     'source': 'PlanetLabConf/ipod.conf.php',
+     'dest': '/etc/ipod.conf',
+     'file_permissions': '644',
+     'file_owner': 'root',
+     'file_group': 'root',
+     'preinstall_cmd': '',
+     'postinstall_cmd': '/etc/init.d/pod start',
+     'error_cmd': '',
+     'ignore_cmd_errors': False,
+     'always_update': False},
+    
+    ]
+
+for conf_file in conf_files:
+	SetConfFile(conf_file)
