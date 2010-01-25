@@ -4,8 +4,8 @@
 %define url $URL$
 
 %define name myplc-release
-%define version 4.3
-%define taglevel 37
+%define version 5.0
+%define taglevel 0
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -211,3 +211,5 @@ rm -rf $RPM_BUILD_ROOT
 - rename myplc into myplc-chroot and myplc-native into myplc
 - new settings (shortname & hrn_root) for local peer
 
+
+%define module_current_branch 4.3
