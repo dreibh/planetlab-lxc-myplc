@@ -124,6 +124,33 @@ $URL$
       <description>Defaults for nodes and slices contents.</description>
       
       <variablelist>
+	<variable id="node_arch" type="string">
+	  <name>arch for nodes</name>
+	  <value>@ARCH@</value>
+	  <description>The default 'arch' to use when installing nodes.
+	  This is offered mostly for consistency with the rest of the
+	  PLC_FLAVOUR category, but does not have much of a practical
+	  interest. In any case, you need to have the corresponding
+	  bootstrapfs images available for nodes.</description>
+	</variable>
+
+	<variable id="node_fcdistro" type="string">
+	  <name>fcdistro for nodes</name>
+	  <value>@FCDISTRO@</value>
+	  <description>THIS CURRENTLY HAS NO EFFECT.
+          The default 'fcdistro' to use when installing
+	  nodes.You need to have the corresponding bootstrapfs images
+	  available for nodes. THIS CURRENTLY HAS NO EFFECT.</description>
+	</variable>
+
+	<variable id="node_pldistro" type="string">
+	  <name>pldistro for nodes</name>
+	  <value>@PLDISTRO@</value>
+	  <description>The default 'pldistro' to use when installing
+	  nodes. You need to have the corresponding bootstrapfs
+	  images available for nodes.</description>
+	</variable>
+
 	<variable id="slice_arch" type="string">
 	  <name>arch for slivers</name>
 	  <value>@ARCH@</value>
