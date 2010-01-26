@@ -1,6 +1,5 @@
 #
 # $Id$
-#
 %define url $URL$
 
 %define name myplc
@@ -23,7 +22,7 @@ Packager: PlanetLab Central <support@planet-lab.org>
 Distribution: PlanetLab %{plrelease}
 URL: %(echo %{url} | cut -d ' ' -f 2)
 
-
+%define nodefamily %{pldistro}-%{distroname}-%{_arch}
 
 ####################### myplc
 Summary: PlanetLab Central (PLC) Portable Installation
@@ -62,13 +61,17 @@ Requires: vixie-cron
 %endif
 # planetlab stuff
 Requires: bootmanager
-Requires: bootcd-%{pldistro}-%{_arch}
+# make sure to remove 2-fold nodefamily stuff
+Conflicts: bootcd-%{pldistro}-%{_arch}
+Requires: bootcd-%{nodefamily}
 Requires: bootcd-initscripts
 Requires: PLCWWW
 Requires: www-register-wizard
 Requires: nodeconfig
 Requires: PLCAPI
-Requires: bootstrapfs-%{pldistro}-%{_arch}
+# make sure to remove 2-fold nodefamily stuff
+Conflicts: bootstrapfs-%{pldistro}-%{_arch}
+Requires: bootstrapfs-%{nodefamily}
 Requires: myplc-docs
 Requires: myplc-release
 Requires: myplc-config
