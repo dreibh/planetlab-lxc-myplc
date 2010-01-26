@@ -146,7 +146,7 @@ chmod 444 ${RPM_BUILD_ROOT}/etc/plc_sliceinitscripts/*
 # Install configuration file
 echo "* myplc: Installing configuration file"
 install -D -m 444 plc_config.dtd ${RPM_BUILD_ROOT}/etc/planetlab/plc_config.dtd
-sed -e "s,@PLDISTRO@,%{pldistro},g" -e "s,@FCDISTRO@,%{fcdistro},g" -e "s,@ARCH@,%{_arch},g" \
+sed -e "s,@PLDISTRO@,%{pldistro},g" -e "s,@FCDISTRO@,%{distroname},g" -e "s,@ARCH@,%{_arch},g" \
     default_config.xml > ${RPM_BUILD_ROOT}/etc/planetlab/default_config.xml
 chmod 444 ${RPM_BUILD_ROOT}/etc/planetlab/default_config.xml
 
