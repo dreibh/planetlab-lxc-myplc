@@ -61,16 +61,13 @@ Requires: vixie-cron
 %endif
 # planetlab stuff
 Requires: bootmanager
-# make sure to remove 2-fold nodefamily stuff
-Conflicts: bootcd-%{pldistro}-%{_arch}
 Requires: bootcd-%{nodefamily}
 Requires: bootcd-initscripts
 Requires: PLCWWW
 Requires: www-register-wizard
 Requires: nodeconfig
+Requires: nodeyum
 Requires: PLCAPI
-# make sure to remove 2-fold nodefamily stuff
-Conflicts: bootstrapfs-%{pldistro}-%{_arch}
 Requires: bootstrapfs-%{nodefamily}
 Requires: myplc-docs
 Requires: myplc-release
