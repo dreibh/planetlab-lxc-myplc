@@ -4,7 +4,7 @@
 
 %define name myplc
 %define version 5.0
-%define taglevel 0
+%define taglevel 1
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 %global python_sitearch	%( python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)" )
@@ -238,6 +238,14 @@ fi
 
 
 %changelog
+* Fri Jan 29 2010 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-5.0-1
+- first working version of 5.0:
+- pld.c/, db-config.d/ and nodeconfig/ scripts should now sit in the module they belong to
+- nodefamily is 3-fold with pldistro-fcdistro-arch
+- new PLC_FLAVOUR config category
+- reviewed module layout
+- cleaned up old chroot-related build stuff (does not need the build module when building anymore)
+
 * Sat Jan 09 2010 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.3-37
 - support for fedora 12
 - new package myplc-config for use by sfa
