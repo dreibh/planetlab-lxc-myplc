@@ -147,7 +147,7 @@ class PrettyXMLGenerator(XMLGenerator):
 
         self.write('<' + name)
         for (name, value) in attrs.items():
-            self.write(' %s=%s' % (name, quoteattr(value)))
+            self.write(' %s=%s' % (name, quoteattr(value.strip())))
         self.write('/>')
 
         if newl:
