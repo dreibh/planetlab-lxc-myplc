@@ -1,0 +1,29 @@
+# Create/update system slices
+
+# get the MyPLC url
+url = GetMyPLCURL()
+
+description = """DistributedRateLimiting Service.
+Distributed rate limiting allows administrators to set a limit on the aggregate 
+outgoing traffic rate for a set of nodes without putting a single static limit 
+on any individual node. Given an aggregate rate limit, the participating nodes 
+each use a portion of the limit according to the current traffic demands at the nodes."""
+
+slice = \
+{
+    'name': plc['slice_prefix'] + "_drl",
+    'description': description,
+    'url': url,
+    'instantiation': "plc-instantiated",
+    # Renew forever (minus one day, work around date conversion weirdness)
+    'expires': 0x7fffffff - (60 * 60 * 24)
+}
+    
+tags = \
+[
+    ('system', "1"),
+    ('drl', "1"),
+    ('capabilities', "CAP_NET_ADMIN"),
+]
+
+SetSlice(slice,tags)
