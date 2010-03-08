@@ -116,6 +116,7 @@ $URL$
 	  <description>The SSH private key used to access the root
 	  account on your nodes.</description>
 	</variable>
+
       </variablelist>
     </category>
 
@@ -631,6 +632,44 @@ $URL$
       </variablelist>
     </category>
 
+    <category id="plc_omf">
+      <name>Planetlab - OMF Integration</name>
+      <description>Planetlab - OMF integration</description>
+      <variablelist>
+        <variable id="enabled" type="boolean">
+          <name>OMF integration</name>
+          <value>false</value>
+          <description>Enable OMF integration.</description>
+        </variable>
+
+        <!-- xmpp server configuration -->
+        <variable id="xmpp_server" type="string">
+          <name>XMPP server</name>
+          <value>localhost.localdomain</value>
+          <description>The fully qualified hostname of the XMPP server.</description>
+        </variable>
+
+        <variable id="xmpp_user" type="string">
+          <name>XMPP username</name>
+          <value></value>
+          <description>XMPP username (which has admin rights).</description>
+        </variable>
+
+        <variable id="xmpp_password" type="string">
+          <name>XMPP password</name>
+          <value></value>
+          <description>The password of the XMPP user.</description>
+        </variable>
+
+        <!-- omf-slicemgr -->
+        <variable id="slicemgr_url" type="string">
+          <name>OMF Slicemgr URL</name>
+          <value>http://localhost.localdomain:5053/</value>
+          <description>.</description>
+        </variable>
+
+      </variablelist>
+    </category>
 
     <category id="plc_planetflow">
       <name>PlanetFlow Service Configuration</name>
@@ -644,6 +683,7 @@ $URL$
         </variable>
       </variablelist>
     </category>
+
     <category id="plc_monitor">
       <name>Monitoring Service</name>
       <description>The Monitor service that tracks node availablity and repair.</description>
