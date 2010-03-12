@@ -5,7 +5,7 @@
 
 %define name myplc-release
 %define version 5.0
-%define taglevel 1
+%define taglevel 2
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -57,6 +57,11 @@ rm -rf $RPM_BUILD_ROOT
 /etc/myplc-release
 
 %changelog
+* Fri Mar 12 2010 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-5.0-2
+- legacy scripts gen-sites-xml & gen-static-content back in (sigh)
+- new OMF category in the config
+- create the drl system slice
+
 * Fri Jan 29 2010 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-5.0-1
 - first working version of 5.0:
 - pld.c/, db-config.d/ and nodeconfig/ scripts should now sit in the module they belong to
