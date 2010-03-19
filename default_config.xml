@@ -664,7 +664,7 @@ $URL$
         <!-- omf-slicemgr -->
         <variable id="slicemgr_url" type="string">
           <name>OMF Slicemgr URL</name>
-          <value>http://localhost.localdomain:5053/</value>
+          <value>http://localhost.localdomain:5053</value>
           <description>.</description>
         </variable>
 
