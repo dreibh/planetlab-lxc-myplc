@@ -58,6 +58,13 @@ case "$1" in
 	include_path=".:$DocumentRoot/planetlab/includes:$DocumentRoot/plekit/php:$DocumentRoot/generated:/etc/planetlab/php:/usr/share/plc_api/php"
 	sed -i -e "s@[;]*include_path = \"\.:.*\"@include_path = \"$include_path\"@" $php_ini
 
+	# for php-5.3 under fedora12, otherwise issues tons of warning messages
+	# Set timezone in php.ini if not already there
+	if grep '^;date.timezone' $php_ini >& /dev/null; then
+	    dialog 'Setting PHP timezone to GMT'
+	    sed -i -e 's,^;date.timezone.*,date.timezone = GMT,' $php_ini
+	fi
+
 	# Disable default Listen directive
 	sed -i -e '/^Listen/d' $httpd_conf
 
