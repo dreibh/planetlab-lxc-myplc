@@ -49,9 +49,8 @@ verify_or_generate_certificate() {
 
     if [ -f $crt ] ; then
 	# Check if certificate is valid
-	verify=$(openssl verify -CAfile $ca $crt)
 	# Backup if invalid or if the subject has changed
-	if grep -q "error" <<<$verify || \
+	if openssl verify -CAfile $ca $crt | grep -q "error" || \
 	    [ "$(ssl_cname $crt)" != "$cname" ] ; then
             backup_file $crt
             backup_file $ca
