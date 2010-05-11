@@ -55,6 +55,7 @@ verify_or_generate_certificate() {
 	    [ "$(ssl_cname $crt)" != "$cname" ] ; then
             backup_file $crt
             backup_file $ca
+            backup_file $key
 	fi
     fi
 
