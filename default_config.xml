@@ -671,6 +671,20 @@ $URL$
       </variablelist>
     </category>
 
+    <category id="plc_reservation">
+      <name> Reservable Nodes</name>
+      <variablelist>
+	<variable id="granularity" type="int">
+	  <name>Lease granularity</name>
+	  <value>3600</value>
+	  <description>The smallest timeslot that can be allocated to
+	  a node. All leases will be rounded to this granularity, so
+	  e.g. if you set 3600 all leases will start and stop at round
+	  hours.</description>
+	  <variable>
+      </variablelist>
+    </category>
+
     <category id="plc_planetflow">
       <name>PlanetFlow Service Configuration</name>
       <description>Planetflow service definitions used in the netflow slice. </description>
