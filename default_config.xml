@@ -673,6 +673,8 @@ $URL$
 
     <category id="plc_reservation">
       <name> Reservable Nodes</name>
+      <description> Settings related to reservable nodes </description>
+
       <variablelist>
 	<variable id="granularity" type="int">
 	  <name>Lease granularity</name>
@@ -681,7 +683,7 @@ $URL$
 	  a node. All leases will be rounded to this granularity, so
 	  e.g. if you set 3600 all leases will start and stop at round
 	  hours.</description>
-	  <variable>
+	</variable>
       </variablelist>
     </category>
 
