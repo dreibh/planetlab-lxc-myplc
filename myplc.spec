@@ -4,7 +4,7 @@
 
 %define name myplc
 %define version 5.0
-%define taglevel 4
+%define taglevel 5
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 %global python_sitearch	%( python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)" )
@@ -238,6 +238,9 @@ fi
 
 
 %changelog
+* Tue Jun 22 2010 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-5.0-5
+- new setting PLC_RESERVATION_GRANULARITY
+
 * Wed May 12 2010 Talip Baris Metin <Talip-Baris.Metin@sophia.inria.fr> - MyPLC-5.0-4
 - * partial-repo.sh script
 - * preserve key along with certificates
