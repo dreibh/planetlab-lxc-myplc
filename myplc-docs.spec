@@ -40,21 +40,25 @@ http://svn.planet-lab.org/wiki/MyPLCUserGuide
 %build
 rm -rf $RPM_BUILD_ROOT
 
-if [ -d PLCAPI ] ; then pushd PLCAPI ; else pushd plcapi; fi
+# using the new lowercase names, and handling legacy
+[ -d plcapi ] || ln -s PLCAPI plcapi
+pushd plcapi
 # beware that making the pdf file somehow overwrites the html
 make -C doc PLCAPI.pdf 
 rm -f doc/PLCAPI.html
 make -C doc PLCAPI.html 
 popd
 
-if [ -d NodeManager ] ; then pushd NodeManager; else pushd nodemanager ; fi
+[ -d nodemanager ] || ln -s NodeManager nodemnager
+pushd nodemanager
 # beware that making the pdf file somehow overwrites the html
 make -C doc NMAPI.pdf 
 rm -f doc/NMAPI.html
 make -C doc NMAPI.html 
 popd
 
-if [ -d Monitor ] ; then pushd Monitor; else pushd monitor; fi
+[ -d monitor ] || ln -s Monitor monitor 
+pushd monitor
 # beware that making the pdf file somehow overwrites the html
 make -C docs Monitor.pdf 
 rm -f docs/Monitor.html
@@ -64,9 +68,9 @@ popd
 %install
 
 for ext in pdf html; do
-    install -D -m 444 PLCAPI/doc/PLCAPI.$ext $RPM_BUILD_ROOT/var/www/html/planetlab/doc/PLCAPI.$ext
-    install -D -m 444 NodeManager/doc/NMAPI.$ext $RPM_BUILD_ROOT/var/www/html/planetlab/doc/NMAPI.$ext
-    install -D -m 444 Monitor/docs/Monitor.$ext $RPM_BUILD_ROOT/var/www/html/planetlab/doc/Monitor.$ext
+    install -D -m 444 plcapi/doc/PLCAPI.$ext $RPM_BUILD_ROOT/var/www/html/planetlab/doc/PLCAPI.$ext
+    install -D -m 444 nodemanager/doc/NMAPI.$ext $RPM_BUILD_ROOT/var/www/html/planetlab/doc/NMAPI.$ext
+    install -D -m 444 monitor/docs/Monitor.$ext $RPM_BUILD_ROOT/var/www/html/planetlab/doc/Monitor.$ext
 done
 
 ./MyPLC/docbook2drupal.sh "PLC API Documentation (%{pldistro})" \
