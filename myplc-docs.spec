@@ -49,7 +49,7 @@ rm -f doc/PLCAPI.html
 make -C doc PLCAPI.html 
 popd
 
-[ -d nodemanager ] || ln -s NodeManager nodemnager
+[ -d nodemanager ] || ln -s NodeManager nodemanager
 pushd nodemanager
 # beware that making the pdf file somehow overwrites the html
 make -C doc NMAPI.pdf 
