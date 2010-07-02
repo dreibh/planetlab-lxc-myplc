@@ -42,6 +42,10 @@ rm -rf $RPM_BUILD_ROOT
 
 # using the new lowercase names, and handling legacy
 [ -d plcapi ] || ln -s PLCAPI plcapi
+[ -d monitor ] || ln -s Monitor monitor 
+[ -d nodemanager ] || ln -s NodeManager nodemanager
+[ -d myplc ] || ln -s MyPLC myplc
+
 pushd plcapi
 # beware that making the pdf file somehow overwrites the html
 make -C doc PLCAPI.pdf 
@@ -49,7 +53,6 @@ rm -f doc/PLCAPI.html
 make -C doc PLCAPI.html 
 popd
 
-[ -d nodemanager ] || ln -s NodeManager nodemanager
 pushd nodemanager
 # beware that making the pdf file somehow overwrites the html
 make -C doc NMAPI.pdf 
@@ -57,7 +60,6 @@ rm -f doc/NMAPI.html
 make -C doc NMAPI.html 
 popd
 
-[ -d monitor ] || ln -s Monitor monitor 
 pushd monitor
 # beware that making the pdf file somehow overwrites the html
 make -C docs Monitor.pdf 
@@ -73,13 +75,13 @@ for ext in pdf html; do
     install -D -m 444 monitor/docs/Monitor.$ext $RPM_BUILD_ROOT/var/www/html/planetlab/doc/Monitor.$ext
 done
 
-./MyPLC/docbook2drupal.sh "PLC API Documentation (%{pldistro})" \
+./myplc/docbook2drupal.sh "PLC API Documentation (%{pldistro})" \
     $RPM_BUILD_ROOT/var/www/html/planetlab/doc/PLCAPI.html \
     $RPM_BUILD_ROOT/var/www/html/planetlab/doc/PLCAPI.php 
-./MyPLC/docbook2drupal.sh "Node Manager API Documentation (%{pldistro})" \
+./myplc/docbook2drupal.sh "Node Manager API Documentation (%{pldistro})" \
     $RPM_BUILD_ROOT/var/www/html/planetlab/doc/NMAPI.html \
     $RPM_BUILD_ROOT/var/www/html/planetlab/doc/NMAPI.php 
-./MyPLC/docbook2drupal.sh "Monitor API Documentation (%{pldistro})" \
+./myplc/docbook2drupal.sh "Monitor API Documentation (%{pldistro})" \
     $RPM_BUILD_ROOT/var/www/html/planetlab/doc/Monitor.html \
     $RPM_BUILD_ROOT/var/www/html/planetlab/doc/Monitor.php 
 
