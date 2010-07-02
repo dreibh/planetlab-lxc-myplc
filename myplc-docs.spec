@@ -40,21 +40,21 @@ http://svn.planet-lab.org/wiki/MyPLCUserGuide
 %build
 rm -rf $RPM_BUILD_ROOT
 
-pushd PLCAPI
+if [ -d PLCAPI ] ; then pushd PLCAPI ; else pushd plcapi; fi
 # beware that making the pdf file somehow overwrites the html
 make -C doc PLCAPI.pdf 
 rm -f doc/PLCAPI.html
 make -C doc PLCAPI.html 
 popd
 
-pushd NodeManager
+if [ -d NodeManager ] ; then pushd NodeManager; else pushd nodemanager ; fi
 # beware that making the pdf file somehow overwrites the html
 make -C doc NMAPI.pdf 
 rm -f doc/NMAPI.html
 make -C doc NMAPI.html 
 popd
 
-pushd Monitor
+if [ -d Monitor ] ; then pushd Monitor; else pushd monitor; fi
 # beware that making the pdf file somehow overwrites the html
 make -C docs Monitor.pdf 
 rm -f docs/Monitor.html
