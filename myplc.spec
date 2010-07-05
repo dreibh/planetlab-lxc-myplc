@@ -4,7 +4,7 @@
 
 %define name myplc
 %define version 5.0
-%define taglevel 5
+%define taglevel 6
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 %global python_sitearch	%( python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)" )
@@ -238,6 +238,10 @@ fi
 
 
 %changelog
+* Mon Jul 05 2010 Baris Metin <Talip-Baris.Metin@sophia.inria.fr> - MyPLC-5.0-6
+- module name changes
+- start wsgi support
+
 * Tue Jun 22 2010 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-5.0-5
 - new setting PLC_RESERVATION_GRANULARITY
 
