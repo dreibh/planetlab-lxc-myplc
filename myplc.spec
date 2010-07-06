@@ -4,7 +4,7 @@
 
 %define name myplc
 %define version 5.0
-%define taglevel 6
+%define taglevel 7
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 %global python_sitearch	%( python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)" )
@@ -238,6 +238,9 @@ fi
 
 
 %changelog
+* Tue Jul 06 2010 Baris Metin <Talip-Baris.Metin@sophia.inria.fr> - MyPLC-5.0-7
+- disable mod_wsgi
+
 * Mon Jul 05 2010 Baris Metin <Talip-Baris.Metin@sophia.inria.fr> - MyPLC-5.0-6
 - module name changes
 - start wsgi support
