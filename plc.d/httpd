@@ -115,17 +115,17 @@ case "$1" in
 		cat <<EOF
 Listen ${!http_port}
 # create wsgi socket where we have the permission
-WSGISocketPrefix run/wsgi
+### WSGISocketPrefix run/wsgi
 # Make sure that the admin web pages and API are always accessed via SSL
 <VirtualHost *:${!http_port}>
     Redirect /db https://$PLC_WWW_HOST:$PLC_WWW_SSL_PORT/db
     Redirect /planetlab https://$PLC_WWW_HOST:$PLC_WWW_SSL_PORT/planetlab
     Redirect /$PLC_API_PATH https://$PLC_API_HOST:$PLC_API_PORT/$PLC_API_PATH
-    Redirect /$PLC_API_WSGI_PATH/ https://$PLC_API_HOST:$PLC_API_PORT/$PLC_API_WSGI_PATH/
-    WSGIScriptAlias $PLC_API_WSGI_PATH /usr/share/plc_api/ModWSGI.wsgi
+###     Redirect /$PLC_API_WSGI_PATH/ https://$PLC_API_HOST:$PLC_API_PORT/$PLC_API_WSGI_PATH/
+###     WSGIScriptAlias $PLC_API_WSGI_PATH /usr/share/plc_api/ModWSGI.wsgi
     # XX make processes and threads configurable 
-    WSGIDaemonProcess plcapi-wsgi user=apache group=apache processes=1 threads=25
-    WSGIProcessGroup plcapi-wsgi
+###     WSGIDaemonProcess plcapi-wsgi user=apache group=apache processes=1 threads=25
+###     WSGIProcessGroup plcapi-wsgi
 </VirtualHost>
 EOF
 	    fi
@@ -155,9 +155,9 @@ EOF
 </Location>
 
 # mod_wsgi location
-<Location $PLC_API_WSGI_PATH/>
-    SetHandler mod_wsgi
-</Location>
+### <Location $PLC_API_WSGI_PATH/>
+###     SetHandler mod_wsgi
+### </Location>
 EOF
 	    else
 		cat <<EOF
@@ -167,9 +167,9 @@ EOF
 </Location>
 
 # mod_wsgi location
-<Location $PLC_API_WSGI_PATH/>
-    Deny from all
-</Location> 
+### <Location $PLC_API_WSGI_PATH/>
+###     Deny from all
+### </Location> 
 EOF
 	    fi
 
