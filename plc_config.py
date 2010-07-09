@@ -840,9 +840,16 @@ DO NOT EDIT. This file was automatically generated at
                 return True
             except: return False
 
+        def email_validator(val):
+            return re.match('\A[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9._\-]+\.[a-zA-Z]+\Z', val)
+
+        def boolean_validator (val):
+            return val in ['true', 'false']
+
         validators = {
-            'email' : lambda val: re.match('\A[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9._\-]+\.[a-zA-Z]+\Z', val),
-            'ip': ip_validator
+            'email' : email_validator,
+            'ip': ip_validator,
+            'boolean': boolean_validator,
             }
 
         # validate it if not a know type.
