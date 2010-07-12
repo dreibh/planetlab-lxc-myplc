@@ -5,7 +5,7 @@
 
 %define name myplc-docs
 %define version 5.0
-%define taglevel 7
+%define taglevel 8
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -93,6 +93,10 @@ rm -rf $RPM_BUILD_ROOT
 /var/www/html/planetlab/doc/
 
 %changelog
+* Mon Jul 12 2010 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.0-8
+- plc-config-tty now has a validator on booleans
+- e.g. entering 'True' now is rejected rather than silently recording 'false'
+
 * Tue Jul 06 2010 Baris Metin <Talip-Baris.Metin@sophia.inria.fr> - MyPLC-5.0-7
 - disable mod_wsgi
 

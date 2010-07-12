@@ -4,7 +4,7 @@
 
 %define name myplc
 %define version 5.0
-%define taglevel 7
+%define taglevel 8
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 %global python_sitearch	%( python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)" )
@@ -238,6 +238,10 @@ fi
 
 
 %changelog
+* Mon Jul 12 2010 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.0-8
+- plc-config-tty now has a validator on booleans
+- e.g. entering 'True' now is rejected rather than silently recording 'false'
+
 * Tue Jul 06 2010 Baris Metin <Talip-Baris.Metin@sophia.inria.fr> - MyPLC-5.0-7
 - disable mod_wsgi
 
