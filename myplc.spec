@@ -228,8 +228,20 @@ fi
 /etc/planetlab
 /etc/plc_sliceinitscripts
 /etc/support-scripts
-/usr/bin/
 /usr/share/myplc/bashrc
+# keep a detailed list, to avoid duplicate of plc-config,
+# that belongs to the myplc-config rpm
+/usr/bin/plc-config-tty
+/usr/bin/db-config
+/usr/bin/dns-config
+/usr/bin/refresh-peer.py*
+/usr/bin/partial-repo.sh
+/usr/bin/mtail.py*
+/usr/bin/plc-map.py*
+/usr/bin/plc-kml.py*
+/usr/bin/clean-empty-dirs.py*
+/usr/bin/plc-check-ssl-peering.py*
+/usr/bin/plc-orphan-accounts.py*
 
 %files config
 %defattr(-,root,root,-)
