@@ -5,7 +5,7 @@
 
 %define name myplc-release
 %define version 5.0
-%define taglevel 8
+%define taglevel 9
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -57,6 +57,9 @@ rm -rf $RPM_BUILD_ROOT
 /etc/myplc-release
 
 %changelog
+* Thu Jul 15 2010 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.0-9
+- avoid duplication of the plc-config binary in both myplc and myplc-config rpms
+
 * Mon Jul 12 2010 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.0-8
 - plc-config-tty now has a validator on booleans
 - e.g. entering 'True' now is rejected rather than silently recording 'false'
