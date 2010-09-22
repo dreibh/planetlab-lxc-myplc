@@ -39,3 +39,11 @@ for person in all_persons:
             print "PERSON-KEY mismatch %r & KEY %r"%(person,key)
 
         
+### check that foreign persons don't have a site
+# funny thing is, this actually populates stuff properly
+# but the usual refreshpeer does not provide this data, so..
+for person in all_persons:
+    if person['peer_id'] and person['site_ids']:
+        print "WARNING Foreign person %r attached on sites:"%person
+        for site_id in person['site_ids']:
+            print "    %r"%site_hash[site_id]
