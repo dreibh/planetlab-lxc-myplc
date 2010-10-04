@@ -242,6 +242,8 @@ fi
 /usr/bin/clean-empty-dirs.py*
 /usr/bin/plc-check-ssl-peering.py*
 /usr/bin/plc-orphan-accounts.py*
+/usr/bin/spot-aliens.py*
+/usr/bin/spot-dup-accounts.sh
 
 %files config
 %defattr(-,root,root,-)
