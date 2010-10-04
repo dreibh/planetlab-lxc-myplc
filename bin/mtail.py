@@ -49,6 +49,8 @@ example:
 
 	parser.add_option("-u","--usual",action="store_true",dest="plc_mode",default=False,
 			  help="Shortcut for watching /var/log with default settings")
+        parser.add_option("-s","--sfa",action="store_true",dest="sfa_mode",default=False,
+                          help="Shortcut for monitoring server-side SFA log files")
 
 	# verbosity
 	parser.add_option("-v","--verbose", action="store_true", dest="verbose", default=False, 
@@ -66,6 +68,11 @@ example:
 	    self.args.append('/var/log')
             # watch the postgresql logs as well
             self.args.append('/var/lib/pgsql/data/pg_log')
+
+        if self.options.sfa_mode:
+            self.args.append("/var/log/sfa.log")
+            self.args.append("/var/log/sfa_import.log")
+            self.args.append("/var/log/httpd/sfa_access_log")
 
 	if self.options.verbose:
 	    print 'Version:',self.subversion_id
