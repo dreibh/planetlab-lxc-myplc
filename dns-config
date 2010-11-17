@@ -94,6 +94,7 @@ domain-needed
 bogus-priv
 addn-hosts=/etc/plc_hosts
 resolv-file=/etc/resolv.conf
+conf-dir=/etc/dnsmasq.d
 """.lstrip())
 
     # Reload dnsmasq
