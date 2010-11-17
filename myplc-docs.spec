@@ -5,7 +5,7 @@
 
 %define name myplc-docs
 %define version 4.3
-%define taglevel 37
+%define taglevel 38
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -87,6 +87,10 @@ rm -rf $RPM_BUILD_ROOT
 /var/www/html/planetlab/doc/
 
 %changelog
+* Thu Jul 22 2010 Daniel Hokka Zakrisson <dhokka@cs.princeton.edu> - myplc-4.3-38
+- Add DRL slice.
+- Generalize bootcd-kernel.
+
 * Sat Jan 09 2010 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.3-37
 - support for fedora 12
 - new package myplc-config for use by sfa
