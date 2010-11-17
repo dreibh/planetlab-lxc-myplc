@@ -5,7 +5,7 @@
 
 %define name myplc
 %define version 4.3
-%define taglevel 37
+%define taglevel 38
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 %global python_sitearch	%( python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)" )
@@ -220,6 +220,10 @@ fi
 
 
 %changelog
+* Thu Jul 22 2010 Daniel Hokka Zakrisson <dhokka@cs.princeton.edu> - myplc-4.3-38
+- Add DRL slice.
+- Generalize bootcd-kernel.
+
 * Sat Jan 09 2010 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.3-37
 - support for fedora 12
 - new package myplc-config for use by sfa
