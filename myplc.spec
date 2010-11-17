@@ -5,7 +5,7 @@
 
 %define name myplc
 %define version 4.3
-%define taglevel 38
+%define taglevel 39
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 %global python_sitearch	%( python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)" )
@@ -220,6 +220,9 @@ fi
 
 
 %changelog
+* Wed Nov 17 2010 Daniel Hokka Zakrisson <dhokka@cs.princeton.edu> - myplc-4.3-39
+- Allow dnsmasq configuration to be extended.
+
 * Thu Jul 22 2010 Daniel Hokka Zakrisson <dhokka@cs.princeton.edu> - myplc-4.3-38
 - Add DRL slice.
 - Generalize bootcd-kernel.

@@ -5,7 +5,7 @@
 
 %define name myplc-docs
 %define version 4.3
-%define taglevel 38
+%define taglevel 39
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -87,6 +87,9 @@ rm -rf $RPM_BUILD_ROOT
 /var/www/html/planetlab/doc/
 
 %changelog
+* Wed Nov 17 2010 Daniel Hokka Zakrisson <dhokka@cs.princeton.edu> - myplc-4.3-39
+- Allow dnsmasq configuration to be extended.
+
 * Thu Jul 22 2010 Daniel Hokka Zakrisson <dhokka@cs.princeton.edu> - myplc-4.3-38
 - Add DRL slice.
 - Generalize bootcd-kernel.
