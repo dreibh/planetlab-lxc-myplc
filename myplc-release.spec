@@ -5,7 +5,7 @@
 
 %define name myplc-release
 %define version 4.3
-%define taglevel 39
+%define taglevel 40
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -57,6 +57,9 @@ rm -rf $RPM_BUILD_ROOT
 /etc/myplc-release
 
 %changelog
+* Wed Nov 17 2010 Daniel Hokka Zakrisson <dhokka@cs.princeton.edu> - myplc-4.3-40
+- Make dnsmasq usable.
+
 * Wed Nov 17 2010 Daniel Hokka Zakrisson <dhokka@cs.princeton.edu> - myplc-4.3-39
 - Allow dnsmasq configuration to be extended.
 
