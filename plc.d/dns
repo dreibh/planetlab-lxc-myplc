@@ -60,7 +60,7 @@ case "$1" in
 	fi
 
 	if [ $PLC_DNS_ENABLED -eq 1 ] ; then
-	    plc_daemon dnsmasq -r /etc/plc_resolv.conf
+	    plc_daemon dnsmasq
 	    check
 	fi
 
