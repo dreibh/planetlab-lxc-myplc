@@ -5,7 +5,7 @@
 
 %define name myplc-release
 %define version 4.3
-%define taglevel 40
+%define taglevel 41
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -57,6 +57,9 @@ rm -rf $RPM_BUILD_ROOT
 /etc/myplc-release
 
 %changelog
+* Thu Nov 18 2010 Daniel Hokka Zakrisson <dhokka@cs.princeton.edu> - myplc-4.3-41
+- Use correct resolv.conf file.
+
 * Wed Nov 17 2010 Daniel Hokka Zakrisson <dhokka@cs.princeton.edu> - myplc-4.3-40
 - Make dnsmasq usable.
 

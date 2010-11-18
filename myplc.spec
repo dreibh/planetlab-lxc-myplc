@@ -5,7 +5,7 @@
 
 %define name myplc
 %define version 4.3
-%define taglevel 40
+%define taglevel 41
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 %global python_sitearch	%( python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)" )
@@ -220,6 +220,9 @@ fi
 
 
 %changelog
+* Thu Nov 18 2010 Daniel Hokka Zakrisson <dhokka@cs.princeton.edu> - myplc-4.3-41
+- Use correct resolv.conf file.
+
 * Wed Nov 17 2010 Daniel Hokka Zakrisson <dhokka@cs.princeton.edu> - myplc-4.3-40
 - Make dnsmasq usable.
 
