@@ -4,7 +4,7 @@
 
 %define name myplc
 %define version 5.0
-%define taglevel 9
+%define taglevel 11
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 %global python_sitearch	%( python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)" )
@@ -242,6 +242,8 @@ fi
 /usr/bin/clean-empty-dirs.py*
 /usr/bin/plc-check-ssl-peering.py*
 /usr/bin/plc-orphan-accounts.py*
+/usr/bin/spot-aliens.py*
+/usr/bin/spot-dup-accounts.sh
 
 %files config
 %defattr(-,root,root,-)
@@ -250,6 +252,13 @@ fi
 
 
 %changelog
+* Mon Oct 04 2010 Baris Metin <Talip-Baris.Metin@sophia.inria.fr> - myplc-5.0-11
+- add missing files to rpm package
+
+* Mon Oct 04 2010 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.0-10
+- mtail.py -s for SFA
+- spot-aliesm.py is a utility script for sanity checks of the PLC db when running refreshpeer+sfa
+
 * Thu Jul 15 2010 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.0-9
 - avoid duplication of the plc-config binary in both myplc and myplc-config rpms
 

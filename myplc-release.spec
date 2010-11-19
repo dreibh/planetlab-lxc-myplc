@@ -5,7 +5,7 @@
 
 %define name myplc-release
 %define version 5.0
-%define taglevel 9
+%define taglevel 11
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -57,6 +57,13 @@ rm -rf $RPM_BUILD_ROOT
 /etc/myplc-release
 
 %changelog
+* Mon Oct 04 2010 Baris Metin <Talip-Baris.Metin@sophia.inria.fr> - myplc-5.0-11
+- add missing files to rpm package
+
+* Mon Oct 04 2010 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.0-10
+- mtail.py -s for SFA
+- spot-aliesm.py is a utility script for sanity checks of the PLC db when running refreshpeer+sfa
+
 * Thu Jul 15 2010 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.0-9
 - avoid duplication of the plc-config binary in both myplc and myplc-config rpms
 
