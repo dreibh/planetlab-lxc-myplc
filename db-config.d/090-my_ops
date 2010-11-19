@@ -1,12 +1,10 @@
 # -*-python-*-
-# $Id$
-# $URL$
+# rely on default for tag_types roles, as this defaults to admin-only
 ########
 myops_node_tags = [
     { 'tagname' : 'exempt_node_until',
       'description' : 'Exclude this node from MyOps until given date (YYYYMMDD)',
-      'category' : 'node/myops', 
-      'min_role_id' : 10} ,
+      'category' : 'node/myops'} ,
 ]
 
 for node_type in myops_node_tags: SetTagType (node_type)
@@ -15,8 +13,7 @@ for node_type in myops_node_tags: SetTagType (node_type)
 myops_site_tags = [
     { 'tagname' : 'exempt_site_until',
       'description' : 'Exclude this site from MyOps until given date (YYYYMMDD)',
-      'category' : 'site/myops', 
-      'min_role_id' : 10} ,
+      'category' : 'site/myops'} ,
 ]
 
 for site_type in myops_site_tags: SetTagType (site_type)
@@ -25,8 +22,7 @@ for site_type in myops_site_tags: SetTagType (site_type)
 myops_person_tags = [
     { 'tagname' : 'exempt_person_until',
       'description' : 'Exclude this person from MyOps until given date (YYYYMMDD)',
-      'category' : 'person/myops', 
-      'min_role_id' : 10} ,
+      'category' : 'person/myops'} ,
 ]
 
 for person_type in myops_person_tags: SetTagType (person_type)
