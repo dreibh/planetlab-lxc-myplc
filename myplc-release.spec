@@ -5,7 +5,7 @@
 
 %define name myplc-release
 %define version 5.0
-%define taglevel 11
+%define taglevel 12
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -57,6 +57,9 @@ rm -rf $RPM_BUILD_ROOT
 /etc/myplc-release
 
 %changelog
+* Wed Dec 01 2010 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.0-12
+- needed for plcapi-5.0-19, i.e. tag permissions based on roles
+
 * Mon Oct 04 2010 Baris Metin <Talip-Baris.Metin@sophia.inria.fr> - myplc-5.0-11
 - add missing files to rpm package
 
