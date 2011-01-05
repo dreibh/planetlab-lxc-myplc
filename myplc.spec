@@ -1,7 +1,3 @@
-#
-# $Id$
-%define url $URL$
-
 %define name myplc
 %define version 5.0
 %define taglevel 12
@@ -20,7 +16,7 @@ BuildArch: noarch
 Vendor: PlanetLab
 Packager: PlanetLab Central <support@planet-lab.org>
 Distribution: PlanetLab %{plrelease}
-URL: %(echo %{url} | cut -d ' ' -f 2)
+URL: %{SCMURL}
 
 %define nodefamily %{pldistro}-%{distroname}-%{_arch}
 

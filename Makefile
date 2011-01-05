@@ -1,7 +1,3 @@
-# 
-# $Id$
-#
-
 ##########
 tags:
 	find . -type f | egrep -v '.svn/|~$$' | xargs etags
