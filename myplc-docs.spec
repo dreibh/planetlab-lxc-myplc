@@ -5,7 +5,7 @@
 
 %define name myplc-docs
 %define version 4.3
-%define taglevel 41
+%define taglevel 42
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -87,6 +87,9 @@ rm -rf $RPM_BUILD_ROOT
 /var/www/html/planetlab/doc/
 
 %changelog
+* Thu Jan 06 2011 S.Çağlar Onur <caglar@cs.princeton.edu> - myplc-4.3-42
+- handle directory name changes
+
 * Thu Nov 18 2010 Daniel Hokka Zakrisson <dhokka@cs.princeton.edu> - myplc-4.3-41
 - Use correct resolv.conf file.
 
