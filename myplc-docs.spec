@@ -40,6 +40,12 @@ http://svn.planet-lab.org/wiki/MyPLCUserGuide
 %build
 rm -rf $RPM_BUILD_ROOT
 
+# using the new lowercase names, and handling legacy
+[ -d PLCAPI ] || ln -s plcapi PLCAPI
+[ -d Monitor ] || ln -s monitor Monitor
+[ -d NodeManager ] || ln -s nodemanager NodeManager
+[ -d MyPLC ] || ln -s myplc MyPLC
+
 pushd PLCAPI
 # beware that making the pdf file somehow overwrites the html
 make -C doc PLCAPI.pdf 
