@@ -5,7 +5,7 @@
 
 %define name myplc-release
 %define version 4.3
-%define taglevel 42
+%define taglevel 43
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -57,6 +57,9 @@ rm -rf $RPM_BUILD_ROOT
 /etc/myplc-release
 
 %changelog
+* Thu Jan 06 2011 S.Çağlar Onur <caglar@cs.princeton.edu> - myplc-4.3-43
+- handle directory name changes for myplc-docs package as well
+
 * Thu Jan 06 2011 S.Çağlar Onur <caglar@cs.princeton.edu> - myplc-4.3-42
 - handle directory name changes
 
