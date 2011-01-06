@@ -107,6 +107,7 @@ This package provides the Python module to configure MyPLC.
 %build
 
 %install
+[ -d MyPLC] || ln -s myplc MyPLC
 pushd MyPLC
 rm -rf $RPM_BUILD_ROOT
 ./build.sh %{pldistro} $RPM_BUILD_ROOT
