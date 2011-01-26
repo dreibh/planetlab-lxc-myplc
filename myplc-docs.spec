@@ -36,10 +36,10 @@ http://svn.planet-lab.org/wiki/MyPLCUserGuide
 rm -rf $RPM_BUILD_ROOT
 
 # using the new lowercase names, and handling legacy
-[ -d plcapi ] || ln -s PLCAPI plcapi
-[ -d monitor ] || ln -s Monitor monitor 
-[ -d nodemanager ] || ln -s NodeManager nodemanager
 [ -d myplc ] || ln -s MyPLC myplc
+[ -d plcapi ] || ln -s PLCAPI plcapi
+[ -d nodemanager ] || ln -s NodeManager nodemanager
+[ -d monitor ] || ln -s Monitor monitor 
 
 pushd plcapi
 # beware that making the pdf file somehow overwrites the html
@@ -55,19 +55,24 @@ rm -f doc/NMAPI.html
 make -C doc NMAPI.html 
 popd
 
+# not everyone rebuilds monitor, so make it optional
+if [ -d monitor ] ; then
 pushd monitor
 # beware that making the pdf file somehow overwrites the html
 make -C docs Monitor.pdf 
 rm -f docs/Monitor.html
 make -C docs Monitor.html 
 popd
+fi
 
 %install
 
 for ext in pdf html; do
     install -D -m 444 plcapi/doc/PLCAPI.$ext $RPM_BUILD_ROOT/var/www/html/planetlab/doc/PLCAPI.$ext
     install -D -m 444 nodemanager/doc/NMAPI.$ext $RPM_BUILD_ROOT/var/www/html/planetlab/doc/NMAPI.$ext
+    if [ -d monitor ] ; then
     install -D -m 444 monitor/docs/Monitor.$ext $RPM_BUILD_ROOT/var/www/html/planetlab/doc/Monitor.$ext
+    fi
 done
 
 ./myplc/docbook2drupal.sh "PLC API Documentation (%{pldistro})" \
@@ -76,9 +81,11 @@ done
 ./myplc/docbook2drupal.sh "Node Manager API Documentation (%{pldistro})" \
     $RPM_BUILD_ROOT/var/www/html/planetlab/doc/NMAPI.html \
     $RPM_BUILD_ROOT/var/www/html/planetlab/doc/NMAPI.php 
+if [ -d monitor ] ; then
 ./myplc/docbook2drupal.sh "Monitor API Documentation (%{pldistro})" \
     $RPM_BUILD_ROOT/var/www/html/planetlab/doc/Monitor.html \
     $RPM_BUILD_ROOT/var/www/html/planetlab/doc/Monitor.php 
+fi
 
 %clean
 rm -rf $RPM_BUILD_ROOT
