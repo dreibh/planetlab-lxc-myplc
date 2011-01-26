@@ -1,6 +1,6 @@
 %define name myplc-release
 %define version 5.0
-%define taglevel 13
+%define taglevel 14
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -52,6 +52,9 @@ rm -rf $RPM_BUILD_ROOT
 /etc/myplc-release
 
 %changelog
+* Wed Jan 26 2011 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.0-14
+- can redo myplc-docs without the doc for monitor
+
 * Mon Jan 24 2011 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.0-13
 - no semantic change - just fixed specfile for git URL
 
