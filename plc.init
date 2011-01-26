@@ -2,12 +2,10 @@
 #
 # plc	Manages all PLC services on this machine
 #
-# chkconfig: 2345 5 99
+# needs to be tested
+# chkconfig: 2345 60 40
 #
 # description:	Manages all PLC services on this machine
-#
-# $Id$
-# $URL$
 #
 
 # Source function library and configuration
