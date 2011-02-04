@@ -3,12 +3,12 @@
 # Bootstraps the PLC database with a default administrator account and
 # a default site, defines default slice attribute types, and
 # creates/updates default system slices.
+# scan ordered scripts in /etc/planetlab/db-config.d
 #
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
+# Thierry Parmentelat <thierry.parmentelat@inria.fr>
 #
-# $Id$
-# $URL$
 
 import os,sys
 from optparse import OptionParser
@@ -24,16 +24,17 @@ def GetSnippets(directory):
             raise Exception, "Error when opening %s (%s)" % \
                   (os.path.join(dir, file), e)
             
-    ignored = (".bak","~",".rpmsave",".rpmnew",".orig")
+    # ignore files that contain either ~ or .
+    ignore_tokens = ("~",".")
     numberedfiles = {}
     for filename in filenames:
-        shouldIgnore = False
-        for ignore in ignored:
-            if filename.endswith(ignore):
-                shouldIgnore = True
+        ignore = False
+        for token in ignore_tokens:
+            if filename.find(token)>=0:
+                ignore = True
                 break
 
-        if not shouldIgnore:
+        if not ignore:
             parts = filename.split('-')
             if len(parts)>=2:
                 name = '-'.join(parts)
@@ -43,12 +44,12 @@ def GetSnippets(directory):
                     entry.append(name)
                     numberedfiles[number]=entry
                 except ValueError:
-                    shouldIgnore = True
+                    ignore = True
             else:
-                shouldIgnore = True
+                ignore = True
 
-        if shouldIgnore:
-            print "db-config: ignoring %s snippet" % filename
+        if ignore:
+            print "db-config: ignored %s snippet" % filename
 
     filenames = []
     keys = numberedfiles.keys()
