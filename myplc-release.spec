@@ -1,6 +1,6 @@
 %define name myplc-release
 %define version 5.0
-%define taglevel 14
+%define taglevel 15
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -52,6 +52,9 @@ rm -rf $RPM_BUILD_ROOT
 /etc/myplc-release
 
 %changelog
+* Fri Feb 04 2011 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.0-15
+- ignore steps in db-config.d if they have a '.' or '~' in their name
+
 * Wed Jan 26 2011 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.0-14
 - can redo myplc-docs without the doc for monitor
 
