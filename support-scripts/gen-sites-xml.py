@@ -76,10 +76,10 @@ plc = Shell(globals())
 #
 
 begin()
-GetNodes(None, ['node_id', 'model', 'boot_state', 'hostname', 'version', 'ssh_rsa_key', 'nodenetwork_ids', 'slice_ids_whitelist'])
-GetNodeNetworks({'is_primary': True}, ['nodenetwork_id', 'node_id', 'ip', 'mac', 'bwlimit'])
+GetNodes(None, ['node_id', 'model', 'boot_state', 'hostname', 'version', 'ssh_rsa_key', 'interface_ids', 'slice_ids_whitelist'])
+GetInterfaces({'is_primary': True}, ['interface_id', 'node_id', 'ip', 'mac', 'bwlimit'])
 GetSites(None, ['name', 'latitude', 'longitude', 'url', 'site_id', 'login_base', 'abbreviated_name', 'node_ids'])
-GetNodeGroups(['Alpha', 'Beta', 'Rollout', 'Production'], ['name', 'node_ids'])
+GetNodeGroups(['Alpha', 'Beta', 'Rollout', 'Production'], ['groupname', 'node_ids'])
 (nodes, nodenetworks, sites, groups) = commit()
 
 # remove whitelisted nodes
@@ -94,7 +94,7 @@ for nodenetwork in nodenetworks:
         for key, value in nodenetwork.iteritems():
             node[key] = value
 
-group_node_ids = dict([(group['name'], group['node_ids']) for group in groups])
+group_node_ids = dict([(group['groupname'], group['node_ids']) for group in groups])
 
 class PrettyXMLGenerator(XMLGenerator):
     """
