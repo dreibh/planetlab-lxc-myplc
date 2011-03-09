@@ -2,7 +2,6 @@
 #
 # plc	Manages all PLC services on this machine
 #
-# needs to be tested
 # chkconfig: 2345 60 40
 #
 # description:	Manages all PLC services on this machine
