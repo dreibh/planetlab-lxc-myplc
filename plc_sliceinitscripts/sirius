@@ -240,20 +240,54 @@ def server():
 
 ########################################
 
-if DEBUGLEVEL < 2:
-    PIDFILE = '/tmp/sirius.pid'
-else:
-    PIDFILE = 'sirius.pid'
+def start (slicename):
+    if DEBUGLEVEL < 2:
+        PIDFILE = '/tmp/%s.pid'%slicename
+    else:
+        PIDFILE = '%s.pid'%slicename
+    try:
+        if os.fork():
+            sys.exit(0)
+        f = open(PIDFILE, 'w')
+        fcntl.flock(f.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except:
+        logexception()
+        sys.exit(1)
 
-try:
-    if os.fork():
-        sys.exit(0)
-    f = open(PIDFILE, 'w')
-    fcntl.flock(f.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-except:
-    logexception()
-    sys.exit(1)
+    Periodic(updateschedule, SLOTDURATION, -5*ONEMINUTE, -1*ONEMINUTE)
+    Periodic(updateloans, 5*ONEMINUTE, 0, 0)
+    server()
 
-Periodic(updateschedule, SLOTDURATION, -5*ONEMINUTE, -1*ONEMINUTE)
-Periodic(updateloans, 5*ONEMINUTE, 0, 0)
-server()
+# xxx fixme
+# at the very least, do nothing 
+def stop(slicename):
+    print '(dummy) stopping',slicename
+    pass
+
+def restart(slicename):
+    stop(slicename)
+    start(slicename)
+
+def main():
+    args=sys.argv[1:]
+    mode='start'
+    slicename='sirius'
+    argc=len(args)
+    if argc>=3: 
+        print 'too many arguments to initscript',args
+        sys.exit(1)
+    elif argc==2: (mode,slicename)=args
+    elif argc==1: mode=args[0]
+    
+#    print "sirius initscript called with mode=%s and slicename=%s"%(mode,slicename)
+
+    if mode=='start': start(slicename)
+    elif mode=='stop': stop(slicename)
+    elif mode=='restart': restart(slicename)
+    else: 
+        print "unknown mode %s"%mode
+        sys.exit(1)
+    sys.exit(0)
+
+if __name__ == '__main__':
+    main()
