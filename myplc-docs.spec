@@ -5,7 +5,7 @@
 
 %define name myplc-docs
 %define version 4.3
-%define taglevel 44
+%define taglevel 45
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -93,6 +93,9 @@ rm -rf $RPM_BUILD_ROOT
 /var/www/html/planetlab/doc/
 
 %changelog
+* Tue Mar 15 2011 S.Çağlar Onur <caglar@verivue.com> - myplc-4.3-45
+- Cherry-pick PHP5 timezone fix form master
+
 * Thu Feb 03 2011 S.Çağlar Onur <caglar@cs.princeton.edu> - myplc-4.3-44
 - pick the greatest version as a kernel
 
