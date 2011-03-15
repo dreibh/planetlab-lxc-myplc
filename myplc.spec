@@ -50,6 +50,7 @@ Requires: vim-minimal
 Requires: findutils
 Requires: xmlsec1
 Requires: xmlsec1-openssl
+Requires: ed
 %if "%{distro}" == "Fedora" && %{distrorelease} >= 10
 Requires: cronie
 %else
