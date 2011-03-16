@@ -5,7 +5,7 @@
 
 %define name myplc-release
 %define version 4.3
-%define taglevel 45
+%define taglevel 46
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -57,6 +57,9 @@ rm -rf $RPM_BUILD_ROOT
 /etc/myplc-release
 
 %changelog
+* Wed Mar 16 2011 S.Çağlar Onur <caglar@verivue.com> - myplc-4.3-46
+- enable short_open_tag for backward compatibility
+
 * Tue Mar 15 2011 S.Çağlar Onur <caglar@verivue.com> - myplc-4.3-45
 - Cherry-pick PHP5 timezone fix form master
 
