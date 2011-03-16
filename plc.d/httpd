@@ -65,6 +65,10 @@ case "$1" in
 	    sed -i -e 's,^;date.timezone.*,date.timezone = GMT,' $php_ini
 	fi
 
+	if grep '^short_open_tag = Off' $php_ini >& /dev/null; then
+	    sed -i -e 's,^short_open_tag = Off,short_open_tag = On,' $php_ini
+	fi
+
 	# Disable default Listen directive
 	sed -i -e '/^Listen/d' $httpd_conf
 
