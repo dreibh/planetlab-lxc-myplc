@@ -251,7 +251,6 @@ fi
 %changelog
 * Mon Mar 21 2011 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.0-16
 - requires ed for the plc.d/packages step
-- new initscript_body slice tag
 - sirius initscript to handle stop and restart
 
 * Fri Feb 04 2011 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.0-15
