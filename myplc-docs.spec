@@ -5,7 +5,7 @@
 
 %define name myplc-docs
 %define version 4.3
-%define taglevel 46
+%define taglevel 47
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -93,6 +93,9 @@ rm -rf $RPM_BUILD_ROOT
 /var/www/html/planetlab/doc/
 
 %changelog
+* Mon Mar 21 2011 S.Çağlar Onur <caglar@verivue.com> - myplc-4.3-47
+- attempt to fix small glitches
+
 * Wed Mar 16 2011 S.Çağlar Onur <caglar@verivue.com> - myplc-4.3-46
 - enable short_open_tag for backward compatibility
 
