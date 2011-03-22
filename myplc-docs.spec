@@ -1,6 +1,6 @@
 %define name myplc-docs
 %define version 5.0
-%define taglevel 16
+%define taglevel 17
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -95,6 +95,9 @@ rm -rf $RPM_BUILD_ROOT
 /var/www/html/planetlab/doc/
 
 %changelog
+* Tue Mar 22 2011 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.0-17
+- fixed changelog, no change from 5.0-16
+
 * Mon Mar 21 2011 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.0-16
 - requires ed for the plc.d/packages step
 - sirius initscript to handle stop and restart

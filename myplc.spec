@@ -1,6 +1,6 @@
 %define name myplc
 %define version 5.0
-%define taglevel 16
+%define taglevel 17
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 %global python_sitearch	%( python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)" )
@@ -249,6 +249,9 @@ fi
 
 
 %changelog
+* Tue Mar 22 2011 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.0-17
+- fixed changelog, no change from 5.0-16
+
 * Mon Mar 21 2011 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.0-16
 - requires ed for the plc.d/packages step
 - sirius initscript to handle stop and restart
