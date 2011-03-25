@@ -72,14 +72,13 @@ Requires: myplc-config
 
 %define debug_package %{nil}
 
-%description
-MyPLC is a complete PlanetLab Central (PLC) portable installation
-contained within a chroot jail. The default installation consists of a
-web server, an XML-RPC API server, a boot server, and a database
-server: the core components of PLC. The installation may be customized
-through a graphical interface. All PLC services are started up and
-shut down through a single System V init script installed in the host
-system.
+%description 
+MyPLC is a complete PlanetLab Central (PLC) portable installation.
+The default installation consists of a web server, an XML-RPC API
+server, a boot server, and a database server: the core components of
+PLC. The installation may be customized through a graphical
+interface. All PLC services are started up and shut down through a
+single System V init script.
 
 ####################### myplc-config
 
