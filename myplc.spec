@@ -231,7 +231,6 @@ fi
 /usr/bin/db-config
 /usr/bin/dns-config
 /usr/bin/refresh-peer.py*
-/usr/bin/partial-repo.sh
 /usr/bin/mtail.py*
 /usr/bin/plc-map.py*
 /usr/bin/plc-kml.py*
