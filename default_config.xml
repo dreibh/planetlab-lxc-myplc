@@ -810,6 +810,27 @@ $URL$
         </variable>
       </variablelist>
     </category>
+    <category id="myslice">
+      <name>MySlice</name>
+      <description>MySlice configuration parameters</description>
+      <variablelist>
+	<variable id="comon_url" type="string">
+	  <name>comon</name>
+	  <value></value>
+	  <description>The address of the CoMon url that provides information for this PLC's nodes (if not the default http://comon.cs.princeton.edu/)</description>
+	</variable>
+	<variable id="comon_available" type="boolean">
+	  <name>comon</name>
+	  <value>false</value>
+	  <description>True, if comon data are available for this PLC's nodes</description>
+	</variable>
+	<variable id="tophat_available" type="boolean">
+	  <name>tophat</name>
+	  <value>false</value>
+	  <description>True, if tophat data are available for this PLC's nodes</description>
+	</variable>
+      </variablelist>
+    </category>
   </variables>
 
   <comps>
