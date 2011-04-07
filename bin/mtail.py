@@ -8,6 +8,9 @@ It can be altered to fit other formats too
 '''
 
 import os, sys, time
+import select
+import sys, tty, termios
+
 from optparse import OptionParser
 
 class mtail:
@@ -237,7 +240,8 @@ example:
 	    sys.exit(1)
 	counter = 0
     
-	while 1:
+        fdin = sys.stdin.fileno()
+	while True:
 	    ## hit the period ?
 	    # dont do this twice at startup
 	    if (counter !=0 and counter % self.options.rescan_period == 0):
@@ -248,7 +252,24 @@ example:
 
 	    time.sleep(1)
 	    counter += 1
-
+            # react on some keys - rough but convenient
+            if os.isatty(fdin):
+                # read stdin
+                typed=[]
+                while select.select([sys.stdin,],[],[],0.0)[0]:
+                    typed.append(sys.stdin.read(1))
+#                print 'found chars',typed
+                for char in typed:
+                    if char.lower() in ['l']: os.system("clear")
+                    elif char.lower() in ['m']:
+                        for i in range(3) : print 60 * '='
+                    elif char.lower() in ['q']: sys.exit(0)
+                    elif char.lower() in ['h']:
+                        print """l: refresh page
+m: mark
+q: quit
+h: help"""
+                    
 ###
 if __name__ == '__main__':
     mtail (sys.argv[1:]).run()
