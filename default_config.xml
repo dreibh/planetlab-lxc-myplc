@@ -632,6 +632,18 @@ $URL$
       </variablelist>
     </category>
 
+    <category id="plc_ratelimit">
+      <name>Planetlab Ratelimit Settings</name>
+      <description>Planetlab Ratelimit Settings</description>
+      <variablelist>
+        <variable id="enabled" type="bolean">
+          <name>Enable Ratelimit</name>
+          <value>false</value>
+          <description>Enable Ratelimit for sites</description>
+        </variable>
+      </variablelist>
+    </category>
+
     <category id="plc_omf">
       <name>Planetlab - OMF Integration</name>
       <description>Planetlab - OMF integration</description>
