@@ -25,6 +25,7 @@ Summary: PlanetLab Central (PLC) Portable Installation
 Group: Applications/Systems
 
 # as much as possible, requires should go in the subpackages specfile
+Requires: redhat-lsb
 Requires: bzip2
 Requires: tar 
 Requires: less
