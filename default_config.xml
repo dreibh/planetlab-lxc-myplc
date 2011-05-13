@@ -746,6 +746,21 @@ $URL$
           <value>support</value>
           <description>All messages from Monitor will be copied to this address.</description>
         </variable>
+        <variable id="dbhost" type="hostname">
+          <name>Database Hostname</name>
+          <value>localhost</value>
+          <description>The hostname for the monitor database.</description>
+        </variable>
+        <variable id="dbuser" type="string">
+          <name>Database User</name>
+          <value>monitoruser</value>
+          <description>The username for connecting to the monitor database.</description>
+        </variable>
+        <variable id="dbname" type="string">
+          <name>Database Name</name>
+          <value>monitor</value>
+          <description>Name of monitor database.</description>
+        </variable>
         <variable id="dbpassword" type="password">
           <name>Database Password</name>
           <value></value>
