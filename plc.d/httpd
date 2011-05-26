@@ -117,7 +117,6 @@ case "$1" in
 	    # HTTP configuration
 	    if [ $skip_http -eq 0 -a -n "${!http_port}" ] ; then
 		cat <<EOF
-Listen 127.0.0.1:${!http_port}
 Listen ${!http_port}
 # create wsgi socket where we have the permission
 ### WSGISocketPrefix run/wsgi
