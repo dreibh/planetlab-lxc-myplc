@@ -42,26 +42,27 @@ rm -rf $RPM_BUILD_ROOT
 [ -d monitor ] || ln -s Monitor monitor 
 
 pushd plcapi
+# june2011 & f12, latex issues weird warnings, might need to try twice
+make -C doc PLCAPI.pdf || make -C doc PLCAPI.pdf 
 # beware that making the pdf file somehow overwrites the html
-make -C doc PLCAPI.pdf 
 rm -f doc/PLCAPI.html
-make -C doc PLCAPI.html 
+make -C doc PLCAPI.html || make -C doc PLCAPI.html 
 popd
 
 pushd nodemanager
 # beware that making the pdf file somehow overwrites the html
-make -C doc NMAPI.pdf 
+make -C doc NMAPI.pdf || make -C doc NMAPI.pdf
 rm -f doc/NMAPI.html
-make -C doc NMAPI.html 
+make -C doc NMAPI.html || make -C doc NMAPI.html 
 popd
 
 # not everyone rebuilds monitor, so make it optional
 if [ -d monitor ] ; then
 pushd monitor
 # beware that making the pdf file somehow overwrites the html
-make -C docs Monitor.pdf 
+make -C docs Monitor.pdf || make -C docs Monitor.pdf 
 rm -f docs/Monitor.html
-make -C docs Monitor.html 
+make -C docs Monitor.html || make -C docs Monitor.html 
 popd
 fi
 
