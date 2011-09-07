@@ -7,8 +7,6 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id$
-#
 
 import codecs
 import os
