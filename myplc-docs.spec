@@ -1,6 +1,6 @@
 %define name myplc-docs
 %define version 5.0
-%define taglevel 17
+%define taglevel 18
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -96,6 +96,15 @@ rm -rf $RPM_BUILD_ROOT
 /var/www/html/planetlab/doc/
 
 %changelog
+* Tue Jun 07 2011 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.0-18
+- new settings for myslice (comon&tophat) and monitor (db)
+- removed mentions of chroot in description
+- can redo myplc-docs on broken f12-latex
+- set short_open_tag in php.ini
+- fixes in gen-sites-xml (is that still used ?)
+- partial-repo.sh has moved to 'build' where it more belongs
+- tweaks in convenience tool 'mtail'
+
 * Tue Mar 22 2011 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.0-17
 - fixed changelog, no change from 5.0-16
 
