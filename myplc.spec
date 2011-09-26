@@ -1,6 +1,6 @@
 %define name myplc
 %define version 5.0
-%define taglevel 18
+%define taglevel 19
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 %global python_sitearch	%( python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)" )
@@ -248,6 +248,9 @@ fi
 
 
 %changelog
+* Mon Sep 26 2011 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.0-19
+- new maintenance/monitoring script spot-aliens to look for glitches in refreshpeer+sfa
+
 * Tue Jun 07 2011 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.0-18
 - new settings for myslice (comon&tophat) and monitor (db)
 - removed mentions of chroot in description

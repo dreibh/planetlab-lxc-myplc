@@ -1,6 +1,6 @@
 %define name myplc-docs
 %define version 5.0
-%define taglevel 18
+%define taglevel 19
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -96,6 +96,9 @@ rm -rf $RPM_BUILD_ROOT
 /var/www/html/planetlab/doc/
 
 %changelog
+* Mon Sep 26 2011 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.0-19
+- new maintenance/monitoring script spot-aliens to look for glitches in refreshpeer+sfa
+
 * Tue Jun 07 2011 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.0-18
 - new settings for myslice (comon&tophat) and monitor (db)
 - removed mentions of chroot in description
