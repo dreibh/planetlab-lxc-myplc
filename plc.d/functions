@@ -109,6 +109,47 @@ upper ()
     fi
 }
 
+# Regenerate configuration files
+reload ()
+{
+    force=$1
+
+    # Regenerate the main configuration file from default values
+    # overlaid with site-specific and current values.
+    # Thierry -- 2007-07-05 : values in plc_config.xml are *not* taken into account here
+    files=(
+        /etc/planetlab/default_config.xml
+        /etc/planetlab/configs/site.xml
+    )
+
+    for file in "${files[@]}" ; do
+    if [ -n "$force" -o $file -nt /etc/planetlab/plc_config.xml ] ; then
+        tmp=$(mktemp /tmp/plc_config.xml.XXXXXX)
+        plc-config --xml "${files[@]}" >$tmp
+        if [ $? -eq 0 ] ; then
+        mv $tmp /etc/planetlab/plc_config.xml
+        chmod 444 /etc/planetlab/plc_config.xml
+        else
+        echo "PLC: Warning: Invalid configuration file(s) detected"
+        rm -f $tmp
+        fi
+        break
+    fi
+    done
+
+    # Convert configuration to various formats
+    if [ -n "$force" -o /etc/planetlab/plc_config.xml -nt /etc/planetlab/plc_config ] ; then
+    plc-config --shell >/etc/planetlab/plc_config
+    fi
+    if [ -n "$force" -o /etc/planetlab/plc_config.xml -nt /etc/planetlab/plc_config.py ] ; then
+    plc-config --python >/etc/planetlab/plc_config.py
+    fi
+    if [ -n "$force" -o /etc/planetlab/plc_config.xml -nt /etc/planetlab/php/plc_config.php ] ; then
+    mkdir -p /etc/planetlab/php
+    plc-config --php >/etc/planetlab/php/plc_config.php
+    fi
+}
+
 # Make copies of stdout and stderr. The plc initscript redirects
 # stdout and stderr to a logfile if -v is not specified.
 [ ! -e /proc/self/fd/3 ] && exec 3>&1
