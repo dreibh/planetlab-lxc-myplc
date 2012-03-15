@@ -1,6 +1,4 @@
 # -*-python-*-
-# $Id$
-# $URL$
 #################### initscripts
 # Default Initscripts
 default_initscripts = []
