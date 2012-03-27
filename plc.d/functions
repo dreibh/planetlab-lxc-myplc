@@ -14,20 +14,17 @@ export PATH=/sbin:/bin:/usr/bin:/usr/sbin
 ERRORS=0
 
 # Count the exit status of the last command
-check ()
-{
+function check () {
     ERRORS=$(($ERRORS+$?))
 }
 
 # Print status header
-dialog ()
-{
+function dialog () {
     echo -n "PLC: $*: " >&3
 }
 
 # Print result
-result ()
-{
+function result () {
     if [ $ERRORS -eq 0 ] ; then
 	success "$*" >&3
     else
@@ -37,8 +34,7 @@ result ()
 }
 
 # Start up a program with a plc_ prefix
-plc_daemon ()
-{
+function plc_daemon () {
     base=${1##*/}
 
     # See if it's already running. Look *only* at the pid file.
@@ -73,22 +69,19 @@ plc_daemon ()
 }
 
 # Print IP address of hostname if resolvable
-gethostbyname ()
-{
+function gethostbyname () {
     python -c 'import socket; import sys; print socket.gethostbyname(sys.argv[1])' $1 2>/dev/null
 }
 
 # Forcefully make a symlink
-symlink ()
-{
+function symlink () {
     mkdir -p $(dirname $2)
     rm -f $2
     ln -s $1 $2
 }
 
 # Argument(s) or stdin to lowercase stdout
-lower ()
-{
+function lower () {
     if [ ${#*} -ge 1 ] ; then
 	tr A-Z a-z <<<$*
     else
@@ -97,8 +90,7 @@ lower ()
 }
 
 # Argument(s) or stdin to uppercase stdout
-upper ()
-{
+function upper () {
     if [ ${#*} -ge 1 ] ; then
 	tr a-z A-Z <<<$*
     else
@@ -107,8 +99,7 @@ upper ()
 }
 
 # Regenerate configuration files
-reload ()
-{
+function reload () {
     force=$1
 
     # Regenerate the main configuration file from default values
