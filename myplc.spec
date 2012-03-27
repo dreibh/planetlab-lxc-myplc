@@ -114,6 +114,7 @@ chmod 755 ${RPM_BUILD_ROOT}/usr/bin/*
 # Install initscript 
 echo "* Installing plc initscript"
 install -D -m 755 plc.init ${RPM_BUILD_ROOT}/etc/init.d/plc
+install -D -m 644 plc.service ${RPM_BUILD_ROOT}/lib/systemd/system/plc.service
 
 # Install initscripts
 echo "* Installing plc.d initscripts"
@@ -240,6 +241,7 @@ fi
 /usr/bin/plc-orphan-accounts.py*
 /usr/bin/spot-aliens.py*
 /usr/bin/spot-dup-accounts.sh
+/lib/systemd/system/plc.service
 
 %files config
 %defattr(-,root,root,-)
