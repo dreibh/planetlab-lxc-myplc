@@ -99,7 +99,7 @@ function upper () {
 }
 
 # Regenerate configuration files
-function reload () {
+function plc_reload () {
     force=$1
 
     # Regenerate the main configuration file from default values

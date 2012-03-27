@@ -8,6 +8,7 @@
 #
 
 # Source function library and configuration
+# plc_reload is defined here
 . /etc/plc.d/functions
 
 # Verbosity
@@ -100,7 +101,7 @@ command=$1
 shift 1
 if [ -z "$1" ] ; then
     # Start or stop everything. Regenerate configuration first.
-    reload force
+    plc_reload force
 else
     # Start or stop a particular step
     steps=("$@")
@@ -115,7 +116,7 @@ start ()
 	if [ -x /etc/plc.d/$step ] ; then
 	    /etc/plc.d/$step start
 	    # Steps may alter the configuration, may need to regenerate
-	    reload
+	    plc_reload
 	else
 	    echo "PLC: $step: unrecognized step" >&4
 	    exit 1
@@ -130,7 +131,7 @@ stop ()
 	if [ -x /etc/plc.d/$step ] ; then
 	    /etc/plc.d/$step stop
 	    # Steps may alter the configuration, may need to regenerate
-	    reload
+	    plc_reload
 	else
 	    echo "PLC: $step: unrecognized step" >&4
 	    exit 1
@@ -149,7 +150,7 @@ case "$command" in
 	;;
 
     reload)
-	reload force
+	plc_reload force
 	;;
 
     checkpoint)
