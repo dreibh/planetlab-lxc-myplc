@@ -1,7 +1,5 @@
 #!/usr/bin/env plcsh
 #
-# $Id$
-#
 # searches and displays any local orphan account (not attached to a site)
 # remote accounts with identical emails are displayed as well
 

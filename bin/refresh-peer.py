@@ -1,5 +1,4 @@
 #!/usr/bin/env plcsh
-# $Id$
 
 import sys,time,os,os.path
 

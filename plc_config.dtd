@@ -4,7 +4,6 @@ Specification for PLC configuration files
 Mark Huang <mlhuang@cs.princeton.edu>
 Copyright (C) 2006 The Trustees of Princeton University
 
-$Id$
 -->
 
 <!ELEMENT configuration (variables, comps)>

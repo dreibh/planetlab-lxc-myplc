@@ -873,10 +873,6 @@ class TrimTextElement(xml.dom.minidom.Element):
 ####################
 # GLOBAL VARIABLES
 #
-release_id = "$Id$"
-release_rev = "$Revision$"
-release_url = "$URL$"
-
 g_configuration=None
 usual_variables=None
 config_dir=None
@@ -1295,7 +1291,7 @@ def check_dir (config_file):
                 
 ####################
 def optParserSetup(configuration):
-    parser = OptionParser(usage=usage(), version="%prog " + release_rev + release_url )
+    parser = OptionParser(usage=usage())
     parser.set_defaults(config_dir=configuration['config_dir'],
                         service=configuration['service'],
                         usual_variables=configuration['usual_variables'])

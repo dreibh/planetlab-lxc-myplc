@@ -5,8 +5,6 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2005 The Trustees of Princeton University
 #
-# $Id: gen-static-content.py,v 1.35.2.1 2007/02/07 03:27:50 mlhuang Exp $
-#
 
 import os, sys, shutil
 import time

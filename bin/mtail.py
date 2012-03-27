@@ -15,8 +15,6 @@ from optparse import OptionParser
 
 class mtail:
 
-    subversion_id = "$Id$"
-
     default_time_format = "%H:%M:%S"
     
     def __init__ (self, args ):
@@ -32,7 +30,7 @@ class mtail:
 	usage = """usage: %prog [options] file-or-dir ...
 example: 
 # %prog -e '*access*' /var/log"""
-	parser=OptionParser(usage=usage,version=self.subversion_id)
+	parser=OptionParser(usage=usage)
 	# tail_period
 	parser.add_option("-p","--period", type="int", dest="tail_period", default=1,
 			  help="Files check period in seconds")
@@ -78,7 +76,6 @@ example:
             self.args.append("/var/log/httpd/sfa_access_log")
 
 	if self.options.verbose:
-	    print 'Version:',self.subversion_id
 	    print 'Options:',self.options
 	    print 'Arguments:',self.args
 

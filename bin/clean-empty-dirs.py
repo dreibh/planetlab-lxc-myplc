@@ -1,7 +1,5 @@
 #!/usr/bin/python
 ###
-### $Id$
-###
 ### utility script for cleaning empty directories
 ### useful to clean up /var/tmp/bootmedium
 ### 

@@ -25,8 +25,6 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2005 The Trustees of Princeton University
 #
-# $Id$
-#
 
 import os, sys
 import plcapilib

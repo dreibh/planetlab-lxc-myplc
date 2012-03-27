@@ -1,7 +1,4 @@
 # -*-Shell-script-*-
-# $Id$
-# $URL$
-#
 # Common functions for PLC startup/shutdown scripts
 #
 # Mark Huang <mlhuang@cs.princeton.edu>

@@ -1,6 +1,4 @@
 # -*-sh-*-
-# $Id$
-# $URL$
 # this file defines a few convenience bash shorthands for managing myplc nodes
 # it is installed in /usr/share/myplc/aliases
 # you might wish to use it in your own bash startup files (.profile/.bashrc)

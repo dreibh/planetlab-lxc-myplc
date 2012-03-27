@@ -5,8 +5,6 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
-# $Id: gen-sites-xml.py,v 1.8 2007/09/14 20:08:28 tmack Exp $
-#
 
 import os, sys
 import getopt
