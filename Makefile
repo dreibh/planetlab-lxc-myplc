@@ -1,6 +1,6 @@
 ##########
 tags:
-	find . -type f | egrep -v '.svn/|~$$' | xargs etags
+	find . -type f | egrep -v '\.git/|~$$' | xargs etags
 
 .PHONY: tags
 
