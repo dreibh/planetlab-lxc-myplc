@@ -66,7 +66,7 @@ Requires: www-register-wizard
 Requires: nodeconfig
 Requires: nodeyum
 Requires: PLCAPI
-Requires: bootstrapfs-%{nodefamily}
+Requires: nodeimage-%{nodefamily}
 Requires: myplc-docs
 Requires: myplc-release
 Requires: myplc-config
