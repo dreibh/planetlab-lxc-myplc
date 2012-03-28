@@ -1,6 +1,6 @@
 %define name myplc
-%define version 5.0
-%define taglevel 19
+%define version 5.1
+%define taglevel 0
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 %global python_sitearch	%( python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)" )
