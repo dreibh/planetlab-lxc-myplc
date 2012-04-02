@@ -7,19 +7,26 @@ tags:
 ########## sync
 # 2 forms are supported
 # (*) if your plc root context has direct ssh access:
-# make sync PLC=boot.planet-lab.eu
-# (*) otherwise, entering through the root context
-# make sync PLCHOST=testplc.onelab.eu GUEST=vplc03.inria.fr
+# make sync PLC=private.one-lab.org
+# (*) otherwise, for test deployments, use on your testmaster
+# $ run export
+# and cut'n paste the export lines before you run make sync
 
 PLCHOST ?= testplc.onelab.eu
 
-ifdef GUEST
-SSHURL:=root@$(PLCHOST):/vservers/$(GUEST)
-SSHCOMMAND:=ssh root@$(PLCHOST) vserver $(GUEST)
-endif
 ifdef PLC
 SSHURL:=root@$(PLC):/
 SSHCOMMAND:=ssh root@$(PLC)
+else
+ifdef PLCHOSTLXC
+SSHURL:=root@$(PLCHOST):/var/lib/lxc/$(GUESTNAME)/rootfs
+SSHCOMMAND:=ssh root@$(PLCHOSTLXC) ssh $(GUESTHOSTNAME)
+else
+ifdef PLCHOSTVS
+SSHURL:=root@$(PLCHOSTVS):/vservers/$(GUESTNAME)
+SSHCOMMAND:=ssh root@$(PLCHOSTVS) vserver $(GUESTNAME) exec
+endif
+endif
 endif
 
 LOCAL_RSYNC_EXCLUDES	:= --exclude '*.pyc' 
@@ -29,9 +36,10 @@ RSYNC			:= rsync -a -v $(RSYNC_COND_DRY_RUN) $(RSYNC_EXCLUDES)
 
 sync:
 ifeq (,$(SSHURL))
-	@echo "sync: You must define, either PLC, or PLCHOST & GUEST, on the command line"
-	@echo "  e.g. make sync PLC=boot.planet-lab.eu"
-	@echo "  or   make sync PLCHOST=testplc.onelab.eu GUEST=vplc03.inria.fr"
+	@echo "sync: I need more info from the command line, e.g."
+	@echo "  make sync PLC=boot.planetlab.eu"
+	@echo "  make sync PLCHOSTVS=.. GUESTNAME=.."
+	@echo "  make sync PLCHOSTLXC=.. GUESTNAME=.. GUESTHOSTNAME=.."
 	@exit 1
 else
 	+$(RSYNC) plc.init $(SSHURL)/etc/init.d/plc
