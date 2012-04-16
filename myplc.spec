@@ -1,6 +1,6 @@
 %define name myplc
 %define version 5.1
-%define taglevel 0
+%define taglevel 1
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 %global python_sitearch	%( python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)" )
@@ -250,6 +250,12 @@ fi
 
 
 %changelog
+* Mon Apr 16 2012 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.1-1
+- use nodeimage package instead of deprecated bootstrapfs
+- has systemd-friendly startup script
+- plc_reload moved to functions/ - no more service plc reload
+- no svn keywords anymore
+
 * Mon Sep 26 2011 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.0-19
 - new maintenance/monitoring script spot-aliens to look for glitches in refreshpeer+sfa
 

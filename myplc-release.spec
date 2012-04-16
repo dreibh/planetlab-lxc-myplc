@@ -1,6 +1,6 @@
 %define name myplc-release
-%define version 5.0
-%define taglevel 19
+%define version 5.1
+%define taglevel 1
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -52,6 +52,12 @@ rm -rf $RPM_BUILD_ROOT
 /etc/myplc-release
 
 %changelog
+* Mon Apr 16 2012 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.1-1
+- use nodeimage package instead of deprecated bootstrapfs
+- has systemd-friendly startup script
+- plc_reload moved to functions/ - no more service plc reload
+- no svn keywords anymore
+
 * Mon Sep 26 2011 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.0-19
 - new maintenance/monitoring script spot-aliens to look for glitches in refreshpeer+sfa
 
