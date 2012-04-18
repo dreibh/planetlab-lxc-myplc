@@ -101,35 +101,67 @@ class KmlMap:
         peer_id=site['peer_id']
 
         # open description
-        description='<ul>'
-        # Name and URL
-        description += '<li>'
-        description += '<a href="%(apiurl)s/db/sites/index.php?id=%(site_id)d"> Site page </a>'%locals()
+        description  = "<br/><table style='border: 1px solid black; padding: 5px;' width='500px'>"
+
+        # TESTBED
+        description += "<tr><td></td><td>&nbsp;</td><td></td></tr>"
+        description += "<tr><td align='center'>"
+        description += "<b>Testbed</b>"
+        description += "</td><td>"
+        if peer_id:
+            peername = 'PlanetLab Central'
+	    peerurl = 'http://www.planet-lab.org'
+            #self.peer_name(site,peers)
+        else:
+            peername = 'PlanetLab Europe'
+	    peerurl = 'http://www.planet-lab.eu'
+        description += "<a style='text-decoration: none;' href='%(peerurl)s'> %(peername)s </a>"%locals()
+        #description += "<a style='text-decoration: none;' href='%(apiurl)s/db/peers/index.php?id=%(peer_id)d'>[description]</a>"%locals()
+        description += "</td><td>"
+        if peer_id:
+            description += "<img src='%(apiurl)s/sites/plc24-32.png'/>"%locals()
+        else:
+            description += "<img src='%(apiurl)s/sites/ple24-32.png'/>"%locals()
+	description += "</td></tr>"
+
+	# URL
         if site['url']:
             site_url=site['url']
-            description += ' -- <a href="%(site_url)s"> %(site_url)s </a>'%locals()
-        description += '</li>'
+            description += "<tr><td align='center'>"
+            description += "<b>Website</b>"
+            description += "</td><td>"
+            description += "<a style='text-decoration: none;' href='%(site_url)s'> %(site_url)s </a>"%locals()
+            description += "</td><td></td></tr>"
+
+        description += "<tr><td></td><td>&nbsp;</td><td></td></tr>"
+        description += "<tr><td align='center'>Usage details:</td><td></td><td></td></tr>"
+        description += "<tr><td></td><td>&nbsp;</td><td></td></tr>"
+
         # NODES
+        description += "<tr><td align='center'>"
+        description += "<img src='%(apiurl)s/sites/node.png'/>"%locals()
+        description += "</td><td>"
         if nb_nodes:
-            description += '<li>'
-            description += '<a href="%(apiurl)s/db/nodes/index.php?site_id=%(site_id)d">%(nb_nodes)d node(s)</a>'%locals()
-            description += '<a href="%(apiurl)s/db/nodes/comon.php?site_id=%(site_id)d"> (in Comon)</a>'%locals()
-            description += '</li>'
+            description += "<a style='text-decoration: none;' href='%(apiurl)s/db/nodes/index.php?site_id=%(site_id)d'>%(nb_nodes)d node(s)</a>"%locals()
+            #description += "<a style='text-decoration: none;' href='%(apiurl)s/db/nodes/comon.php?site_id=%(site_id)d'> (in Comon)</a>"%locals()
         else:
-            description += '<li>No node</li>'
+            description += "<i>No node</i>"
+        description += "</td><td></td></tr>"
+
         #SLICES
+        description += "<tr><td align='center'>"
+        description += "<img src='%(apiurl)s/sites/slice.png'/>"%locals()
+        description += "</td><td>"
         if nb_slices:
-            description += '<li><a href="%(apiurl)s/db/slices/index.php?site_id=%(site_id)d">%(nb_slices)d slice(s)</a></li>'%locals()
+            description += "<a style='text-decoration: none;' href='%(apiurl)s/db/slices/index.php?site_id=%(site_id)d'>%(nb_slices)d slice(s)</a>"%locals()
         else:
-            description += '<li>No slice</li>'
-        # PEER
-        if peer_id:
-            peername = self.peer_name(site,peers)
-            description += '<li>'
-            description += '<a href="%(apiurl)s/db/peers/index.php?id=%(peer_id)d">At peer %(peername)s</a>'%locals()
-            description += '</li>'
+            description += "<i>No slice</i>"
+        description += "</td><td></td></tr>"
+
+        description += "<tr><td></td><td>&nbsp;</td><td></td></tr>"
+
         # close description
-        description +='</ul>'
+        description += "</table>"
 
         if not self.options.labels:
             name=""
