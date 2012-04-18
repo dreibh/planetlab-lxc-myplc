@@ -154,7 +154,7 @@ class KmlMap:
 
         # NODES
         description += "<tr><td align='center'>"
-        description += "<img src='%(apiurl)s/sites/node.png'/>"%locals()
+        description += "<img src='%(apiurl)s/googlemap/node.png'/>"%locals()
         description += "</td><td>"
         if nb_nodes:
             description += "<a style='text-decoration: none;' href='%(apiurl)s/db/nodes/index.php?site_id=%(site_id)d'>%(nb_nodes)d node(s)</a>"%locals()
@@ -165,7 +165,7 @@ class KmlMap:
 
         #SLICES
         description += "<tr><td align='center'>"
-        description += "<img src='%(apiurl)s/sites/slice.png'/>"%locals()
+        description += "<img src='%(apiurl)s/googlemap/slice.png'/>"%locals()
         description += "</td><td>"
         if nb_slices:
             description += "<a style='text-decoration: none;' href='%(apiurl)s/db/slices/index.php?site_id=%(site_id)d'>%(nb_slices)d slice(s)</a>"%locals()
