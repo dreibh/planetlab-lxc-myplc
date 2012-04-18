@@ -168,7 +168,8 @@ class KmlMap:
             description=""
 
         # STYLE
-        if self.options.use_google_icons:
+        # the size for google icons
+        if not self.options.use_custom_icons:
             if not peer_id:
                 # local sites
                 iconfile=default_local_builtin
@@ -178,6 +179,7 @@ class KmlMap:
                 iconfile=default_foreign_builtin
                 xyspec="<x>160</x><y>0</y><w>32</w><h>32</h>"
             iconurl="root://icons/%(iconfile)s"%locals()
+        # the size for our own brew of icons
         else:
             if not peer_id:
                 iconfile=self.options.local_icon
@@ -216,15 +218,16 @@ def main () :
     parser.add_option("-n","--no-label",action="store_false",dest="labels",
                       default=True,
                       help="outputs only geographic positions, no labels")
-    parser.add_option("-c","--custom",action="store_false",dest="use_google_icons",
-                      default=True,
-                      help="use locally customized icons rather than the google-provided defaults")
+    # default - for private depls. - is to use google-provided icons like palette-3
+    parser.add_option("-c","--custom",action="store_true",dest="use_custom_icons",
+                      default=False,
+                      help="use locally customized icons rather than the %s and %s defaults"%(default_local_builtin,default_foreign_builtin))
     parser.add_option("-l","--local",action="store",dest="local_icon",
                       default=default_local_icon,
-                      help="set icon url to use for local sites marker -- default is %s"%default_local_icon)
+                      help="set icon url to use for local sites marker -- requires -c -- default is %s"%default_local_icon)
     parser.add_option("-f","--foreign",action="store",dest="foreign_icon",
                       default=default_foreign_icon,
-                      help="set icon url to use for foreign sites marker -- default is %s"%default_foreign_icon)
+                      help="set icon url to use for foreign sites marker -- requires -c -- default is %s"%default_foreign_icon)
 
     (options, args) = parser.parse_args()
     if len(args) != 0:
