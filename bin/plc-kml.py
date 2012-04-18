@@ -101,6 +101,29 @@ class KmlMap:
         baseurl='http://%s'%api.config.PLC_WWW_HOST
         peer_id=site['peer_id']
 
+        # STYLE
+        # the size for google icons
+        if not self.options.use_custom_icons:
+            if not peer_id:
+                # local sites
+                iconfile=default_local_builtin
+                xyspec="<x>128</x><y>0</y><w>32</w><h>32</h>"
+            else:
+                # remote
+                iconfile=default_foreign_builtin
+                xyspec="<x>160</x><y>0</y><w>32</w><h>32</h>"
+            iconurl="root://icons/%(iconfile)s"%locals()
+        # the size for our own brew of icons
+        else:
+            if not peer_id:
+                iconfile=self.options.local_icon
+            else:
+                iconfile=self.options.foreign_icon
+            iconurl="%(baseurl)s/%(iconfile)s"%locals()
+            xyspec=""
+
+        iconspec="<href>%(iconurl)s</href>%(xyspec)s"%locals()
+
         # open description
         description  = "<br/><table style='border: 1px solid black; padding: 5px;' width='500px'>"
 
@@ -113,10 +136,7 @@ class KmlMap:
         description += "<a style='text-decoration: none;' href='%(peerurl)s'> %(peername)s </a>"%locals()
         #description += "<a style='text-decoration: none;' href='%(apiurl)s/db/peers/index.php?id=%(peer_id)d'>[description]</a>"%locals()
         description += "</td><td>"
-        if peer_id:
-            description += "<img src='%(apiurl)s/sites/plc24-32.png'/>"%locals()
-        else:
-            description += "<img src='%(apiurl)s/sites/ple24-32.png'/>"%locals()
+        description += "<img src='%(iconurl)s'/>"%locals()
 	description += "</td></tr>"
 
 	# URL
@@ -161,29 +181,6 @@ class KmlMap:
         if not self.options.labels:
             name=""
             description=""
-
-        # STYLE
-        # the size for google icons
-        if not self.options.use_custom_icons:
-            if not peer_id:
-                # local sites
-                iconfile=default_local_builtin
-                xyspec="<x>128</x><y>0</y><w>32</w><h>32</h>"
-            else:
-                # remote
-                iconfile=default_foreign_builtin
-                xyspec="<x>160</x><y>0</y><w>32</w><h>32</h>"
-            iconurl="root://icons/%(iconfile)s"%locals()
-        # the size for our own brew of icons
-        else:
-            if not peer_id:
-                iconfile=self.options.local_icon
-            else:
-                iconfile=self.options.foreign_icon
-            iconurl="%(baseurl)s/%(iconfile)s"%locals()
-            xyspec=""
-
-        iconspec="<href>%(iconurl)s</href>%(xyspec)s"%locals()
 
         # set the camera 50km high
         template="""<Placemark>
