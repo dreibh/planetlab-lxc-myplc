@@ -34,32 +34,18 @@ class KmlMap:
     def write(self,string):
         self.output.write(string.encode("UTF-8"))
 
-    # mention local last 
-    @staticmethod
-    def site_compare (s1,s2):
-        p1 = p2 = 0
-        if s1['peer_id']: p1=s1['peer_id']
-        if s2['peer_id']: p2=s2['peer_id']
-        return p2-p1
-
-    def refresh (self):
-        self.open()
-        self.write_header()
-        # cache peers 
-        peers = GetPeers()
-        all_sites = GetSites({'enabled':True,'is_public':True})
-        all_sites.sort(KmlMap.site_compare)
-        for site in all_sites:
-            self.write_site(site,peers)
-        self.write_footer()
-        self.close()
-
 # initial placement is for europe - dunno how to tune that yet
     def write_header (self):
+        if not self.options.nodegroup:
+            title="%s sites"%api.config.PLC_NAME
+            detailed="All the sites known to the %s testbed"%api.config.PLC_NAME
+        else:
+            title="Nodegroup %s"%self.options.nodegroup
+            detailed="All sites involved in nodegroup %s"%self.options.nodegroup
         self.write("""<?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://earth.google.com/kml/2.2">
 <Document>
-<name> PlanetLab Sites </name>
+<name> %(title)s </name>
 <LookAt>
 <longitude>9.180821112577378</longitude>
 <latitude>44.43275321178062</latitude>
@@ -68,8 +54,8 @@ class KmlMap:
 <tilt>0</tilt>
 <heading>-7.767386340832667</heading>
 </LookAt>
-<description> All the sites known to the PlanetLab testbed. </description>
-""")
+<description> %(detailed)s. </description>
+"""%locals())
 
     def write_footer (self):
         self.write("""</Document></kml>
@@ -83,7 +69,63 @@ class KmlMap:
                 return (peer['peername'],peer['peer_url'].replace("PLCAPI/",""),)
         return "Unknown peer_name"
 
-    def write_site (self, site, peers):
+    # mention local last 
+    @staticmethod
+    def site_compare (s1,s2):
+        p1 = p2 = 0
+        if s1['peer_id']: p1=s1['peer_id']
+        if s2['peer_id']: p2=s2['peer_id']
+        return p2-p1
+
+    ####################
+    def refresh (self):
+        if self.options.nodegroup:
+            self.refresh_nodegroup()
+        else:
+            self.refresh_all_sites()
+
+    def refresh_all_sites(self):
+        self.open()
+        self.write_header()
+        # cache peers 
+        peers = GetPeers()
+        all_sites = GetSites({'enabled':True,'is_public':True})
+        all_sites.sort(KmlMap.site_compare)
+        for site in all_sites:
+            self.write_site(site,peers)
+        self.write_footer()
+        self.close()
+
+    def refresh_nodegroup(self):
+        try:
+            nodegroup=GetNodeGroups({'groupname':self.options.nodegroup})[0]
+        except:
+            print "No such nodegroup %s - ignored"%self.options.nodegroup
+            return
+        nodegroup_node_ids=nodegroup['node_ids']
+        if len(nodegroup_node_ids)==0:
+            print "Empty nodegroup %s - ignored"%self.options.nodegroup
+            return
+        # let's go
+        self.open()
+        self.write_header()
+        # cache peers 
+        peers = GetPeers()
+        nodes=GetNodes(nodegroup_node_ids)
+        global_node_hash = dict ( [ (n['node_id'],n) for n in nodes ] )
+        site_ids = [ node['site_id'] for node in nodes]
+        # remove any duplicate
+        site_ids = list(set(site_ids))
+        sites = GetSites (site_ids)
+        # patch sites so that 'node_ids' only contains the nodes in the nodegroup
+        for site in sites:
+            site['node_ids'] = [ node_id for node_id in site['node_ids'] if node_id in nodegroup_node_ids ]
+            node_hash = dict ( [ (node_id, global_node_hash[node_id]) for node_id in site['node_ids'] ] )
+            self.write_site(site,peers,nodegroup_id=nodegroup['nodegroup_id'], node_hash=node_hash)
+        self.write_footer()
+        self.close()
+
+    def write_site (self, site, peers, nodegroup_id=False, node_hash={}):
         # discard sites with missing lat or lon
         if not site['latitude'] or not site['longitude']:
             return
@@ -150,6 +192,17 @@ class KmlMap:
             description += "</td>"
             description += "</tr>"
 
+        # nodegroup direct link
+        if self.options.nodegroup:
+            nodegroup=self.options.nodegroup
+            description += "<tr>"
+            description += "<td style='font-weight: bold'>Nodegroup</td>"
+            description += "<td>"
+            description += "<a style='text-decoration: none;' href='/planetlab/tags/nodegroups.php?id=%(nodegroup_id)d'> %(nodegroup)s </a>"%locals()
+            description += "</td>"
+            description += "</tr>"
+
+
         # Usage area
         description += "<tr>"
         description += "<td style='font-weight: bold; margin-bottom:2px;'>Usage</td>"
@@ -160,25 +213,37 @@ class KmlMap:
         description += "<thead></thead><tbody>"
 
         # NODES
-        description += "<tr><td align='center'>"
-        description += "<img src='%(apiurl)s/googlemap/node.png'/>"%locals()
-        description += "</td><td>"
-        if nb_nodes:
-            description += "<a style='text-decoration: none;' href='%(apiurl)s/db/nodes/index.php?site_id=%(site_id)d'>%(nb_nodes)d node(s)</a>"%locals()
-            #description += "<a style='text-decoration: none;' href='%(apiurl)s/db/nodes/comon.php?site_id=%(site_id)d'> (in Comon)</a>"%locals()
+        # regular all-sites mode
+        if not nodegroup_id:
+            description += "<tr><td align='center'>"
+            description += "<img src='%(apiurl)s/googlemap/node.png'/>"%locals()
+            description += "</td><td>"
+            if nb_nodes:
+                description += "<a style='text-decoration: none;' href='%(apiurl)s/db/nodes/index.php?site_id=%(site_id)d'>%(nb_nodes)d node(s)</a>"%locals()
+            else:
+                description += "<i>No node</i>"
+            description += "</td></tr>"
+        # nodegroup mode : show all nodes
         else:
-            description += "<i>No node</i>"
-        description += "</td></tr>"
+            for node_id in site['node_ids']:
+                node=node_hash[node_id]
+                hostname=node['hostname']
+                description += "<tr><td align='center'>"
+                description += "<img src='%(apiurl)s/googlemap/node.png'/>"%locals()
+                description += "</td><td>"
+                description += "<a style='text-decoration: none;' href='%(apiurl)s/db/nodes/index.php?id=%(node_id)d'>%(hostname)s </a>"%locals()
+                description += "</td></tr>"
 
         #SLICES
-        description += "<tr><td align='center'>"
-        description += "<img src='%(apiurl)s/googlemap/slice.png'/>"%locals()
-        description += "</td><td>"
-        if nb_slices:
-            description += "<a style='text-decoration: none;' href='%(apiurl)s/db/slices/index.php?site_id=%(site_id)d'>%(nb_slices)d slice(s)</a>"%locals()
-        else:
-            description += "<span style='font-style:italic;'>No slice</span>"
-        description += "</td></tr>"
+        if not nodegroup_id:
+            description += "<tr><td align='center'>"
+            description += "<img src='%(apiurl)s/googlemap/slice.png'/>"%locals()
+            description += "</td><td>"
+            if nb_slices:
+                description += "<a style='text-decoration: none;' href='%(apiurl)s/db/slices/index.php?site_id=%(site_id)d'>%(nb_slices)d slice(s)</a>"%locals()
+            else:
+                description += "<span style='font-style:italic;'>No slice</span>"
+                description += "</td></tr>"
         
         # close usage table
         description += "</tbody></table>"
@@ -219,6 +284,10 @@ def main () :
     parser.add_option("-n","--no-label",action="store_false",dest="labels",
                       default=True,
                       help="outputs only geographic positions, no labels")
+
+    parser.add_option("-g","--nodegroup",action='store',dest='nodegroup',default=None,
+                      help="outputs a kml file for a given nodegroup only")
+
     # default - for private depls. - is to use google-provided icons like palette-3
     parser.add_option("-c","--custom",action="store_true",dest="use_custom_icons",
                       default=False,
