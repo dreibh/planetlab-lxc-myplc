@@ -125,32 +125,39 @@ class KmlMap:
         iconspec="<href>%(iconurl)s</href>%(xyspec)s"%locals()
 
         # open description
-        description  = "<br/><table style='border: 1px solid black; padding: 5px;' width='500px'>"
+        # can't seem to get classes to get through to the google maps API
+        # so have to use hard-wired settings
+        description = ""
+        description += "<table style='border: 1px solid black; padding: 3px; margin-top:5px;' width='300px'>"
+        description += "<thead></thead><tbody>"
 
         # TESTBED
-        description += "<tr><td></td><td>&nbsp;</td><td></td></tr>"
-        description += "<tr><td align='center'>"
-        description += "<b>Testbed</b>"
-        description += "</td><td>"
+        description += "<tr>"
+        description += "<td style='font-weight: bold'>Testbed</td>"
         (peername,peerurl) = self.peer_info (site,peers)
-        description += "<a style='text-decoration: none;' href='%(peerurl)s'> %(peername)s </a>"%locals()
-        #description += "<a style='text-decoration: none;' href='%(apiurl)s/db/peers/index.php?id=%(peer_id)d'>[description]</a>"%locals()
-        description += "</td><td>"
-        description += "<img src='%(iconurl)s'/>"%locals()
-	description += "</td></tr>"
+        description += "<td style='vertical-align:middle;'>"
+        description += "<p><img src='%(iconurl)s' style='vertical-align:middle;'/>"%locals()
+        description += "<a href='%(peerurl)s' style='text-decoration:none;vertical-align:middle;'> %(peername)s </a>"%locals()
+	description += "</p></td></tr>"
 
 	# URL
         if site['url']:
             site_url=site['url']
-            description += "<tr><td align='center'>"
-            description += "<b>Website</b>"
-            description += "</td><td>"
+            description += "<tr>"
+            description += "<td style='font-weight: bold'>Website</td>"
+            description += "<td>"
             description += "<a style='text-decoration: none;' href='%(site_url)s'> %(site_url)s </a>"%locals()
-            description += "</td><td></td></tr>"
+            description += "</td>"
+            description += "</tr>"
 
-        description += "<tr><td></td><td>&nbsp;</td><td></td></tr>"
-        description += "<tr><td align='center'>Usage details:</td><td></td><td></td></tr>"
-        description += "<tr><td></td><td>&nbsp;</td><td></td></tr>"
+        # Usage area
+        description += "<tr>"
+        description += "<td style='font-weight: bold; margin-bottom:2px;'>Usage</td>"
+
+        # encapsulate usage in a table of its own
+        description += "<td>"
+        description += "<table style=''>"
+        description += "<thead></thead><tbody>"
 
         # NODES
         description += "<tr><td align='center'>"
@@ -161,7 +168,7 @@ class KmlMap:
             #description += "<a style='text-decoration: none;' href='%(apiurl)s/db/nodes/comon.php?site_id=%(site_id)d'> (in Comon)</a>"%locals()
         else:
             description += "<i>No node</i>"
-        description += "</td><td></td></tr>"
+        description += "</td></tr>"
 
         #SLICES
         description += "<tr><td align='center'>"
@@ -170,13 +177,15 @@ class KmlMap:
         if nb_slices:
             description += "<a style='text-decoration: none;' href='%(apiurl)s/db/slices/index.php?site_id=%(site_id)d'>%(nb_slices)d slice(s)</a>"%locals()
         else:
-            description += "<i>No slice</i>"
-        description += "</td><td></td></tr>"
-
-        description += "<tr><td></td><td>&nbsp;</td><td></td></tr>"
+            description += "<span style='font-style:italic;'>No slice</span>"
+        description += "</td></tr>"
+        
+        # close usage table
+        description += "</tbody></table>"
+        description += "</td></tr>"
 
         # close description
-        description += "</table>"
+        description += "</tbody></table>"
 
         if not self.options.labels:
             name=""
