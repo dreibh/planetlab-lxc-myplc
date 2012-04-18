@@ -46,7 +46,7 @@ class KmlMap:
         self.open()
         self.write_header()
         # cache peers 
-        peers = GetPeers({},['peer_id','peername'])
+        peers = GetPeers()
         all_sites = GetSites({'enabled':True,'is_public':True})
         all_sites.sort(KmlMap.site_compare)
         for site in all_sites:
@@ -75,12 +75,13 @@ class KmlMap:
         self.write("""</Document></kml>
 """)
 
-    def peer_name (self,site, peers):
+    def peer_info (self,site, peers):
         if not site['peer_id']:
-            return "local"
+            return (api.config.PLC_NAME, "http://%s/"%api.config.PLC_API_HOST,)
         for peer in peers:
             if peer['peer_id'] == site['peer_id']:
-                return peer['peername']
+                return (peer['peername'],peer['peer_url'].replace("PLCAPI/",""),)
+        return "Unknown peer_name"
 
     def write_site (self, site, peers):
         # discard sites with missing lat or lon
@@ -108,13 +109,7 @@ class KmlMap:
         description += "<tr><td align='center'>"
         description += "<b>Testbed</b>"
         description += "</td><td>"
-        if peer_id:
-            peername = 'PlanetLab Central'
-	    peerurl = 'http://www.planet-lab.org'
-            #self.peer_name(site,peers)
-        else:
-            peername = 'PlanetLab Europe'
-	    peerurl = 'http://www.planet-lab.eu'
+        (peername,peerurl) = self.peer_info (site,peers)
         description += "<a style='text-decoration: none;' href='%(peerurl)s'> %(peername)s </a>"%locals()
         #description += "<a style='text-decoration: none;' href='%(apiurl)s/db/peers/index.php?id=%(peer_id)d'>[description]</a>"%locals()
         description += "</td><td>"
