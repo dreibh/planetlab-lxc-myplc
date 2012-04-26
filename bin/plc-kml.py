@@ -17,6 +17,12 @@ default_foreign_icon     = "sites/google-foreign.png"
 default_local_builtin    = "palette-4.png"
 default_foreign_builtin  = "palette-3.png"
 
+# cosmetic - peername cannot be easily changed on the PLC-PLE link...
+def render_public_name (peername):
+    if peername=='PlanetLab': return "PlanetLab Central"
+    elif peername == 'PlanetLabEurope': return "PlanetLab Europe"
+    else: return peername
+
 class KmlMap:
 
     def __init__ (self,outputname,options):
@@ -37,8 +43,9 @@ class KmlMap:
 # initial placement is for europe - dunno how to tune that yet
     def write_header (self):
         if not self.options.nodegroup:
-            title="%s sites"%api.config.PLC_NAME
-            detailed="All the sites known to the %s testbed"%api.config.PLC_NAME
+            local_peername=render_public_name(api.config.PLC_NAME)
+            title="%s sites"%local_peername
+            detailed="All the sites known to the %s testbed"%local_peername
         else:
             title="Nodegroup %s"%self.options.nodegroup
             detailed="All sites involved in nodegroup %s"%self.options.nodegroup
@@ -63,10 +70,10 @@ class KmlMap:
 
     def peer_info (self,site, peers):
         if not site['peer_id']:
-            return (api.config.PLC_NAME, "http://%s/"%api.config.PLC_API_HOST,)
+            return (render_public_name(api.config.PLC_NAME), "http://%s/"%api.config.PLC_API_HOST,)
         for peer in peers:
             if peer['peer_id'] == site['peer_id']:
-                return (peer['peername'],peer['peer_url'].replace("PLCAPI/",""),)
+                return (render_public_name(peer['peername']),peer['peer_url'].replace("PLCAPI/",""),)
         return "Unknown peer_name"
 
     # mention local last 
@@ -204,8 +211,10 @@ class KmlMap:
 
 
         # Usage area
+        if not nodegroup_id: title="Usage"
+        else: title="Nodes"
         description += "<tr>"
-        description += "<td style='font-weight: bold; margin-bottom:2px;'>Usage</td>"
+        description += "<td style='font-weight: bold; margin-bottom:2px;'>%(title)s</td>"%locals()
 
         # encapsulate usage in a table of its own
         description += "<td>"
