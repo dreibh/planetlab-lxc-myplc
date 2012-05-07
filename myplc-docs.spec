@@ -1,6 +1,6 @@
 %define name myplc-docs
 %define version 5.1
-%define taglevel 1
+%define taglevel 2
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -96,6 +96,9 @@ rm -rf $RPM_BUILD_ROOT
 /var/www/html/planetlab/doc/
 
 %changelog
+* Mon May 07 2012 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.1-2
+- plc-kml.py now has support for nodegroups
+
 * Mon Apr 16 2012 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.1-1
 - use nodeimage package instead of deprecated bootstrapfs
 - has systemd-friendly startup script
