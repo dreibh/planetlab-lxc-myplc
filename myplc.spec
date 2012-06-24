@@ -109,6 +109,7 @@ install -D -m 755 plc_config.py ${RPM_BUILD_ROOT}/${PYTHON_SITEARCH}/plc_config.
 echo "* Installing scripts in /usr/bin"
 mkdir -p ${RPM_BUILD_ROOT}/usr/bin
 rsync -av --exclude .svn bin/ ${RPM_BUILD_ROOT}/usr/bin/
+(cd $RPM_BUILD_ROOT/usr/bin; ln -s mtail.py mtail)
 chmod 755 ${RPM_BUILD_ROOT}/usr/bin/*
 
 # Install initscript 
@@ -234,6 +235,7 @@ fi
 /usr/bin/dns-config
 /usr/bin/refresh-peer.py*
 /usr/bin/mtail.py*
+/usr/bin/mtail
 /usr/bin/plc-map.py*
 /usr/bin/plc-kml.py*
 /usr/bin/clean-empty-dirs.py*
