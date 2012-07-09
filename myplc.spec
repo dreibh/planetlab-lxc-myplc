@@ -1,6 +1,6 @@
 %define name myplc
 %define version 5.1
-%define taglevel 2
+%define taglevel 3
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 %global python_sitearch	%( python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)" )
@@ -252,6 +252,9 @@ fi
 
 
 %changelog
+* Mon Jul 09 2012 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.1-3
+- expose mtail.py as simply mtail
+
 * Mon May 07 2012 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.1-2
 - plc-kml.py now has support for nodegroups
 
