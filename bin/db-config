@@ -65,8 +65,7 @@ def main():
     variables = cfg.variables()
 
     usage="%prog [-- options] [steps]"
-    release_url = "$URL$"
-    parser = OptionParser(usage=usage, version="%prog " + release_url )
+    parser = OptionParser(usage=usage )
     parser.add_option("-l","--list",dest="list_steps",action="store_true",default=False,
                       help="Lists available steps")
     parser.add_option("-v","--verbose",dest="verbose",action="store_true",default=False,
