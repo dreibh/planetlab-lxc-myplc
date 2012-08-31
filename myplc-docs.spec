@@ -1,6 +1,6 @@
 %define name myplc-docs
 %define version 5.1
-%define taglevel 3
+%define taglevel 4
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -96,6 +96,10 @@ rm -rf $RPM_BUILD_ROOT
 /var/www/html/planetlab/doc/
 
 %changelog
+* Fri Aug 31 2012 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.1-4
+- set TimeoutSec to 300 in plc.service
+- remove ref to deprecated svn $URL$ in db-config usage
+
 * Mon Jul 09 2012 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.1-3
 - expose mtail.py as simply mtail
 
