@@ -56,6 +56,10 @@ case "$1" in
 	include_path=".:$DocumentRoot/planetlab/includes:$DocumentRoot/plekit/php:$DocumentRoot/generated:/etc/planetlab/php:/usr/share/plc_api/php"
 	sed -i -e "s@[;]*include_path = \"\.:.*\"@include_path = \"$include_path\"@" $php_ini
 
+	# Set open_basedir so as to avoid leaks
+	open_basedir="$DocumentRoot:/etc/planetlab/php:/usr/share/plc_api/php:/var/log/myslice:/var/tmp/bootmedium:/tmp"
+	sed -i -e "s@[;]*open_basedir =.*@open_basedir = \"$open_basedir\"@" $php_ini
+	
 	# for php-5.3 under fedora12, otherwise issues tons of warning messages
 	# Set timezone in php.ini if not already there
 	if grep '^;date.timezone' $php_ini >& /dev/null; then
