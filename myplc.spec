@@ -242,6 +242,7 @@ fi
 /usr/bin/plc-check-ssl-peering.py*
 /usr/bin/plc-orphan-accounts.py*
 /usr/bin/spot-aliens.py*
+/usr/bin/check-hrns.py*
 /usr/bin/spot-dup-accounts.sh
 /lib/systemd/system/plc.service
 
