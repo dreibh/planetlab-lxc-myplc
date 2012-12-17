@@ -835,6 +835,7 @@ Copyright (C) 2006 The Trustees of Princeton University
         </variable>
       </variablelist>
     </category>
+
     <category id="myslice">
       <name>MySlice</name>
       <description>MySlice configuration parameters</description>
@@ -853,6 +854,17 @@ Copyright (C) 2006 The Trustees of Princeton University
 	  <name>tophat</name>
 	  <value>false</value>
 	  <description>True, if tophat data are available for this PLC's nodes</description>
+	</variable>
+      </variablelist>
+    </category>
+
+    <category id="plc_vsys">
+      <name>vsys</name>
+      <description>Default vsys tags</description>
+      <variablelist>
+	<variable id="defaults" type="string">
+	  <name>vsys tags set by default</name>
+	  <description>Comma-separated list of vsys script names that all newly created slices will have as their vsys tags. For older slices, see the check-vsys-default-tags.py script as part of the myplc package.</description>
 	</variable>
       </variablelist>
     </category>

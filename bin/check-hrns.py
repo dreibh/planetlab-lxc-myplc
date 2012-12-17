@@ -42,7 +42,12 @@ def handle_persons (sites,sites_by_id, dry_run,verbose):
         
             
 def main():
-    parser = OptionParser()
+    usage="""Usage: %prog
+  Checks that the hrn tags are correctly set
+Example:
+  %prog -- -p -nv
+"""
+    parser = OptionParser(usage=usage)
     parser.add_option("-p", "--person", action = "store_true", default = False, 
                       dest='persons',help="run on persons")
     parser.add_option("-n", "--node", action = "store_true", default = False, 
