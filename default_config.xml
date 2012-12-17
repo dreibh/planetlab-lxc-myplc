@@ -860,11 +860,11 @@ Copyright (C) 2006 The Trustees of Princeton University
 
     <category id="plc_vsys">
       <name>vsys</name>
-      <description>Default vsys tags</description>
+      <description>Default values for the vsys tag</description>
       <variablelist>
 	<variable id="defaults" type="string">
 	  <name>vsys tags set by default</name>
-	  <description>Comma-separated list of vsys script names that all newly created slices will have as their vsys tags. For older slices, see the check-vsys-default-tags.py script as part of the myplc package.</description>
+	  <description>Comma-separated list of vsys script names that all newly created slices will have as their vsys tags. For older slices, see the check-vsys-defaults.py script as part of the myplc package.</description>
 	</variable>
       </variablelist>
     </category>

@@ -243,6 +243,7 @@ fi
 /usr/bin/plc-orphan-accounts.py*
 /usr/bin/spot-aliens.py*
 /usr/bin/check-hrns.py*
+/usr/bin/check-vsys-defaults.py*
 /usr/bin/spot-dup-accounts.sh
 /lib/systemd/system/plc.service
 
