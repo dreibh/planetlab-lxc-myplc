@@ -28,8 +28,7 @@ def check (options):
     if options.tags:
         values=options.tags
     else:
-        config_tags=api.config.PLC_VSYS_DEFAULTS
-        values= [ value for value in config_tags.split(',') if value ]
+        config_tags= [ y for y in [ x.strip() for x in api.config.PLC_VSYS_DEFAULTS.split(',') ] if y ]
     # let's go
     for value in values:
         slice_tags=GetSliceTags({'tagname':'vsys','value':value})
