@@ -28,7 +28,7 @@ def handle_persons (sites,sites_by_id, dry_run,verbose):
     for person in persons:
         how_many=len(person['site_ids'])
         if how_many !=1:
-            if verbose: print "person %s not in 1 site (%s instead) -- ignored"%(person['email'],how_many)
+            if verbose: print "Checking persons in exactly one site -- person %s in %s site(s) -- ignored"%(person['email'],how_many)
             continue
         try:    login_base=sites_by_id[person['site_ids'][0]]['login_base']
         except: print "Cannot handle person %s - site not found"%person['email']; continue
