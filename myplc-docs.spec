@@ -1,6 +1,6 @@
 %define name myplc-docs
 %define version 5.1
-%define taglevel 5
+%define taglevel 6
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -96,6 +96,9 @@ rm -rf $RPM_BUILD_ROOT
 /var/www/html/planetlab/doc/
 
 %changelog
+* Wed Dec 19 2012 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.1-6
+- bugfix in check-vsys-defaults.py
+
 * Wed Dec 19 2012 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.1-5
 - define open_basedir in php.ini to stop confidentiality leak
 - new utility slice_ssh_keys.py for showing sliver keys (OMF interop)
