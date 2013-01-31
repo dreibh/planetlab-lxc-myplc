@@ -112,9 +112,8 @@ case "$1" in
 		fi
 	    done
 
-        # Create a separate path for mod_wsgi until we are ready to replace 
-        # mod_python
-        PLC_API_WSGI_PATH=/PLCAPIWSGI 
+            # mod_python being retired as of fedora18 we go for mod_wsgi instead
+            PLC_API_PATH_WSGI=$PLC_API_PATH
 
 	    # HTTP configuration
 	    if [ $skip_http -eq 0 -a -n "${!http_port}" ] ; then
@@ -127,11 +126,10 @@ Listen ${!http_port}
     Redirect /db https://$PLC_WWW_HOST:$PLC_WWW_SSL_PORT/db
     Redirect /planetlab https://$PLC_WWW_HOST:$PLC_WWW_SSL_PORT/planetlab
     Redirect /$PLC_API_PATH https://$PLC_API_HOST:$PLC_API_PORT/$PLC_API_PATH
-###     Redirect /$PLC_API_WSGI_PATH/ https://$PLC_API_HOST:$PLC_API_PORT/$PLC_API_WSGI_PATH/
-###     WSGIScriptAlias $PLC_API_WSGI_PATH /usr/share/plc_api/ModWSGI.wsgi
-    # XX make processes and threads configurable 
-###     WSGIDaemonProcess plcapi-wsgi user=apache group=apache processes=1 threads=25
-###     WSGIProcessGroup plcapi-wsgi
+    WSGIScriptAlias $PLC_API_PATH_WSGI /usr/share/plc_api/ModWSGI.wsgi
+    # xxx make processes and threads configurable 
+    WSGIDaemonProcess plcapi-wsgi user=apache group=apache processes=1 threads=25
+    WSGIProcessGroup plcapi-wsgi
 </VirtualHost>
 EOF
 	    fi
@@ -153,29 +151,29 @@ EOF
 	(
 	    if [ "$PLC_API_ENABLED" = "1" ] ; then
 		cat <<EOF
-# mod_python location
-<Location $PLC_API_PATH>
-    SetHandler mod_python
-    PythonPath "sys.path + ['/usr/share/plc_api']"
-    PythonHandler ModPython
-</Location>
+#### mod_python location - turned off
+###<Location $PLC_API_PATH>
+###    SetHandler mod_python
+###    PythonPath "sys.path + ['/usr/share/plc_api']"
+###    PythonHandler ModPython
+###</Location>
 
-# mod_wsgi location
-### <Location $PLC_API_WSGI_PATH/>
-###     SetHandler mod_wsgi
-### </Location>
+# mod_wsgi location - enabled
+<Location $PLC_API_PATH_WSGI>
+     SetHandler mod_wsgi
+</Location>
 EOF
 	    else
 		cat <<EOF
-# mod_python location
-<Location $PLC_API_PATH>
-    Deny from all
-</Location>
+#### mod_python location - turned off
+###<Location $PLC_API_PATH>
+###    Deny from all
+###</Location>
 
 # mod_wsgi location
-### <Location $PLC_API_WSGI_PATH/>
-###     Deny from all
-### </Location> 
+<Location $PLC_API_PATH_WSGI>
+    Deny from all
+</Location> 
 EOF
 	    fi
 
