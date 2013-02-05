@@ -74,6 +74,7 @@ case "$1" in
 	# Disable default Listen directive
 	sed -i -e '/^Listen/d' $httpd_conf
 
+	plcapi_noslash=$(echo $PLC_API_PATH | sed -e s,/,,g)
 	# Set the port numbers
 	for server in WWW API BOOT ; do
 	    enabled=PLC_${server}_ENABLED
@@ -84,11 +85,13 @@ case "$1" in
 	    http_port=PLC_${server}_PORT
 	    https_port=PLC_${server}_SSL_PORT
 
-#	    # API should always be accessed via SSL
-#	    if [ "$server" = "API" ] ; then
-#		https_port=${!http_port}
-#		http_port=
-#	    fi
+	    # API should always be accessed via SSL
+	    if [ "$server" = "API" ] ; then
+		https_port=${!http_port}
+		http_port=
+	    fi
+
+	    echo "# DBG server=$server hostname=${!hostname} http_port=${!http_port} https_port=${!https_port}"
 
 	    # Check if we are already listening on these ports
 	    skip_http=0
@@ -122,8 +125,9 @@ Listen ${!http_port}
     Redirect /planetlab https://$PLC_WWW_HOST:$PLC_WWW_SSL_PORT/planetlab
 # as a matter of fact most xmlrpc clients won't follow the redirection
 # so this is mostly rethorical, but just in case...
-   Redirect /$PLC_API_PATH https://$PLC_WWW_HOST:$PLC_WWW_SSL_PORT/$PLC_API_PATH
+   Redirect /$plcapi_noslash https://$PLC_WWW_HOST:$PLC_WWW_SSL_PORT/$plcapi_noslash
 </VirtualHost>
+
 EOF
 	    fi
 
@@ -144,8 +148,7 @@ EOF
 WSGISocketPrefix run/wsgi
 
 <VirtualHost *:${!https_port}>
-
-   WSGIScriptAlias /$PLC_API_PATH /usr/share/plc_api/wsgi/plc.wsgi
+   WSGIScriptAlias /$plcapi_noslash /usr/share/plc_api/apache/plc.wsgi
 # xxx would be cool to be able to tweak this through config
    WSGIDaemonProcess plcapi-wsgi-ssl user=apache group=apache processes=1 threads=25
    WSGIProcessGroup plcapi-wsgi-ssl
@@ -155,8 +158,8 @@ WSGISocketPrefix run/wsgi
    SSLCertificateFile /etc/planetlab/${server_lower}_ssl.crt
    SSLCertificateKeyFile /etc/planetlab/${server_lower}_ssl.key
    SSLCertificateChainFile /etc/planetlab/${server_lower}_ca_ssl.crt
-
 </VirtualHost>
+
 EOF
 	    fi
 	done >$plc_conf
