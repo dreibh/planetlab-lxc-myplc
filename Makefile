@@ -44,7 +44,7 @@ else
 	+$(RSYNC) bin/ $(SSHURL)/usr/bin/
 	+$(RSYNC) plc.d/ $(SSHURL)/etc/plc.d/
 	+$(RSYNC) db-config.d/ $(SSHURL)/etc/planetlab/db-config.d/
-	+$(RSYNC) plc_config.py $(SSHURL)/usr/lib/python2.\*/site-packages/plc_config.py
+	+$(RSYNC) plc_config.py $(SSHURL)/usr/lib\*/python2.\*/site-packages/plc_config.py
 	+$(RSYNC) default_config.xml $(SSHURL)/etc/planetlab/default_config.xml
 	@echo XXXXXXXX you might need to run ssh root@$(PLC) service plc start 
 endif
