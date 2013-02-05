@@ -88,7 +88,7 @@ case "$1" in
 #	    if [ "$server" = "API" ] ; then
 #		https_port=${!http_port}
 #		http_port=
-	    fi
+#	    fi
 
 	    # Check if we are already listening on these ports
 	    skip_http=0
