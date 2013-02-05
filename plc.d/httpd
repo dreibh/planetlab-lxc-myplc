@@ -84,10 +84,10 @@ case "$1" in
 	    http_port=PLC_${server}_PORT
 	    https_port=PLC_${server}_SSL_PORT
 
-	    # API should always be accessed via SSL
-	    if [ "$server" = "API" ] ; then
-		https_port=${!http_port}
-		http_port=
+#	    # API should always be accessed via SSL
+#	    if [ "$server" = "API" ] ; then
+#		https_port=${!http_port}
+#		http_port=
 	    fi
 
 	    # Check if we are already listening on these ports
@@ -112,24 +112,17 @@ case "$1" in
 		fi
 	    done
 
-            # mod_python being retired as of fedora18 we go for mod_wsgi instead
-            PLC_API_PATH_WSGI=$PLC_API_PATH
-
 	    # HTTP configuration
 	    if [ $skip_http -eq 0 -a -n "${!http_port}" ] ; then
 		cat <<EOF
 Listen ${!http_port}
-# create wsgi socket where we have the permission
-### WSGISocketPrefix run/wsgi
-# Make sure that the admin web pages and API are always accessed via SSL
 <VirtualHost *:${!http_port}>
+    # Make sure that the admin web pages are always accessed via SSL
     Redirect /db https://$PLC_WWW_HOST:$PLC_WWW_SSL_PORT/db
     Redirect /planetlab https://$PLC_WWW_HOST:$PLC_WWW_SSL_PORT/planetlab
-    Redirect /$PLC_API_PATH https://$PLC_API_HOST:$PLC_API_PORT/$PLC_API_PATH
-    WSGIScriptAlias $PLC_API_PATH_WSGI /usr/share/plc_api/ModWSGI.wsgi
-    # xxx make processes and threads configurable 
-    WSGIDaemonProcess plcapi-wsgi user=apache group=apache processes=1 threads=25
-    WSGIProcessGroup plcapi-wsgi
+# as a matter of fact most xmlrpc clients won't follow the redirection
+# so this is mostly rethorical, but just in case...
+   Redirect /$PLC_API_PATH https://$PLC_WWW_HOST:$PLC_WWW_SSL_PORT/$PLC_API_PATH
 </VirtualHost>
 EOF
 	    fi
@@ -144,48 +137,53 @@ EOF
 		    -e "s/^Listen .*/Listen ${!https_port}/" \
 		    -e "s/<VirtualHost _default_:.*>/<VirtualHost _default_:${!https_port}>/" \
 		    $ssl_conf
+	    # this is used to locate the right certificates
+	    server_lower=$(echo $server | tr 'A-Z' 'a-z')
+	    cat <<EOF
+# create wsgi socket where we have the permission
+WSGISocketPrefix run/wsgi
+
+<VirtualHost *:${!https_port}>
+
+   WSGIScriptAlias /$PLC_API_PATH /usr/share/plc_api/wsgi/plc.wsgi
+# xxx would be cool to be able to tweak this through config
+   WSGIDaemonProcess plcapi-wsgi-ssl user=apache group=apache processes=1 threads=25
+   WSGIProcessGroup plcapi-wsgi-ssl
+
+   # SSL
+   SSLEngine On
+   SSLCertificateFile /etc/planetlab/${server_lower}_ssl.crt
+   SSLCertificateKeyFile /etc/planetlab/${server_lower}_ssl.key
+   SSLCertificateChainFile /etc/planetlab/${server_lower}_ca_ssl.crt
+
+</VirtualHost>
+EOF
 	    fi
 	done >$plc_conf
 
 	# Set custom Apache directives
 	(
-	    if [ "$PLC_API_ENABLED" = "1" ] ; then
-		cat <<EOF
-#### mod_python location - turned off
-###<Location $PLC_API_PATH>
-###    SetHandler mod_python
-###    PythonPath "sys.path + ['/usr/share/plc_api']"
-###    PythonHandler ModPython
-###</Location>
-
-# mod_wsgi location - enabled
-<Location $PLC_API_PATH_WSGI>
-     SetHandler mod_wsgi
-</Location>
+	    # could be restricted to boot boxes but harmless..
+	    cat <<EOF
+AddType application/octet-stream .iso
+AddType application/octet-stream .usb
 EOF
-	    else
+	    # make sure /PLCAPI can't get accessed if API not enabled here
+	    if [ "$PLC_API_ENABLED" != "1" ] ; then
 		cat <<EOF
-#### mod_python location - turned off
-###<Location $PLC_API_PATH>
-###    Deny from all
-###</Location>
-
 # mod_wsgi location
-<Location $PLC_API_PATH_WSGI>
+<Location $PLC_API_PATH>
     Deny from all
 </Location> 
 EOF
 	    fi
 
+	    # redirect www requests if not on the right server
 	    if [ "$PLC_WWW_ENABLED" != "1" ] ; then
 		cat <<EOF
 Redirect /index.html http://$PLC_WWW_HOST:$PLC_WWW_PORT/
 EOF
 	    fi
-	    cat <<EOF
-AddType application/octet-stream .iso
-AddType application/octet-stream .usb
-EOF
 	) >>$plc_conf
 
 	# Make alpina-logs directory writable for bootmanager log upload
