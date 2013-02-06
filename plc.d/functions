@@ -138,6 +138,46 @@ function plc_reload () {
     fi
 }
 
+#################### feb 2013 for f18
+# Authorization directives change in apache 2.4
+# http://httpd.apache.org/docs/2.4/upgrading.html#access
+#### up to 2.2, this would be e.g.
+# apachectl -V
+# Server version: Apache/2.2.22 (Unix)
+# <Directory "/usr/share/plc_api/apache">
+# Options	+ExecCGI
+# Order allow,deny
+# Allow from all
+# </Directory>
+#### starting with 2.4 it becomes
+# apachectl -V
+# Server version: Apache/2.4.3 (Fedora)
+# <Directory "/usr/share/plc_api/apache">
+# Options	+ExecCGI
+# Require	all granted
+# </Directory>
+
+function apache_newauth () {
+    apache_version=$(apachectl -V 2> /dev/null | grep 'Server version' | cut -d ' ' -f3 | sed -e 's,^.*/,,')
+    apache_major=$(echo $apache_version | cut -d. -f1)
+    apache_minor=$(echo $apache_version | cut -d. -f2)
+    test "$apache_minor" -ge 4
+}
+function apache_allow () {
+    if apache_newauth; then
+	echo -e "Require all granted"
+    else
+	echo -e "Order allow,deny\n   Allow from all"
+    fi
+}
+function apache_forbid () {
+    if apache_newauth; then
+	echo -e "Require all denied"
+    else
+	echo -e "Order deny,allow\n   Deny from all"
+    fi
+}
+
 # Make copies of stdout and stderr. The plc initscript redirects
 # stdout and stderr to a logfile if -v is not specified.
 [ ! -e /proc/self/fd/3 ] && exec 3>&1

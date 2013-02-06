@@ -158,9 +158,15 @@ WSGISocketPrefix run/wsgi
    SSLCertificateFile /etc/planetlab/${server_lower}_ssl.crt
    SSLCertificateKeyFile /etc/planetlab/${server_lower}_ssl.key
    SSLCertificateChainFile /etc/planetlab/${server_lower}_ca_ssl.crt
+
+   <Directory "/usr/share/plc_api/apache">
+   Options +ExecCGI
+   $(apache_allow)
+   </Directory>
 </VirtualHost>
 
 EOF
+
 	    fi
 	done >$plc_conf
 
@@ -176,7 +182,7 @@ EOF
 		cat <<EOF
 # mod_wsgi location
 <Location $PLC_API_PATH>
-    Deny from all
+    $(apache_forbid)
 </Location> 
 EOF
 	    fi
