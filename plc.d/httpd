@@ -74,7 +74,7 @@ case "$1" in
 	# Disable default Listen directive
 	sed -i -e '/^Listen/d' $httpd_conf
 
-	plcapi_noslash=$(echo $PLC_API_PATH | sed -e s,/,,g)
+	plc_api_path_noslash=$(echo $PLC_API_PATH | sed -e s,/,,g)
 	# Set the port numbers
 	for server in WWW API BOOT ; do
 	    enabled=PLC_${server}_ENABLED
@@ -125,7 +125,7 @@ Listen ${!http_port}
     Redirect /planetlab https://$PLC_WWW_HOST:$PLC_WWW_SSL_PORT/planetlab
 # as a matter of fact most xmlrpc clients won't follow the redirection
 # so this is mostly rethorical, but just in case...
-   Redirect /$plcapi_noslash https://$PLC_WWW_HOST:$PLC_WWW_SSL_PORT/$plcapi_noslash
+   Redirect /$plc_api_path_noslash https://$PLC_WWW_HOST:$PLC_WWW_SSL_PORT/$plc_api_path_noslash
 </VirtualHost>
 
 EOF
@@ -148,7 +148,7 @@ EOF
 WSGISocketPrefix run/wsgi
 
 <VirtualHost *:${!https_port}>
-   WSGIScriptAlias /$plcapi_noslash /usr/share/plc_api/apache/plc.wsgi
+   WSGIScriptAlias /$plc_api_path_noslash /usr/share/plc_api/apache/plc.wsgi
 # xxx would be cool to be able to tweak this through config
    WSGIDaemonProcess plcapi-wsgi-ssl user=apache group=apache processes=1 threads=25
    WSGIProcessGroup plcapi-wsgi-ssl
