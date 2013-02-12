@@ -21,7 +21,7 @@ def handle_nodes (sites,sites_by_id, dry_run, verbose):
                 if dry_run: continue
                 SetNodeHrn (node['node_id'],hrn)
             else:
-                if verbose: print "host %s OK"%node['hostname']
+                if verbose: print "Node %s OK"%node['hostname']
 
 def handle_persons (sites,sites_by_id, dry_run,verbose): 
     persons=GetPersons ({'peer_id':None},['person_id','email','hrn','site_ids'])
