@@ -144,14 +144,13 @@ EOF
 	    # this is used to locate the right certificates
 	    server_lower=$(echo $server | tr 'A-Z' 'a-z')
 	    cat <<EOF
+
 # create wsgi socket where we have the permission
+<IfModule !mod_python.c>
 WSGISocketPrefix run/wsgi
+</IfModule>
 
 <VirtualHost *:${!https_port}>
-   WSGIScriptAlias /$plc_api_path_noslash /usr/share/plc_api/apache/plc.wsgi
-# xxx would be cool to be able to tweak this through config
-   WSGIDaemonProcess plcapi-wsgi-ssl user=apache group=apache processes=1 threads=25
-   WSGIProcessGroup plcapi-wsgi-ssl
 
    # SSL
    SSLEngine On
@@ -159,10 +158,28 @@ WSGISocketPrefix run/wsgi
    SSLCertificateKeyFile /etc/planetlab/${server_lower}_ssl.key
    SSLCertificateChainFile /etc/planetlab/${server_lower}_ca_ssl.crt
 
+# we prefer mod_python if available, as first attempts at using mod_wsgi
+# turned out less reliable
+<IfModule mod_python.c>
+   <Location /$plc_api_path_noslash>
+      SetHandler mod_python
+      PythonPath "sys.path + ['/usr/share/plc_api']"
+      PythonHandler apache.ModPython
+   </Location>
+</IfModule>
+
+<IfModule !mod_python.c>
+   WSGIScriptAlias /$plc_api_path_noslash /usr/share/plc_api/apache/plc.wsgi
+# xxx would be cool to be able to tweak this through config
+   WSGIDaemonProcess plcapi-wsgi-ssl user=apache group=apache processes=1 threads=25
+   WSGIProcessGroup plcapi-wsgi-ssl
+
    <Directory "/usr/share/plc_api/apache">
-   Options +ExecCGI
-   $(apache_allow)
+      Options +ExecCGI
+      $(apache_allow)
    </Directory>
+</IfModule>
+
 </VirtualHost>
 
 EOF
