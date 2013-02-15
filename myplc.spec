@@ -65,7 +65,13 @@ Requires: PLCWWW
 Requires: www-register-wizard
 Requires: nodeconfig
 Requires: nodeyum
-Requires: PLCAPI
+Requires: plcapi
+# this technically is a plcapi dependency but it's simpler here for chosing which
+%if "%{distro}" == "Fedora" && %{distrorelease} >= 18
+Requires: mod_wsgi
+%else
+Requires: mod_python
+%endif
 Requires: nodeimage-%{nodefamily}
 Requires: myplc-docs
 Requires: myplc-release
