@@ -141,14 +141,41 @@ EOF
 		    -e "s/^Listen .*/Listen ${!https_port}/" \
 		    -e "s/<VirtualHost _default_:.*>/<VirtualHost _default_:${!https_port}>/" \
 		    $ssl_conf
-	    # this is used to locate the right certificates
-	    server_lower=$(echo $server | tr 'A-Z' 'a-z')
-	    cat <<EOF
+		# this is used to locate the right certificates
+		server_lower=$(echo $server | tr 'A-Z' 'a-z')
 
+		# which one is used is currently configured in myplc.spec,
+		# with mod_python preferred
+		if rpm -q mod_python >& /dev/null ; then
+		    configure_for_mod_python=true
+		elif rpm -q mod_wsgi >& /dev/null ; then
+		    configure_for_mod_wsgi=true
+		else
+		    echo "Requires mod_python or mod_wsgi.... exiting"
+		    exit 1
+		fi
+
+		# It would be tempting to use <IfModule> here 
+		# but early tests showed this could be tricky/fragile
+		# So let's hard-wire it for one module
+		# A lot of trial-and -error was involved in getting this that way...
+
+		if [ -n "$configure_for_mod_python" ] ; then
+#################### for mod_python
+		    cat <<EOF
+# mod_python location
+<Location /PLCAPI/>
+    SetHandler mod_python
+    PythonPath "sys.path + ['/usr/share/plc_api']"
+    PythonHandler apache.ModPython
+</Location>
+EOF
+
+		elif [ -n "$configure_for_mod_wsgi" ] ; then
+#################### for mod_wsgi
+		    cat <<EOF
 # create wsgi socket where we have the permission
-<IfModule !mod_python.c>
 WSGISocketPrefix run/wsgi
-</IfModule>
 
 <VirtualHost *:${!https_port}>
 
@@ -158,17 +185,6 @@ WSGISocketPrefix run/wsgi
    SSLCertificateKeyFile /etc/planetlab/${server_lower}_ssl.key
    SSLCertificateChainFile /etc/planetlab/${server_lower}_ca_ssl.crt
 
-# we prefer mod_python if available, as first attempts at using mod_wsgi
-# turned out less reliable
-<IfModule mod_python.c>
-   <Location /$plc_api_path_noslash>
-      SetHandler mod_python
-      PythonPath "sys.path + ['/usr/share/plc_api']"
-      PythonHandler apache.ModPython
-   </Location>
-</IfModule>
-
-<IfModule !mod_python.c>
    WSGIScriptAlias /$plc_api_path_noslash /usr/share/plc_api/apache/plc.wsgi
 # xxx would be cool to be able to tweak this through config
    WSGIDaemonProcess plcapi-wsgi-ssl user=apache group=apache processes=1 threads=25
@@ -178,12 +194,10 @@ WSGISocketPrefix run/wsgi
       Options +ExecCGI
       $(apache_allow)
    </Directory>
-</IfModule>
 
 </VirtualHost>
-
 EOF
-
+		fi
 	    fi
 	done >$plc_conf
 
