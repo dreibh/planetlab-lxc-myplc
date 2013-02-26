@@ -123,6 +123,20 @@ Copyright (C) 2006 The Trustees of Princeton University
       <description>Defaults for nodes and slices contents.</description>
       
       <variablelist>
+	<variable id="virt_map" type="string">
+	  <value> f8,f12,f14,centos5,centos6:vs; default:lxc </value>
+	  <description>Allows to compute a virtualization mechanism
+	  from an fcdistro. Starting with 5.2 MyPLC has support for
+	  either 'vs' or 'lxc', and this gives a correspondance from
+	  the node's fcdistro to the right virtualization mechanism.
+	  This information is essentially used by the BootManager for
+	  getting the installation phase right like e.g. when
+	  partitioning disks, and not to figure the contents of the
+	  nodeimage that depend only on fcdistro, pldistro and of
+	  course arch. This can be overridden by setting the vrt tag
+	  on that particular node. </description>
+	</variable>
+
 	<variable id="node_arch" type="string">
 	  <name>arch for nodes</name>
 	  <value>@ARCH@</value>
