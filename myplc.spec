@@ -1,6 +1,6 @@
 %define name myplc
-%define version 5.1
-%define taglevel 6
+%define version 5.2
+%define taglevel 0
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 %global python_sitearch	%( python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)" )
@@ -65,7 +65,7 @@ Requires: PLCWWW
 Requires: www-register-wizard
 Requires: nodeconfig
 Requires: nodeyum
-Requires: plcapi
+Requires: plcapi >= 5.2
 # this technically is a plcapi dependency but it's simpler here for chosing which
 %if "%{distro}" == "Fedora" && %{distrorelease} >= 18
 Requires: mod_wsgi
