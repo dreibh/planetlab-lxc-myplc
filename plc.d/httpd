@@ -57,7 +57,7 @@ case "$1" in
 	sed -i -e "s@[;]*include_path = \"\.:.*\"@include_path = \"$include_path\"@" $php_ini
 
 	# Set open_basedir so as to avoid leaks
-	open_basedir="$DocumentRoot:/etc/planetlab/php:/usr/share/plc_api/php:/var/log/myslice:/var/tmp/bootmedium:/tmp"
+	open_basedir="$DocumentRoot:/etc/planetlab/php:/usr/share/plc_api/php:/var/log/myslice:/var/tmp/bootmedium:/var/log/bm:/tmp"
 	sed -i -e "s@[;]*open_basedir =.*@open_basedir = \"$open_basedir\"@" $php_ini
 	
 	# for php-5.3 under fedora12, otherwise issues tons of warning messages
