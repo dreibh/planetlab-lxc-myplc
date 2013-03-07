@@ -1,6 +1,6 @@
 %define name myplc-release
-%define version 5.1
-%define taglevel 6
+%define version 5.2
+%define taglevel 1
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -52,6 +52,12 @@ rm -rf $RPM_BUILD_ROOT
 /etc/myplc-release
 
 %changelog
+* Thu Mar 07 2013 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.2-1
+- supports httpd config for either mod_python (preferred) or mod_wsgi
+- requires mod_wsgi on f18 only, otherwise mod_python
+- supports httpd config for apache 2.4 (f18)
+- new config variable PLC_FLAVOUR_VIRT_MAP to set 'virt' from fcdistro
+
 * Wed Dec 19 2012 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.1-6
 - bugfix in check-vsys-defaults.py
 
