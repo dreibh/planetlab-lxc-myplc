@@ -38,7 +38,7 @@ def handle_persons (sites,sites_by_id, dry_run,verbose):
             if dry_run: continue
             SetPersonHrn (person['person_id'],hrn)
         else:
-            if verbose: print "host %s OK"%person['email']
+            if verbose: print "Person %s OK"%person['email']
         
             
 def main():
