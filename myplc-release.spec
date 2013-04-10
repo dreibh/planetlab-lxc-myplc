@@ -1,6 +1,6 @@
 %define name myplc-release
 %define version 5.2
-%define taglevel 1
+%define taglevel 2
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -52,6 +52,9 @@ rm -rf $RPM_BUILD_ROOT
 /etc/myplc-release
 
 %changelog
+* Wed Apr 10 2013 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.2-2
+- fix typo in check-hrns - used to print 'host' while dealing with persons
+
 * Thu Mar 07 2013 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.2-1
 - supports httpd config for either mod_python (preferred) or mod_wsgi
 - requires mod_wsgi on f18 only, otherwise mod_python
