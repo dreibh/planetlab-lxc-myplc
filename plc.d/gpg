@@ -39,10 +39,19 @@ case "$1" in
 
 	    # Temporarily replace /dev/random with /dev/urandom to
 	    # avoid running out of entropy.
-	    rm -f /dev/random
-	    # 1 9 is /dev/urandom
-	    mknod /dev/random c 1 9
-	    # sometimes mknod fails within an improperly setup vserver
+	    # (1 9 is /dev/urandom, 1 8 is /dev/random)
+	    #
+	    # a former version of this was rm'ing /dev/random and re-creating it afterwards
+	    # however in 1.0.4 libvirt won't allow the use of mknod at all, so let's work around that
+	    # by moving things around instead
+	    #
+	    # if we find this file it's probably that a previous run has failed..
+	    [ -f /dev/random.preserve ] && { echo "Unexpected file /dev/random.preserve - exiting" ; exit 1; }
+	    mv -f /dev/random /dev/random.preserve
+	    # doesn't hurt to check 
+	    check
+	    ln -s /dev/urandom /dev/random
+	    # again 
 	    check
 	    gpg --homedir=$homedir --no-permission-warning --batch --no-tty --yes \
 		--gen-key <<EOF
@@ -59,8 +68,8 @@ Expire-Date: 0
 %commit
 EOF
 	    check
-	    rm -f /dev/random
-	    mknod /dev/random c 1 8
+	    mv -f /dev/random.preserve /dev/random
+	    check
 	else
 	    # Update GPG UID
 	    MESSAGE=$"Updating GPG keys"
