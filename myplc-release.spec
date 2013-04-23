@@ -1,6 +1,6 @@
 %define name myplc-release
 %define version 5.2
-%define taglevel 2
+%define taglevel 3
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -52,6 +52,10 @@ rm -rf $RPM_BUILD_ROOT
 /etc/myplc-release
 
 %changelog
+* Tue Apr 23 2013 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.2-3
+- plc.d/gpg now does not rm /dev/random but preserves it
+- this is because libvirt won't let us run mknod
+
 * Wed Apr 10 2013 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.2-2
 - fix typo in check-hrns - used to print 'host' while dealing with persons
 
