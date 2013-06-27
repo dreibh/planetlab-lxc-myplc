@@ -673,25 +673,6 @@ Copyright (C) 2006 The Trustees of Princeton University
           <description>The fully qualified hostname of the XMPP server.</description>
         </variable>
 
-        <variable id="xmpp_user" type="string">
-          <name>XMPP username</name>
-          <value></value>
-          <description>XMPP username (which has admin rights).</description>
-        </variable>
-
-        <variable id="xmpp_password" type="string">
-          <name>XMPP password</name>
-          <value></value>
-          <description>The password of the XMPP user.</description>
-        </variable>
-
-        <!-- omf-slicemgr -->
-        <variable id="slicemgr_url" type="string">
-          <name>OMF Slicemgr URL</name>
-          <value>http://localhost.localdomain:5053</value>
-          <description>.</description>
-        </variable>
-
       </variablelist>
     </category>
 
