@@ -1,6 +1,6 @@
 %define name myplc-docs
 %define version 5.2
-%define taglevel 3
+%define taglevel 4
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -96,6 +96,9 @@ rm -rf $RPM_BUILD_ROOT
 /var/www/html/planetlab/doc/
 
 %changelog
+* Fri Jun 28 2013 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.2-4
+- drop PLC_OMF_XMPP_{USER,PASSWORD} from config
+
 * Tue Apr 23 2013 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.2-3
 - plc.d/gpg now does not rm /dev/random but preserves it
 - this is because libvirt won't let us run mknod
