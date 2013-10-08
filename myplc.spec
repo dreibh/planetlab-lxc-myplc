@@ -52,11 +52,12 @@ Requires: findutils
 Requires: xmlsec1
 Requires: xmlsec1-openssl
 Requires: ed
-%if "%{distro}" == "Fedora" && %{distrorelease} >= 10
 Requires: cronie
-%else
-Requires: vixie-cron
+# starting with f16 we depend on this new rpm
+%if "%{distro}" == "Fedora" && %{distrorelease} >= 16
+Requires: rpm-sign
 %endif
+
 # planetlab stuff
 Requires: bootmanager
 Requires: bootcd-%{nodefamily}
