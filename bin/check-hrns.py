@@ -2,7 +2,7 @@
 import sys
 from optparse import OptionParser
 
-from PLC.Namespace import hostname_to_hrn, email_to_hrn
+from PLC.Namespace import hostname_to_hrn, email_to_hrn, slicename_to_hrn
 # (auth_hrn, email):
 
 toplevel=api.config.PLC_HRN_ROOT
@@ -39,6 +39,21 @@ def handle_persons (sites,sites_by_id, dry_run,verbose):
             SetPersonHrn (person['person_id'],hrn)
         else:
             if verbose: print "Person %s OK"%person['email']
+
+
+def handle_slices (sites,sites_by_id, dry_run,verbose):
+    slices=GetSlices ({'peer_id':None},['slice_id','name','hrn','site_id'])
+    for slice in slices:
+        try:    login_base=sites_by_id[slice['site_id']]['login_base']
+        except: print "Cannot handle slice %s - site not found"%slice['name']; continue
+        hrn=slicename_to_hrn (toplevel, slice['name'])
+        if slice['hrn'] != hrn:
+            print "Slice %s - current hrn %s, should be %s"%(slice['name'], slice['hrn'], hrn)
+            if dry_run: continue
+            SetSliceHrn (slice['slice_id'],hrn)
+        else:
+            if verbose: print "Slice %s OK"%slice['name']
+
         
             
 def main():
@@ -52,6 +67,8 @@ Example:
                       dest='persons',help="run on persons")
     parser.add_option("-n", "--node", action = "store_true", default = False, 
                       dest='nodes',help="run on nodes")
+    parser.add_option("-S", "--slice", action = "store_true", default = False,
+                      dest='slices',help="run on slices")
     parser.add_option("-s", "--show", action = "store_true", default = False, 
                       dest='show', help="dry run, only show discrepencies")
     parser.add_option("-v", "--verbose", action = "store_true", default = False, 
@@ -62,17 +79,22 @@ Example:
         parser.print_help()
         sys.exit(1)
     # if neither -p nor -n, run both
-    if not options.nodes and not options.persons:
+    if not options.nodes and not options.persons and not options.slices:
         options.nodes=True
         options.persons=True
-    
+        options.slices=True        
+
     dry_run=options.show
     verbose=options.verbose
     # optimizing : we compute the set of sites only once
-    sites = GetSites({'peer_id':None},['site_id','login_base','node_ids','person_ids'])
+    sites = GetSites({'peer_id':None},['site_id','login_base','node_ids','person_ids','name'])
+    # remove external sites created through SFA
+    sites = [site for site in sites if not site['name'].startswith('sfa.')]
+
     sites_by_id = dict ( [ (site['site_id'], site) for site in sites ] )
     if options.nodes: handle_nodes(sites,sites_by_id,dry_run,verbose)
     if options.persons: handle_persons(sites,sites_by_id,dry_run,verbose)
+    if options.slices: handle_slices(sites,sites_by_id,dry_run,verbose)
 
 if __name__ == "__main__":
     main()
