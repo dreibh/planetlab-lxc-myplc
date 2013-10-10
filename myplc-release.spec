@@ -1,6 +1,6 @@
 %define name myplc-release
 %define version 5.2
-%define taglevel 4
+%define taglevel 5
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -52,6 +52,10 @@ rm -rf $RPM_BUILD_ROOT
 /etc/myplc-release
 
 %changelog
+* Thu Oct 10 2013 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.2-5
+- reduce the scope of check-hrns.py script, now that the SFA layer handles this natively
+- add an rpm-sign dependency on feedora>=16
+
 * Fri Jun 28 2013 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.2-4
 - drop PLC_OMF_XMPP_{USER,PASSWORD} from config
 

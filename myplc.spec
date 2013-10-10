@@ -1,6 +1,6 @@
 %define name myplc
 %define version 5.2
-%define taglevel 4
+%define taglevel 5
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 %global python_sitearch	%( python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)" )
@@ -261,6 +261,10 @@ fi
 
 
 %changelog
+* Thu Oct 10 2013 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.2-5
+- reduce the scope of check-hrns.py script, now that the SFA layer handles this natively
+- add an rpm-sign dependency on feedora>=16
+
 * Fri Jun 28 2013 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.2-4
 - drop PLC_OMF_XMPP_{USER,PASSWORD} from config
 
