@@ -54,7 +54,18 @@ def handle_slices (sites,sites_by_id, dry_run,verbose):
         else:
             if verbose: print "Slice %s OK"%slice['name']
 
+
+def handle_sites (sites,sites_by_id, dry_run,verbose):
+    for site in sites:
+        hrn='.'.join([toplevel, site['login_base']])
+        if site['hrn'] != hrn:
+            print "Site %s - current hrn %s, should be %s"%(site['name'], site['hrn'], hrn)
+            if dry_run: continue
+            SetSiteHrn (site['site_id'],hrn)
+        else:
+            if verbose: print "Site %s OK"%site['name']
         
+
             
 def main():
     usage="""Usage: %prog
@@ -69,6 +80,8 @@ Example:
                       dest='nodes',help="run on nodes")
     parser.add_option("-S", "--slice", action = "store_true", default = False,
                       dest='slices',help="run on slices")
+    parser.add_option("-t", "--site", action = "store_true", default = False,
+                      dest='sites',help="run on sites")
     parser.add_option("-s", "--show", action = "store_true", default = False, 
                       dest='show', help="dry run, only show discrepencies")
     parser.add_option("-v", "--verbose", action = "store_true", default = False, 
@@ -79,15 +92,16 @@ Example:
         parser.print_help()
         sys.exit(1)
     # if neither -p nor -n, run both
-    if not options.nodes and not options.persons and not options.slices:
+    if not options.nodes and not options.persons and not options.slices and not options.sites:
         options.nodes=True
         options.persons=True
         options.slices=True        
+        options.sites=True
 
     dry_run=options.show
     verbose=options.verbose
     # optimizing : we compute the set of sites only once
-    sites = GetSites({'peer_id':None},['site_id','login_base','node_ids','person_ids','name'])
+    sites = GetSites({'peer_id':None},['site_id','login_base','node_ids','person_ids','name','hrn'])
     # remove external sites created through SFA
     sites = [site for site in sites if not site['name'].startswith('sfa.')]
 
@@ -95,6 +109,7 @@ Example:
     if options.nodes: handle_nodes(sites,sites_by_id,dry_run,verbose)
     if options.persons: handle_persons(sites,sites_by_id,dry_run,verbose)
     if options.slices: handle_slices(sites,sites_by_id,dry_run,verbose)
+    if options.sites: handle_sites(sites,sites_by_id,dry_run,verbose)
 
 if __name__ == "__main__":
     main()
