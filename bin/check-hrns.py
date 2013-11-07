@@ -12,7 +12,7 @@ def handle_nodes (sites,sites_by_id, dry_run, verbose):
     nodes_by_id = dict ( [ (node['node_id'],node) for node in nodes ] )
     for site in sites:
         login_base=site['login_base']
-        for node_id in site['node_ids']:
+        for node_id in site.get('node_ids', []):
             try:    node=nodes_by_id[node_id]
             except: print 'cannot find node %s'%node_id; continue
             hrn=hostname_to_hrn (toplevel, login_base, node['hostname'])
@@ -25,34 +25,41 @@ def handle_nodes (sites,sites_by_id, dry_run, verbose):
 
 def handle_persons (sites,sites_by_id, dry_run,verbose): 
     persons=GetPersons ({'peer_id':None},['person_id','email','hrn','site_ids'])
-    for person in persons:
-        how_many=len(person['site_ids'])
-        if how_many !=1:
-            if verbose: print "Checking persons in exactly one site -- person %s in %s site(s) -- ignored"%(person['email'],how_many)
-            continue
-        try:    login_base=sites_by_id[person['site_ids'][0]]['login_base']
-        except: print "Cannot handle person %s - site not found"%person['email']; continue
-        hrn=email_to_hrn ("%s.%s"%(toplevel,login_base),person['email'])
-        if person['hrn'] != hrn:
-            print "Person %s - current hrn %s, should be %s"%(person['email'], person['hrn'], hrn)
-            if dry_run: continue
-            SetPersonHrn (person['person_id'],hrn)
-        else:
-            if verbose: print "Person %s OK"%person['email']
+    persons_by_id = dict ( [ (person['person_id'],person) for person in persons ] )
+    for site in sites:
+        login_base=site['login_base']
+        for person_id in site.get('person_ids', []):
+            try:    person=persons_by_id[person_id]
+            except: print 'cannot find person %s'%person_id; continue
+            how_many=len(person['site_ids'])
+            if how_many !=1:
+                if verbose: print "Checking persons in exactly one site -- person %s in %s site(s) -- ignored"%(person['email'],how_many)
+                continue
+
+            hrn=email_to_hrn ("%s.%s"%(toplevel,login_base),person['email'])
+            if person['hrn'] != hrn:
+                print "Person %s - current hrn %s, should be %s"%(person['email'], person['hrn'], hrn)
+                if dry_run: continue
+                SetPersonHrn (person['person_id'],hrn)
+            else:
+                if verbose: print "Person %s OK"%person['email']
 
 
 def handle_slices (sites,sites_by_id, dry_run,verbose):
     slices=GetSlices ({'peer_id':None},['slice_id','name','hrn','site_id'])
-    for slice in slices:
-        try:    login_base=sites_by_id[slice['site_id']]['login_base']
-        except: print "Cannot handle slice %s - site not found"%slice['name']; continue
-        hrn=slicename_to_hrn (toplevel, slice['name'])
-        if slice['hrn'] != hrn:
-            print "Slice %s - current hrn %s, should be %s"%(slice['name'], slice['hrn'], hrn)
-            if dry_run: continue
-            SetSliceHrn (slice['slice_id'],hrn)
-        else:
-            if verbose: print "Slice %s OK"%slice['name']
+    slices_by_id = dict ( [ (slice['slice_id'],slice) for slice in slices ] )
+    for site in sites:
+        login_base=site['login_base']
+        for slice_id in site.get('slice_ids', []):
+            try:    slice=slices_by_id[slice_id]
+            except: print 'cannot find slice %s'%slice_id; continue
+            hrn=slicename_to_hrn (toplevel, slice['name'])
+            if slice['hrn'] != hrn:
+                print "Slice %s - current hrn %s, should be %s"%(slice['name'], slice['hrn'], hrn)
+                if dry_run: continue
+                SetSliceHrn (slice['slice_id'],hrn)
+            else:
+                if verbose: print "Slice %s OK"%slice['name']
 
 
 def handle_sites (sites,sites_by_id, dry_run,verbose):
@@ -104,8 +111,8 @@ Example:
     sites = GetSites({'peer_id':None},['site_id','login_base','node_ids','person_ids','name','hrn'])
     # remove external sites created through SFA
     sites = [site for site in sites if not site['name'].startswith('sfa:')]
-
     sites_by_id = dict ( [ (site['site_id'], site) for site in sites ] )
+
     if options.nodes: handle_nodes(sites,sites_by_id,dry_run,verbose)
     if options.persons: handle_persons(sites,sites_by_id,dry_run,verbose)
     if options.slices: handle_slices(sites,sites_by_id,dry_run,verbose)
