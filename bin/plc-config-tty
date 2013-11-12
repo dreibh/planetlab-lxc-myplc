@@ -15,6 +15,7 @@ usual_variables = [
     "PLC_NAME",
     "PLC_SHORTNAME",
     "PLC_SLICE_PREFIX",
+    "PLC_HRN_ROOT",
     "PLC_ROOT_USER",
     "PLC_ROOT_PASSWORD",
     "PLC_MAIL_ENABLED",

@@ -39,7 +39,7 @@ Copyright (C) 2006 The Trustees of Princeton University
 	<variable id="hrn_root" type="string">
 	  <name>Root in Hierarchical Naming Space </name>
 	  <value>planetlab.test</value>
-	  <description> The root of this peer in the hierarchical federation naming space.</description>
+	  <description> The root of this peer in the hierarchical federation naming space. if SFA services are setup on top of this PLC deplyment, the SFA_INTERFACE_HRN needs to be equal to PLC_HRN_ROOT</description>
 	</variable>
 
 	<variable id="slice_prefix" type="string">
