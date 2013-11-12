@@ -5,11 +5,7 @@ from optparse import OptionParser
 from PLC.Namespace import hostname_to_hrn, email_to_hrn, slicename_to_hrn
 # (auth_hrn, email):
 
-try:
-    from sfa.util.config import Config
-    toplevel=Config().SFA_INTERFACE_HRN
-except:
-    toplevel=api.config.PLC_HRN_ROOT
+toplevel=api.config.PLC_HRN_ROOT
 
 def handle_nodes (sites,sites_by_id, dry_run, verbose):
     nodes=GetNodes ({'peer_id':None},['node_id','hostname','hrn'])
