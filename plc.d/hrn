@@ -1,0 +1,30 @@
+#!/bin/bash
+#
+# priority: 1300
+#
+# Check and Set the HRNs of Sites/Slices/Persons
+#
+# Copyright (C) 2006 The Trustees of Princeton University
+# Mohamed Amine Larabi <mohamed.larabi@inria.fr>
+#
+
+# Source function library and configuration
+. /etc/plc.d/functions
+. /etc/planetlab/plc_config
+
+# Be verbose
+set -x
+
+
+case "$1" in
+    start)
+	MESSAGE=$"Checking/Setting HRNs"
+	dialog "$MESSAGE"
+
+        check-hrns.py       
+ 
+	result "$MESSAGE"
+	;;
+esac
+
+exit $ERRORS
