@@ -108,7 +108,7 @@ Example:
     dry_run=options.show
     verbose=options.verbose
     # optimizing : we compute the set of sites only once
-    sites = GetSites({'peer_id':None},['site_id','login_base','node_ids','person_ids','name','hrn'])
+    sites = GetSites({'peer_id':None},['site_id','login_base','node_ids','person_ids','name','hrn','slice_ids'])
     # remove external sites created through SFA
     sites = [site for site in sites if not site['name'].startswith('sfa:')]
     sites_by_id = dict ( [ (site['site_id'], site) for site in sites ] )
