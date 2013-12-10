@@ -1,6 +1,6 @@
 %define name myplc-release
 %define version 5.3
-%define taglevel 0
+%define taglevel 1
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -52,6 +52,10 @@ rm -rf $RPM_BUILD_ROOT
 /etc/myplc-release
 
 %changelog
+* Tue Dec 10 2013 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.3-1
+- review check-hrns for plcapi-5.3
+- add PLC_HRN_ROOT in usual plc-config-tty's settings
+
 * Thu Oct 10 2013 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.2-5
 - reduce the scope of check-hrns.py script, now that the SFA layer handles this natively
 - add an rpm-sign dependency on feedora>=16
