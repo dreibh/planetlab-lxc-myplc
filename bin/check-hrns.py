@@ -70,7 +70,7 @@ def handle_sites (sites,sites_by_id, dry_run,verbose):
         hrn='.'.join([toplevel, site['login_base']])
         if site['hrn'] != hrn:
             if verbose:
-                print "Site %s - current hrn %s, should be %s"%(site['name'], site['hrn'], hrn)
+                print "Site %s - current hrn %s, should be %s"%(site['name'].encode('ascii', 'ignore'), site['hrn'], hrn)
             if dry_run: continue
             SetSiteHrn (site['site_id'],hrn)
         else:
