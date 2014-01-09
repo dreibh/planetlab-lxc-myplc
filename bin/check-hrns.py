@@ -17,7 +17,8 @@ def handle_nodes (sites,sites_by_id, dry_run, verbose):
             except: print 'cannot find node %s'%node_id; continue
             hrn=hostname_to_hrn (toplevel, login_base, node['hostname'])
             if node['hrn'] != hrn:
-                print "Node %s - current hrn %s, should be %s"%(node['hostname'], node['hrn'], hrn)
+                if verbose:
+                    print "Node %s - current hrn %s, should be %s"%(node['hostname'], node['hrn'], hrn)
                 if dry_run: continue
                 SetNodeHrn (node['node_id'],hrn)
             else:
@@ -38,7 +39,8 @@ def handle_persons (sites,sites_by_id, dry_run,verbose):
 
             hrn=email_to_hrn ("%s.%s"%(toplevel,login_base),person['email'])
             if person['hrn'] != hrn:
-                print "Person %s - current hrn %s, should be %s"%(person['email'], person['hrn'], hrn)
+                if verbose:
+                    print "Person %s - current hrn %s, should be %s"%(person['email'], person['hrn'], hrn)
                 if dry_run: continue
                 SetPersonHrn (person['person_id'],hrn)
             else:
@@ -55,7 +57,8 @@ def handle_slices (sites,sites_by_id, dry_run,verbose):
             except: print 'cannot find slice %s'%slice_id; continue
             hrn=slicename_to_hrn (toplevel, slice['name'])
             if slice['hrn'] != hrn:
-                print "Slice %s - current hrn %s, should be %s"%(slice['name'], slice['hrn'], hrn)
+                if verbose:  
+                    print "Slice %s - current hrn %s, should be %s"%(slice['name'], slice['hrn'], hrn)
                 if dry_run: continue
                 SetSliceHrn (slice['slice_id'],hrn)
             else:
@@ -66,7 +69,8 @@ def handle_sites (sites,sites_by_id, dry_run,verbose):
     for site in sites:
         hrn='.'.join([toplevel, site['login_base']])
         if site['hrn'] != hrn:
-            print "Site %s - current hrn %s, should be %s"%(site['name'], site['hrn'], hrn)
+            if verbose:
+                print "Site %s - current hrn %s, should be %s"%(site['name'].encode('ascii', 'ignore'), site['hrn'], hrn)
             if dry_run: continue
             SetSiteHrn (site['site_id'],hrn)
         else:
