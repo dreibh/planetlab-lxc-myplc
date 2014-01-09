@@ -38,7 +38,7 @@ Requires: curl
 Requires: rsync
 Requires: python-devel
 Requires: yum
-Requires: PyXML
+#Requires: PyXML
 Requires: createrepo
 Requires: cpio
 Requires: wget
