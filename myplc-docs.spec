@@ -1,6 +1,6 @@
 %define name myplc-docs
 %define version 5.3
-%define taglevel 1
+%define taglevel 2
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -96,6 +96,10 @@ rm -rf $RPM_BUILD_ROOT
 /var/www/html/planetlab/doc/
 
 %changelog
+* Fri Mar 21 2014 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.3-2
+- tweaks in check-hrns.py
+- do not require PyXML any more
+
 * Tue Dec 10 2013 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.3-1
 - review check-hrns for plcapi-5.3
 - add PLC_HRN_ROOT in usual plc-config-tty's settings
