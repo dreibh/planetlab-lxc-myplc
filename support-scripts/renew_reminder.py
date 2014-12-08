@@ -26,7 +26,7 @@ class Logfile:
     def write(self, data):
 	try:
 	    fd = os.open(self.filename, os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0644)
-	    os.write(fd, '%s' % data)
+	    os.write(fd, '{}'.format(data))
 	    os.close(fd)
 	except OSError:
 	    sys.stderr.write(data)
@@ -38,7 +38,7 @@ log = Logfile(LOGFILE)
 verbose = False;
 
 # E-mail parameteres
-slice_url = """https://%(PLC_WWW_HOST)s/db/slices/index.php?id=""" % locals()
+slice_url = "https://{PLC_WWW_HOST}/db/slices/index.php?id=".format(**locals())
 
 parser = OptionParser()
 parser.add_option("-s", "--slice", action = "append", dest = "slices", default = None,
@@ -63,7 +63,17 @@ slice_filter = {'peer_id': None}
 if options.slices:
     slice_filter['name'] = options.slices
 
-for slice in GetSlices(slice_filter, ['slice_id', 'name', 'expires', 'description', 'url', 'person_ids']):
+# issue one call to GetPersons to gather the sfa_created tag on all persons
+persons = GetPersons ({'peer_id': None}, ['person_id', 'email', 'sfa_created'])
+persons_by_id = { p['person_id'] : p for p in persons }
+if options.verbose:
+    print "retrieved {} persons".format(len(persons))
+
+slices = GetSlices(slice_filter, ['slice_id', 'name', 'expires', 'description', 'url', 'person_ids'])
+if options.verbose:
+    print "scanning {} slices".format(len(slices))
+    
+for slice in slices:
     # See if slice expires before the specified warning date
     if not options.force and slice['expires'] > expires:
         continue
@@ -78,46 +88,53 @@ for slice in GetSlices(slice_filter, ['slice_id', 'name', 'expires', 'descriptio
             suffix = "s"
         else:
             suffix = ""
-	days = "%d day%s" % (days, suffix)
+	days = "{days} day{suffix}".format(**locals())
 
-    name = slice['name']
+    slice_name = slice['name']
     slice_id = slice['slice_id']
 
-    message = """
-The %(PLC_NAME)s slice %(name)s will expire in %(days)s.
+    message_format = """
+The {PLC_NAME} slice {slice_name} will expire in {days}.
 """
 
     # Explain that slices must have descriptions and URLs
     if not slice['description'] or not slice['description'].strip() or \
        not slice['url'] or not slice['url'].strip():
-        message += """
+        message_format += """
 Before you may renew this slice, you must provide a short description
 of the slice and a link to a project website.
 """
 
     # Provide links to renew or delete the slice
-    message += """
+    message_format += """
 To update, renew, or delete this slice, visit the URL:
 
-	%(slice_url)s%(slice_id)d
+	{slice_url}{slice_id}
 """
 
-    emails = [person['email'] for person in GetPersons(slice['person_ids'], ['email'])]
-    if not emails: emails = ['no contacts']	
-    log_details = [time.ctime(now), slice['name'], time.ctime(slice['expires'])]
-    log_data = "%s\t%s" % ("\t".join(log_details), ",".join(emails))
+    # compute set of persons but keep federated users (the ones with sfa_created) out 
+    slice_persons    = [ persons_by_id[id] for id in slice['person_ids'] ]
+    recipient_emails = [ person['email'] for person in slice_persons if not person['sfa_created'] ]
+    recipient_ids    = [ person['email'] for person in slice_persons if not person['sfa_created'] ]
+    nb_in_slice      = len(slice_persons)
+    nb_not_sfa       = len(recipient_emails)
 
-    # Send it
-    if slice['person_ids']:
-        if options.dryrun:
-            print message % locals()
-	    print "log >> %s" % log_data
-        else:
-            NotifyPersons(slice['person_ids'],
-                          "%(PLC_NAME)s slice %(name)s expires in %(days)s" % locals(),
-                          message % locals())
-	    print >> log, log_data
+    if not recipient_emails:
+        if options.verbose:
+            print """{slice_name} has no recipient 
+({nb_in_slice} in slice, {nb_not_sfa} not sfa_created)""".format(**locals())
+        continue
+
+    log_details = [time.ctime(now), slice_name, time.ctime(slice['expires'])]
+    log_data = "{}\t{}".format("\t".join(log_details), ",".join(recipient_emails))
+
+    if options.dryrun:
+        print "-------------------- Found slice to renew {slice_name}".format(**locals())
+        print message_format.format(**locals())
+        print "log >> {}".format(log_data)
+    else:
+        NotifyPersons(slice['person_ids'],
+                      "{PLC_NAME} slice {slice_name} expires in {days}".format(**locals()),
+                      message_format.format(**locals()))
+        print >> log, log_data
 	    
-    elif options.verbose:
-        print slice['name'], "has no users, skipping"
-	print >> log, log_data
