@@ -1,6 +1,6 @@
 %define name myplc
 %define version 5.3
-%define taglevel 2
+%define taglevel 3
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 %global python_sitearch	%( python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)" )
@@ -261,6 +261,9 @@ fi
 
 
 %changelog
+* Wed Feb 18 2015 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.3-3
+- tweaked renew_reminder for federation
+
 * Fri Mar 21 2014 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.3-2
 - tweaks in check-hrns.py
 - do not require PyXML any more
