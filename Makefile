@@ -16,15 +16,8 @@ ifdef PLC
 SSHURL:=root@$(PLC):/
 SSHCOMMAND:=ssh root@$(PLC)
 else
-ifdef PLCHOSTLXC
-SSHURL:=root@$(PLCHOSTLXC):/var/lib/lxc/$(GUESTNAME)/rootfs
+SSHURL:=root@$(PLCHOSTLXC):/vservers/$(GUESTNAME)/
 SSHCOMMAND:=ssh root@$(PLCHOSTLXC) ssh $(GUESTHOSTNAME)
-else
-ifdef PLCHOSTVS
-SSHURL:=root@$(PLCHOSTVS):/vservers/$(GUESTNAME)
-SSHCOMMAND:=ssh root@$(PLCHOSTVS) vserver $(GUESTNAME) exec
-endif
-endif
 endif
 
 LOCAL_RSYNC_EXCLUDES	:= --exclude '*.pyc' 
@@ -46,7 +39,7 @@ else
 	+$(RSYNC) db-config.d/ $(SSHURL)/etc/planetlab/db-config.d/
 	+$(RSYNC) plc_config.py $(SSHURL)/usr/lib\*/python2.\*/site-packages/plc_config.py
 	+$(RSYNC) default_config.xml $(SSHURL)/etc/planetlab/default_config.xml
-	@echo XXXXXXXX you might need to run ssh root@$(PLC) service plc start 
+	@echo XXXXXXXX you might need to run $(SSHCOMMAND) service plc start 
 endif
 
 #################### convenience, for debugging only
