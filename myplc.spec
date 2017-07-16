@@ -1,6 +1,6 @@
 %define name myplc
 %define version 5.3
-%define taglevel 3
+%define taglevel 4
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 %global python_sitearch	%( python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)" )
@@ -261,6 +261,9 @@ fi
 
 
 %changelog
+* Sun Jul 16 2017 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.3-4
+- takes care of creating plcapi log file
+
 * Wed Feb 18 2015 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.3-3
 - tweaked renew_reminder for federation
 
