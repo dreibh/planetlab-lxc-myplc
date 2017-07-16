@@ -22,7 +22,7 @@ import glob
 import os, os.path
 from argparse import ArgumentParser
 
-def running_domains():
+def running_domains(all_domains=False):
     command = [
         'virsh',
     	'-c',
@@ -30,6 +30,8 @@ def running_domains():
         'list',
         '--name',
     ]
+    if all_domains:
+        command.append('--all')
     names_string = subprocess.check_output(
         command,
         universal_newlines = True,
@@ -47,7 +49,7 @@ def existing_vservers():
 def display_or_run_commands(commands, run):
     if commands:
         if not run:
-            print("========== You should run")
+            print("---- You should run")
             for command in commands:
                 print(" ".join(command))
         else:
@@ -61,10 +63,26 @@ def main():
     parser = ArgumentParser()
     # the default is to cowardly show commands to run
     # use --run to actually do it
-    parser.add_argument("-r", "--run", action='store_true', default=False)
+    parser.add_argument("-r", "--run", action='store_true', default=False,
+                        help="actually run commands, that otherwise are just displayed")
+    parser.add_argument("-d", "--deep", action='store_true', default=False,
+                        help="spot and destroy containers that are known to libvirt, but not running")
+    parser.add_argument("-v", "--verbose",
+                        help="also displays variable definitions to cut-and-paste for the shell")
     args = parser.parse_args()
 
+    known_containers = set(running_domains(all_domains=True))
     running_containers = set(running_domains())
+    not_running_containers = known_containers - running_containers
+    
+    if args.deep:
+        commands = []
+        print("Found {} containers that are known but not running".format(len(not_running_containers)))
+        for not_running_container in not_running_containers:
+            commands.append(['userdel', not_running_container])
+            commands.append(['virsh', '-c', 'lxc:///', 'undefine', not_running_container])
+        display_or_run_commands(commands, args.run)
+
     existing_containers = set(existing_vservers())
     zombies_containers = existing_containers - running_containers
 
@@ -73,21 +91,24 @@ def main():
         'onelab-',
         'lxc-',
         'omf-',
+        'planetflow-',
         ]
 
     # we need to call 'btrfs subvolume delete' on these remainings
     # instead of just 'rm'
     if zombies_containers:
+        print("-------- Found {} existing, but not running, containers".format(len(zombies_containers)))
         commands = []
         zombie_dirs = ["/vservers/"+z for z in zombies_containers]
-        print("-------- Found {} existing, but not running, containers".format(len(zombies_containers)))
-        print("zombie_dirs='{}'".format(" ".join(zombie_dirs)))
+        if args.verbose:
+            print("zombie_dirs='{}'".format(" ".join(zombie_dirs)))
         subvolumes = [ path
                        for z in zombies_containers
                        for prefix in flavour_prefixes
                        for path in glob.glob("/vservers/{z}/{prefix}*".format(z=z, prefix=prefix))]
         if subvolumes:
-            print("zombie_subvolumes='{}'".format(" ".join(subvolumes)))
+            if args.verbose:
+                print("zombie_subvolumes='{}'".format(" ".join(subvolumes)))
             for subvolume in subvolumes:
                 commands.append([ 'btrfs', 'subvolume', 'delete', subvolume])
         for zombie_dir in zombie_dirs:
@@ -105,4 +126,5 @@ def main():
         for w in weirdos_containers:
             print("/vservers/{}".format(w))
 
+    print("{} slices are currently running".format(len(running_containers)))
 main()    

@@ -4,6 +4,11 @@ import sys,time,os,os.path
 
 logdir="/var/log/peers"
 
+#
+# WARNING: the bulk of this output now goes into
+# /var/log/plcapi.log 
+#
+
 def Run (peername):
     timestring=time.strftime("%Y-%m-%d-%H-%M-%S")
     print 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',peername
