@@ -19,7 +19,7 @@ set -x
 ssl_cname ()
 {
     openssl x509 -noout -in $1 -subject | \
-	sed -n -e 's@.*/CN=\([^/]*\).*@\1@p' | \
+	sed -e 's|.*CN *= *\([-_a-zA-Z0-9.]*\).*|\1|' | \
 	lower
 }
 
