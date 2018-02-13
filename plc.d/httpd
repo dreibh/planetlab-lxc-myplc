@@ -91,8 +91,6 @@ case "$1" in
 		http_port=
 	    fi
 
-	    echo "# DBG server=$server hostname=${!hostname} http_port=${!http_port} https_port=${!https_port}"
-
 	    # Check if we are already listening on these ports
 	    skip_http=0
 	    skip_https=0
@@ -107,16 +105,24 @@ case "$1" in
 		previous_http_port=PLC_${previous_server}_PORT
 		previous_https_port=PLC_${previous_server}_SSL_PORT
 
-		if [ "${!http_port}" = "${!previous_http_port}" ] ; then
+		if [ -z "${http_port}" ]; then
+                    skip_http=1;
+                elif [ -z "${!http_port}" ]; then
+                    skip_http=1;                    
+                elif [ "${!http_port}" = "${!previous_http_port}" ] ; then
 		    skip_http=1
 		fi
-		if [ "${!https_port}" = "${!previous_https_port}" ] ; then
+		if [ -z "${https_port}" ]; then
+                    skip_https=1
+		elif [ -z "${!https_port}" ]; then
+                    skip_https=1
+                elif [ "${!https_port}" = "${!previous_https_port}" ] ; then
 		    skip_https=1
 		fi
 	    done
 
 	    # HTTP configuration
-	    if [ $skip_http -eq 0 -a -n "${!http_port}" ] ; then
+	    if [ $skip_http -eq 0 ] ; then
 		cat <<EOF
 Listen ${!http_port}
 <VirtualHost *:${!http_port}>
@@ -132,7 +138,7 @@ EOF
 	    fi
 
 	    # HTTPS configuration
-	    if [ $skip_https -eq 0 -a -n "${!https_port}" ] ; then
+	    if [ $skip_https -eq 0 ] ; then
 		# XXX Cannot support NameVirtualHost over SSL. If
 		# the API, boot, and web servers are all running
 		# on the same machine, the web server certificate
