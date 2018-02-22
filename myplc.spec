@@ -57,6 +57,10 @@ Requires: cronie
 %if "%{distro}" == "Fedora" && %{distrorelease} >= 16
 Requires: rpm-sign
 %endif
+# starting with f27 we depend on this new rpm
+%if "%{distro}" == "Fedora" && %{distrorelease} >= 27
+Requires: php-fpm
+%endif
 
 # planetlab stuff
 Requires: bootmanager
@@ -201,7 +205,11 @@ if [ -x /sbin/chkconfig ] ; then
     /sbin/chkconfig --add plc
     /sbin/chkconfig plc on
 fi
-rpm -q php-fpm >& /dev/null && { systemctl enable php-fpm; systemctl start php-fpm; }
+
+%if "%{distro}" == "Fedora" && %{distrorelease} >= 27
+systemctl enable php-fpm
+systemctl start  php-fpm
+%endif
 
 %triggerpostun -- %{name}
 # 0 = erase, 1 = upgrade
