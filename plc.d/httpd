@@ -85,7 +85,8 @@ case "$1" in
 	fi
 
         # configure php-fpm as well if present (starting with f27)
-        [ -d $php_fpm_dir ] && cat > $php_fpm_conf << EOF
+        if [ -d $php_fpm_dir ] ; then
+            cat > $php_fpm_conf << EOF
 [www]
 php_value[include_path] = $include_path
 php_value[open_basedir] = $open_basedir
@@ -93,6 +94,11 @@ php_value[date.timezone] = GMT
 php_value[short_open_tag] = On
 php_value[memory_limit] = 80M
 EOF
+            # this is needed because otherwise, the first time
+            # we do this configuration, the service is already up
+            # and the config is usable only the second time
+            systemctl restart php-fpm
+        fi
 
 	# Disable default Listen directive
 	sed -i -e '/^Listen/d' $httpd_conf
