@@ -21,6 +21,8 @@ php_ini=/etc/php.ini
 httpd_conf=/etc/httpd/conf/httpd.conf
 ssl_conf=/etc/httpd/conf.d/ssl.conf
 plc_conf=/etc/httpd/conf.d/plc.conf
+php_fpm_conf=/etc/php-fpm.d/plc.conf
+php_fpm_dir=$(dirname $php_fpm_conf)
 
 function disable_file () {
     file=$1; shift
@@ -70,6 +72,27 @@ case "$1" in
 	if grep '^short_open_tag = Off' $php_ini >& /dev/null; then
 	    sed -i -e 's,^short_open_tag = Off,short_open_tag = On,' $php_ini
 	fi
+
+	## patch php.ini
+	# memory limit
+	sed -i -e 's,^memory_limit = 32M *;,memory_limit = 80M ; patch myplc -- ,' $php_ini 
+	# log_errors : is On by default
+	# error_log
+	if ! grep '^error_log *=' $php_ini > /dev/null ; then
+	  echo 'error_log = /var/log/php.log' >> $php_ini
+	  touch /var/log/php.log
+	  chmod 666 /var/log/php.log
+	fi
+
+        # configure php-fpm as well if present (starting with f27)
+        [ -d $php_fpm_dir ] && cat > $php_fpm_conf << EOF
+[www]
+php_value[include_path] = $include_path
+php_value[open_basedir] = $open_basedir
+php_value[date.timezone] = GMT
+php_value[short_open_tag] = On
+php_value[memory_limit] = 80M
+EOF
 
 	# Disable default Listen directive
 	sed -i -e '/^Listen/d' $httpd_conf
@@ -280,17 +303,6 @@ define('PLANETLAB_SUPPORT_EMAIL', PLC_NAME . ' Support <' . PLC_MAIL_SUPPORT_ADD
 define('PLANETLAB_SUPPORT_EMAIL_ONLY', PLC_MAIL_SUPPORT_ADDRESS);
 ?>
 EOF
-
-	## patch php.ini
-	# memory limit
-	sed -i -e 's,^memory_limit = 32M *;,memory_limit = 80M ; patch myplc -- ,' $php_ini 
-	# log_errors : is On by default
-	# error_log
-	if ! grep '^error_log *=' $php_ini > /dev/null ; then
-	  echo 'error_log = /var/log/php.log' >> $php_ini
-	  touch /var/log/php.log
-	  chmod 666 /var/log/php.log
-	fi
 
 	## make room for logs
 	touch /var/log/plcapi.log
