@@ -1,9 +1,9 @@
 [Unit]
 Description=PLC Service
-After=syslog.target network.target
+After=network.target
 
 [Service]
-Type=forking
+Type=simple
 ExecStart=/etc/init.d/plc start
 ExecStop=/etc/init.d/plc stop
 ExecReload=/etc/init.d/plc reload
