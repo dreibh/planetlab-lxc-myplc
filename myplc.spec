@@ -72,6 +72,9 @@ Requires: nodeconfig
 Requires: nodeyum
 Requires: plcapi >= 5.2
 # this technically is a plcapi dependency but it's simpler here for chosing which
+%if "%{distro}" == "Fedora" && %{distrorelease} >= 29
+Requires: python2-mod_wsgi
+%else
 %if "%{distro}" == "Fedora" && %{distrorelease} >= 18
 Requires: mod_wsgi
 %else
