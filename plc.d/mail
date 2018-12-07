@@ -9,43 +9,45 @@
 #
 
 # Source function library and configuration
-. /etc/plc.d/functions
-. /etc/planetlab/plc_config
+source /etc/plc.d/functions
+source /etc/planetlab/plc_config
 
 # Be verbose
 set -x
 
+echo '$1' = $1
+
 case "$1" in
     start)
-	if [ "$PLC_MAIL_ENABLED" != "1" ] ; then
-	    exit 0
-	fi
+        if [ "$PLC_MAIL_ENABLED" != "1" ] ; then
+            exit 0
+        fi
 
-	MESSAGE=$"Starting mail server"
-	dialog "$MESSAGE"
+        MESSAGE=$"Starting mail server"
+        dialog "$MESSAGE"
 
-	# Add apache to list of users that can send mail as others
-	# without a warning, so that the API can send out mail.
-	count=$(grep ^apache /etc/mail/trusted-users|wc -l)
-	if [ $count -eq 0 ] ; then
-	        echo "apache" >>/etc/mail/trusted-users
-	fi
+        # Add apache to list of users that can send mail as others
+        # without a warning, so that the API can send out mail.
+        count=$(grep ^apache /etc/mail/trusted-users|wc -l)
+        if [ $count -eq 0 ] ; then
+                echo "apache" >>/etc/mail/trusted-users
+        fi
 
-	(exec 3>&- 4>&- ; service sendmail start)
-	check
+        (exec 3>&- 4>&- ; systemctl start sendmail)
+        check
 
-	result "$MESSAGE"
-	;;
+        result "$MESSAGE"
+        ;;
 
     stop)
-	MESSAGE=$"Stopping mail server"
-	dialog "$MESSAGE"
+        MESSAGE=$"Stopping mail server"
+        dialog "$MESSAGE"
 
-	service sendmail stop
-	check
+        systemctl stop sendmail
+        check
 
-	result "$MESSAGE"
-	;;
+        result "$MESSAGE"
+        ;;
 esac
 
 exit $ERRORS

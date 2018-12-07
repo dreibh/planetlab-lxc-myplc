@@ -7,8 +7,22 @@
 
 export PATH=/sbin:/bin:/usr/bin:/usr/sbin
 
-# Source function library
-. /etc/init.d/functions
+# covering for former /etc/init.d/functions
+function success() {
+    echo success "$@"
+    true
+}
+
+function failure() {
+    echo failure "$@"
+    false
+}
+
+function action() {
+    local message="$1"; shift
+    echo $message
+    "$@"
+}
 
 # Total number of errors
 ERRORS=0
@@ -18,7 +32,6 @@ function check () {
     ERRORS=$(($ERRORS+$?))
 }
 
-# Print status header
 function dialog () {
     echo -n "PLC: $*: " >&3
 }
@@ -26,9 +39,9 @@ function dialog () {
 # Print result
 function result () {
     if [ $ERRORS -eq 0 ] ; then
-	success "$*" >&3
+        success "$@" >&3
     else
-	failure "$*" >&3
+        failure "$@" >&3
     fi
     echo >&3
 }
@@ -39,11 +52,11 @@ function plc_daemon () {
 
     # See if it's already running. Look *only* at the pid file.
     if [ -f /var/run/plc_${base}.pid ]; then
-	local line p
-	read line < /var/run/plc_${base}.pid
-	for p in $line ; do
-		[ -z "${p//[0-9]/}" -a -d "/proc/$p" ] && pid="$pid $p"
-	done
+        local line p
+        read line < /var/run/plc_${base}.pid
+        for p in $line ; do
+                [ -z "${p//[0-9]/}" -a -d "/proc/$p" ] && pid="$pid $p"
+        done
     fi
 
     [ -n "${pid:-}" -a -z "${force:-}" ] && return
@@ -62,7 +75,7 @@ function plc_daemon () {
     ret=$?
 
     if [ -f /var/run/${base}.pid ] ; then
-	mv /var/run/${base}.pid /var/run/plc_${base}.pid
+        mv /var/run/${base}.pid /var/run/plc_${base}.pid
     fi
 
     return $ret
@@ -83,18 +96,18 @@ function symlink () {
 # Argument(s) or stdin to lowercase stdout
 function lower () {
     if [ ${#*} -ge 1 ] ; then
-	tr A-Z a-z <<<$*
+        tr A-Z a-z <<<$*
     else
-	tr A-Z a-z
+        tr A-Z a-z
     fi
 }
 
 # Argument(s) or stdin to uppercase stdout
 function upper () {
     if [ ${#*} -ge 1 ] ; then
-	tr a-z A-Z <<<$*
+        tr a-z A-Z <<<$*
     else
-	tr a-z A-Z
+        tr a-z A-Z
     fi
 }
 
@@ -145,7 +158,7 @@ function plc_reload () {
 # apachectl -V
 # Server version: Apache/2.2.22 (Unix)
 # <Directory "/usr/share/plc_api/apache">
-# Options	+ExecCGI
+# Options       +ExecCGI
 # Order allow,deny
 # Allow from all
 # </Directory>
@@ -153,8 +166,8 @@ function plc_reload () {
 # apachectl -V
 # Server version: Apache/2.4.3 (Fedora)
 # <Directory "/usr/share/plc_api/apache">
-# Options	+ExecCGI
-# Require	all granted
+# Options       +ExecCGI
+# Require       all granted
 # </Directory>
 
 function apache_newauth () {
@@ -165,16 +178,16 @@ function apache_newauth () {
 }
 function apache_allow () {
     if apache_newauth; then
-	echo -e "Require all granted"
+        echo -e "Require all granted"
     else
-	echo -e "Order allow,deny\n   Allow from all"
+        echo -e "Order allow,deny\n   Allow from all"
     fi
 }
 function apache_forbid () {
     if apache_newauth; then
-	echo -e "Require all denied"
+        echo -e "Require all denied"
     else
-	echo -e "Order deny,allow\n   Deny from all"
+        echo -e "Order deny,allow\n   Deny from all"
     fi
 }
 

@@ -40,7 +40,7 @@ class PLCConfiguration:
     You may also save() the configuration. If a file path or object is
     not specified, the configuration will be written to the file path
     or object that was first loaded.
-    
+
     plc.save()
     plc.save("/etc/planetlab/plc_config.xml")
     """
@@ -249,7 +249,7 @@ class PLCConfiguration:
             It looks for filled-in values in the order of, local object (self),
             followed by cread (read values), and finally default values.
 
-        Arguments: 
+        Arguments:
 
             default configuration
             site configuration
@@ -358,7 +358,7 @@ class PLCConfiguration:
 
         if not category.has_key('id') or type(category['id']) not in types.StringTypes:
             return
-        
+
         category_id = category['id'].lower()
 
         if self._variables.has_key(category_id):
@@ -420,7 +420,7 @@ class PLCConfiguration:
             for tag in ['name', 'value', 'description']:
                 if variable.has_key(tag):
                     self._set_text_of_child(variable_element, tag, variable[tag])
-                
+
             if category_element.getElementsByTagName('variablelist'):
                 variablelist_element = category_element.getElementsByTagName('variablelist')[0]
             else:
@@ -441,7 +441,7 @@ class PLCConfiguration:
         (variable, category) when found
         (None, None) otherwise
         """
-        
+
         for (category_id, (category, variables)) in self._variables.iteritems():
             for variable in variables.values():
                 (id, name, value, comments) = self._sanitize_variable(category_id, variable)
@@ -575,7 +575,7 @@ class PLCConfiguration:
             for attribute in ['type']:
                 if package.has_key(attribute):
                     packagereq_element.setAttribute(attribute, package[attribute])
-                
+
             if group_element.getElementsByTagName('packagelist'):
                 packagelist_element = group_element.getElementsByTagName('packagelist')[0]
             else:
@@ -952,7 +952,7 @@ def get_current_value (cread, cwrite, category_id, variable_id):
         result=get_value (cread,category_id,variable_id)
     return result
 
-# refrain from using plc_config's _sanitize 
+# refrain from using plc_config's _sanitize
 def get_varname (config,  category_id, variable_id):
     (category, variable) = config.get (category_id, variable_id)
     return (category_id+"_"+variable['id']).upper()
@@ -996,7 +996,7 @@ def list_category (config, cid):
             for variable in variables.values():
                 result += ["%s_%s" %(cid,variable['id'])]
     return result
-    
+
 def print_category (config, cid, show_comments=True):
     cid=cid.lower()
     CID=cid.upper()
@@ -1023,15 +1023,15 @@ def consolidate (default_config, site_config, consolidated_config):
 
 def reload_service ():
     global service
-    os.system("set -x ; service %s reload" % service)
-        
+    os.system("set -x ; systemctl reload %s" % service)
+
 ####################
 def restart_service ():
     global service
     print ("==================== Stopping %s" % service)
-    os.system("service %s stop" % service)
+    os.system("systemctl stop %s" % service)
     print ("==================== Starting %s" % service)
-    os.system("service %s start" % service)
+    os.system("systemctl start %s" % service)
 
 ####################
 def prompt_variable (cdef, cread, cwrite, category, variable,
@@ -1048,7 +1048,7 @@ def prompt_variable (cdef, cread, cwrite, category, variable,
         variable_type = get_type(cdef,category_id,variable_id)
         current_value = get_current_value(cread,cwrite,category_id, variable_id)
         varname = get_varname (cread,category_id, variable_id)
-        
+
         if show_comments :
             print_name_comments (cdef, category_id, variable_id)
         prompt = "== %s : [%s] " % (varname,current_value)
@@ -1100,7 +1100,7 @@ def prompt_variables_all (cdef, cread, cwrite, show_comments):
                 except Exception, inst:
                     if (str(inst) == 'NextCategory'): break
                     else: raise
-                    
+
     except Exception, inst:
         if (str(inst) == 'BailOut'): return
         else: raise
@@ -1229,7 +1229,7 @@ def mainloop (cdef, cread, cwrite, default_config, site_config, consolidated_con
             print ("Wrote %s" % site_config)
             consolidate(default_config, site_config, consolidated_config)
             print ("You might want to type 'r' (restart %s), 'R' (reload %s) or 'q' (quit)" % \
-                   (service,service))
+                   (service, service))
         elif command in "uU":
             global usual_variables
             try:
@@ -1282,13 +1282,13 @@ def check_dir (config_file):
         except OSError, e:
             print "Cannot create dir %s due to %s - exiting" % (dirname,e)
             sys.exit(1)
-            
+
         if (not os.path.exists (dirname)):
             print "Cannot create dir %s - exiting" % dirname
             sys.exit(1)
         else:
             print "Created directory %s" % dirname
-                
+
 ####################
 def optParserSetup(configuration):
     parser = OptionParser(usage=usage())
@@ -1349,7 +1349,7 @@ def main(command,argv,configuration):
 
     # local settings only, will be modified & saved
     cwrite=PLCConfiguration()
-    
+
     try:
         cread.load(site_config)
         cwrite.load(site_config)

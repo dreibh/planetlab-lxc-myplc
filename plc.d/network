@@ -9,8 +9,8 @@
 #
 
 # Source function library and configuration
-. /etc/plc.d/functions
-. /etc/planetlab/plc_config
+source /etc/plc.d/functions
+source /etc/planetlab/plc_config
 
 # Be verbose
 set -x
