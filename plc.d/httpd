@@ -46,7 +46,7 @@ case "$1" in
 
 	# set document root - not really useful on fedora but just in case
 	sed -i -e "s@^DocumentRoot.*@DocumentRoot \"$DocumentRoot\"@" $httpd_conf
-	# whether WWW is enabled or not : 
+	# whether WWW is enabled or not :
 	if [ "$PLC_WWW_ENABLED" != "1" ] ; then
 	    # avoid hitting drupal, that would try to connect to the db and create noise
 	    disable_file $DocumentRoot/index.php
@@ -61,7 +61,7 @@ case "$1" in
 	# Set open_basedir so as to avoid leaks
 	open_basedir="$DocumentRoot:/etc/planetlab/php:/usr/share/plc_api/php:/var/log/myslice:/var/tmp/bootmedium:/var/log/bm:/tmp"
 	sed -i -e "s@[;]*open_basedir =.*@open_basedir = \"$open_basedir\"@" $php_ini
-	
+
 	# for php-5.3 under fedora12, otherwise issues tons of warning messages
 	# Set timezone in php.ini if not already there
 	if grep '^;date.timezone' $php_ini >& /dev/null; then
@@ -75,7 +75,7 @@ case "$1" in
 
 	## patch php.ini
 	# memory limit
-	sed -i -e 's,^memory_limit = 32M *;,memory_limit = 80M ; patch myplc -- ,' $php_ini 
+	sed -i -e 's,^memory_limit = 32M *;,memory_limit = 80M ; patch myplc -- ,' $php_ini
 	# log_errors : is On by default
 	# error_log
 	if ! grep '^error_log *=' $php_ini > /dev/null ; then
@@ -137,7 +137,7 @@ EOF
 		if [ -z "${http_port}" ]; then
                     skip_http=1;
                 elif [ -z "${!http_port}" ]; then
-                    skip_http=1;                    
+                    skip_http=1;
                 elif [ "${!http_port}" = "${!previous_http_port}" ] ; then
 		    skip_http=1
 		fi
@@ -190,7 +190,7 @@ EOF
 		    exit 1
 		fi
 
-		# It would be tempting to use <IfModule> here 
+		# It would be tempting to use <IfModule> here
 		# but early tests showed this could be tricky/fragile
 		# So let's hard-wire it for one module
 		# A lot of trial-and -error was involved in getting this that way...
@@ -249,7 +249,7 @@ EOF
 # mod_wsgi location
 <Location $PLC_API_PATH>
     $(apache_forbid)
-</Location> 
+</Location>
 EOF
 	    fi
 

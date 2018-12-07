@@ -27,7 +27,7 @@ Group: Applications/Systems
 # as much as possible, requires should go in the subpackages specfile
 Requires: redhat-lsb
 Requires: bzip2
-Requires: tar 
+Requires: tar
 Requires: less
 Requires: sendmail
 Requires: sendmail-cf
@@ -80,6 +80,7 @@ Requires: mod_wsgi
 %else
 Requires: mod_python
 %endif
+%endif
 Requires: nodeimage-%{nodefamily}
 Requires: myplc-docs
 Requires: myplc-release
@@ -87,7 +88,7 @@ Requires: myplc-config
 
 %define debug_package %{nil}
 
-%description 
+%description
 MyPLC is a complete PlanetLab Central (PLC) portable installation.
 The default installation consists of a web server, an XML-RPC API
 server, a boot server, and a database server: the core components of
@@ -126,7 +127,7 @@ rsync -av --exclude .svn bin/ ${RPM_BUILD_ROOT}/usr/bin/
 (cd $RPM_BUILD_ROOT/usr/bin; ln -s mtail.py mtail)
 chmod 755 ${RPM_BUILD_ROOT}/usr/bin/*
 
-# Install initscript 
+# Install initscript
 echo "* Installing plc initscript"
 install -D -m 755 plc.init ${RPM_BUILD_ROOT}/etc/init.d/plc
 install -D -m 644 plc.service ${RPM_BUILD_ROOT}/usr/lib/systemd/system/plc.service
@@ -226,7 +227,7 @@ if [ $1 -gt 0 ] ; then
 	    fi
 	fi
     done
-fi    
+fi
 
 %preun
 # 0 = erase, 1 = upgrade
@@ -576,22 +577,22 @@ fi
 - figures in doc package
 
 * Fri May 09 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.2-11
-- no more doc packaged outside of myplc-docs - doc/ cleaned up 
+- no more doc packaged outside of myplc-docs - doc/ cleaned up
 - chroot packaging does not have docs anymore
 - 'cvs' and 'dev' not required from myplc-native anymore
 - cosmetic change in kml output
 
 * Thu May 08 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.2-10
 - defaults for *_IP conf vars now void, expect more accurate /etc/hosts
-- gethostbyname uses python rather than perl (hope this shrinks deps) 
+- gethostbyname uses python rather than perl (hope this shrinks deps)
 - doc: reviewed myplc doc - deprecated everything related to myplc-devel
 - doc: packaging doc in myplc-native (myplc&PLCAPI) & removed target files from svn
-- make sync now works towards vserver-based myplc only 
+- make sync now works towards vserver-based myplc only
 
 * Mon May 05 2008 Stephen Soltesz <soltesz@cs.princeton.edu> - MyPLC-4.2-9
-- 
+-
 - added vsys 'pfmount' script to the default netflow slice attributes.
-- 
+-
 
 * Thu Apr 24 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.2-8
 - plc.d/bootcd step altered for handling legacy bootcd smooth migration
@@ -606,10 +607,10 @@ fi
 - resolv file in /etc/resolv.conf, not plc_resolv.conf
 - improved sirius script
 - remove the 'driver' node-network-setting that was unused, and new 'Multihome' category
-- expires more properly set 
+- expires more properly set
 
 * Mon Apr 07 2008 Stephen Soltesz <soltesz@cs.princeton.edu> - MyPLC-4.2-4 MyPLC-4.2-5
-- 
+-
 
 * Wed Mar 26 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.2-3 MyPLC-4.2-4
 - renew_reminder script moved to support-scripts/

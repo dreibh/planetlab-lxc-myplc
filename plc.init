@@ -1,10 +1,10 @@
 #!/bin/bash
 #
-# plc	Manages all PLC services on this machine
+# plc   Manages all PLC services on this machine
 #
 # chkconfig: 2345 60 40
 #
-# description:	Manages all PLC services on this machine
+# description:  Manages all PLC services on this machine
 #
 
 # Source function library and configuration
@@ -39,8 +39,8 @@ for step in /etc/plc.d/* ; do
     stepname=$(basename $step)
     plainstepname=$(echo $stepname | sed -e 's,\.,,' -e 's,~,,' -e 's,functions,,' )
     if [ -f $step -a -x $step -a "$stepname" = "$plainstepname" ] ; then
-	priority=$(sed -ne 's/# priority: \(.*\)/\1/p' $step)
-	echo $priority $stepname
+        priority=$(sed -ne 's/# priority: \(.*\)/\1/p' $step)
+        echo $priority $stepname
     fi
 done | sort -n | cut -d' ' -f2
 ))
@@ -49,23 +49,23 @@ nsteps=${#steps[@]}
 usage()
 {
     echo "Usage: $0 [OPTION]... [COMMAND] [STEP]..."
-    echo "	-v		Be verbose"
-    echo "	-h		This message"
+    echo "      -v              Be verbose"
+    echo "      -h              This message"
     echo
     echo "Commands:"
-    echo "	start		Start all PLC subsystems"
-    echo "	stop		Stop all PLC subsystems"
-    echo "	reload		Regenerate configuration files"
-    echo "	restart		Restart all PLC subsystems"
-    echo "	checkpoint filename : Checkpoint the current state of MyPLC to filename"
-    echo "	restore filename : Restore MyPLC state from filename"
-    echo "	steps		Displays ordered list of subsystems"
+    echo "      start           Start all PLC subsystems"
+    echo "      stop            Stop all PLC subsystems"
+    echo "      reload          Regenerate configuration files"
+    echo "      restart         Restart all PLC subsystems"
+    echo "      checkpoint filename : Checkpoint the current state of MyPLC to filename"
+    echo "      restore filename : Restore MyPLC state from filename"
+    echo "      steps           Displays ordered list of subsystems"
     echo
     echo "Steps:"
     for step in "${steps[@]}" ; do
-	if [ -x /etc/plc.d/$step ] ; then
-	    echo "	$(basename $step)"
-	fi
+        if [ -x /etc/plc.d/$step ] ; then
+            echo "      $(basename $step)"
+        fi
     done
     exit 1
 }
@@ -73,12 +73,12 @@ usage()
 # Get options
 while getopts "vh" opt ; do
     case $opt in
-	v)
-	    verbose=1
-	    ;;
-	h|*)
-	    usage
-	    ;;
+        v)
+            verbose=1
+            ;;
+        h|*)
+            usage
+            ;;
     esac
 done
 
@@ -113,86 +113,86 @@ RETVAL=0
 start ()
 {
     for step in "${steps[@]}" ; do
-	if [ -x /etc/plc.d/$step ] ; then
-	    /etc/plc.d/$step start
-	    # Steps may alter the configuration, may need to regenerate
-	    plc_reload
-	else
-	    echo "PLC: $step: unrecognized step" >&4
-	    exit 1
-	fi
+        if [ -x /etc/plc.d/$step ] ; then
+            /etc/plc.d/$step start
+            # Steps may alter the configuration, may need to regenerate
+            plc_reload
+        else
+            echo "PLC: $step: unrecognized step" >&4
+            exit 1
+        fi
     done
 }
 
 stop ()
 {
     for i in $(seq 1 $nsteps) ; do
-	step=${steps[$(($nsteps - $i))]}
-	if [ -x /etc/plc.d/$step ] ; then
-	    /etc/plc.d/$step stop
-	    # Steps may alter the configuration, may need to regenerate
-	    plc_reload
-	else
-	    echo "PLC: $step: unrecognized step" >&4
-	    exit 1
-	fi
+        step=${steps[$(($nsteps - $i))]}
+        if [ -x /etc/plc.d/$step ] ; then
+            /etc/plc.d/$step stop
+            # Steps may alter the configuration, may need to regenerate
+            plc_reload
+        else
+            echo "PLC: $step: unrecognized step" >&4
+            exit 1
+        fi
     done
 }
 
 case "$command" in
     start|stop)
-	$command
-	;;
+        $command
+        ;;
 
     restart)
-	stop
-	start
-	;;
+        stop
+        start
+        ;;
 
     reload)
-	plc_reload force
-	;;
+        plc_reload force
+        ;;
 
     checkpoint)
-	cpfile=$1
-	if [ -z "$cpfile" ] ; then
-	    echo "PLC: checkpoint requires a filename as an argument"
-	    exit 1
-	fi 
-	cpdir=$(mktemp -d tmp.XXXXXX)
-	cd $cpdir
-	mkdir -p ./etc/planetlab/
-	rsync -av /etc/planetlab/ ./etc/planetlab/
-	/etc/plc.d/db checkpoint ./etc/planetlab/plc_db.checkpoint ./etc/planetlab/plc_drupal.checkpoint
-	tar cjf $cpfile etc
-	cd -
-	rm -rf $cpdir
-	;;
+        cpfile=$1
+        if [ -z "$cpfile" ] ; then
+            echo "PLC: checkpoint requires a filename as an argument"
+            exit 1
+        fi 
+        cpdir=$(mktemp -d tmp.XXXXXX)
+        cd $cpdir
+        mkdir -p ./etc/planetlab/
+        rsync -av /etc/planetlab/ ./etc/planetlab/
+        /etc/plc.d/db checkpoint ./etc/planetlab/plc_db.checkpoint ./etc/planetlab/plc_drupal.checkpoint
+        tar cjf $cpfile etc
+        cd -
+        rm -rf $cpdir
+        ;;
 
     restore)
-	cpfile=$1
-	cpdir=$(mktemp -d tmp.XXXXXX)
-	cd $cpdir
-	tar xjf $cpfile
-	/etc/plc.d/db restore ./etc/planetlab/plc_db.checkpoint ./etc/planetlab/plc_drupal.checkpoint
-	rm -f ./etc/planetlab/plc_db.checkpoint ./etc/planetlab/plc_drupal.checkpoint
-	rsync -av ./etc/planetlab/ /etc/planetlab/
-	cd -
-	rm -rf $cpdir
-	;;
+        cpfile=$1
+        cpdir=$(mktemp -d tmp.XXXXXX)
+        cd $cpdir
+        tar xjf $cpfile
+        /etc/plc.d/db restore ./etc/planetlab/plc_db.checkpoint ./etc/planetlab/plc_drupal.checkpoint
+        rm -f ./etc/planetlab/plc_db.checkpoint ./etc/planetlab/plc_drupal.checkpoint
+        rsync -av ./etc/planetlab/ /etc/planetlab/
+        cd -
+        rm -rf $cpdir
+        ;;
 
     steps)
-	echo "${steps[@]}" >&4
-	;;
+        echo "${steps[@]}" >&4
+        ;;
 
     # for backwards compatibility
     mount|umount|mountstatus)
-	echo "${command} not used within native myplc environment"
-	;;
+        echo "${command} not used within native myplc environment"
+        ;;
 
     *)
-	usage >&3
-	;;
+        usage >&3
+        ;;
 esac
 
 exit $RETVAL
