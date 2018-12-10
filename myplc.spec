@@ -20,11 +20,72 @@ URL: %{SCMURL}
 
 %define nodefamily %{pldistro}-%{distroname}-%{_arch}
 
-####################### myplc
+
+####################### myplc - mostly a meta-package
 Summary: PlanetLab Central (PLC) Portable Installation
 Group: Applications/Systems
 
+# planetlab stuff
+Requires: bootmanager
+Requires: bootcd-%{nodefamily}
+Requires: bootcd-initscripts
+Requires: www-register-wizard
+Requires: nodeconfig
+Requires: nodeyum
+Requires: nodeimage-%{nodefamily}
+Requires: myplc-docs
+Requires: myplc-release
+Requires: myplc-core
+Requires: createrepo
+
+
+# starting with f16 we depend on this new rpm
+%if "%{distro}" == "Fedora" && %{distrorelease} >= 16
+Requires: rpm-sign
+%endif
+
+
+%define debug_package %{nil}
+
+%description
+MyPLC is a complete PlanetLab Central (PLC) portable installation.
+The default installation consists of a web server, an XML-RPC API
+server, a boot server, and a database server: the core components of
+PLC. The installation may be customized through a graphical
+interface. All PLC services are started up and shut down through a
+single System V init script.
+
+
+####################### myplc-core
+
+%package core
+
+Summary: this package is designed for deployments that only need
+the API + db + www UI. Installing this will not require any node-oriented
+package, like bootcd, nodeiamge, or bootmanager.
+
+% description core
+The core of myplc is about its API + database + web interface
+
 # as much as possible, requires should go in the subpackages specfile
+Requires: myplc-config
+Requires: plcapi
+Requires: plewww
+
+# this technically is a plcapi dependency
+# but it's simpler here for chosing which
+%if "%{distro}" == "Fedora" && %{distrorelease} >= 29
+Requires: python2-mod_wsgi
+%else
+Requires: mod_wsgi
+%endif
+
+# this technically is a plewww dependency
+# starting with f27 we depend on this new rpm
+%if "%{distro}" == "Fedora" && %{distrorelease} >= 27
+Requires: php-fpm
+%endif
+
 Requires: redhat-lsb
 Requires: bzip2
 Requires: tar
@@ -37,9 +98,8 @@ Requires: php-pgsql
 Requires: curl
 Requires: rsync
 Requires: python-devel
-Requires: yum
+Requires: dnf
 #Requires: PyXML
-Requires: createrepo
 Requires: cpio
 Requires: wget
 Requires: php
@@ -53,48 +113,7 @@ Requires: xmlsec1
 Requires: xmlsec1-openssl
 Requires: ed
 Requires: cronie
-# starting with f16 we depend on this new rpm
-%if "%{distro}" == "Fedora" && %{distrorelease} >= 16
-Requires: rpm-sign
-%endif
-# starting with f27 we depend on this new rpm
-%if "%{distro}" == "Fedora" && %{distrorelease} >= 27
-Requires: php-fpm
-%endif
 
-# planetlab stuff
-Requires: bootmanager
-Requires: bootcd-%{nodefamily}
-Requires: bootcd-initscripts
-Requires: PLCWWW
-Requires: www-register-wizard
-Requires: nodeconfig
-Requires: nodeyum
-Requires: plcapi >= 5.2
-# this technically is a plcapi dependency but it's simpler here for chosing which
-%if "%{distro}" == "Fedora" && %{distrorelease} >= 29
-Requires: python2-mod_wsgi
-%else
-%if "%{distro}" == "Fedora" && %{distrorelease} >= 18
-Requires: mod_wsgi
-%else
-Requires: mod_python
-%endif
-%endif
-Requires: nodeimage-%{nodefamily}
-Requires: myplc-docs
-Requires: myplc-release
-Requires: myplc-config
-
-%define debug_package %{nil}
-
-%description
-MyPLC is a complete PlanetLab Central (PLC) portable installation.
-The default installation consists of a web server, an XML-RPC API
-server, a boot server, and a database server: the core components of
-PLC. The installation may be customized through a graphical
-interface. All PLC services are started up and shut down through a
-single System V init script.
 
 ####################### myplc-config
 
@@ -205,10 +224,7 @@ if [ $1 -gt 0 ] ; then
 fi
 
 %post
-if [ -x /sbin/chkconfig ] ; then
-    /sbin/chkconfig --add plc
-    /sbin/chkconfig plc on
-fi
+systemctl enable plc
 
 %if "%{distro}" == "Fedora" && %{distrorelease} >= 27
 systemctl enable php-fpm
@@ -233,21 +249,18 @@ fi
 # 0 = erase, 1 = upgrade
 if [ $1 -eq 0 ] ; then
     %{_sysconfdir}/init.d/plc stop
-    if [ -x /sbin/chkconfig ] ; then
-        /sbin/chkconfig plc off
-	/sbin/chkconfig --del plc
-    fi
+    systemctl disable plc
 fi
 
+
 %files
+/usr/share/myplc/bashrc
+
+%files core
 %defattr(-,root,root,-)
-# Host startup script and configuration file
-/usr/bin/plc-ctl
-/etc/plc.d
 /etc/planetlab
 /etc/plc_sliceinitscripts
 /etc/support-scripts
-/usr/share/myplc/bashrc
 # keep a detailed list, to avoid duplicate of plc-config,
 # that belongs to the myplc-config rpm
 /usr/bin/plc-config-tty
@@ -265,7 +278,7 @@ fi
 /usr/bin/check-hrns.py*
 /usr/bin/check-vsys-defaults.py*
 /usr/bin/spot-dup-accounts.sh
-/usr/lib/systemd/system/plc.service
+
 
 %files config
 %defattr(-,root,root,-)
