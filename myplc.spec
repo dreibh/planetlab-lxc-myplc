@@ -258,6 +258,9 @@ fi
 
 %files core
 %defattr(-,root,root,-)
+/usr/lib/systemd/system/plc.service
+/usr/bin/plc-ctl
+/etc/plc.d
 /etc/planetlab
 /etc/plc_sliceinitscripts
 /etc/support-scripts
