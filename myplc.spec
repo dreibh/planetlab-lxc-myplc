@@ -26,17 +26,17 @@ Summary: PlanetLab Central (PLC) Portable Installation
 Group: Applications/Systems
 
 # planetlab stuff
-Requires: bootmanager
-Requires: bootcd-%{nodefamily}
-Requires: bootcd-initscripts
-Requires: www-register-wizard
-Requires: nodeconfig
-Requires: nodeyum
-Requires: nodeimage-%{nodefamily}
 Requires: myplc-docs
 Requires: myplc-release
 Requires: myplc-core
 Requires: createrepo
+Requires: bootmanager
+Requires: bootcd-%{nodefamily}
+Requires: bootcd-initscripts
+Requires: nodeimage-%{nodefamily}
+Requires: nodeconfig
+Requires: nodeyum
+Requires: www-register-wizard
 
 
 # starting with f16 we depend on this new rpm
@@ -44,8 +44,6 @@ Requires: createrepo
 Requires: rpm-sign
 %endif
 
-
-%define debug_package %{nil}
 
 %description
 MyPLC is a complete PlanetLab Central (PLC) portable installation.
@@ -57,17 +55,15 @@ single System V init script.
 
 
 ####################### myplc-core
+# Warning: it appears that Requires should come here
+# BEFORE the %description thingy
 
 %package core
 
 Summary: core contents of myplc with API + db + www UI
 
-%description core
-The core of myplc is about its API + database + web interface.
-Installing this will not require any node-oriented
-package, like bootcd, nodeimage, or bootmanager.
-
-# as much as possible, requires should go in the subpackages specfile
+# as much as possible, requires should have gone
+# with the individual packages, but well
 Requires: myplc-config
 Requires: plcapi
 Requires: plewww
@@ -115,6 +111,11 @@ Requires: ed
 Requires: cronie
 
 
+%description core
+The core of myplc is about its API + database + web interface.
+Installing this will not require any node-oriented
+package, like bootcd, nodeimage, or bootmanager.
+
 ####################### myplc-config
 
 %package config
@@ -125,6 +126,7 @@ Requires: python
 
 %description config
 This package provides the Python module to configure MyPLC.
+
 
 
 %prep
