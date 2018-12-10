@@ -62,7 +62,7 @@ single System V init script.
 
 Summary: core contents of myplc with API + db + www UI
 
-% description core
+%description core
 The core of myplc is about its API + database + web interface.
 Installing this will not require any node-oriented
 package, like bootcd, nodeimage, or bootmanager.
