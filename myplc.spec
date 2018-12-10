@@ -129,8 +129,8 @@ chmod 755 ${RPM_BUILD_ROOT}/usr/bin/*
 
 # Install initscript
 echo "* Installing plc initscript"
-install -D -m 755 plc.init ${RPM_BUILD_ROOT}/etc/init.d/plc
-install -D -m 644 plc.service ${RPM_BUILD_ROOT}/usr/lib/systemd/system/plc.service
+install -D -m 755 systemd/plc-ctl ${RPM_BUILD_ROOT}/usr/bin/plc-ctl
+install -D -m 644 systemd/plc.service ${RPM_BUILD_ROOT}/usr/lib/systemd/system/plc.service
 
 # Install initscripts
 echo "* Installing plc.d initscripts"
@@ -242,7 +242,7 @@ fi
 %files
 %defattr(-,root,root,-)
 # Host startup script and configuration file
-/etc/init.d/plc
+/usr/bin/plc-ctl
 /etc/plc.d
 /etc/planetlab
 /etc/plc_sliceinitscripts

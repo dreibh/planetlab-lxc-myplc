@@ -1,0 +1,14 @@
+[Unit]
+Description=PLC Service
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/plc-ctl start
+RemainAfterExit=true
+ExecStop=/usr/bin/plc-ctl stop
+ExecReload=/usr/bin/plc-ctl reload
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target
