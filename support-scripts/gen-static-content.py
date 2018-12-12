@@ -11,7 +11,7 @@ import time
 import string
 import codecs
 import socket
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import csv
 
 SCRIPT_PID_FILE= "/var/run/gen-static-content.pid"
@@ -85,8 +85,7 @@ def GetNodeListsContent(f):
     f.write( "$node_list_generated_time= '%s';\n" % time_generated )
 
     # Nodes with primary IP addresses in boot state
-    nodes_in_boot = filter(lambda node: node['boot_state'] == "boot" and node['ip'],
-                           all_nodes)
+    nodes_in_boot = [node for node in all_nodes if node['boot_state'] == "boot" and node['ip']]
 
     # Hostnames
     all_hosts = [node['hostname'] for node in nodes_in_boot]
@@ -118,12 +117,11 @@ def GetNodeListsContent(f):
     f.write( "}\n" )
 
     for group in ['Alpha', 'Beta']:
-        if not node_group_nodes.has_key(group):
+        if group not in node_group_nodes:
             node_group_nodes[group] = []
 
         # Group nodes with primary IP addresses in boot state
-        group_nodes_in_boot = filter(lambda node: node['boot_state'] == "boot" and node['ip'],
-                                     node_group_nodes[group])
+        group_nodes_in_boot = [node for node in node_group_nodes[group] if node['boot_state'] == "boot" and node['ip']]
 
         # Group hostnames
         group_hosts = [node['hostname'] for node in group_nodes_in_boot]
@@ -144,9 +142,8 @@ def GetNodeListsContent(f):
         f.write( "}\n" )
 
     # All production nodes (nodes not in Alpha or Beta)
-    production_nodes_in_boot = filter(lambda node: node not in node_group_nodes['Alpha'] and \
-                                                   node not in node_group_nodes['Beta'],
-                                      nodes_in_boot)
+    production_nodes_in_boot = [node for node in nodes_in_boot if node not in node_group_nodes['Alpha'] and \
+                                                   node not in node_group_nodes['Beta']]
 
     production_hosts = [node['hostname'] for node in production_nodes_in_boot]                           
     f.write( "elseif( $which_node_list == 'production_hosts' )\n" )
@@ -200,17 +197,17 @@ def GetPlanetFlowStats(f):
     url = url + '/slice.php?csv=1&start_time=2+days+ago'
     if slices:
         url = url + '&slices[]=' + '&slices[]='.join(slices)
-    stats = urllib2.urlopen(url)
+    stats = urllib.request.urlopen(url)
     fields = ['slice', 'flows', 'packets', 'bytes', 'src_ips',
               'dst_ips', 'top_dst_ip', 'top_dst_ip_bytes']
     rows = csv.DictReader(stats, fields)
     f.write("<?php\n")
     f.write("$planetflow = array(\n")
     for row in rows:
-        if row.has_key('slice'):
+        if 'slice' in row:
             f.write("'%s' => array(\n" % row['slice'])
             for field in fields:
-                if row.has_key(field) and \
+                if field in row and \
                    row[field] is not None and \
                    row[field] != "":
                     if type(row[field]) == type(0):
@@ -271,7 +268,7 @@ if __name__ == '__main__':
         
     if os.access(SCRIPT_PID_FILE, os.R_OK):
         pid= string.strip(file(SCRIPT_PID_FILE).readline())
-        if pid <> "":
+        if pid != "":
             if os.system("/bin/kill -0 %s > /dev/null 2>&1" % pid) == 0:
                 sys.exit(0)
             
@@ -301,12 +298,12 @@ if __name__ == '__main__':
                 if nodenetwork['is_primary']:
                     node['ip'] = nodenetwork['ip']
                 break
-            except IndexError, KeyError:
+            except IndexError as KeyError:
                 continue
 
     # Get list of nodes in each node group
     for group in all_groups:
-        nodes_in_group = filter(lambda node: node['node_id'] in group['node_ids'], all_nodes)
+        nodes_in_group = [node for node in all_nodes if node['node_id'] in group['node_ids']]
         node_group_nodes[group['tagname']] = nodes_in_group
 
     # generate the static content files
@@ -316,16 +313,16 @@ if __name__ == '__main__':
                 output_file_path= "%s/%s" % (GENERATED_OUTPUT_PATH,file_name)
                 tmp_output_file_path= output_file_path + '.tmp'
                 tmp_output_file= codecs.open( tmp_output_file_path, encoding = 'utf-8', mode = "w" )
-            except IOError, err:
-                print( "Unable to open file %s for writing." % output_file_path )
+            except IOError as err:
+                print(( "Unable to open file %s for writing." % output_file_path ))
                 continue
 
             try:
                 func(tmp_output_file)
                 tmp_output_file.flush()
                 shutil.copyfile( tmp_output_file_path, output_file_path )
-            except Exception, e:
-                print "Unable to get content for file: %s" % file_name, e
+            except Exception as e:
+                print("Unable to get content for file: %s" % file_name, e)
                 import traceback
                 traceback.print_exc()
 

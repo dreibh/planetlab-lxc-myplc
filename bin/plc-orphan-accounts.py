@@ -33,38 +33,38 @@ def get_orphans ():
     return orphans
 
 def list_person (margin,p):
-    print margin,'%6d'%p['person_id'], time.asctime(time.gmtime(p['date_created'])),
-    if not p['peer_id']: print 'LOCAL',
-    else: print 'pr=',p['peer_id'],
-    if p['enabled']: print 'ENB',
-    else: print 'DIS',
-    print p['email']
+    print(margin,'%6d'%p['person_id'], time.asctime(time.gmtime(p['date_created'])), end=' ')
+    if not p['peer_id']: print('LOCAL', end=' ')
+    else: print('pr=',p['peer_id'], end=' ')
+    if p['enabled']: print('ENB', end=' ')
+    else: print('DIS', end=' ')
+    print(p['email'])
 
 date_keys=['date_created','last_updated']
 def details_person (p):
-    keys=p.keys()
+    keys=list(p.keys())
     keys.sort()
     for key in keys:
-        print key,'->',
+        print(key,'->', end=' ')
         value=p[key]
-        if key in date_keys:    print time.asctime(time.gmtime(value))
-        else:                   print value
+        if key in date_keys:    print(time.asctime(time.gmtime(value)))
+        else:                   print(value)
 
 def get_related(email):
     return GetPersons ({'email':email,'~peer_id':None})
 
 def header (message):
-    print '--------------------'
-    print GetPeerName(),
-    print time.asctime(time.gmtime())
-    print 'Listing orphan accounts and any similar remote'
-    print '--------------------'
+    print('--------------------')
+    print(GetPeerName(), end=' ')
+    print(time.asctime(time.gmtime()))
+    print('Listing orphan accounts and any similar remote')
+    print('--------------------')
 
 def delete_local (person,default_bool,options):
     
     # just in case
     if person['peer_id'] != None:
-        print 'ERROR: cannot delete non-local person',person['email']
+        print('ERROR: cannot delete non-local person',person['email'])
         return
 
     prompt = 'want to delete '+person['email']
@@ -76,9 +76,9 @@ def delete_local (person,default_bool,options):
     while not done:
         done=True
         try:
-            answer = raw_input(prompt).strip()
+            answer = input(prompt).strip()
         except EOFError :
-            print 'bailing out'
+            print('bailing out')
             sys.exit(1)
 
         if answer=='':
@@ -95,12 +95,12 @@ def delete_local (person,default_bool,options):
     id=person['person_id']
     email=person['email']
     if options.dry_run:
-        if do_delete:                   print 'Would delete',id,'->',email
-        else:                           print 'Would preserve',id,'->',email
+        if do_delete:                   print('Would delete',id,'->',email)
+        else:                           print('Would preserve',id,'->',email)
     elif do_delete:
-        print 'Deleting',id,'->',email,
-        if DeletePerson(id) == 1:       print 'OK',id,'deleted'
-        else:                           print 'Deletion failed'
+        print('Deleting',id,'->',email, end=' ')
+        if DeletePerson(id) == 1:       print('OK',id,'deleted')
+        else:                           print('Deletion failed')
 
 def main_orphans (options):
     orphans = get_orphans()

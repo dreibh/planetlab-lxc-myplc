@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 ###
 ### utility script for cleaning empty directories
 ### useful to clean up /var/tmp/bootmedium
@@ -42,12 +42,13 @@ def main (dirs):
     for dir in dirs:
 	try:
 	    if dir.index("/") != 0:
-		print "%s: args must be absolute paths"%(sys.argv[0])
-		print "%s: %s ignored"%(sys.argv[0],dir)
+		print("%s: args must be absolute paths"%(sys.argv[0]))
+		print("%s: %s ignored"%(sys.argv[0],dir))
 	    else:
 		clean_root(dir)
-	except OSError, (errno, strerror):
-	    print ERROR_STR % {'path' : path, 'error': strerror }
+	except OSError as xxx_todo_changeme:
+	    (errno, strerror) = xxx_todo_changeme.args
+	    print(ERROR_STR % {'path' : path, 'error': strerror })
 
 if __name__ == '__main__':
     main (sys.argv[1:])

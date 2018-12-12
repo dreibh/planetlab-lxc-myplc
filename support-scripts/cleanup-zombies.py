@@ -51,13 +51,13 @@ def display_or_run_commands(commands, run):
         if not run:
             print("---- You should run")
             for command in commands:
-                print(" ".join(command))
+                print((" ".join(command)))
         else:
             for command in commands:
-                print("Running {}".format(" ".join(command)))
+                print(("Running {}".format(" ".join(command))))
                 retcod = subprocess.call(command)
                 if retcod != 0:
-                    print("Warning: failed with retcod = {}".format(retcod))
+                    print(("Warning: failed with retcod = {}".format(retcod)))
 
 def main():
     parser = ArgumentParser()
@@ -77,7 +77,7 @@ def main():
     
     if args.deep:
         commands = []
-        print("Found {} containers that are known but not running".format(len(not_running_containers)))
+        print(("Found {} containers that are known but not running".format(len(not_running_containers))))
         for not_running_container in not_running_containers:
             commands.append(['userdel', not_running_container])
             commands.append(['virsh', '-c', 'lxc:///', 'undefine', not_running_container])
@@ -97,18 +97,18 @@ def main():
     # we need to call 'btrfs subvolume delete' on these remainings
     # instead of just 'rm'
     if zombies_containers:
-        print("-------- Found {} existing, but not running, containers".format(len(zombies_containers)))
+        print(("-------- Found {} existing, but not running, containers".format(len(zombies_containers))))
         commands = []
         zombie_dirs = ["/vservers/"+z for z in zombies_containers]
         if args.verbose:
-            print("zombie_dirs='{}'".format(" ".join(zombie_dirs)))
+            print(("zombie_dirs='{}'".format(" ".join(zombie_dirs))))
         subvolumes = [ path
                        for z in zombies_containers
                        for prefix in flavour_prefixes
                        for path in glob.glob("/vservers/{z}/{prefix}*".format(z=z, prefix=prefix))]
         if subvolumes:
             if args.verbose:
-                print("zombie_subvolumes='{}'".format(" ".join(subvolumes)))
+                print(("zombie_subvolumes='{}'".format(" ".join(subvolumes))))
             for subvolume in subvolumes:
                 commands.append([ 'btrfs', 'subvolume', 'delete', subvolume])
         for zombie_dir in zombie_dirs:
@@ -122,9 +122,9 @@ def main():
     #### should happen much less frequently
     weirdos_containers = running_containers - existing_containers
     if weirdos_containers:
-        print("-------- Found {} running but non existing".format(len(weirdos_containers)))
+        print(("-------- Found {} running but non existing".format(len(weirdos_containers))))
         for w in weirdos_containers:
-            print("/vservers/{}".format(w))
+            print(("/vservers/{}".format(w)))
 
-    print("{} slices are currently running".format(len(running_containers)))
+    print(("{} slices are currently running".format(len(running_containers))))
 main()    

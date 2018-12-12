@@ -21,7 +21,7 @@ def writepid(prog):
         pid = pidfile.readline().strip()
         pidfile.close()
         if os.path.isdir("/proc/" + pid):
-            print "Error: Another copy of %s is still running (%s)" % (prog, pid)
+            print("Error: Another copy of %s is still running (%s)" % (prog, pid))
             sys.exit(1)
     except IOError:
         pass
@@ -41,8 +41,8 @@ def main():
     variables = cfg.variables()
 
     (category, variablelist) = variables['plc_dns']
-    plc_dns = dict(zip(variablelist.keys(),
-                       [variable['value'] for variable in variablelist.values()]))
+    plc_dns = dict(list(zip(list(variablelist.keys()),
+                       [variable['value'] for variable in list(variablelist.values())])))
 
     if plc_dns['enabled'] != "true":
         return 0
@@ -55,7 +55,7 @@ def main():
         nodes[node['node_id']] = node
 
     interface_ids = set()
-    for node in nodes.values():
+    for node in list(nodes.values()):
         interface_ids.update(node['interface_ids'])
 
     for interface in GetInterfaces(list(interface_ids)):
@@ -67,7 +67,7 @@ def main():
         else:
             hostname = nodes[interface['node_id']]['hostname']
 
-        if hosts.has_key(interface['ip']):
+        if interface['ip'] in hosts:
             if hostname not in hosts[interface['ip']]:
                 hosts[interface['ip']].append(hostname)
         else:
@@ -76,7 +76,7 @@ def main():
     # Write /etc/plc_hosts
     plc_hosts = open("/etc/plc_hosts", "w")
     plc_hosts.write("# DO NOT EDIT; File is writen and removed by automatic scripts\n")
-    for ip, hostnames in hosts.iteritems():
+    for ip, hostnames in hosts.items():
         plc_hosts.write(ip + "\t" + " ".join(hostnames) + "\n")
     plc_hosts.close()
 

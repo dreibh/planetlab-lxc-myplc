@@ -11,20 +11,20 @@ logdir="/var/log/peers"
 
 def Run (peername):
     timestring=time.strftime("%Y-%m-%d-%H-%M-%S")
-    print 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',peername
-    print 'RefreshPeer on %s - starting on %s'%(peername,timestring)
-    print 'xxxxxxxxxx'
+    print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',peername)
+    print('RefreshPeer on %s - starting on %s'%(peername,timestring))
+    print('xxxxxxxxxx')
     sys.stdout.flush()
     start=time.time()
     result=RefreshPeer(peername)
     finish=time.time()
 
-    print 'Total duration',finish-start
-    print 'xxxxxxxxxx timers:'
-    keys=result.keys()
+    print('Total duration',finish-start)
+    print('xxxxxxxxxx timers:')
+    keys=list(result.keys())
     keys.sort()
     for key in keys:
-        print key,result[key]
+        print(key,result[key])
     sys.stdout.flush()
     sys.stderr.flush()
 

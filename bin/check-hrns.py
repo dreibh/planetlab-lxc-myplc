@@ -14,15 +14,15 @@ def handle_nodes (sites,sites_by_id, dry_run, verbose):
         login_base=site['login_base']
         for node_id in site.get('node_ids', []):
             try:    node=nodes_by_id[node_id]
-            except: print 'cannot find node %s'%node_id; continue
+            except: print('cannot find node %s'%node_id); continue
             hrn=hostname_to_hrn (toplevel, login_base, node['hostname'])
             if node['hrn'] != hrn:
                 if verbose:
-                    print "Node %s - current hrn %s, should be %s"%(node['hostname'], node['hrn'], hrn)
+                    print("Node %s - current hrn %s, should be %s"%(node['hostname'], node['hrn'], hrn))
                 if dry_run: continue
                 SetNodeHrn (node['node_id'],hrn)
             else:
-                if verbose: print "Node %s OK"%node['hostname']
+                if verbose: print("Node %s OK"%node['hostname'])
 
 def handle_persons (sites,sites_by_id, dry_run,verbose): 
     persons=GetPersons ({'peer_id':None},['person_id','email','hrn','site_ids'])
@@ -31,20 +31,20 @@ def handle_persons (sites,sites_by_id, dry_run,verbose):
         login_base=site['login_base']
         for person_id in site.get('person_ids', []):
             try:    person=persons_by_id[person_id]
-            except: print 'cannot find person %s'%person_id; continue
+            except: print('cannot find person %s'%person_id); continue
             how_many=len(person['site_ids'])
             if how_many !=1:
-                if verbose: print "Checking persons in exactly one site -- person %s in %s site(s) -- ignored"%(person['email'],how_many)
+                if verbose: print("Checking persons in exactly one site -- person %s in %s site(s) -- ignored"%(person['email'],how_many))
                 continue
 
             hrn=email_to_hrn ("%s.%s"%(toplevel,login_base),person['email'])
             if person['hrn'] != hrn:
                 if verbose:
-                    print "Person %s - current hrn %s, should be %s"%(person['email'], person['hrn'], hrn)
+                    print("Person %s - current hrn %s, should be %s"%(person['email'], person['hrn'], hrn))
                 if dry_run: continue
                 SetPersonHrn (person['person_id'],hrn)
             else:
-                if verbose: print "Person %s OK"%person['email']
+                if verbose: print("Person %s OK"%person['email'])
 
 
 def handle_slices (sites,sites_by_id, dry_run,verbose):
@@ -54,15 +54,15 @@ def handle_slices (sites,sites_by_id, dry_run,verbose):
         login_base=site['login_base']
         for slice_id in site.get('slice_ids', []):
             try:    slice=slices_by_id[slice_id]
-            except: print 'cannot find slice %s'%slice_id; continue
+            except: print('cannot find slice %s'%slice_id); continue
             hrn=slicename_to_hrn (toplevel, slice['name'])
             if slice['hrn'] != hrn:
                 if verbose:  
-                    print "Slice %s - current hrn %s, should be %s"%(slice['name'], slice['hrn'], hrn)
+                    print("Slice %s - current hrn %s, should be %s"%(slice['name'], slice['hrn'], hrn))
                 if dry_run: continue
                 SetSliceHrn (slice['slice_id'],hrn)
             else:
-                if verbose: print "Slice %s OK"%slice['name']
+                if verbose: print("Slice %s OK"%slice['name'])
 
 
 def handle_sites (sites,sites_by_id, dry_run,verbose):
@@ -70,11 +70,11 @@ def handle_sites (sites,sites_by_id, dry_run,verbose):
         hrn='.'.join([toplevel, site['login_base']])
         if site['hrn'] != hrn:
             if verbose:
-                print "Site %s - current hrn %s, should be %s"%(site['name'].encode('ascii', 'ignore'), site['hrn'], hrn)
+                print("Site %s - current hrn %s, should be %s"%(site['name'].encode('ascii', 'ignore'), site['hrn'], hrn))
             if dry_run: continue
             SetSiteHrn (site['site_id'],hrn)
         else:
-            if verbose: print "Site %s OK"%site['name']
+            if verbose: print("Site %s OK"%site['name'])
         
 
             

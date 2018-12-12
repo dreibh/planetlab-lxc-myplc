@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Write out sites.xml
 #
@@ -29,18 +29,18 @@ dryrun = False
 
 # Parse options
 def usage():
-    print "Usage: %s [OPTION]..." % sys.argv[0]
-    print "Options:"
-    print "     -n, --dryrun            Dry run, do not write files (default: %s)" % dryrun
-    print "     -d, --docroot=DIR       Document root (default: %s)" % DOCROOT
-    print "     -h, --help              This message"
+    print("Usage: %s [OPTION]..." % sys.argv[0])
+    print("Options:")
+    print("     -n, --dryrun            Dry run, do not write files (default: %s)" % dryrun)
+    print("     -d, --docroot=DIR       Document root (default: %s)" % DOCROOT)
+    print("     -h, --help              This message")
     sys.exit(1)
 
 # Get options
 try:
     (opts, argv) = getopt.getopt(sys.argv[1:], "nd:h", ["dryrun", "docroot=", "help"])
-except getopt.GetoptError, err:
-    print "Error: " + err.msg
+except getopt.GetoptError as err:
+    print("Error: " + err.msg)
     usage()
 
 for (opt, optval) in opts:
@@ -55,7 +55,7 @@ for (opt, optval) in opts:
 if not dryrun:
     if os.access(PID_FILE, os.R_OK):
         pid= file(PID_FILE).readline().strip()
-        if pid <> "":
+        if pid != "":
             if os.system("/bin/kill -0 %s > /dev/null 2>&1" % pid) == 0:
                 sys.exit(0)
 
@@ -82,14 +82,14 @@ GetNodeGroups(['Alpha', 'Beta', 'Rollout', 'Production'], ['groupname', 'node_id
 
 # remove whitelisted nodes
 remove_whitelisted = lambda node: not node['slice_ids_whitelist']
-nodes = filter(remove_whitelisted, nodes)
+nodes = list(filter(remove_whitelisted, nodes))
 
 nodes = dict([(node['node_id'], node) for node in nodes])
 
 for nodenetwork in nodenetworks:
-    if nodes.has_key(nodenetwork['node_id']):
+    if nodenetwork['node_id'] in nodes:
         node = nodes[nodenetwork['node_id']]
-        for key, value in nodenetwork.iteritems():
+        for key, value in nodenetwork.items():
             node[key] = value
 
 group_node_ids = dict([(group['groupname'], group['node_ids']) for group in groups])
@@ -144,7 +144,7 @@ class PrettyXMLGenerator(XMLGenerator):
             self.ignorableWhitespace("".join(self.indents))
 
         self.write('<' + name)
-        for (name, value) in attrs.items():
+        for (name, value) in list(attrs.items()):
             self.write(' %s=%s' % (name, quoteattr(value.strip())))
         self.write('/>')
 
@@ -220,40 +220,40 @@ for site in sites:
     # <SITE ...>
     attrs = {}
     for attr in ['name', 'latitude', 'longitude', 'url', 'site_id', 'login_base']:
-        attrs[attr.upper()] = unicode(site[attr])
-    attrs['FULL_SITE_NAME'] = unicode(site['name'])
-    attrs['SHORT_SITE_NAME'] = unicode(site['abbreviated_name'])
+        attrs[attr.upper()] = str(site[attr])
+    attrs['FULL_SITE_NAME'] = str(site['name'])
+    attrs['SHORT_SITE_NAME'] = str(site['abbreviated_name'])
     xml.startElement('SITE', attrs)
 
     for node_id in site['node_ids']:
-        if nodes.has_key(node_id):
+        if node_id in nodes:
             node = nodes[node_id]
 
             # <HOST ...>
             attrs = {}
-            attrs['NAME'] = unicode(node['hostname'])
+            attrs['NAME'] = str(node['hostname'])
             attrs['VERSION'] = "2.0"
             for attr in ['model', 'node_id', 'boot_state']:
-                attrs[attr.upper()] = unicode(node[attr]).strip()
+                attrs[attr.upper()] = str(node[attr]).strip()
 
             # If the node is in Alpha, Beta, or Rollout, otherwise Production
             for group in ['Alpha', 'Beta', 'Rollout', 'Production']:
-                if group_node_ids.has_key(group) and \
+                if group in group_node_ids and \
                    node_id in group_node_ids[group]:
                     break
             attrs['STATUS'] = group
 
             if node['version']:
-                attrs['BOOT_VERSION'] = unicode(node['version'].splitlines()[0])
+                attrs['BOOT_VERSION'] = str(node['version'].splitlines()[0])
             if node['ssh_rsa_key']:
-                attrs['RSA_KEY'] = unicode(node['ssh_rsa_key'].splitlines()[0])
+                attrs['RSA_KEY'] = str(node['ssh_rsa_key'].splitlines()[0])
 
-            if node.has_key('ip') and node['ip']:
-                attrs['IP'] = unicode(node['ip'])
-            if node.has_key('mac') and node['mac']:
-                attrs['MAC'] = unicode(node['mac'])
-            if node.has_key('bwlimit') and node['bwlimit']:
-                attrs['BWLIMIT'] = unicode(format_tc_rate(node['bwlimit']))
+            if 'ip' in node and node['ip']:
+                attrs['IP'] = str(node['ip'])
+            if 'mac' in node and node['mac']:
+                attrs['MAC'] = str(node['mac'])
+            if 'bwlimit' in node and node['bwlimit']:
+                attrs['BWLIMIT'] = str(format_tc_rate(node['bwlimit']))
 
             xml.simpleElement('HOST', attrs)
 

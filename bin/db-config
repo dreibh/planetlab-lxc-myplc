@@ -20,9 +20,9 @@ def GetSnippets(directory):
     if os.path.exists(directory):
         try:
             filenames = os.listdir(directory)
-        except OSError, e:
-            raise Exception, "Error when opening %s (%s)" % \
-                  (os.path.join(dir, file), e)
+        except OSError as e:
+            raise Exception("Error when opening %s (%s)" % \
+                  (os.path.join(dir, file), e))
             
     # ignore files that contain either ~ or .
     ignore_tokens = ("~",".")
@@ -49,10 +49,10 @@ def GetSnippets(directory):
                 ignore = True
 
         if ignore:
-            print "db-config: ignored %s snippet" % filename
+            print("db-config: ignored %s snippet" % filename)
 
     filenames = []
-    keys = numberedfiles.keys()
+    keys = list(numberedfiles.keys())
     keys.sort()
     for k in keys:
         for filename in numberedfiles[k]:
@@ -74,9 +74,9 @@ def main():
     (options,steps) = parser.parse_args()
     
     # Load variables into dictionaries
-    for category_id, (category, variablelist) in variables.iteritems():
-        globals()[category_id] = dict(zip(variablelist.keys(),
-                                          [variable['value'] for variable in variablelist.values()]))
+    for category_id, (category, variablelist) in variables.items():
+        globals()[category_id] = dict(list(zip(list(variablelist.keys()),
+                                          [variable['value'] for variable in list(variablelist.values())])))
 
     directory="/etc/planetlab/db-config.d"
     snippets = GetSnippets(directory)
@@ -95,16 +95,16 @@ def main():
         
         if options.list_steps:
             if not options.verbose: 
-                print snippet
+                print(snippet)
             else: 
-                print "Found step %s/%s"%(directory,snippet)
+                print("Found step %s/%s"%(directory,snippet))
                 os.system("rpm -qf %s/%s"%(directory,snippet))
             continue
 
         fullpath = os.path.join(directory, snippet)
         if options.verbose:
-            print "Running step %s"%fullpath
-        execfile(fullpath)
+            print("Running step %s"%fullpath)
+        exec(compile(open(fullpath).read(), fullpath, 'exec'))
 
 if __name__ == '__main__':
     main()

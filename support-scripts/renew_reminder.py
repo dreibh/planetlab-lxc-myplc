@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Notify users of slices that are about to expire
 #
@@ -25,7 +25,7 @@ class Logfile:
 	self.filename = filename
     def write(self, data):
 	try:
-	    fd = os.open(self.filename, os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0644)
+	    fd = os.open(self.filename, os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0o644)
 	    os.write(fd, '{}'.format(data))
 	    os.close(fd)
 	except OSError:
@@ -57,7 +57,7 @@ now = int(time.time())
 expires = now + (options.expires * 24 * 60 * 60)
 
 if options.verbose:
-    print "Checking for slices that expire before " + time.ctime(expires)
+    print("Checking for slices that expire before " + time.ctime(expires))
 
 slice_filter = {'peer_id': None}
 if options.slices:
@@ -67,11 +67,11 @@ if options.slices:
 persons = GetPersons ({'peer_id': None}, ['person_id', 'email', 'sfa_created'])
 persons_by_id = { p['person_id'] : p for p in persons }
 if options.verbose:
-    print "retrieved {} persons".format(len(persons))
+    print("retrieved {} persons".format(len(persons)))
 
 slices = GetSlices(slice_filter, ['slice_id', 'name', 'expires', 'description', 'url', 'person_ids'])
 if options.verbose:
-    print "scanning {} slices".format(len(slices))
+    print("scanning {} slices".format(len(slices)))
     
 for slice in slices:
     # See if slice expires before the specified warning date
@@ -121,20 +121,20 @@ To update, renew, or delete this slice, visit the URL:
 
     if not recipient_emails:
         if options.verbose:
-            print """{slice_name} has no recipient 
-({nb_in_slice} in slice, {nb_not_sfa} not sfa_created)""".format(**locals())
+            print("""{slice_name} has no recipient 
+({nb_in_slice} in slice, {nb_not_sfa} not sfa_created)""".format(**locals()))
         continue
 
     log_details = [time.ctime(now), slice_name, time.ctime(slice['expires'])]
     log_data = "{}\t{}".format("\t".join(log_details), ",".join(recipient_emails))
 
     if options.dryrun:
-        print "-------------------- Found slice to renew {slice_name}".format(**locals())
-        print message_format.format(**locals())
-        print "log >> {}".format(log_data)
+        print("-------------------- Found slice to renew {slice_name}".format(**locals()))
+        print(message_format.format(**locals()))
+        print("log >> {}".format(log_data))
     else:
         NotifyPersons(slice['person_ids'],
                       "{PLC_NAME} slice {slice_name} expires in {days}".format(**locals()),
                       message_format.format(**locals()))
-        print >> log, log_data
+        print(log_data, file=log)
 	    

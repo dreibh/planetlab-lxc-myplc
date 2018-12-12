@@ -5,16 +5,16 @@ from optparse import OptionParser
 try:
     vsys_tag_type=GetSliceTags({'tagname':'vsys'})[0]
 except:
-    print "Can't find tag vsys - exiting"
+    print("Can't find tag vsys - exiting")
     sys.exit(1)
 
 def add_value (slice, value, options):
     (slice_id, slice_name ) = (slice['slice_id'], slice['name'])
     if options.dry_run:
-        print "Would add vsys=%s to slice %s (%d)"%(value,slice_name,slice_id)
+        print("Would add vsys=%s to slice %s (%d)"%(value,slice_name,slice_id))
         return
     if options.verbose:
-        print "Adding vsys=%s to slice %s (%d)"%(value,slice_name,slice_id)
+        print("Adding vsys=%s to slice %s (%d)"%(value,slice_name,slice_id))
     AddSliceTag (slice_id, 'vsys', value)
 
 
@@ -39,7 +39,7 @@ def check (options):
                 add_value (slice,value,options)
                 counter+=1
         if options.verbose:
-            print "Found %d slices for which %s is missing"%(counter,value)
+            print("Found %d slices for which %s is missing"%(counter,value))
 
 def main ():
     usage="""Usage: %prog

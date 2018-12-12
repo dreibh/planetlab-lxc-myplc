@@ -61,31 +61,31 @@ class check_ssl:
         curl.setopt(pycurl.POST, 1)
         curl.setopt(pycurl.POSTFIELDS, self.getpeername_post_request(local_peername))
 
-        import StringIO
-        b = StringIO.StringIO()
+        import io
+        b = io.StringIO()
         curl.setopt(pycurl.WRITEFUNCTION, b.write)
 
         try:
             curl.perform()
             errcode = curl.getinfo(pycurl.HTTP_CODE)
             response = b.getvalue()
-            print 'xmlrpc answer',response
+            print('xmlrpc answer',response)
             if response.find('Failed') >= 0:
-                print 'FAILURE : failed to authenticate ?'
+                print('FAILURE : failed to authenticate ?')
                 return False
             elif response.find(remote_peername) <0:
-                print 'FAILURE : xmlrpc round trip OK but peername does not match'
+                print('FAILURE : xmlrpc round trip OK but peername does not match')
                 return False
             else:
-                print 'SUCCESS'
+                print('SUCCESS')
                 return True
 
-        except pycurl.error, err:
+        except pycurl.error as err:
             (errcode, errmsg) = err
             if errcode == 60:
-                print 'FAILURE', "SSL certificate validation failed, %r"%(errmsg)
+                print('FAILURE', "SSL certificate validation failed, %r"%(errmsg))
             elif errcode != 200:
-                print 'FAILURE', "HTTP error %d, errmsg %r" % (errcode,errmsg)
+                print('FAILURE', "HTTP error %d, errmsg %r" % (errcode,errmsg))
             return False
 
     def main (self):
@@ -113,7 +113,7 @@ class check_ssl:
 #            for url_format in [ 'https://%s:443/PLCAPI/' , 'https://%s/PLCAPI/' ]:
             for url_format in [ 'https://%s/PLCAPI/' ]:
                 url=url_format%hostname
-                print '============================== Checking url=',url
+                print('============================== Checking url=',url)
                 if self.check_url(url,local_peername,remote_peername,cacert):
                     ok=True
         if ok:

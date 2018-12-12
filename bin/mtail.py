@@ -76,14 +76,14 @@ example:
             self.args.append("/var/log/httpd/sfa_access_log")
 
 	if self.options.verbose:
-	    print 'Options:',self.options
-	    print 'Arguments:',self.args
+	    print('Options:',self.options)
+	    print('Arguments:',self.args)
 
     def file_size (self,filename):
         try:
             return os.stat(filename)[6]
         except:
-            print "WARNING: file %s has vanished"%filename
+            print("WARNING: file %s has vanished"%filename)
             return 0
 		
     def number_files (self):
@@ -94,7 +94,7 @@ example:
     def scan_files (self) :
 
 	if self.options.verbose:
-	    print 'entering scan_files, files=',self.files
+	    print('entering scan_files, files=',self.files)
 
 	# mark entries in files as pre-existing
 	for key in self.files:
@@ -104,18 +104,18 @@ example:
 	filenames = []
 	for arg in self.args:
 	    if self.options.verbose:
-		print 'scan_files -- Considering arg',arg
+		print('scan_files -- Considering arg',arg)
 	    if os.path.isfile (arg):
 		filenames += [ arg ]
 	    elif os.path.isdir (arg) :
 		filenames += self.walk (arg)
 	    else:
-		print "mtail : no such file or directory %s -- ignored"%arg
+		print("mtail : no such file or directory %s -- ignored"%arg)
 
 	# updates files
 	for filename in filenames :
 	    # known file
-	    if self.files.has_key(filename):
+	    if filename in self.files:
 		size = self.file_size(filename)
 		offset = self.files[filename]['size']
 		if size > offset:
@@ -133,7 +133,7 @@ example:
 		try:
 		    self.format
 		    self.show_now()
-		    print self.format%filename,"new file"
+		    print(self.format%filename,"new file")
 		    self.show_file_end(filename,0,self.file_size(filename))
 		except:
 		    pass
@@ -141,16 +141,16 @@ example:
 	
 	# cleanup 
 	# avoid side-effects on the current loop basis
-	read_filenames = self.files.keys()
+	read_filenames = list(self.files.keys())
 	for filename in read_filenames:
-	    if self.files[filename].has_key('old-file'):
+	    if 'old-file' in self.files[filename]:
 		self.show_now()
-		print self.format%filename,"file has gone"
+		print(self.format%filename,"file has gone")
 		del self.files[filename]
 
 	# compute margin and format
 	if not filenames:
-	    print sys.argv[0],": WARNING : no file in scope"
+	    print(sys.argv[0],": WARNING : no file in scope")
 	    self.format="%s"
 	else:
 	    if len(filenames)==1:
@@ -160,12 +160,12 @@ example:
                 self.margin=max(*[len(f) for f in filenames])
 	    self.format="%%%ds"%self.margin
 	    if self.options.verbose:
-		print 'Current set of files:',filenames
+		print('Current set of files:',filenames)
 
     def tail_files (self):
 
 	if self.options.verbose:
-	    print 'tail_files'
+	    print('tail_files')
 	for filename in self.files:
 	    size = self.file_size(filename)
 	    offset = self.files[filename]['size']
@@ -176,7 +176,7 @@ example:
     def show_now (self):
 	if self.options.show_time:
 	    label=time.strftime(self.options.time_format,time.localtime())
-	    print label,
+	    print(label, end=' ')
 
     def show_file_end (self, filename, offset, size):
         try:
@@ -187,16 +187,16 @@ example:
 	file.seek(offset)
 	line=file.read(size-offset)
 	self.show_now()
-	print self.format%filename,'----------------------------------------'
-	print line
+	print(self.format%filename,'----------------------------------------')
+	print(line)
 	file.close()
 
     def show_file_when_size_decreased (self, filename, offset, size):
-	print self.format%filename,'---------- file size decreased ---------', 
+	print(self.format%filename,'---------- file size decreased ---------', end=' ') 
 	if self.options.verbose:
-	    print 'size during last check',offset,'current size',size
+	    print('size during last check',offset,'current size',size)
 	else:
-	    print ''
+	    print('')
 
     # get all files under a directory
     def walk ( self, root ):
@@ -259,13 +259,13 @@ example:
                 for char in typed:
                     if char.lower() in ['l']: os.system("clear")
                     elif char.lower() in ['m']:
-                        for i in range(3) : print 60 * '='
+                        for i in range(3) : print(60 * '=')
                     elif char.lower() in ['q']: sys.exit(0)
                     elif char.lower() in ['h']:
-                        print """l: refresh page
+                        print("""l: refresh page
 m: mark
 q: quit
-h: help"""
+h: help""")
                     
 ###
 if __name__ == '__main__':

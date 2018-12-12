@@ -107,11 +107,11 @@ class KmlMap:
         try:
             nodegroup=GetNodeGroups({'groupname':self.options.nodegroup})[0]
         except:
-            print "No such nodegroup %s - ignored"%self.options.nodegroup
+            print("No such nodegroup %s - ignored"%self.options.nodegroup)
             return
         nodegroup_node_ids=nodegroup['node_ids']
         if len(nodegroup_node_ids)==0:
-            print "Empty nodegroup %s - ignored"%self.options.nodegroup
+            print("Empty nodegroup %s - ignored"%self.options.nodegroup)
             return
         # let's go
         self.open()

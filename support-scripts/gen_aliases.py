@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Generates:
 #
@@ -49,7 +49,7 @@ gen_aliases.py options:
 dryrun = False
 
 (plcapi, moreopts, argv) = plcapilib.plcapi(globals(), sys.argv, shortopts, longopts, moreusage)
-for opt, optval in moreopts.iteritems():
+for opt, optval in moreopts.items():
     if opt == "-n" or opt == "--dryrun":
         dryrun = True
 
@@ -69,7 +69,7 @@ def passwd(path = '/etc/passwd'):
         if len(fields) < len(required):
             continue
         # {'account': 'princeton_mlh', 'password': 'x', ...}
-        entries.append(dict(zip(required + optional, fields)))
+        entries.append(dict(list(zip(required + optional, fields))))
 
     return entries
 
@@ -77,7 +77,7 @@ def GetPIs(site_id_or_login_base):
     pis = []
     for site in GetSites([site_id_or_login_base], ['person_ids']):
         persons = GetPersons(site['person_ids'], ['email', 'roles', 'enabled'])
-        pis += filter(lambda person: 'pi' in person['roles'] and person['enabled'], persons)
+        pis += [person for person in persons if 'pi' in person['roles'] and person['enabled']]
     if pis:
         return [pi['email'] for pi in pis]
     return ["NO-pi"]
@@ -86,7 +86,7 @@ def GetTechs(login_base):
     techs = []
     for site in GetSites([login_base], ['person_ids']):
         persons = GetPersons(site['person_ids'], ['email', 'roles', 'enabled'])
-        techs += filter(lambda person: 'tech' in person['roles'] and person['enabled'], persons)
+        techs += [person for person in persons if 'tech' in person['roles'] and person['enabled']]
     if techs:
         return [tech['email'] for tech in techs]
     return ["NO-tech"]
@@ -97,7 +97,7 @@ def GetSliceUsers(name):
     users = []
     for slice in GetSlices([name], ['site_id', 'person_ids']):
         persons = GetPersons(slice['person_ids'], ['email', 'enabled'])
-        enabledpersons += filter(lambda person: person['enabled'], persons)
+        enabledpersons += [person for person in persons if person['enabled']]
         users += [person['email'] for person in enabledpersons]
         # Add all the PIs for the site
         users += GetPIs(slice['site_id'])
@@ -126,7 +126,7 @@ if len(argv) == 0:
     for pw in passwd('/usr/share/doc/plc/accounts.txt'):
         # Only allow posts from those with implicit or explicit access to
         # all servers or explicit access to the CVS server
-        if pw.has_key('servers') and pw['servers'] not in ['*', 'cvs']:
+        if 'servers' in pw and pw['servers'] not in ['*', 'cvs']:
             continue
 
         # System users are those with UIDs greater than 2000 and less than 3000
@@ -145,7 +145,7 @@ if len(argv) == 0:
     if not dryrun:
         config_list = os.popen("/var/mailman/bin/config_list -i %s cvs" % cvs_config.name)
         if config_list.close() is not None:
-            raise Exception, "/var/mailman/bin/config_list cvs failed"
+            raise Exception("/var/mailman/bin/config_list cvs failed")
 
     # Get all emails
     announce = []
@@ -162,7 +162,7 @@ if len(argv) == 0:
 
     # Merge in membership of announce-additions
     list_members = os.popen("/var/mailman/bin/list_members announce-additions", 'r')
-    announce += map(lambda line: line.strip(), list_members.readlines())
+    announce += [line.strip() for line in list_members.readlines()]
     list_members.close()
     # Remove duplicates and sort
     announce = list(Set(announce))
@@ -171,7 +171,7 @@ if len(argv) == 0:
     sync_members = os.popen("/var/mailman/bin/sync_members %s -w=yes -g=yes -f - announce" % flags, 'w')
     sync_members.write("\n".join(announce))
     if sync_members.close() is not None:
-        raise Exception, "/var/mailman/bin/sync_members announce failed"
+        raise Exception("/var/mailman/bin/sync_members announce failed")
 
     # Generate {pis,techs}@lists.planet-lab.org membership
 
@@ -184,11 +184,11 @@ if len(argv) == 0:
     sync_members = os.popen("/var/mailman/bin/sync_members %s -w=no -g=no -f - pis" % flags, 'w')
     sync_members.write("\n".join(pis))
     if sync_members.close() is not None:
-        raise Exception, "/var/mailman/bin/sync_members pis failed"
+        raise Exception("/var/mailman/bin/sync_members pis failed")
     sync_members = os.popen("/var/mailman/bin/sync_members %s -w=no -g=no -f - techs" % flags, 'w')
     sync_members.write("\n".join(techs))
     if sync_members.close() is not None:
-        raise Exception, "/var/mailman/bin/sync_members techs failed"
+        raise Exception("/var/mailman/bin/sync_members techs failed")
 
     # Generate local-host-names file
     local_host_names.write("planet-lab.org\n")
@@ -232,11 +232,11 @@ if len(argv) == 0:
 # Otherwise, print space-separated list of aliases
 elif len(argv) == 2:
     if argv[0] == "slice":
-        print " ".join(GetSliceUsers(argv[1]))
+        print(" ".join(GetSliceUsers(argv[1])))
     elif argv[0] == "pi":
-        print " ".join(GetPIs(argv[1]))
+        print(" ".join(GetPIs(argv[1])))
     elif argv[0] == "tech":
-        print " ".join(GetTechs(argv[1]))
+        print(" ".join(GetTechs(argv[1])))
 
 else:
     plcapi.usage(moreusage)
