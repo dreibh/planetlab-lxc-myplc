@@ -3,7 +3,7 @@
 %define taglevel 4
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
-%global python_sitearch	%( python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)" )
+
 
 Name: %{name}
 Version: %{version}
@@ -138,9 +138,8 @@ This package provides the Python module to configure MyPLC.
 rm -rf $RPM_BUILD_ROOT
 
 # Install configuration scripts
-echo "* Installing plc_config.py in " ${PYTHON_SITEARCH}
-PYTHON_SITEARCH=`python -c 'from distutils.sysconfig import get_python_lib; print get_python_lib(1)'`
-install -D -m 755 plc_config.py ${RPM_BUILD_ROOT}/${PYTHON_SITEARCH}/plc_config.py
+echo "* Installing plc_config.py in %{python3_sitelib}"
+install -D -m 755 plc_config.py ${RPM_BUILD_ROOT}/%{python3_sitelib}
 
 echo "* Installing scripts in /usr/bin"
 mkdir -p ${RPM_BUILD_ROOT}/usr/bin
@@ -288,7 +287,7 @@ fi
 %files config
 %defattr(-,root,root,-)
 /usr/bin/plc-config
-%{python_sitearch}/plc_config.py*
+%{python3_sitelib}/plc_config.py*
 
 
 %changelog
