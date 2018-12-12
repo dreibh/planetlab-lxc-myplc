@@ -139,7 +139,7 @@ rm -rf $RPM_BUILD_ROOT
 
 # Install configuration scripts
 echo "* Installing plc_config.py in %{python3_sitelib}"
-install -D -m 755 plc_config.py ${RPM_BUILD_ROOT}/%{python3_sitelib}
+install -D -m 755 plc_config.py ${RPM_BUILD_ROOT}/%{python3_sitelib}/plc_config.py
 
 echo "* Installing scripts in /usr/bin"
 mkdir -p ${RPM_BUILD_ROOT}/usr/bin
