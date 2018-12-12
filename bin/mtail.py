@@ -1,8 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
-Does tail -f on log files in a given directory. 
-The display is in chronological order of the logged lines, 
+Does tail -f on log files in a given directory.
+The display is in chronological order of the logged lines,
 given that the first column of log files is timestamp.
 It can be altered to fit other formats too
 '''
@@ -16,19 +16,19 @@ from optparse import OptionParser
 class mtail:
 
     default_time_format = "%H:%M:%S"
-    
+
     def __init__ (self, args ):
-	
+
 	# internal structure for tracking changes
 	self.files = {}
 	# parse command-line args : will set options and args
 	self.parse_args(args)
-	# initialize 
+	# initialize
 	self.scan_files()
 
     def parse_args (self, args):
 	usage = """usage: %prog [options] file-or-dir ...
-example: 
+example:
 # %prog -e '*access*' /var/log"""
 	parser=OptionParser(usage=usage)
 	# tail_period
@@ -44,7 +44,7 @@ example:
 	parser.add_option("-r","--raw", action="store_true", dest="show_time", default=True,
 			  help="Suppresses time display")
 
-	# note for exclusion patterns 
+	# note for exclusion patterns
 	parser.add_option("-e","--exclude", action="append", dest="excludes", default=[],
 			  help="Exclusion pattern  -- can be specified multiple times applies on files not explicitly mentioned on the command-line")
 
@@ -54,7 +54,7 @@ example:
                           help="Shortcut for monitoring server-side SFA log files")
 
 	# verbosity
-	parser.add_option("-v","--verbose", action="store_true", dest="verbose", default=False, 
+	parser.add_option("-v","--verbose", action="store_true", dest="verbose", default=False,
 			  help="Run in verbose mode")
 
 	(self.options, self.args) = parser.parse_args(args)
@@ -85,7 +85,7 @@ example:
         except:
             print("WARNING: file %s has vanished"%filename)
             return 0
-		
+
     def number_files (self):
 	return len(self.files)
 
@@ -138,8 +138,8 @@ example:
 		except:
 		    pass
 		self.files[filename]={'size':self.file_size(filename)}
-	
-	# cleanup 
+
+	# cleanup
 	# avoid side-effects on the current loop basis
 	read_filenames = list(self.files.keys())
 	for filename in read_filenames:
@@ -192,7 +192,7 @@ example:
 	file.close()
 
     def show_file_when_size_decreased (self, filename, offset, size):
-	print(self.format%filename,'---------- file size decreased ---------', end=' ') 
+	print(self.format%filename,'---------- file size decreased ---------', end=' ')
 	if self.options.verbose:
 	    print('size during last check',offset,'current size',size)
 	else:
@@ -201,7 +201,7 @@ example:
     # get all files under a directory
     def walk ( self, root ):
 	import fnmatch, os, string
-	
+
 	# initialize
 	result = []
 
@@ -236,7 +236,7 @@ example:
 	    self.option_parser.print_help()
 	    sys.exit(1)
 	counter = 0
-    
+
         fdin = sys.stdin.fileno()
 	while True:
 	    ## hit the period ?
@@ -266,7 +266,7 @@ example:
 m: mark
 q: quit
 h: help""")
-                    
+
 ###
 if __name__ == '__main__':
     mtail (sys.argv[1:]).run()
