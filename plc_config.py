@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 #
 # Merge PlanetLab Central (PLC) configuration files into a variety of
 # output formats. These files represent the global configuration for a
@@ -15,10 +15,9 @@ import sys
 import textwrap
 import time
 import traceback
-import types
 import xml.dom.minidom
 from xml.parsers.expat import ExpatError
-from StringIO import StringIO
+from io import StringIO
 from optparse import OptionParser
 
 class ConfigurationException(Exception): pass
@@ -192,10 +191,10 @@ class PLCConfiguration:
 
         try:
             dom = xml.dom.minidom.parse(file)
-        except ExpatError, e:
-            raise ConfigurationException, e
+        except ExpatError as e:
+            raise ConfigurationException(e)
 
-        if type(file) in types.StringTypes:
+        if isinstance(file, str):
             self._files.append(os.path.abspath(file))
 
         # Parse <variables> section
@@ -231,7 +230,7 @@ class PLCConfiguration:
             else:
                 file = "/etc/planetlab/plc_config.xml"
 
-        if type(file) in types.StringTypes:
+        if isinstance(file, str):
             fileobj = open(file, 'w')
         else:
             fileobj = file
@@ -263,14 +262,14 @@ class PLCConfiguration:
         """
 
         validated_variables = {}
-        for category_id, variable_id in verify_variables.iteritems():
+        for category_id, variable_id in verify_variables.items():
             category_id = category_id.lower()
             variable_id = variable_id.lower()
             variable_value = None
             sources = (self, read, default)
             for source in sources:
                 (category_value, variable_value) = source.get(category_id,variable_id)
-                if variable_value <> None:
+                if variable_value != None:
                     entry = validated_variables.get(category_id,[])
                     entry.append(variable_value['value'])
                     validated_variables["%s_%s"%(category_id.upper(),variable_id.upper())]=entry
@@ -299,9 +298,9 @@ class PLCConfiguration:
                      'description': "Variable description" }
         """
 
-        if self._variables.has_key(category_id.lower()):
+        if category_id.lower() in self._variables:
             (category, variables) = self._variables[category_id]
-            if variables.has_key(variable_id.lower()):
+            if variable_id.lower() in variables:
                 variable = variables[variable_id]
             else:
                 variable = None
@@ -324,12 +323,12 @@ class PLCConfiguration:
         variable_id = unique variable identifier (e.g., 'port')
         """
 
-        if self._variables.has_key(category_id.lower()):
+        if category_id.lower() in self._variables:
             (category, variables) = self._variables[category_id]
             if variable_id is None:
                 category['element'].parentNode.removeChild(category['element'])
                 del self._variables[category_id]
-            elif variables.has_key(variable_id.lower()):
+            elif variable_id.lower() in variables:
                 variable = variables[variable_id]
                 variable['element'].parentNode.removeChild(variable['element'])
                 del variables[variable_id]
@@ -356,18 +355,19 @@ class PLCConfiguration:
                      'description': "Variable description" }
         """
 
-        if not category.has_key('id') or type(category['id']) not in types.StringTypes:
+        if ('id' not in category
+            or not isinstance(category['id'], str)):
             return
 
         category_id = category['id'].lower()
 
-        if self._variables.has_key(category_id):
+        if category_id in self._variables:
             # Existing category
             (old_category, variables) = self._variables[category_id]
 
             # Merge category attributes
             for tag in ['name', 'description']:
-                if category.has_key(tag):
+                if tag in category:
                     old_category[tag] = category[tag]
                     self._set_text_of_child(old_category['element'], tag, category[tag])
 
@@ -377,7 +377,7 @@ class PLCConfiguration:
             category_element = self._dom.createElement('category')
             category_element.setAttribute('id', category_id)
             for tag in ['name', 'description']:
-                if category.has_key(tag):
+                if tag in category:
                     self._set_text_of_child(category_element, tag, category[tag])
 
             if self._dom.documentElement.getElementsByTagName('variables'):
@@ -392,22 +392,23 @@ class PLCConfiguration:
             variables = {}
             self._variables[category_id] = (category, variables)
 
-        if variable is None or not variable.has_key('id') or type(variable['id']) not in types.StringTypes:
+        if (variable is None or 'id' not in variable
+                or not isinstance(variable['id'], str)):
             return
 
         variable_id = variable['id'].lower()
 
-        if variables.has_key(variable_id):
+        if variable_id in variables:
             # Existing variable
             old_variable = variables[variable_id]
 
             # Merge variable attributes
             for attribute in ['type']:
-                if variable.has_key(attribute):
+                if attribute in variable:
                     old_variable[attribute] = variable[attribute]
                     old_variable['element'].setAttribute(attribute, variable[attribute])
             for tag in ['name', 'value', 'description']:
-                if variable.has_key(tag):
+                if tag in variable:
                     old_variable[tag] = variable[tag]
                     self._set_text_of_child(old_variable['element'], tag, variable[tag])
         else:
@@ -415,10 +416,10 @@ class PLCConfiguration:
             variable_element = self._dom.createElement('variable')
             variable_element.setAttribute('id', variable_id)
             for attribute in ['type']:
-                if variable.has_key(attribute):
+                if attribute in variable:
                     variable_element.setAttribute(attribute, variable[attribute])
             for tag in ['name', 'value', 'description']:
-                if variable.has_key(tag):
+                if tag in variable:
                     self._set_text_of_child(variable_element, tag, variable[tag])
 
             if category_element.getElementsByTagName('variablelist'):
@@ -442,8 +443,8 @@ class PLCConfiguration:
         (None, None) otherwise
         """
 
-        for (category_id, (category, variables)) in self._variables.iteritems():
-            for variable in variables.values():
+        for (category_id, (category, variables)) in self._variables.items():
+            for variable in list(variables.values()):
                 (id, name, value, comments) = self._sanitize_variable(category_id, variable)
                 if (id == varname):
                     return (category,variable)
@@ -464,9 +465,9 @@ class PLCConfiguration:
                     'type': "mandatory|optional" }
         """
 
-        if self._packages.has_key(group_id.lower()):
+        if group_id.lower() in self._packages:
             (group, packages) = self._packages[group_id]
-            if packages.has_key(package_name):
+            if package_name in packages:
                 package = packages[package_name]
             else:
                 package = None
@@ -489,12 +490,12 @@ class PLCConfiguration:
         package_name - unique package name (e.g., 'postgresql')
         """
 
-        if self._packages.has_key(group_id):
+        if group_id in self._packages:
             (group, packages) = self._packages[group_id]
             if package_name is None:
                 group['element'].parentNode.removeChild(group['element'])
                 del self._packages[group_id]
-            elif packages.has_key(package_name.lower()):
+            elif package_name.lower() in packages:
                 package = packages[package_name]
                 package['element'].parentNode.removeChild(package['element'])
                 del packages[package_name]
@@ -520,18 +521,18 @@ class PLCConfiguration:
                     'type': "mandatory|optional" }
         """
 
-        if not group.has_key('id'):
+        if 'id' not in group:
             return
 
         group_id = group['id']
 
-        if self._packages.has_key(group_id):
+        if group_id in self._packages:
             # Existing group
             (old_group, packages) = self._packages[group_id]
 
             # Merge group attributes
             for tag in ['id', 'name', 'default', 'description', 'uservisible']:
-                if group.has_key(tag):
+                if tag in group:
                     old_group[tag] = group[tag]
                     self._set_text_of_child(old_group['element'], tag, group[tag])
 
@@ -540,7 +541,7 @@ class PLCConfiguration:
             # Merge into DOM
             group_element = self._dom.createElement('group')
             for tag in ['id', 'name', 'default', 'description', 'uservisible']:
-                if group.has_key(tag):
+                if tag in group:
                     self._set_text_of_child(group_element, tag, group[tag])
 
             if self._dom.documentElement.getElementsByTagName('comps'):
@@ -555,17 +556,17 @@ class PLCConfiguration:
             packages = {}
             self._packages[group_id] = (group, packages)
 
-        if package is None or not package.has_key('name'):
+        if package is None or 'name' not in package:
             return
 
         package_name = package['name']
-        if packages.has_key(package_name):
+        if package_name in packages:
             # Existing package
             old_package = packages[package_name]
 
             # Merge variable attributes
             for attribute in ['type']:
-                if package.has_key(attribute):
+                if attribute in package:
                     old_package[attribute] = package[attribute]
                     old_package['element'].setAttribute(attribute, package[attribute])
         else:
@@ -573,7 +574,7 @@ class PLCConfiguration:
             packagereq_element = TrimTextElement('packagereq')
             self._set_text(packagereq_element, package_name)
             for attribute in ['type']:
-                if package.has_key(attribute):
+                if attribute in package:
                     packagereq_element.setAttribute(attribute, package[attribute])
 
             if group_element.getElementsByTagName('packagelist'):
@@ -636,23 +637,23 @@ class PLCConfiguration:
 
 
     def _sanitize_variable(self, category_id, variable):
-        assert variable.has_key('id')
+        assert 'id' in variable
         # Prepend variable name with category label
         id = category_id + "_" + variable['id']
         # And uppercase it
         id = id.upper()
 
-        if variable.has_key('type'):
+        if 'type' in variable:
             type = variable['type']
         else:
             type = None
 
-        if variable.has_key('name'):
+        if 'name' in variable:
             name = variable['name']
         else:
             name = None
 
-        if variable.has_key('value') and variable['value'] is not None:
+        if 'value' in variable and variable['value'] is not None:
             value = variable['value']
             if type == "int" or type == "double":
                 # bash, Python, and PHP do not require that numbers be quoted
@@ -669,7 +670,7 @@ class PLCConfiguration:
         else:
             value = None
 
-        if variable.has_key('description') and variable['description'] is not None:
+        if 'description' in variable and variable['description'] is not None:
             description = variable['description']
             # Collapse consecutive whitespace
             description = re.sub(r'\s+', ' ', description)
@@ -702,8 +703,8 @@ DO NOT EDIT. This file was automatically generated at
         buf = codecs.lookup(encoding)[3](StringIO())
         buf.writelines(["# " + line + os.linesep for line in self._header()])
 
-        for (category_id, (category, variables)) in self._variables.iteritems():
-            for variable in variables.values():
+        for (category_id, (category, variables)) in self._variables.items():
+            for variable in list(variables.values()):
                 (id, name, value, comments) = self._sanitize_variable(category_id, variable)
                 if show_comments:
                     buf.write(os.linesep)
@@ -727,8 +728,8 @@ DO NOT EDIT. This file was automatically generated at
         buf.write("<?php" + os.linesep)
         buf.writelines(["// " + line + os.linesep for line in self._header()])
 
-        for (category_id, (category, variables)) in self._variables.iteritems():
-            for variable in variables.values():
+        for (category_id, (category, variables)) in self._variables.items():
+            for variable in list(variables.values()):
                 (id, name, value, comments) = self._sanitize_variable(category_id, variable)
                 buf.write(os.linesep)
                 if name is not None:
@@ -762,8 +763,8 @@ DO NOT EDIT. This file was automatically generated at
 
         buf = codecs.lookup(encoding)[3](StringIO())
 
-        for (category_id, (category, variables)) in self._variables.iteritems():
-            for variable in variables.values():
+        for (category_id, (category, variables)) in self._variables.items():
+            for variable in list(variables.values()):
                 (id, name, value, comments) = self._sanitize_variable(category_id, variable)
                 buf.write(id + os.linesep)
 
@@ -777,8 +778,8 @@ DO NOT EDIT. This file was automatically generated at
 
         buf = codecs.lookup(encoding)[3](StringIO())
 
-        for (group, packages) in self._packages.values():
-            buf.write(os.linesep.join(packages.keys()))
+        for (group, packages) in list(self._packages.values()):
+            buf.write(os.linesep.join(list(packages.keys())))
 
         if buf.tell():
             buf.write(os.linesep)
@@ -793,7 +794,7 @@ DO NOT EDIT. This file was automatically generated at
 
         buf = codecs.lookup(encoding)[3](StringIO())
 
-        for (group, packages) in self._packages.values():
+        for (group, packages) in list(self._packages.values()):
             buf.write(group['name'] + os.linesep)
 
         return buf.getvalue()
@@ -969,31 +970,31 @@ def get_name_comments (config, cid, vid):
 def print_name_comments (config, cid, vid):
     (name,comments)=get_name_comments(config,cid,vid)
     if name:
-        print "### %s" % name
+        print("### %s" % name)
     if comments:
         for line in comments:
-            print "# %s" % line
+            print("# %s" % line)
     else:
-        print "!!! No comment associated to %s_%s" % (cid,vid)
+        print("!!! No comment associated to %s_%s" % (cid,vid))
 
 ####################
 def list_categories (config):
     result=[]
-    for (category_id, (category, variables)) in config.variables().iteritems():
+    for (category_id, (category, variables)) in config.variables().items():
         result += [category_id]
     return result
 
 def print_categories (config):
-    print "Known categories"
+    print("Known categories")
     for cid in list_categories(config):
-        print "%s" % (cid.upper())
+        print("%s" % (cid.upper()))
 
 ####################
 def list_category (config, cid):
     result=[]
-    for (category_id, (category, variables)) in config.variables().iteritems():
+    for (category_id, (category, variables)) in config.variables().items():
         if (cid == category_id):
-            for variable in variables.values():
+            for variable in list(variables.values()):
                 result += ["%s_%s" %(cid,variable['id'])]
     return result
 
@@ -1002,11 +1003,11 @@ def print_category (config, cid, show_comments=True):
     CID=cid.upper()
     vids=list_category(config,cid)
     if (len(vids) == 0):
-        print "%s : no such category"%CID
+        print("%s : no such category"%CID)
     else:
-        print "Category %s contains" %(CID)
+        print("Category %s contains" %(CID))
         for vid in vids:
-            print vid.upper()
+            print(vid.upper())
 
 ####################
 def consolidate (default_config, site_config, consolidated_config):
@@ -1015,11 +1016,11 @@ def consolidate (default_config, site_config, consolidated_config):
         conso = PLCConfiguration (default_config)
         conso.load (site_config)
         conso.save (consolidated_config)
-    except Exception, inst:
-        print "Could not consolidate, %s" % (str(inst))
+    except Exception as inst:
+        print("Could not consolidate, %s" % (str(inst)))
         return
-    print ("Merged\n\t%s\nand\t%s\ninto\t%s"%(default_config,site_config,
-                                              consolidated_config))
+    print(("Merged\n\t%s\nand\t%s\ninto\t%s"%(default_config,site_config,
+                                              consolidated_config)))
 
 def reload_service ():
     global service
@@ -1028,17 +1029,17 @@ def reload_service ():
 ####################
 def restart_service ():
     global service
-    print ("==================== Stopping %s" % service)
+    print(("==================== Stopping %s" % service))
     os.system("systemctl stop %s" % service)
-    print ("==================== Starting %s" % service)
+    print(("==================== Starting %s" % service))
     os.system("systemctl start %s" % service)
 
 ####################
 def prompt_variable (cdef, cread, cwrite, category, variable,
                      show_comments, support_next=False):
 
-    assert category.has_key('id')
-    assert variable.has_key('id')
+    assert 'id' in category
+    assert 'id' in variable
 
     category_id = category ['id']
     variable_id = variable['id']
@@ -1053,11 +1054,11 @@ def prompt_variable (cdef, cread, cwrite, category, variable,
             print_name_comments (cdef, category_id, variable_id)
         prompt = "== %s : [%s] " % (varname,current_value)
         try:
-            answer = raw_input(prompt).strip()
+            answer = input(prompt).strip()
         except EOFError :
             raise Exception ('BailOut')
         except KeyboardInterrupt:
-            print "\n"
+            print("\n")
             raise Exception ('BailOut')
 
         # no change
@@ -1068,40 +1069,40 @@ def prompt_variable (cdef, cread, cwrite, category, variable,
         elif (answer == "#"):
             print_name_comments(cread,category_id,variable_id)
         elif (answer == "?"):
-            print variable_usage.strip()
+            print(variable_usage.strip())
         elif (answer == "="):
-            print ("%s defaults to %s" %(varname,default_value))
+            print(("%s defaults to %s" %(varname,default_value)))
         # revert to default : remove from cwrite (i.e. site-config)
         elif (answer == "/"):
             cwrite.delete(category_id,variable_id)
-            print ("%s reverted to %s" %(varname,default_value))
+            print(("%s reverted to %s" %(varname,default_value)))
             return
         elif (answer == ">"):
             if support_next:
                 raise Exception ('NextCategory')
             else:
-                print "No support for next category"
+                print("No support for next category")
         else:
             if cdef.validate_type(variable_type, answer):
                 variable['value'] = answer
                 cwrite.set(category,variable)
                 return
             else:
-                print "Not a valid value"
+                print("Not a valid value")
 
 def prompt_variables_all (cdef, cread, cwrite, show_comments):
     try:
-        for (category_id, (category, variables)) in cread.variables().iteritems():
-            print ("========== Category = %s" % category_id.upper())
-            for variable in variables.values():
+        for (category_id, (category, variables)) in cread.variables().items():
+            print(("========== Category = %s" % category_id.upper()))
+            for variable in list(variables.values()):
                 try:
                     newvar = prompt_variable (cdef, cread, cwrite, category, variable,
                                               show_comments, True)
-                except Exception, inst:
+                except Exception as inst:
                     if (str(inst) == 'NextCategory'): break
                     else: raise
 
-    except Exception, inst:
+    except Exception as inst:
         if (str(inst) == 'BailOut'): return
         else: raise
 
@@ -1109,20 +1110,20 @@ def prompt_variables_category (cdef, cread, cwrite, cid, show_comments):
     cid=cid.lower()
     CID=cid.upper()
     try:
-        print ("========== Category = %s" % CID)
+        print(("========== Category = %s" % CID))
         for vid in list_category(cdef,cid):
             (category,variable) = cdef.locate_varname(vid.upper())
             newvar = prompt_variable (cdef, cread, cwrite, category, variable,
                                       show_comments, False)
-    except Exception, inst:
+    except Exception as inst:
         if (str(inst) == 'BailOut'): return
         else: raise
 
 ####################
 def show_variable (cdef, cread, cwrite,
                    category, variable,show_value,show_comments):
-    assert category.has_key('id')
-    assert variable.has_key('id')
+    assert 'id' in category
+    assert 'id' in variable
 
     category_id = category ['id']
     variable_id = variable['id']
@@ -1133,21 +1134,21 @@ def show_variable (cdef, cread, cwrite,
     if show_comments :
         print_name_comments (cdef, category_id, variable_id)
     if show_value:
-        print "%s = %s" % (varname,current_value)
+        print("%s = %s" % (varname,current_value))
     else:
-        print "%s" % (varname)
+        print("%s" % (varname))
 
 def show_variables_all (cdef, cread, cwrite, show_value, show_comments):
-    for (category_id, (category, variables)) in cread.variables().iteritems():
-        print ("========== Category = %s" % category_id.upper())
-        for variable in variables.values():
+    for (category_id, (category, variables)) in cread.variables().items():
+        print(("========== Category = %s" % category_id.upper()))
+        for variable in list(variables.values()):
             show_variable (cdef, cread, cwrite,
                            category, variable,show_value,show_comments)
 
 def show_variables_category (cdef, cread, cwrite, cid, show_value,show_comments):
     cid=cid.lower()
     CID=cid.upper()
-    print ("========== Category = %s" % CID)
+    print(("========== Category = %s" % CID))
     for vid in list_category(cdef,cid):
         (category,variable) = cdef.locate_varname(vid.upper())
         show_variable (cdef, cread, cwrite, category, variable,
@@ -1163,15 +1164,15 @@ def mainloop (cdef, cread, cwrite, default_config, site_config, consolidated_con
     global service
     while True:
         try:
-            answer = raw_input("Enter command (u for usual changes, w to save, ? for help) ").strip()
+            answer = input("Enter command (u for usual changes, w to save, ? for help) ").strip()
         except EOFError:
             answer =""
         except KeyboardInterrupt:
-            print "\nBye"
+            print("\nBye")
             sys.exit()
 
         if (answer == "") or (answer in "?hH"):
-            print mainloop_usage
+            print(mainloop_usage)
             continue
         groups_parse = matcher_mainloop_0arg.match(answer)
         command=None
@@ -1184,7 +1185,7 @@ def mainloop (cdef, cread, cwrite, default_config, site_config, consolidated_con
                 command = groups_parse.group('command')
                 arg=groups_parse.group('arg')
         if not command:
-            print ("Unknown command >%s< -- use h for help" % answer)
+            print(("Unknown command >%s< -- use h for help" % answer))
             continue
 
         show_comments=command.isupper()
@@ -1205,7 +1206,7 @@ def mainloop (cdef, cread, cwrite, default_config, site_config, consolidated_con
                 # category/variable as output by locate_varname
                 mode='VARIABLE'
             if not mode:
-                print "%s: no such category or variable" % arg
+                print("%s: no such category or variable" % arg)
                 continue
 
         if command in "qQ":
@@ -1219,17 +1220,17 @@ def mainloop (cdef, cread, cwrite, default_config, site_config, consolidated_con
                 validator = g_configuration.get('validator',noop_validator)
                 validator(validated_variables)
                 cwrite.save(site_config)
-            except ConfigurationException, e:
-                print "Save failed due to a configuration exception: %s" % e
+            except ConfigurationException as e:
+                print("Save failed due to a configuration exception: %s" % e)
                 break;
             except:
-                print traceback.print_exc()
-                print ("Could not save -- fix write access on %s" % site_config)
+                print(traceback.print_exc())
+                print(("Could not save -- fix write access on %s" % site_config))
                 break
-            print ("Wrote %s" % site_config)
+            print(("Wrote %s" % site_config))
             consolidate(default_config, site_config, consolidated_config)
-            print ("You might want to type 'r' (restart %s), 'R' (reload %s) or 'q' (quit)" % \
-                   (service, service))
+            print(("You might want to type 'r' (restart %s), 'R' (reload %s) or 'q' (quit)" % \
+                   (service, service)))
         elif command in "uU":
             global usual_variables
             try:
@@ -1237,7 +1238,7 @@ def mainloop (cdef, cread, cwrite, default_config, site_config, consolidated_con
                     (category,variable) = cdef.locate_varname(varname)
                     if not (category is None and variable is None):
                         prompt_variable(cdef, cread, cwrite, category, variable, False)
-            except Exception, inst:
+            except Exception as inst:
                 if (str(inst) != 'BailOut'):
                     raise
         elif command == "r":
@@ -1255,7 +1256,7 @@ def mainloop (cdef, cread, cwrite, default_config, site_config, consolidated_con
                 try:
                     prompt_variable (cdef,cread,cwrite,category,variable,
                                      show_comments,False)
-                except Exception, inst:
+                except Exception as inst:
                     if str(inst) != 'BailOut':
                         raise
         elif command in "vVsSlL":
@@ -1270,7 +1271,7 @@ def mainloop (cdef, cread, cwrite, default_config, site_config, consolidated_con
             elif mode == 'VARIABLE':
                 show_variable (c1,c2,c3,category,variable,show_value,show_comments)
         else:
-            print ("Unknown command >%s< -- use h for help" % answer)
+            print(("Unknown command >%s< -- use h for help" % answer))
 
 ####################
 # creates directory for file if not yet existing
@@ -1278,16 +1279,16 @@ def check_dir (config_file):
     dirname = os.path.dirname (config_file)
     if (not os.path.exists (dirname)):
         try:
-            os.makedirs(dirname,0755)
-        except OSError, e:
-            print "Cannot create dir %s due to %s - exiting" % (dirname,e)
+            os.makedirs(dirname,0o755)
+        except OSError as e:
+            print("Cannot create dir %s due to %s - exiting" % (dirname,e))
             sys.exit(1)
 
         if (not os.path.exists (dirname)):
-            print "Cannot create dir %s - exiting" % dirname
+            print("Cannot create dir %s - exiting" % dirname)
             sys.exit(1)
         else:
-            print "Created directory %s" % dirname
+            print("Created directory %s" % dirname)
 
 ####################
 def optParserSetup(configuration):
@@ -1338,12 +1339,12 @@ def main(command,argv,configuration):
         # in effect : default settings + local settings - read only
         cread = PLCConfiguration(default_config)
 
-    except ConfigurationException, e:
-        print ("Error %s in default config file %s" %(e,default_config))
+    except ConfigurationException as e:
+        print(("Error %s in default config file %s" %(e,default_config)))
         return 1
     except:
-        print traceback.print_exc()
-        print ("default config files %s not found, is myplc installed ?" % default_config)
+        print(traceback.print_exc())
+        print(("default config files %s not found, is myplc installed ?" % default_config))
         return 1
 
 
