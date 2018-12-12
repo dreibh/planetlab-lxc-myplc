@@ -71,7 +71,7 @@ Requires: plewww
 # this technically is a plcapi dependency
 # but it's simpler here for chosing which
 %if "%{distro}" == "Fedora" && %{distrorelease} >= 29
-Requires: python2-mod_wsgi
+Requires: python3-mod_wsgi
 %else
 Requires: mod_wsgi
 %endif
@@ -93,7 +93,7 @@ Requires: expect
 Requires: php-pgsql
 Requires: curl
 Requires: rsync
-Requires: python-devel
+Requires: python3-devel
 Requires: dnf
 #Requires: PyXML
 Requires: cpio
@@ -122,7 +122,7 @@ package, like bootcd, nodeimage, or bootmanager.
 
 Summary: PlanetLab Central (PLC) configuration python module
 Group: Applications/Systems
-Requires: python
+Requires: python3
 
 %description config
 This package provides the Python module to configure MyPLC.
