@@ -20,7 +20,7 @@ SSHURL:=root@$(PLCHOSTLXC):/vservers/$(GUESTNAME)/
 SSHCOMMAND:=ssh root@$(PLCHOSTLXC) ssh $(GUESTHOSTNAME)
 endif
 
-LOCAL_RSYNC_EXCLUDES	:= --exclude '*.pyc' 
+LOCAL_RSYNC_EXCLUDES	:= --exclude '*.pyc'
 RSYNC_EXCLUDES		:= --exclude .svn --exclude CVS --exclude '*~' --exclude TAGS $(LOCAL_RSYNC_EXCLUDES)
 RSYNC_COND_DRY_RUN	:= $(if $(findstring n,$(MAKEFLAGS)),--dry-run,)
 RSYNC			:= rsync -a -v $(RSYNC_COND_DRY_RUN) $(RSYNC_EXCLUDES)
@@ -37,9 +37,9 @@ else
 	+$(RSYNC) bin/ $(SSHURL)/usr/bin/
 	+$(RSYNC) plc.d/ $(SSHURL)/etc/plc.d/
 	+$(RSYNC) db-config.d/ $(SSHURL)/etc/planetlab/db-config.d/
-	+$(RSYNC) plc_config.py $(SSHURL)/usr/lib\*/python2.\*/site-packages/plc_config.py
+	+$(RSYNC) plc_config.py $(SSHURL)/usr/lib\*/python3.\*/site-packages/plc_config.py
 	+$(RSYNC) default_config.xml $(SSHURL)/etc/planetlab/default_config.xml
-	@echo XXXXXXXX you might need to run $(SSHCOMMAND) service plc start 
+	@echo XXXXXXXX you might need to run $(SSHCOMMAND) service plc start
 endif
 
 #################### convenience, for debugging only
@@ -51,4 +51,3 @@ endif
 +%: varname=$(subst +,,$@)
 +%:
 	@echo "$($(varname))"
-
