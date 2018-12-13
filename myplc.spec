@@ -70,11 +70,7 @@ Requires: plewww
 
 # this technically is a plcapi dependency
 # but it's simpler here for chosing which
-%if "%{distro}" == "Fedora" && %{distrorelease} >= 29
 Requires: python3-mod_wsgi
-%else
-Requires: mod_wsgi
-%endif
 
 # this technically is a plewww dependency
 # starting with f27 we depend on this new rpm
