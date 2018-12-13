@@ -8,7 +8,6 @@
 # Copyright (C) 2006 The Trustees of Princeton University
 #
 
-import codecs
 import os
 import re
 import sys
@@ -699,12 +698,12 @@ DO NOT EDIT. This file was automatically generated at
         # Get rid of the surrounding newlines
         return header.strip().split(os.linesep)
 
-    def output_shell(self, show_comments=True, encoding="utf-8"):
+    def output_shell(self, show_comments=True):
         """
         Return variables as a shell script.
         """
 
-        buf = codecs.lookup(encoding)[3](StringIO())
+        buf = StringIO()
         buf.writelines(["# " + line + os.linesep for line in self._header()])
 
         for (category_id, (category, variables)) in self._variables.items():
@@ -724,12 +723,12 @@ DO NOT EDIT. This file was automatically generated at
 
         return buf.getvalue()
 
-    def output_php(self, encoding="utf-8"):
+    def output_php(self):
         """
         Return variables as a PHP script.
         """
 
-        buf = codecs.lookup(encoding)[3](StringIO())
+        buf = StringIO()
         buf.write("<?php" + os.linesep)
         buf.writelines(["// " + line + os.linesep for line in self._header()])
 
@@ -751,23 +750,19 @@ DO NOT EDIT. This file was automatically generated at
 
         return buf.getvalue()
 
-    def output_xml(self, encoding="utf-8"):
+    def output_xml(self):
         """
         Return variables in original XML format.
         """
 
-        buf = codecs.lookup(encoding)[3](StringIO())
-        self._dom.writexml(buf, addindent="  ", indent="",
-                           newl="\n", encoding=encoding)
+        return self._dom.toxml()
 
-        return buf.getvalue()
-
-    def output_variables(self, encoding="utf-8"):
+    def output_variables(self):
         """
         Return list of all variable names.
         """
 
-        buf = codecs.lookup(encoding)[3](StringIO())
+        buf = StringIO()
 
         for (category_id, (category, variables)) in self._variables.items():
             for variable in list(variables.values()):
@@ -777,12 +772,12 @@ DO NOT EDIT. This file was automatically generated at
 
         return buf.getvalue()
 
-    def output_packages(self, encoding="utf-8"):
+    def output_packages(self):
         """
         Return list of all packages.
         """
 
-        buf = codecs.lookup(encoding)[3](StringIO())
+        buf = StringIO()
 
         for (group, packages) in list(self._packages.values()):
             buf.write(os.linesep.join(list(packages.keys())))
@@ -792,39 +787,38 @@ DO NOT EDIT. This file was automatically generated at
 
         return buf.getvalue()
 
-    def output_groups(self, encoding="utf-8"):
+    def output_groups(self):
         """
         Return list of all package group names.
         """
 
-        buf = codecs.lookup(encoding)[3](StringIO())
+        buf = StringIO()
 
         for (group, packages) in list(self._packages.values()):
             buf.write(group['name'] + os.linesep)
 
         return buf.getvalue()
 
-    def output_comps(self, encoding="utf-8"):
+    def output_comps(self):
         """
         Return <comps> section of configuration.
         """
 
-        if self._dom is None or \
-           not self._dom.getElementsByTagName("comps"):
+        if (self._dom is None or not self._dom.getElementsByTagName("comps")):
             return
         comps = self._dom.getElementsByTagName("comps")[0]
 
         impl = xml.dom.minidom.getDOMImplementation()
         doc = impl.createDocument(None, "comps", None)
 
-        buf = codecs.lookup(encoding)[3](StringIO())
+        buf = StringIO()
 
         # Pop it off the DOM temporarily
         parent = comps.parentNode
         parent.removeChild(comps)
 
         doc.replaceChild(comps, doc.documentElement)
-        doc.writexml(buf, encoding=encoding)
+        doc.writexml(buf)
 
         # Put it back
         parent.appendChild(comps)
