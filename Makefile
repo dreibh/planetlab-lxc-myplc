@@ -21,9 +21,9 @@ SSHCOMMAND:=ssh root@$(PLCHOSTLXC) ssh $(GUESTHOSTNAME)
 endif
 
 LOCAL_RSYNC_EXCLUDES	:= --exclude '*.pyc'
-RSYNC_EXCLUDES		:= --exclude .svn --exclude CVS --exclude '*~' --exclude TAGS $(LOCAL_RSYNC_EXCLUDES)
+RSYNC_EXCLUDES		:= --exclude '*~' --exclude TAGS $(LOCAL_RSYNC_EXCLUDES)
 RSYNC_COND_DRY_RUN	:= $(if $(findstring n,$(MAKEFLAGS)),--dry-run,)
-RSYNC			:= rsync -a -v $(RSYNC_COND_DRY_RUN) $(RSYNC_EXCLUDES)
+RSYNC			:= rsync -ai $(RSYNC_COND_DRY_RUN) $(RSYNC_EXCLUDES)
 
 sync:
 ifeq (,$(SSHURL))
@@ -33,7 +33,8 @@ ifeq (,$(SSHURL))
 	@echo "  make sync PLCHOSTLXC=.. GUESTNAME=.. GUESTHOSTNAME=.."
 	@exit 1
 else
-	+$(RSYNC) plc.init $(SSHURL)/etc/init.d/plc
+	+$(RSYNC) systemd/plc-ctl $(SSHURL)/usr/bin/plc-ctl
+	+$(RSYNC) systemd/plc.service $(SSHURL)/usr/lib/systemd/system/plc.service
 	+$(RSYNC) bin/ $(SSHURL)/usr/bin/
 	+$(RSYNC) plc.d/ $(SSHURL)/etc/plc.d/
 	+$(RSYNC) db-config.d/ $(SSHURL)/etc/planetlab/db-config.d/
