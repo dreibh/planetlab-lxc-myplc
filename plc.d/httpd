@@ -183,7 +183,9 @@ EOF
 		# with mod_python preferred
 		if rpm -q mod_python >& /dev/null ; then
 		    configure_for_mod_python=true
-		elif rpm -q mod_wsgi >& /dev/null || rpm -q python2-mod_wsgi >& /dev/null ; then
+		elif rpm -q mod_wsgi >& /dev/null \
+          || rpm -q python2-mod_wsgi >& /dev/null \
+          || rpm -q python3-mod_wsgi >& /dev/null ; then
 		    configure_for_mod_wsgi=true
 		else
 		    echo "Requires mod_python or mod_wsgi.... exiting"
