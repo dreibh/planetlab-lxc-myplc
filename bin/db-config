@@ -1,4 +1,4 @@
-#!/usr/bin/env /usr/bin/plcsh
+#!/usr/bin/plcsh
 #
 # Bootstraps the PLC database with a default administrator account and
 # a default site, defines default slice attribute types, and
@@ -9,11 +9,15 @@
 # Copyright (C) 2006 The Trustees of Princeton University
 # Thierry Parmentelat <thierry.parmentelat@inria.fr>
 #
+# to run with options, do e.g.
+# db-config -- -l
 
-import os,sys
-from optparse import OptionParser
+import os
+import sys
+from argparse import ArgumentParser
 
 from plc_config import PLCConfiguration
+
 
 def GetSnippets(directory):
     filenames = []
@@ -21,28 +25,28 @@ def GetSnippets(directory):
         try:
             filenames = os.listdir(directory)
         except OSError as e:
-            raise Exception("Error when opening %s (%s)" % \
-                  (os.path.join(dir, file), e))
-            
+            raise Exception("Error when opening %s (%s)" %
+                            (os.path.join(dir, file), e))
+
     # ignore files that contain either ~ or .
-    ignore_tokens = ("~",".")
+    ignore_tokens = ("~", ".")
     numberedfiles = {}
     for filename in filenames:
         ignore = False
         for token in ignore_tokens:
-            if filename.find(token)>=0:
+            if filename.find(token) >= 0:
                 ignore = True
                 break
 
         if not ignore:
             parts = filename.split('-')
-            if len(parts)>=2:
+            if len(parts) >= 2:
                 name = '-'.join(parts)
                 try:
                     number = int(parts[0])
-                    entry = numberedfiles.get(number,[])
+                    entry = numberedfiles.get(number, [])
                     entry.append(name)
-                    numberedfiles[number]=entry
+                    numberedfiles[number] = entry
                 except ValueError:
                     ignore = True
             else:
@@ -59,57 +63,66 @@ def GetSnippets(directory):
             filenames.append(filename)
     return filenames
 
+
 def main():
     cfg = PLCConfiguration()
     cfg.load()
     variables = cfg.variables()
 
-    usage="%prog [-- options] [steps]"
-    parser = OptionParser(usage=usage )
-    parser.add_option("-l","--list",dest="list_steps",action="store_true",default=False,
-                      help="Lists available steps")
-    parser.add_option("-v","--verbose",dest="verbose",action="store_true",default=False,
-                      help="Run verbosely")
+    usage = "%prog [-- options] [steps]"
 
-    (options,steps) = parser.parse_args()
-    
+    parser = ArgumentParser(usage=usage)
+    parser.add_argument(
+        "-l", "--list",
+        dest="list_steps", action="store_true", default=False,
+        help="Lists available steps")
+    parser.add_argument(
+        "-v", "--verbose",
+        dest="verbose", action="store_true", default=False,
+        help="Run verbosely")
+    parser.add_argument('steps', nargs='*')
+
+    args = parser.parse_args()
+
+    globals_exec = globals().copy()
+    locals_exec = {}
+
     # Load variables into dictionaries
     for category_id, (category, variablelist) in variables.items():
-        globals()[category_id] = dict(list(zip(list(variablelist.keys()),
-                                          [variable['value'] for variable in list(variablelist.values())])))
+        globals_exec[category_id] = variablelist.copy()
 
-    directory="/etc/planetlab/db-config.d"
+    directory = "/etc/planetlab/db-config.d"
     snippets = GetSnippets(directory)
 
+    steps = args.steps
+
     for snippet in snippets:
-        
-        selected=False
+
+        selected = False
         # no steps provided on the command-line : run them all
         if not steps:
-            selected=True
+            selected = True
         else:
             for step in steps:
-                if snippet.find (step)>=0 : selected=True
-        if not selected: 
+                if snippet.find(step) >= 0:
+                    selected = True
+        if not selected:
             continue
-        
-        if options.list_steps:
-            if not options.verbose: 
+
+        if args.list_steps:
+            if not args.verbose:
                 print(snippet)
-            else: 
-                print("Found step %s/%s"%(directory,snippet))
-                os.system("rpm -qf %s/%s"%(directory,snippet))
+            else:
+                print("Found step %s/%s" % (directory, snippet))
+                os.system("rpm -qf %s/%s" % (directory, snippet))
             continue
 
         fullpath = os.path.join(directory, snippet)
-        if options.verbose:
-            print("Running step %s"%fullpath)
-        exec(compile(open(fullpath).read(), fullpath, 'exec'))
+        if args.verbose:
+            print("Running step %s" % fullpath)
+        with open(fullpath) as feed:
+            exec(feed.read(), globals_exec, locals_exec)
+
 
 if __name__ == '__main__':
     main()
-
-# Local variables:
-# tab-width: 4
-# mode: python
-# End:
