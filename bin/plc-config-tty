@@ -2,14 +2,18 @@
 
 import sys
 import readline
+
 import plc_config
+
 
 def validator(validated_variables):
     maint_user = validated_variables["PLC_API_MAINTENANCE_USER"]
     root_user = validated_variables["PLC_ROOT_USER"]
     if maint_user == root_user:
-        errStr="PLC_API_MAINTENANCE_USER=%s cannot be the same as PLC_ROOT_USER=%s"%(maint_user,root_user)
+        errStr = "PLC_API_MAINTENANCE_USER=%s cannot be the same as PLC_ROOT_USER=%s" % (
+            maint_user, root_user)
         raise plc_config.ConfigurationException(errStr)
+
 
 usual_variables = [
     "PLC_NAME",
@@ -26,18 +30,18 @@ usual_variables = [
     "PLC_BOOT_HOST",
     "PLC_NET_DNS1",
     "PLC_NET_DNS2",
-    ]
+]
 
-configuration={ \
-    'name':'plc',
-    'service':"plc",
-    'usual_variables':usual_variables,
-    'config_dir':"/etc/planetlab",
-    'validate_variables':{"PLC_API":"MAINTENANCE_USER","PLC":"ROOT_USER"},
-    'validator':validator,
-    }
+configuration = {
+    'name': 'plc',
+    'service': "plc",
+    'usual_variables': usual_variables,
+    'config_dir': "/etc/planetlab",
+    'validate_variables': {"PLC_API": "MAINTENANCE_USER", "PLC": "ROOT_USER"},
+    'validator': validator,
+}
 
 if __name__ == '__main__':
-    command=sys.argv[0]
+    command = sys.argv[0]
     argv = sys.argv[1:]
-    plc_config.main(command,argv,configuration)
+    plc_config.main(command, argv, configuration)
