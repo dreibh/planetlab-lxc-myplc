@@ -10,13 +10,15 @@ url = GetMyPLCURL()
 for (root, dirs, files) in os.walk("/etc/plc_sliceinitscripts"):
     for f in files:
         # Read the file
-        file = open(root + "/" + f, "ro")
-        script = file.read()
-        script = script.replace("@SITE@", url)
-        script = script.replace("@PREFIX@", plc['slice_prefix'])
-        name = plc['slice_prefix'] + "_" + f
-        default_initscripts.append({"name":name,"enabled":True,"script":script})
-        file.close()
+        with open(root + "/" + f) as feed:
+            script = feed.read()
+            script = script.replace("@SITE@", url)
+            script = script.replace("@PREFIX@", plc['slice_prefix'])
+            name = plc['slice_prefix'] + "_" + f
+            default_initscripts.append({
+                "name": name,
+                "enabled": True,
+                "script": script})
 
 for initscript in default_initscripts:
 	SetInitScript(initscript)
