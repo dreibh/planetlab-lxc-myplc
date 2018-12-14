@@ -326,7 +326,7 @@ EOF
 	MESSAGE=$"Stopping web server"
 	dialog "$MESSAGE"
 
-	killproc plc_httpd
+	pkill -f plc_httpd
 	check
 
 	result "$MESSAGE"
