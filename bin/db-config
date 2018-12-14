@@ -89,7 +89,9 @@ def main():
 
     # Load variables into dictionaries
     for category_id, (category, variablelist) in variables.items():
-        globals_exec[category_id] = variablelist.copy()
+        globals_exec[category_id] = dict(
+            zip(variablelist.keys(),
+            [variable['value'] for variable in variablelist.values()]))
 
     directory = "/etc/planetlab/db-config.d"
     snippets = GetSnippets(directory)
