@@ -7,9 +7,11 @@
 # Mark Huang <mlhuang@cs.princeton.edu>
 # Copyright (C) 2006 The Trustees of Princeton University
 #
+# pylint: disable=c0111
 
+import sys
+import os
 from plc_config import PLCConfiguration
-import os, sys
 
 def writepid(prog):
     """
@@ -17,18 +19,16 @@ def writepid(prog):
     """
 
     try:
-        pidfile = file("/var/run/%s.pid" % prog, "r")
-        pid = pidfile.readline().strip()
-        pidfile.close()
+        with open("/var/run/%s.pid" % prog, "r") as pidfile:
+            pid = pidfile.readline().strip()
         if os.path.isdir("/proc/" + pid):
             print("Error: Another copy of %s is still running (%s)" % (prog, pid))
             sys.exit(1)
     except IOError:
         pass
 
-    pidfile = file("/var/run/%s.pid" % prog, "w")
-    pidfile.write(str(os.getpid()))
-    pidfile.close()
+    with open("/var/run/%s.pid" % prog, "w") as pidfile:
+        pidfile.write(str(os.getpid()))
 
 def removepid(prog):
     os.unlink("/var/run/%s.pid" % prog)
@@ -40,9 +40,10 @@ def main():
     cfg.load()
     variables = cfg.variables()
 
-    (category, variablelist) = variables['plc_dns']
+    (_, variablelist) = variables['plc_dns']
     plc_dns = dict(list(zip(list(variablelist.keys()),
-                       [variable['value'] for variable in list(variablelist.values())])))
+                            [variable['value']
+                             for variable in list(variablelist.values())])))
 
     if plc_dns['enabled'] != "true":
         return 0
@@ -72,10 +73,10 @@ def main():
                 hosts[interface['ip']].append(hostname)
         else:
             hosts[interface['ip']] = [hostname]
-    
+
     # Write /etc/plc_hosts
     plc_hosts = open("/etc/plc_hosts", "w")
-    plc_hosts.write("# DO NOT EDIT; File is writen and removed by automatic scripts\n")
+    plc_hosts.write("# DO NOT EDIT; File is written and removed by automatic scripts\n")
     for ip, hostnames in hosts.items():
         plc_hosts.write(ip + "\t" + " ".join(hostnames) + "\n")
     plc_hosts.close()
@@ -87,7 +88,8 @@ def main():
     # the public DNS cannot answer, and which load the servers
     # (especially the root servers) uneccessarily.
     #
-    file("/etc/dnsmasq.conf", "w").write("""
+    with open("/etc/dnsmasq.conf", "w") as writer:
+        writer.write("""
 domain-needed
 bogus-priv
 addn-hosts=/etc/plc_hosts
