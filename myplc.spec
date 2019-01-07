@@ -1,6 +1,6 @@
 %define name myplc
 %define version 5.3
-%define taglevel 4
+%define taglevel 5
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 %global python_sitearch	%( python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)" )
@@ -292,6 +292,13 @@ fi
 
 
 %changelog
+* Mon Jan 07 2019 Thierry Parmentelat <thierry.parmentelat@inria.fr> - myplc-5.3-5
+- last version suitable for f27/f29 with python2
+- packaging is split up, one more rpm named 'myplc-core' is produced,
+- that covers the infrastructure side only (without bootcds and nodeimages and all node-oriented material)
+- no more init file, one systemd service only, that leverages new /usr/bin/plc-ctl
+- more robust config for httpd and php-fpm and php
+
 * Sun Jul 16 2017 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.3-4
 - takes care of creating plcapi log file
 
