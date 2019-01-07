@@ -1,6 +1,6 @@
 %define name myplc-docs
-%define version 5.3
-%define taglevel 4
+%define version 7.0
+%define taglevel 0
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 
@@ -96,6 +96,9 @@ rm -rf $RPM_BUILD_ROOT
 /var/www/html/planetlab/doc/
 
 %changelog
+* Mon Jan 07 2019 Thierry Parmentelat <thierry.parmentelat@inria.fr> - myplc-7.0-0
+- suitable for python3 on both f27 and f29
+
 * Sun Jul 16 2017 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - myplc-5.3-4
 - takes care of creating plcapi log file
 
