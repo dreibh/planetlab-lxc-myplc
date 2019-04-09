@@ -171,7 +171,9 @@ function plc_reload () {
 # </Directory>
 
 function apache_newauth () {
-    apache_version=$(apachectl -V 2> /dev/null | grep 'Server version' | cut -d ' ' -f3 | sed -e 's,^.*/,,')
+    # somehow in 2019 apachectl stopped answering the -V option
+    # apache_version=$(apachectl -V 2> /dev/null | grep 'Server version' | cut -d ' ' -f3 | sed -e 's,^.*/,,')
+    apache_version=$(rpm -q --queryformat "%{VERSION}" httpd)
     apache_major=$(echo $apache_version | cut -d. -f1)
     apache_minor=$(echo $apache_version | cut -d. -f2)
     test "$apache_minor" -ge 4
