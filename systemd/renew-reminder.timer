@@ -1,0 +1,9 @@
+[Unit]
+Description=Runs renew-reminder.py on a daily basis
+
+[Timer]
+OnUnitActiveSec=1d
+Unit=renew-reminder.service
+
+[Install]
+WantedBy=multi-user.target

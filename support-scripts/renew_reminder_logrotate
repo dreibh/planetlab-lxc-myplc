@@ -1,8 +1,0 @@
-/var/log/renew_reminder {
-    weekly
-    missingok
-    notifempty
-    create 0640 root root
-
-}
-
