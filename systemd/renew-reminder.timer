@@ -2,7 +2,7 @@
 Description=Runs renew-reminder.py on a daily basis
 
 [Timer]
-OnUnitActiveSec=1d
+OnCalendar=*-*-* 08:30
 Unit=renew-reminder.service
 
 [Install]
