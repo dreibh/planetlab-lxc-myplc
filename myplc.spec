@@ -284,7 +284,7 @@ fi
 %defattr(-,root,root,-)
 /usr/bin/plc-config
 %{python3_sitelib}/plc_config.py*
-
+%exclude %{python3_sitelib}/__pycache__/*.pyc
 
 %changelog
 * Mon Jan 07 2019 Thierry Parmentelat <thierry.parmentelat@inria.fr> - myplc-7.0-0
