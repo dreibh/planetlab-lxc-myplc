@@ -12,6 +12,67 @@
 . /etc/plc.d/functions
 . /etc/planetlab/plc_config
 
+### IMPORTANT NOTE 2020 - feb
+# when moving to fedora31 I run into this
+# https://fedoraproject.org/wiki/Changes/GnuPG2_as_default_GPG_implementation
+# which breaks the whole system for us because
+# * gnupg2 key generation function won't work as expected
+# * but with much wider impact, it turns out that private keys
+#   are now stored in a completely different way, and this will affect
+#   the way that particular location (typically /etc/planetlab/secring.gpg)
+#   is both
+#   * configured (as $PLC_ROOT_GPG_KEY) 
+#   * and passed around (see the PLC.GPG module and its gpg_sign() function)
+# 
+# so for now it looks MUCH EASIER to just get fedora to install gnupg1 
+# instead of (or on top of) gnupg, and use gpg1 when available
+# below is a leftover of the beginning of a code adaptation
+# to gnupg2, that should work fine (took some time to get right actually)
+# but this is currently unused 
+
+# the default gpg command is version 1 up to f29, version 2 starts with f31 
+# that could be more for when we support both
+GPG_MAJOR_VERSION=$(gpg --version | grep '^gpg' | cut -d' ' -f 3 | cut -d. -f1)
+
+function generate_key_v1() {
+	local homedir=$1
+	gpg --homedir=$homedir --no-permission-warning --batch --no-tty --yes --gen-key << EOF
+Key-Type: DSA
+Key-Length: 1024
+Subkey-Type: ELG-E
+Subkey-Length: 1024
+Name-Real: $PLC_NAME Central
+Name-Comment: http://$PLC_WWW_HOST/
+Name-Email: $PLC_MAIL_SUPPORT_ADDRESS
+Expire-Date: 0
+%pubring $PLC_ROOT_GPG_KEY_PUB
+%secring $PLC_ROOT_GPG_KEY
+%commit
+EOF
+}
+
+# this code should work allright as far as key generation, but as explained above
+# moving to gnupg2 requires a lot more work all over the place...
+function generate_key_v2() {
+	>&2 echo "it appears you have GPGv2 installed, myPLC is not ready for that !"
+	return 1
+
+	local homedir=$1
+	gpg --homedir=$homedir --generate-key --batch << EOF
+Key-Type: DSA
+Key-Length: 1024
+Subkey-Type: ELG-E
+Subkey-Length: 1024
+Name-Real: $PLC_NAME Central
+Name-Comment: http://$PLC_WWW_HOST/
+Name-Email: $PLC_MAIL_SUPPORT_ADDRESS
+Expire-Date: 0
+%pubring $PLC_ROOT_GPG_KEY_PUB
+%no-protection
+%commit
+EOF
+}
+
 # Be verbose
 set -x
 
@@ -53,20 +114,11 @@ case "$1" in
 	    ln -s /dev/urandom /dev/random
 	    # again 
 	    check
-	    gpg --homedir=$homedir --no-permission-warning --batch --no-tty --yes \
-		--gen-key <<EOF
-Key-Type: DSA
-Key-Length: 1024
-Subkey-Type: ELG-E
-Subkey-Length: 1024
-Name-Real: $PLC_NAME Central
-Name-Comment: http://$PLC_WWW_HOST/
-Name-Email: $PLC_MAIL_SUPPORT_ADDRESS
-Expire-Date: 0
-%pubring $PLC_ROOT_GPG_KEY_PUB
-%secring $PLC_ROOT_GPG_KEY
-%commit
-EOF
+		if [ "$GPG_MAJOR_VERSION" == 1 ]; then
+			generate_key_v1 $homedir
+		else
+			generate_key_v2 $homedir
+		fi
 	    check
 	    mv -f /dev/random.preserve /dev/random
 	    check
