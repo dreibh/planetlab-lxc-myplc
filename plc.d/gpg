@@ -30,13 +30,17 @@
 # to gnupg2, that should work fine (took some time to get right actually)
 # but this is currently unused 
 
+# for now we run only with gpg1, but on recent systems it means 
+# we need to invoke explicitly gpg1
+type gpg1 >& /dev/null && GPG=gpg1 || GPG=gpg
+
+# this is more for when we support both
 # the default gpg command is version 1 up to f29, version 2 starts with f31 
-# that could be more for when we support both
-GPG_MAJOR_VERSION=$(gpg --version | grep '^gpg' | cut -d' ' -f 3 | cut -d. -f1)
+GPG_MAJOR_VERSION=$($GPG --version | grep '^gpg' | cut -d' ' -f 3 | cut -d. -f1)
 
 function generate_key_v1() {
 	local homedir=$1
-	gpg --homedir=$homedir --no-permission-warning --batch --no-tty --yes --gen-key << EOF
+	$GPG --homedir=$homedir --no-permission-warning --batch --no-tty --yes --gen-key << EOF
 Key-Type: DSA
 Key-Length: 1024
 Subkey-Type: ELG-E
@@ -58,7 +62,7 @@ function generate_key_v2() {
 	return 1
 
 	local homedir=$1
-	gpg --homedir=$homedir --generate-key --batch << EOF
+	$GPG --homedir=$homedir --generate-key --batch << EOF
 Key-Type: DSA
 Key-Length: 1024
 Subkey-Type: ELG-E
@@ -136,7 +140,7 @@ case "$1" in
 		    break
 		fi
 	    done < <(
-		gpg --homedir=$homedir --no-permission-warning --batch --no-tty --yes \
+		$GPG --homedir=$homedir --no-permission-warning --batch --no-tty --yes \
 		    --no-default-keyring \
 		    --secret-keyring=$PLC_ROOT_GPG_KEY \
 		    --keyring=$PLC_ROOT_GPG_KEY_PUB \
@@ -146,7 +150,7 @@ case "$1" in
 	    IFS=$OLDIFS
 
 	    # Add a new UID if appropriate. GPG will detect and merge duplicates.
-	    gpg --homedir=$homedir --no-permission-warning --batch --no-tty --yes \
+	    $GPG --homedir=$homedir --no-permission-warning --batch --no-tty --yes \
 		--no-default-keyring \
 		--secret-keyring=$PLC_ROOT_GPG_KEY \
 		--keyring=$PLC_ROOT_GPG_KEY_PUB \
@@ -162,7 +166,7 @@ EOF
 
 	# Install the key in the RPM database
 	mkdir -p /etc/pki/rpm-gpg
-	gpg --homedir=$homedir --no-permission-warning --batch --no-tty --yes \
+	$GPG --homedir=$homedir --no-permission-warning --batch --no-tty --yes \
 	    --no-default-keyring \
 	    --secret-keyring=$PLC_ROOT_GPG_KEY \
 	    --keyring=$PLC_ROOT_GPG_KEY_PUB \
