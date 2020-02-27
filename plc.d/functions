@@ -83,7 +83,8 @@ function plc_daemon () {
 
 # Print IP address of hostname if resolvable
 function gethostbyname () {
-    python -c 'import socket; import sys; print socket.gethostbyname(sys.argv[1])' $1 2>/dev/null
+    local host="$1"; shift
+    python3 -c "import socket; import sys; print(socket.gethostbyname('${host}'))"
 }
 
 # Forcefully make a symlink
