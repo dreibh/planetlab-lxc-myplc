@@ -30,12 +30,13 @@ Requires: myplc-docs
 Requires: myplc-release
 Requires: myplc-core
 Requires: createrepo
-Requires: bootmanager
-Requires: bootcd-%{nodefamily}
-Requires: bootcd-initscripts
-Requires: nodeimage-%{nodefamily}
-Requires: nodeconfig
-Requires: nodeyum
+## serverside only
+#Requires: bootmanager
+#Requires: bootcd-%{nodefamily}
+#Requires: bootcd-initscripts
+#Requires: nodeimage-%{nodefamily}
+#Requires: nodeconfig
+#Requires: nodeyum
 Requires: www-register-wizard
 
 
