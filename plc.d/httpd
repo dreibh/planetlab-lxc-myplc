@@ -79,9 +79,12 @@ case "$1" in
 	# log_errors : is On by default
 	# error_log
 	if ! grep '^error_log *=' $php_ini > /dev/null ; then
-	  echo 'error_log = /var/log/php.log' >> $php_ini
-	  touch /var/log/php.log
-	  chmod 666 /var/log/php.log
+            sed -i -e '/^;error_log = syslog/a error_log = /var/log/php.log' $php_ini
+            sed -i -e 's/display_errors =.*/display_errors = On/' $php_ini
+            sed -i -e 's/display_startup_errors =.*/display_startup_errors = On/' $php_ini
+            # create the log file and make it writable by apache
+	    touch /var/log/php.log
+	    chmod 666 /var/log/php.log
 	fi
 
         # configure php-fpm as well if present (starting with f27)
