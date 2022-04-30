@@ -1,5 +1,5 @@
 %define name myplc
-%define version 7.0
+%define version 7.1
 %define taglevel 0
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
@@ -288,6 +288,9 @@ fi
 %exclude %{python3_sitelib}/__pycache__/*.pyc
 
 %changelog
+* Sat Apr 30 2022 Thierry Parmentelat <thierry.parmentelat@inria.fr> - myplc-7.1-0
+- ready on f35
+
 * Mon Jan 07 2019 Thierry Parmentelat <thierry.parmentelat@inria.fr> - myplc-7.0-0
 - suitable for python3 on both f27 and f29
 
