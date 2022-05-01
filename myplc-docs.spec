@@ -49,12 +49,15 @@ rm -f doc/PLCAPI.html
 make -C doc PLCAPI.html || make -C doc PLCAPI.html 
 popd
 
+# nodemanager is now optional
+if [ -d nodemanager]; then
 pushd nodemanager
 # beware that making the pdf file somehow overwrites the html
 make -C doc NMAPI.pdf || make -C doc NMAPI.pdf
 rm -f doc/NMAPI.html
 make -C doc NMAPI.html || make -C doc NMAPI.html 
 popd
+fi
 
 # not everyone rebuilds monitor, so make it optional
 if [ -d monitor ] ; then
