@@ -50,7 +50,7 @@ make -C doc PLCAPI.html || make -C doc PLCAPI.html
 popd
 
 # nodemanager is now optional
-if [ -d nodemanager]; then
+if [ -d nodemanager ]; then
 pushd nodemanager
 # beware that making the pdf file somehow overwrites the html
 make -C doc NMAPI.pdf || make -C doc NMAPI.pdf
