@@ -84,9 +84,11 @@ done
 ./myplc/docbook2drupal.sh "PLC API Documentation (%{pldistro})" \
     $RPM_BUILD_ROOT/var/www/html/planetlab/doc/PLCAPI.html \
     $RPM_BUILD_ROOT/var/www/html/planetlab/doc/PLCAPI.php
+if [ -d nodemanager/doc ] ; then
 ./myplc/docbook2drupal.sh "Node Manager API Documentation (%{pldistro})" \
     $RPM_BUILD_ROOT/var/www/html/planetlab/doc/NMAPI.html \
     $RPM_BUILD_ROOT/var/www/html/planetlab/doc/NMAPI.php
+fi
 if [ -d monitor/docs ] ; then
 ./myplc/docbook2drupal.sh "Monitor API Documentation (%{pldistro})" \
     $RPM_BUILD_ROOT/var/www/html/planetlab/doc/Monitor.html \
