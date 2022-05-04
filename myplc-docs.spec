@@ -50,7 +50,7 @@ make -C doc PLCAPI.html || make -C doc PLCAPI.html
 popd
 
 # nodemanager is now optional
-if [ -d nodemanager ]; then
+if [ -d nodemanager/doc ]; then
 pushd nodemanager
 # beware that making the pdf file somehow overwrites the html
 make -C doc NMAPI.pdf || make -C doc NMAPI.pdf
@@ -60,7 +60,7 @@ popd
 fi
 
 # not everyone rebuilds monitor, so make it optional
-if [ -d monitor ] ; then
+if [ -d monitor/docs ] ; then
 pushd monitor
 # beware that making the pdf file somehow overwrites the html
 make -C docs Monitor.pdf || make -C docs Monitor.pdf 
