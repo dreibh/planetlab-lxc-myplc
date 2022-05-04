@@ -50,7 +50,7 @@ make -C doc PLCAPI.html || make -C doc PLCAPI.html
 popd
 
 # nodemanager is now optional
-if [ -d nodemanager/doc ]; then
+if [ -d nodemanager/doc ] ; then
 pushd nodemanager
 # beware that making the pdf file somehow overwrites the html
 make -C doc NMAPI.pdf || make -C doc NMAPI.pdf
@@ -73,8 +73,10 @@ fi
 
 for ext in pdf html; do
     install -D -m 444 plcapi/doc/PLCAPI.$ext $RPM_BUILD_ROOT/var/www/html/planetlab/doc/PLCAPI.$ext
+    if [ -d nodemanager/doc ] ; then
     install -D -m 444 nodemanager/doc/NMAPI.$ext $RPM_BUILD_ROOT/var/www/html/planetlab/doc/NMAPI.$ext
-    if [ -d monitor ] ; then
+    fi
+    if [ -d monitor/docs ] ; then
     install -D -m 444 monitor/docs/Monitor.$ext $RPM_BUILD_ROOT/var/www/html/planetlab/doc/Monitor.$ext
     fi
 done
