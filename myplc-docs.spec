@@ -39,14 +39,14 @@ rm -rf $RPM_BUILD_ROOT
 [ -d myplc ] || ln -s MyPLC myplc
 [ -d plcapi ] || ln -s PLCAPI plcapi
 [ -d nodemanager ] || ln -s NodeManager nodemanager
-[ -d monitor ] || ln -s Monitor monitor 
+[ -d monitor ] || ln -s Monitor monitor
 
 pushd plcapi
 # june2011 & f12, latex issues weird warnings, might need to try twice
-make -C doc PLCAPI.pdf || make -C doc PLCAPI.pdf 
+make -C doc PLCAPI.pdf || make -C doc PLCAPI.pdf
 # beware that making the pdf file somehow overwrites the html
 rm -f doc/PLCAPI.html
-make -C doc PLCAPI.html || make -C doc PLCAPI.html 
+make -C doc PLCAPI.html || make -C doc PLCAPI.html
 popd
 
 # nodemanager is now optional
@@ -55,7 +55,7 @@ pushd nodemanager
 # beware that making the pdf file somehow overwrites the html
 make -C doc NMAPI.pdf || make -C doc NMAPI.pdf
 rm -f doc/NMAPI.html
-make -C doc NMAPI.html || make -C doc NMAPI.html 
+make -C doc NMAPI.html || make -C doc NMAPI.html
 popd
 fi
 
@@ -63,9 +63,9 @@ fi
 if [ -d monitor/docs ] ; then
 pushd monitor
 # beware that making the pdf file somehow overwrites the html
-make -C docs Monitor.pdf || make -C docs Monitor.pdf 
+make -C docs Monitor.pdf || make -C docs Monitor.pdf
 rm -f docs/Monitor.html
-make -C docs Monitor.html || make -C docs Monitor.html 
+make -C docs Monitor.html || make -C docs Monitor.html
 popd
 fi
 
@@ -83,14 +83,14 @@ done
 
 ./myplc/docbook2drupal.sh "PLC API Documentation (%{pldistro})" \
     $RPM_BUILD_ROOT/var/www/html/planetlab/doc/PLCAPI.html \
-    $RPM_BUILD_ROOT/var/www/html/planetlab/doc/PLCAPI.php 
+    $RPM_BUILD_ROOT/var/www/html/planetlab/doc/PLCAPI.php
 ./myplc/docbook2drupal.sh "Node Manager API Documentation (%{pldistro})" \
     $RPM_BUILD_ROOT/var/www/html/planetlab/doc/NMAPI.html \
-    $RPM_BUILD_ROOT/var/www/html/planetlab/doc/NMAPI.php 
-if [ -d monitor ] ; then
+    $RPM_BUILD_ROOT/var/www/html/planetlab/doc/NMAPI.php
+if [ -d monitor/docs ] ; then
 ./myplc/docbook2drupal.sh "Monitor API Documentation (%{pldistro})" \
     $RPM_BUILD_ROOT/var/www/html/planetlab/doc/Monitor.html \
-    $RPM_BUILD_ROOT/var/www/html/planetlab/doc/Monitor.php 
+    $RPM_BUILD_ROOT/var/www/html/planetlab/doc/Monitor.php
 fi
 
 %clean
@@ -413,7 +413,7 @@ rm -rf $RPM_BUILD_ROOT
 - figures in doc package
 
 * Fri May 09 2008 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - MyPLC-4.2-11
-- no more doc packaged outside of myplc-docs - doc/ cleaned up 
+- no more doc packaged outside of myplc-docs - doc/ cleaned up
 - chroot packaging does not have docs anymore
 - 'cvs' and 'dev' not required from myplc-native anymore
 - cosmetic change in kml output
